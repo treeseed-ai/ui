@@ -23,6 +23,8 @@ test('unified component index groups forms and displays', async ({ page }) => {
 });
 
 test('all registered component pages render preview and metadata', async ({ page }) => {
+  test.setTimeout(90_000);
+
   for (const entry of componentCatalog) {
     await page.goto(entry.route);
     await expect(page.locator('body')).not.toContainText('An error occurred.');

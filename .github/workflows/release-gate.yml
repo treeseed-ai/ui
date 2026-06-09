@@ -1,0 +1,37 @@
+name: Release Gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install UI dependencies
+        run: |
+          for attempt in 1 2 3; do
+            if npm ci; then
+              exit 0
+            fi
+            echo "npm ci failed; retrying (${attempt}/3)."
+            sleep $((attempt * 5))
+          done
+          npm ci
+
+      - name: Verify UI package
+        run: npm run verify
