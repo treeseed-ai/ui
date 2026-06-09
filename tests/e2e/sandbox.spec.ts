@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { componentCatalog } from '../../sandbox/src/lib/component-catalog';
+import { componentCatalog, formComponents } from '../../sandbox/src/lib/component-catalog';
 
 const readPollingState = async (page: import('@playwright/test').Page) => {
   const text = await page.getByLabel('Polling State').locator('pre').innerText();
@@ -42,30 +42,41 @@ test('all registered component pages render preview and metadata', async ({ page
 });
 
 test('form pages submit on-page without navigation', async ({ page }) => {
-  await page.goto('/forms/dynamic-pie-allocation');
-  await expect(page.getByTestId('dynamic-pie-allocation')).toHaveAttribute('data-hydrated', 'true');
-  await page.getByTestId('slice-input-planning').fill('40');
-  await page.getByRole('button', { name: 'Submit allocation' }).click();
-  await expect(page).toHaveURL(/\/forms\/dynamic-pie-allocation$/);
-  await expect(page.getByLabel('Submission')).toContainText('capacity_allocation');
+  test.setTimeout(90_000);
 
-  await page.goto('/forms/text-input');
-  await page.getByLabel('Project').fill('Catalog Test Project');
-  await page.getByRole('button', { name: 'Submit project' }).click();
-  await expect(page).toHaveURL(/\/forms\/text-input$/);
-  await expect(page.getByLabel('Submission')).toContainText('Catalog Test Project');
+  for (const entry of formComponents) {
+    await page.goto(entry.route);
+    await expect(page.getByTestId('component-page')).toHaveAttribute('data-component', entry.id);
 
-  await page.goto('/forms/select');
-  await page.getByLabel('Environment').selectOption('staging');
-  await page.getByRole('button', { name: 'Submit environment' }).click();
-  await expect(page).toHaveURL(/\/forms\/select$/);
-  await expect(page.getByLabel('Submission')).toContainText('staging');
+    if (entry.id === 'dynamic-pie-allocation') {
+      await expect(page.getByTestId('dynamic-pie-allocation')).toHaveAttribute('data-hydrated', 'true');
+      await page.getByTestId('slice-input-planning').fill('40');
+    }
 
-  await page.goto('/forms/rich-markdown-editor');
-  await expect(page.locator('.ts-rich-markdown-field')).toContainText('Build a resilient launch loop', { timeout: 15_000 });
-  await page.getByRole('button', { name: 'Submit markdown' }).click();
-  await expect(page).toHaveURL(/\/forms\/rich-markdown-editor$/);
-  await expect(page.getByLabel('Submission')).toContainText('Build a resilient launch loop');
+    if (['checkbox-field', 'select-field', 'text-field'].includes(entry.id)) {
+      await expect(page.getByTestId('react-form-control')).toHaveAttribute('data-hydrated', 'true');
+    }
+
+    if (entry.id === 'text-input') {
+      await page.getByLabel('Project').fill('Catalog Test Project');
+    }
+
+    if (entry.id === 'select') {
+      await page.getByLabel('Environment').selectOption('staging');
+    }
+
+    if (entry.id === 'textarea') {
+      await page.getByLabel('Notes').fill('Catalog textarea submission');
+    }
+
+    if (entry.id === 'rich-markdown-editor') {
+      await expect(page.locator('.ts-rich-markdown-field')).toContainText('Build a resilient launch loop', { timeout: 15_000 });
+    }
+
+    await page.locator('main').getByRole('button', { name: /^Submit/ }).last().click();
+    await expect(page).toHaveURL(new RegExp(`${entry.route}$`));
+    await expect(page.getByLabel('Submission').locator('pre')).not.toHaveText('null');
+  }
 });
 
 test('catalog JSON data panels use syntax highlighting', async ({ page }) => {

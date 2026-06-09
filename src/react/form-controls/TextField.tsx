@@ -3,6 +3,7 @@ import type { ChangeEvent } from "react";
 type TextFieldProps = {
   id: string;
   label: string;
+  name?: string;
   value?: string;
   defaultValue?: string;
   placeholder?: string;
@@ -14,6 +15,7 @@ type TextFieldProps = {
 export function TextField({
   id,
   label,
+  name,
   value,
   defaultValue,
   placeholder,
@@ -29,6 +31,7 @@ export function TextField({
 
   const sharedProps = {
     id,
+    name,
     value,
     defaultValue,
     placeholder,

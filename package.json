@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -140,6 +140,18 @@
     "./components/react/RichMarkdownEditor": {
       "types": "./dist/react/editors/RichMarkdownEditor.d.ts",
       "default": "./dist/react/editors/RichMarkdownEditor.js"
+    },
+    "./components/react/CheckboxField": {
+      "types": "./dist/react/form-controls/CheckboxField.d.ts",
+      "default": "./dist/react/form-controls/CheckboxField.js"
+    },
+    "./components/react/SelectField": {
+      "types": "./dist/react/form-controls/SelectField.d.ts",
+      "default": "./dist/react/form-controls/SelectField.js"
+    },
+    "./components/react/TextField": {
+      "types": "./dist/react/form-controls/TextField.d.ts",
+      "default": "./dist/react/form-controls/TextField.js"
     },
     "./lib/pie-allocation": {
       "types": "./dist/lib/pie-allocation/math.d.ts",

@@ -89,6 +89,16 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'size', type: "'sm' | 'md'", defaultValue: 'md', description: 'Button size.' },
     { name: 'disabled', type: 'boolean', defaultValue: false, description: 'Disables the button.' },
   ]),
+  form('checkbox-field', 'CheckboxField', 'Fields', 'react', 'Theme-aware React checkbox form control.', 'small', {
+    id: 'react-enabled',
+    name: 'react_enabled',
+    label: 'Enable realtime monitoring',
+    checked: true,
+  }, [
+    { name: 'checked', type: 'boolean', defaultValue: true, description: 'Controlled checked state.' },
+    { name: 'defaultChecked', type: 'boolean', defaultValue: undefined, description: 'Initial uncontrolled checked state.' },
+    { name: 'onChange', type: '(checked: boolean) => void', defaultValue: undefined, description: 'Change callback.' },
+  ], { react_enabled: true, submitted: null }),
   form('dynamic-pie-allocation', 'DynamicPieAllocationInput', 'Allocation', 'react', 'Interactive pie allocation form value editor.', 'large', {
     name: 'capacity_allocation',
     precision: 1,
@@ -149,6 +159,18 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'initialMarkdown', type: 'string', defaultValue: '# Build a resilient launch loop', description: 'Initial editor document.' },
     { name: 'required', type: 'boolean', defaultValue: true, description: 'Requires content before submit.' },
   ], { markdown: '', submitted: null }),
+  form('select-field', 'SelectField', 'Choices', 'react', 'Theme-aware React select form control.', 'small', {
+    id: 'react-environment',
+    name: 'react_environment',
+    label: 'Environment',
+    value: 'production',
+    options: 3,
+  }, [
+    { name: 'value', type: 'string', defaultValue: 'production', description: 'Controlled selected option.' },
+    { name: 'defaultValue', type: 'string', defaultValue: undefined, description: 'Initial uncontrolled selected option.' },
+    { name: 'options', type: 'SelectOption[]', defaultValue: 3, description: 'Selectable options.' },
+    { name: 'onChange', type: '(value: string) => void', defaultValue: undefined, description: 'Change callback.' },
+  ], { react_environment: 'production', submitted: null }),
   form('select', 'Select', 'Choices', 'astro', 'Theme-aware native select control.', 'small', {
     name: 'environment',
     value: 'production',
@@ -157,6 +179,18 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'value', type: 'string', defaultValue: 'production', description: 'Selected option.' },
     { name: 'required', type: 'boolean', defaultValue: true, description: 'Requires a selected option.' },
   ]),
+  form('text-field', 'TextField', 'Fields', 'react', 'Theme-aware React text and textarea form control.', 'small', {
+    id: 'react-project',
+    name: 'react_project',
+    label: 'Project',
+    value: 'Monitoring Console',
+    multiline: false,
+  }, [
+    { name: 'value', type: 'string', defaultValue: 'Monitoring Console', description: 'Controlled field value.' },
+    { name: 'defaultValue', type: 'string', defaultValue: undefined, description: 'Initial uncontrolled field value.' },
+    { name: 'multiline', type: 'boolean', defaultValue: false, description: 'Renders a textarea instead of an input.' },
+    { name: 'onChange', type: '(value: string) => void', defaultValue: undefined, description: 'Change callback.' },
+  ], { react_project: 'Monitoring Console', submitted: null }),
   form('text-input', 'TextInput', 'Fields', 'astro', 'Theme-aware single-line input control.', 'small', {
     name: 'project',
     type: 'text',

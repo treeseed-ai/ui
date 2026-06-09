@@ -3,6 +3,7 @@ import type { ChangeEvent } from "react";
 type CheckboxFieldProps = {
   id: string;
   label: string;
+  name?: string;
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;
@@ -11,6 +12,7 @@ type CheckboxFieldProps = {
 export function CheckboxField({
   id,
   label,
+  name,
   checked,
   defaultChecked,
   onChange
@@ -26,6 +28,7 @@ export function CheckboxField({
         className="checkbox-control"
         defaultChecked={defaultChecked}
         id={id}
+        name={name}
         onChange={handleChange}
         type="checkbox"
       />

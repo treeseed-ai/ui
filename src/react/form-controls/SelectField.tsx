@@ -8,6 +8,7 @@ export type SelectOption = {
 type SelectFieldProps = {
   id: string;
   label: string;
+  name?: string;
   value?: string;
   defaultValue?: string;
   options: SelectOption[];
@@ -18,6 +19,7 @@ type SelectFieldProps = {
 export function SelectField({
   id,
   label,
+  name,
   value,
   defaultValue,
   options,
@@ -37,6 +39,7 @@ export function SelectField({
         className="control"
         defaultValue={defaultValue}
         id={id}
+        name={name}
         onChange={handleChange}
         value={value}
       >

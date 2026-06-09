@@ -12,6 +12,7 @@ import Textarea from '../../../../src/astro/forms/Textarea.astro';
 import ThemeMenu from '../../../../src/astro/theme/ThemeMenu.astro';
 import ThemeSelector from '../../../../src/astro/theme/ThemeSelector.astro';
 import DynamicPieAllocationHarness from '../../components/forms/DynamicPieAllocationHarness.tsx';
+import ReactFormControlHarness from '../../components/forms/ReactFormControlHarness.tsx';
 import RichMarkdownEditorHarness from '../../components/forms/RichMarkdownEditorHarness.tsx';
 import { defineTreeseedTheme } from '../../../../src/theme/index.ts';
 import { findComponent, formComponents, type ComponentCatalogEntry } from '../../lib/component-catalog.ts';
@@ -52,6 +53,14 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
 
     {entry.runtime === 'react' && entry.id === 'dynamic-pie-allocation' ? <DynamicPieAllocationHarness client:load /> : null}
     {entry.runtime === 'react' && entry.id === 'rich-markdown-editor' ? <RichMarkdownEditorHarness client:only="react" /> : null}
+    {entry.runtime === 'react' && ['checkbox-field', 'select-field', 'text-field'].includes(entry.id) ? (
+      <ReactFormControlHarness
+        client:load
+        componentId={entry.id as 'checkbox-field' | 'select-field' | 'text-field'}
+        componentName={entry.name}
+        intendedSize={entry.intendedSize}
+      />
+    ) : null}
 
     {entry.runtime === 'astro' ? (
       <form class="catalog-form-harness" data-catalog-form data-redact-password={entry.id === 'password-meter' ? 'true' : undefined}>
@@ -68,9 +77,12 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
               </div>
             ) : null}
             {entry.id === 'field' ? (
-              <Field label="Project name" name="project_name" help="Short labels work best in TreeSeed navigation.">
-                <TextInput name="project_name" value="Monitoring Console" />
-              </Field>
+              <>
+                <Field label="Project name" name="project_name" help="Short labels work best in TreeSeed navigation.">
+                  <TextInput name="project_name" value="Monitoring Console" />
+                </Field>
+                <FormActions><Button type="submit">Submit field</Button></FormActions>
+              </>
             ) : null}
             {entry.id === 'form-actions' ? (
               <FormActions align="between">
