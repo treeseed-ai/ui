@@ -1,0 +1,36 @@
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    dts({
+      entryRoot: 'src',
+      include: ['src'],
+      exclude: ['sandbox', 'tests'],
+    }),
+  ],
+  build: {
+    lib: {
+      entry: {
+        index: 'src/index.ts',
+        react: 'src/react.ts',
+        'theme/index': 'src/theme/index.ts',
+        'lib/charts/index': 'src/lib/charts/index.ts',
+        'lib/pie-allocation/math': 'src/lib/pie-allocation/math.ts',
+        'react/pie-allocation/DynamicPieAllocationInput': 'src/react/pie-allocation/DynamicPieAllocationInput.tsx',
+        'react/charts/MonitoringChart': 'src/react/charts/MonitoringChart.tsx',
+        'react/charts/ProjectActivityChart': 'src/react/charts/ProjectActivityChart.tsx',
+        'react/editors/RichMarkdownEditor': 'src/react/editors/RichMarkdownEditor.tsx',
+      },
+      formats: ['es'],
+    },
+    rollupOptions: {
+      external: [/^node:/, 'astro', 'react', 'react-dom', 'react/jsx-runtime', 'recharts', 'yaml', '@mdxeditor/editor'],
+      output: {
+        preserveModules: false,
+      },
+    },
+  },
+});

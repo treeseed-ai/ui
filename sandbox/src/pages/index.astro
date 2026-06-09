@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { displayComponents, formComponents, type ComponentCatalogEntry } from '../lib/component-catalog.ts';
+
+function groupByCategory(entries: ComponentCatalogEntry[]) {
+  return entries.reduce<Record<string, ComponentCatalogEntry[]>>((groups, entry) => {
+    groups[entry.category] = [...(groups[entry.category] ?? []), entry];
+    return groups;
+  }, {});
+}
+
+const formGroups = groupByCategory(formComponents);
+const displayGroups = groupByCategory(displayComponents);
+---
+
+<BaseLayout title="TreeSeed UI Component Catalog">
+  <main class="catalog-shell" data-testid="component-index">
+    <header class="catalog-hero">
+      <p class="sandbox-eyebrow">Component catalog</p>
+      <h1>TreeSeed UI Components</h1>
+      <p>One canonical index for reusable TreeSeed form elements and display components.</p>
+    </header>
+
+    <section class="catalog-section" aria-labelledby="form-elements-heading">
+      <div class="catalog-section__heading">
+        <p class="sandbox-eyebrow">Stateful inputs</p>
+        <h2 id="form-elements-heading">Form Elements</h2>
+      </div>
+      <div class="catalog-group-grid">
+        {Object.entries(formGroups).map(([category, entries]) => (
+          <section class="ts-panel" aria-labelledby={`forms-${category.toLowerCase()}`}>
+            <header class="ts-panel__header">
+              <div class="ts-panel__heading">
+                <h3 class="ts-panel__title" id={`forms-${category.toLowerCase()}`}>{category}</h3>
+              </div>
+            </header>
+            <div class="ts-panel__body">
+              <div class="catalog-card-list">
+                {entries.map((entry) => (
+                  <a class="catalog-component-card" href={entry.route}>
+                    <span class="catalog-component-card__title">{entry.name}</span>
+                    <span class="catalog-component-card__meta">
+                      <span class="ts-badge" data-tone="info">{entry.runtime}</span>
+                      <span class="ts-badge" data-tone="success">form</span>
+                    </span>
+                    <span class="catalog-component-card__description">{entry.description}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <section class="catalog-section" aria-labelledby="displays-heading">
+      <div class="catalog-section__heading">
+        <p class="sandbox-eyebrow">Information surfaces</p>
+        <h2 id="displays-heading">Displays</h2>
+      </div>
+      <div class="catalog-group-grid">
+        {Object.entries(displayGroups).map(([category, entries]) => (
+          <section class="ts-panel" aria-labelledby={`displays-${category.toLowerCase()}`}>
+            <header class="ts-panel__header">
+              <div class="ts-panel__heading">
+                <h3 class="ts-panel__title" id={`displays-${category.toLowerCase()}`}>{category}</h3>
+              </div>
+            </header>
+            <div class="ts-panel__body">
+              <div class="catalog-card-list">
+                {entries.map((entry) => (
+                  <a class="catalog-component-card" href={entry.route}>
+                    <span class="catalog-component-card__title">{entry.name}</span>
+                    <span class="catalog-component-card__meta">
+                      <span class="ts-badge" data-tone="info">{entry.runtime}</span>
+                      <span class="ts-badge" data-tone="muted">display</span>
+                    </span>
+                    <span class="catalog-component-card__description">{entry.description}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

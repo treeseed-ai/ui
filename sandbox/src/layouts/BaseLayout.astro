@@ -1,0 +1,120 @@
+---
+import '../../../src/styles/tokens.css';
+import '../../../src/styles/theme.css';
+import '../../../src/styles/ui.css';
+import '../../../src/styles/forms.css';
+import '../../../src/styles/charts.css';
+import '../../../src/styles/pie-allocation.css';
+import '../../../src/styles/sandbox.css';
+import ThemeScript from '../../../src/astro/theme/ThemeScript.astro';
+import ThemeMenu from '../../../src/astro/theme/ThemeMenu.astro';
+import { defineTreeseedTheme } from '../../../src/theme/index.ts';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props as Props;
+const themeConfig = defineTreeseedTheme({
+	schemeDirectories: ['treeseed.color-schemes'],
+	defaultScheme: 'fern',
+	defaultMode: 'system',
+	cwd: process.cwd(),
+});
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+		<ThemeScript defaultScheme="fern" defaultMode="system" themeConfig={themeConfig} />
+	</head>
+	<body>
+		<header class="sandbox-topbar">
+			<nav class="sandbox-topbar__nav" aria-label="Sandbox">
+				<a class="sandbox-brand" href="/">
+					<img src="/logo.svg" alt="" width="32" height="32" loading="eager" />
+					<span>TreeSeed UI</span>
+				</a>
+				<a class="sandbox-topbar__link" href="/">Components</a>
+			</nav>
+			<div class="sandbox-topbar__actions">
+				<ThemeMenu selectedScheme="fern" selectedMode="system" themeConfig={themeConfig} />
+				<a class="ts-button" data-variant="primary" href="https://treeseed.ai">Go to TreeSeed</a>
+			</div>
+		</header>
+		<slot />
+		<script>
+			const jsonDataPanelSelector = '.catalog-debug pre, .debug-panel pre';
+
+			const escapeHtml = (value: string) =>
+				value
+					.replaceAll('&', '&amp;')
+					.replaceAll('<', '&lt;')
+					.replaceAll('>', '&gt;')
+					.replaceAll('"', '&quot;')
+					.replaceAll("'", '&#039;');
+
+			const renderHighlightedJson = (json: string) =>
+				json.replace(
+					/("(?:\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
+					(match: string) => {
+						let tokenType = 'number';
+						if (match.startsWith('"')) {
+							tokenType = /:\s*$/.test(match) ? 'key' : 'string';
+						} else if (match === 'true' || match === 'false') {
+							tokenType = 'boolean';
+						} else if (match === 'null') {
+							tokenType = 'null';
+						}
+						return `<span class="catalog-json-token catalog-json-token--${tokenType}">${escapeHtml(match)}</span>`;
+					},
+				);
+
+			const highlightJsonPanel = (pre: HTMLPreElement) => {
+				const source = pre.textContent ?? '';
+				if (pre.dataset.jsonHighlighted === 'true' && pre.dataset.jsonSource === source) {
+					return;
+				}
+
+				let parsed: unknown;
+				try {
+					parsed = JSON.parse(source.trim());
+				} catch {
+					return;
+				}
+
+				const formatted = JSON.stringify(parsed, null, 2);
+				pre.dataset.jsonSource = formatted;
+				pre.dataset.jsonHighlighted = 'true';
+				pre.innerHTML = renderHighlightedJson(formatted);
+			};
+
+			const highlightJsonPanels = () => {
+				for (const pre of document.querySelectorAll<HTMLPreElement>(jsonDataPanelSelector)) {
+					highlightJsonPanel(pre);
+				}
+			};
+
+			let highlightFrame = 0;
+			const scheduleJsonHighlight = () => {
+				cancelAnimationFrame(highlightFrame);
+				highlightFrame = requestAnimationFrame(highlightJsonPanels);
+			};
+
+			document.addEventListener('DOMContentLoaded', highlightJsonPanels);
+			document.addEventListener('astro:page-load', highlightJsonPanels);
+
+			const jsonPanelObserver = new MutationObserver(scheduleJsonHighlight);
+			jsonPanelObserver.observe(document.body, {
+				childList: true,
+				characterData: true,
+				subtree: true,
+			});
+		</script>
+	</body>
+</html>

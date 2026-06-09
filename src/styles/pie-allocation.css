@@ -1,0 +1,177 @@
+.dynamic-pie-allocation {
+  --pie-allocation-surface: var(--ts-color-surface);
+  --pie-allocation-muted: var(--ts-color-text-muted);
+  --pie-allocation-text: var(--ts-color-text);
+  --pie-allocation-border: var(--ts-color-border);
+  --pie-allocation-border-strong: var(--ts-color-border-strong);
+  --pie-allocation-accent: var(--ts-color-accent);
+  --pie-allocation-error: var(--ts-color-danger);
+  --pie-allocation-control-background: var(--ts-color-surface-raised);
+  --pie-allocation-control-disabled-background: var(--ts-color-surface-muted);
+  background: var(--pie-allocation-surface);
+  border: 1px solid var(--pie-allocation-border);
+  border-radius: 8px;
+  color: var(--pie-allocation-text);
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.dynamic-pie-allocation__body {
+  align-items: stretch;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+}
+
+.dynamic-pie-allocation__chart {
+  align-content: center;
+  display: grid;
+  justify-items: center;
+}
+
+.dynamic-pie-allocation__svg {
+  height: auto;
+  max-width: 320px;
+  overflow: visible;
+  width: 100%;
+}
+
+.dynamic-pie-allocation__slice {
+  stroke: var(--pie-allocation-surface);
+  stroke-width: 2;
+}
+
+.dynamic-pie-allocation__handle {
+  cursor: grab;
+  fill: var(--pie-allocation-surface);
+  stroke: var(--pie-allocation-accent);
+  stroke-width: 3;
+}
+
+.dynamic-pie-allocation__legend {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  padding-left: 20px;
+  position: relative;
+}
+
+.dynamic-pie-allocation__legend::before {
+  background: var(--pie-allocation-border);
+  bottom: 18px;
+  content: "";
+  left: 0;
+  position: absolute;
+  top: 18px;
+  width: 1px;
+}
+
+.dynamic-pie-allocation__row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 16px minmax(88px, 1fr) minmax(6.25rem, 8rem) auto auto;
+  min-width: 0;
+}
+
+.dynamic-pie-allocation__swatch {
+  border: 1px solid rgb(0 0 0 / 0.16);
+  border-radius: 4px;
+  height: 16px;
+  width: 16px;
+}
+
+.dynamic-pie-allocation__label {
+  align-self: center;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.dynamic-pie-allocation__input {
+  background: var(--pie-allocation-control-background);
+  border: 1px solid var(--pie-allocation-border-strong);
+  border-radius: 6px;
+  box-sizing: border-box;
+  color-scheme: inherit;
+  color: var(--pie-allocation-text);
+  min-height: 38px;
+  min-width: 0;
+  padding: 6px 0.45rem 6px 8px;
+  text-align: left;
+  text-overflow: clip;
+  width: 100%;
+}
+
+.dynamic-pie-allocation__input:disabled {
+  background: var(--pie-allocation-control-disabled-background);
+  color: var(--pie-allocation-muted);
+}
+
+.dynamic-pie-allocation__input::-webkit-inner-spin-button,
+.dynamic-pie-allocation__input::-webkit-outer-spin-button {
+  margin-left: 1rem;
+  margin-right: 0.04rem;
+}
+
+html[data-ts-mode='dark'] .dynamic-pie-allocation {
+  --pie-allocation-control-background: color-mix(in srgb, var(--ts-color-surface-raised) 82%, var(--ts-color-accent-soft));
+  --pie-allocation-control-disabled-background: var(--ts-color-surface-muted);
+}
+
+.dynamic-pie-allocation__percent,
+.dynamic-pie-allocation__locked,
+.dynamic-pie-allocation__validation {
+  color: var(--pie-allocation-muted);
+}
+
+.dynamic-pie-allocation__percent,
+.dynamic-pie-allocation__locked {
+  align-self: center;
+}
+
+.dynamic-pie-allocation__locked,
+.dynamic-pie-allocation__validation {
+  font-size: 0.9rem;
+}
+
+.dynamic-pie-allocation__status {
+  border-top: 1px solid var(--pie-allocation-border);
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.dynamic-pie-allocation__validation--error {
+  color: var(--pie-allocation-error);
+}
+
+@media (max-width: 720px) {
+  .dynamic-pie-allocation {
+    padding: 14px;
+  }
+
+  .dynamic-pie-allocation__body {
+    grid-template-columns: 1fr;
+  }
+
+  .dynamic-pie-allocation__legend {
+    border-top: 1px solid var(--pie-allocation-border);
+    padding-left: 0;
+    padding-top: 16px;
+  }
+
+  .dynamic-pie-allocation__legend::before {
+    display: none;
+  }
+
+  .dynamic-pie-allocation__row {
+    grid-template-columns: 16px minmax(0, 1fr) minmax(5.75rem, 7rem) auto;
+  }
+
+  .dynamic-pie-allocation__locked {
+    grid-column: 2 / -1;
+  }
+}

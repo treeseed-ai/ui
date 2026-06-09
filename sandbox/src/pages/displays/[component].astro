@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ActionList from '../../../../src/astro/data/ActionList.astro';
+import Badge from '../../../../src/astro/data/Badge.astro';
+import DataTable from '../../../../src/astro/data/DataTable.astro';
+import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
+import MetricCard from '../../../../src/astro/data/MetricCard.astro';
+import MetricGrid from '../../../../src/astro/data/MetricGrid.astro';
+import StatusPill from '../../../../src/astro/data/StatusPill.astro';
+import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
+import AppShell from '../../../../src/astro/shell/AppShell.astro';
+import BottomNav from '../../../../src/astro/shell/BottomNav.astro';
+import ProjectHeader from '../../../../src/astro/shell/ProjectHeader.astro';
+import PublicFooter from '../../../../src/astro/shell/PublicFooter.astro';
+import PublicShell from '../../../../src/astro/shell/PublicShell.astro';
+import RailNav from '../../../../src/astro/shell/RailNav.astro';
+import ShellIconLink from '../../../../src/astro/shell/ShellIconLink.astro';
+import TopBar from '../../../../src/astro/shell/TopBar.astro';
+import Card from '../../../../src/astro/surface/Card.astro';
+import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
+import Panel from '../../../../src/astro/surface/Panel.astro';
+import ThemePreviewSwatch from '../../../../src/astro/theme/ThemePreviewSwatch.astro';
+import MonitoringChartHarness from '../../components/displays/MonitoringChartHarness.tsx';
+import ProjectActivityChartHarness from '../../components/displays/ProjectActivityChartHarness.tsx';
+import { defineTreeseedTheme } from '../../../../src/theme/index.ts';
+import { displayComponents, findComponent, type ComponentCatalogEntry } from '../../lib/component-catalog.ts';
+
+export function getStaticPaths() {
+  return displayComponents.map((entry) => ({
+    params: { component: entry.id },
+    props: { entry },
+  }));
+}
+
+const props = Astro.props as { entry?: ComponentCatalogEntry };
+const entry = props.entry ?? findComponent('display', Astro.params.component) ?? displayComponents[0];
+const themeConfig = defineTreeseedTheme({
+  schemeDirectories: ['treeseed.color-schemes'],
+  defaultScheme: 'fern',
+  defaultMode: 'system',
+  cwd: process.cwd(),
+});
+const navItems = [
+  { label: 'Overview', href: '/displays/app-shell' },
+  { label: 'Projects', href: '/displays/app-shell/projects' },
+  { label: 'Knowledge', href: '/displays/app-shell/knowledge' },
+  { label: 'Settings', href: '/displays/app-shell/settings' },
+];
+const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+const configJson = JSON.stringify({
+  packageEntry: entry.packageEntry,
+  defaultProps: entry.defaultProps,
+  configurableProps: entry.configurableProps,
+}, null, 2);
+---
+
+{entry.id === 'app-shell' ? (
+  <AppShell
+    title="AppShell"
+    description={entry.description}
+    currentPath="/displays/app-shell"
+    appearance={{ scheme: 'fern', mode: 'system' }}
+    brand={brand}
+    navItems={navItems}
+    quickActions={[{ label: 'All components', href: '/', variant: 'secondary' }]}
+    themeConfig={themeConfig}
+  >
+    <Fragment slot="railContext"><Badge tone="info">Full-page display</Badge></Fragment>
+    <Panel title="AppShell preview" description="This page is rendered by the full AppShell component.">
+      <p>AppShell owns the document, rail, top bar, header, main area, quick actions, and bottom navigation.</p>
+    </Panel>
+  </AppShell>
+) : entry.id === 'public-shell' ? (
+  <PublicShell
+    title="PublicShell"
+    description={entry.description}
+    currentPath="/displays/public-shell"
+    appearance={{ scheme: 'fern', mode: 'system' }}
+    brand={brand}
+    navItems={[
+      { label: 'Components', href: '/' },
+      { label: 'PublicShell', href: '/displays/public-shell' },
+    ]}
+    actions={[{ label: 'All components', href: '/', variant: 'secondary' }]}
+    themeConfig={themeConfig}
+  >
+    <PageHeader title="PublicShell" description="This page is rendered by the full PublicShell component." />
+    <Panel title="Public shell preview">
+      <p>PublicShell owns the document frame, public navigation, appearance controls, content area, and footer.</p>
+    </Panel>
+  </PublicShell>
+) : (
+  <BaseLayout title={`TreeSeed UI ${entry.name}`}>
+    <main class="catalog-shell catalog-page" data-testid="component-page" data-component={entry.id} data-kind="display">
+      <header class="catalog-page-header">
+        <div>
+          <p class="sandbox-eyebrow">Displays / {entry.category}</p>
+          <h1>{entry.name}</h1>
+          <p>{entry.description}</p>
+        </div>
+        <a class="ts-button" data-variant="secondary" href="/">All components</a>
+      </header>
+
+      <section class:list={['catalog-preview', `catalog-preview--${entry.intendedSize}`]} aria-label={`${entry.name} preview`}>
+        <span class="catalog-preview__label">Component frame</span>
+        <div class="catalog-preview__stage">
+          {entry.id === 'action-list' ? <ActionList items={[{ title: 'Review deployment guardrails', description: 'Confirm readiness gates.', meta: 'Required', tone: 'warning', actionLabel: 'Open' }, { title: 'Sync knowledge pack', description: 'Refresh artifacts.', meta: 'Ready', tone: 'success', actionLabel: 'Run' }, { title: 'Inspect capacity', description: 'Compare active provider limits.', meta: 'Optional', tone: 'muted', actionLabel: 'View' }]} /> : null}
+          {entry.id === 'badge' ? <div class="primitive-inline"><Badge>Default</Badge><Badge tone="success">Success</Badge><Badge tone="warning">Warning</Badge><Badge tone="danger">Danger</Badge></div> : null}
+          {entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
+          {entry.id === 'data-table' ? <DataTable caption="DataTable preview" columns={[{ key: 'name', label: 'Name' }, { key: 'type', label: 'Type' }, { key: 'status', label: 'Status' }]} rows={[{ name: 'Monitoring Console', type: 'Template', status: 'Published' }, { name: 'Capacity Diagnostics', type: 'Panel', status: 'Draft' }, { name: 'Knowledge Pack', type: 'Artifact', status: 'Ready' }]} /> : null}
+          {entry.id === 'empty-state' ? <EmptyState eyebrow="Empty state" title="No pending approvals" description="Reusable quiet state." actions={[{ label: 'Create approval', href: '/displays/empty-state', variant: 'secondary' }]} /> : null}
+          {entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
+          {entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" /> : null}
+          {entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
+          {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
+          {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
+          {entry.id === 'panel' ? <Panel title="Panel preview" description="Header, actions, and body."><p>Panel body content sized like an application section.</p></Panel> : null}
+          {entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
+          {entry.id === 'status-pill' ? <div class="primitive-inline"><StatusPill tone="success">Healthy</StatusPill><StatusPill tone="warning">Delayed</StatusPill><StatusPill tone="danger">Blocked</StatusPill></div> : null}
+          {entry.id === 'theme-preview-swatch' ? <ThemePreviewSwatch swatches={['#245b47', '#d8efe2', '#f2b84b', '#273142']} label="Theme preview swatch" /> : null}
+          {entry.id === 'bottom-nav' ? <BottomNav items={navItems.slice(0, 3)} currentPath="/displays/bottom-nav" /> : null}
+          {entry.id === 'project-header' ? <ProjectHeader title="ProjectHeader" description="Project context header with tabs." badges={['Preview', 'Healthy']} currentPath="/displays/project-header" tabs={[{ label: 'Overview', href: '/displays/project-header' }, { label: 'Agents', href: '/displays/project-header/agents' }]} actions={[{ label: 'Settings', href: '/displays/project-header' }]} /> : null}
+          {entry.id === 'public-footer' ? <PublicFooter brandName="TreeSeed UI" summary="Packaged components for TreeSeed applications." groups={[{ label: 'Sandbox', items: [{ label: 'Components', href: '/' }] }, { label: 'Package', items: [{ label: '@treeseed/ui', href: '/' }] }]} /> : null}
+          {entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
+          {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
+          {entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
+        </div>
+      </section>
+
+      <aside class="catalog-info-grid" aria-label="Component metadata">
+        <section class="catalog-debug" aria-label="Configuration Options">
+          <h2>Configuration Options</h2>
+          <pre>{configJson}</pre>
+        </section>
+        <section class="catalog-debug" aria-label="Defaults">
+          <h2>Defaults</h2>
+          <pre>{JSON.stringify(entry.defaultProps, null, 2)}</pre>
+        </section>
+        {entry.stateShape ? (
+          <section class="catalog-debug" aria-label="Optional State">
+            <h2>Optional State</h2>
+            <pre>{JSON.stringify(entry.stateShape, null, 2)}</pre>
+          </section>
+        ) : null}
+      </aside>
+    </main>
+  </BaseLayout>
+)}

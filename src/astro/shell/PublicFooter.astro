@@ -1,0 +1,55 @@
+---
+interface FooterLink {
+	label: string;
+	href: string;
+}
+
+interface FooterGroup {
+	label: string;
+	items: FooterLink[];
+}
+
+interface Props {
+	brandName?: string;
+	summary?: string;
+	stageLabel?: string;
+	stageDescription?: string;
+	groups?: FooterGroup[];
+}
+
+const {
+	brandName = 'TreeSeed',
+	summary = 'Reusable UI for TreeSeed applications.',
+	stageLabel = 'Component library',
+	stageDescription = 'Shared primitives, themes, and tested application components.',
+	groups = [
+		{ label: 'Resources', items: [{ label: 'Components', href: '/' }] },
+	],
+} = Astro.props as Props;
+---
+
+<footer class="ts-public-footer">
+	<div class="ts-public-footer__inner">
+		<div class="ts-public-footer__grid">
+			<div class="ts-public-footer__column">
+				<p class="ts-public-footer__title">{brandName}</p>
+				<p class="ts-public-footer__copy">{summary}</p>
+			</div>
+			<div class="ts-public-footer__column">
+				<p class="ts-public-footer__heading">Project stage</p>
+				<p class="ts-public-footer__column-title">{stageLabel}</p>
+				<p class="ts-public-footer__copy">{stageDescription}</p>
+			</div>
+			{groups.map((group) => (
+				<div class="ts-public-footer__column">
+					<p class="ts-public-footer__heading">{group.label}</p>
+					<div class="ts-public-footer__links">
+						{group.items.map((item) => (
+							<a href={item.href}>{item.label}</a>
+						))}
+					</div>
+				</div>
+			))}
+		</div>
+	</div>
+</footer>

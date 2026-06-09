@@ -1,0 +1,150 @@
+{
+  "name": "@treeseed/ui",
+  "version": "0.1.0",
+  "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/treeseed-ai/ui.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "astro dev --root sandbox",
+    "build": "vite build && node ./scripts/copy-assets.mjs",
+    "preview": "astro preview --root sandbox",
+    "check": "tsc --noEmit && astro check --root sandbox",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit tests/component tests/package",
+    "test:e2e": "playwright test",
+    "test:all": "npm run build && npm run test && npm run test:e2e"
+  },
+  "dependencies": {
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/view": "^6.43.0",
+    "@lezer/highlight": "^1.2.3",
+    "@mdxeditor/editor": "^4.0.2",
+    "codemirror": "^6.0.2",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5",
+    "yaml": "^2.8.1"
+  },
+  "peerDependencies": {
+    "astro": "^5.0.0 || ^6.0.0",
+    "react": "^18.3.0 || ^19.0.0",
+    "react-dom": "^18.3.0 || ^19.0.0",
+    "recharts": "^3.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/react": "^4.3.0",
+    "@playwright/test": "^1.60.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.6.0",
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^5.1.1",
+    "astro": "^6.4.4",
+    "jsdom": "^29.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^3.8.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.2"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react.js"
+    },
+    "./theme": {
+      "types": "./dist/theme/index.d.ts",
+      "default": "./dist/theme/index.js"
+    },
+    "./styles/tokens.css": "./dist/styles/tokens.css",
+    "./styles/theme.css": "./dist/styles/theme.css",
+    "./styles/ui.css": "./dist/styles/ui.css",
+    "./styles/forms.css": "./dist/styles/forms.css",
+    "./styles/app-shell.css": "./dist/styles/app-shell.css",
+    "./styles/charts.css": "./dist/styles/charts.css",
+    "./styles/pie-allocation.css": "./dist/styles/pie-allocation.css",
+    "./components/astro/forms/Button.astro": "./dist/astro/forms/Button.astro",
+    "./components/astro/forms/Field.astro": "./dist/astro/forms/Field.astro",
+    "./components/astro/forms/FormActions.astro": "./dist/astro/forms/FormActions.astro",
+    "./components/astro/forms/MarkdownField.astro": "./dist/astro/forms/MarkdownField.astro",
+    "./components/astro/forms/PasswordMeter.astro": "./dist/astro/forms/PasswordMeter.astro",
+    "./components/astro/forms/RadioGroup.astro": "./dist/astro/forms/RadioGroup.astro",
+    "./components/astro/forms/Select.astro": "./dist/astro/forms/Select.astro",
+    "./components/astro/forms/TextInput.astro": "./dist/astro/forms/TextInput.astro",
+    "./components/astro/forms/Textarea.astro": "./dist/astro/forms/Textarea.astro",
+    "./components/astro/data/ActionList.astro": "./dist/astro/data/ActionList.astro",
+    "./components/astro/data/Badge.astro": "./dist/astro/data/Badge.astro",
+    "./components/astro/data/DataTable.astro": "./dist/astro/data/DataTable.astro",
+    "./components/astro/data/KeyValueList.astro": "./dist/astro/data/KeyValueList.astro",
+    "./components/astro/data/MetricCard.astro": "./dist/astro/data/MetricCard.astro",
+    "./components/astro/data/MetricGrid.astro": "./dist/astro/data/MetricGrid.astro",
+    "./components/astro/data/StatusPill.astro": "./dist/astro/data/StatusPill.astro",
+    "./components/astro/layout/PageHeader.astro": "./dist/astro/layout/PageHeader.astro",
+    "./components/astro/shell/AppShell.astro": "./dist/astro/shell/AppShell.astro",
+    "./components/astro/shell/BottomNav.astro": "./dist/astro/shell/BottomNav.astro",
+    "./components/astro/shell/ProjectHeader.astro": "./dist/astro/shell/ProjectHeader.astro",
+    "./components/astro/shell/PublicFooter.astro": "./dist/astro/shell/PublicFooter.astro",
+    "./components/astro/shell/PublicShell.astro": "./dist/astro/shell/PublicShell.astro",
+    "./components/astro/shell/RailNav.astro": "./dist/astro/shell/RailNav.astro",
+    "./components/astro/shell/ShellIconLink.astro": "./dist/astro/shell/ShellIconLink.astro",
+    "./components/astro/shell/TopBar.astro": "./dist/astro/shell/TopBar.astro",
+    "./components/astro/surface/Card.astro": "./dist/astro/surface/Card.astro",
+    "./components/astro/surface/EmptyState.astro": "./dist/astro/surface/EmptyState.astro",
+    "./components/astro/surface/Panel.astro": "./dist/astro/surface/Panel.astro",
+    "./components/astro/theme/ThemeMenu.astro": "./dist/astro/theme/ThemeMenu.astro",
+    "./components/astro/theme/ThemePreviewSwatch.astro": "./dist/astro/theme/ThemePreviewSwatch.astro",
+    "./components/astro/theme/ThemeScript.astro": "./dist/astro/theme/ThemeScript.astro",
+    "./components/astro/theme/ThemeSelector.astro": "./dist/astro/theme/ThemeSelector.astro",
+    "./components/react/DynamicPieAllocationInput": {
+      "types": "./dist/react/pie-allocation/DynamicPieAllocationInput.d.ts",
+      "default": "./dist/react/pie-allocation/DynamicPieAllocationInput.js"
+    },
+    "./components/react/MonitoringChart": {
+      "types": "./dist/react/charts/MonitoringChart.d.ts",
+      "default": "./dist/react/charts/MonitoringChart.js"
+    },
+    "./components/react/ProjectActivityChart": {
+      "types": "./dist/react/charts/ProjectActivityChart.d.ts",
+      "default": "./dist/react/charts/ProjectActivityChart.js"
+    },
+    "./components/react/RichMarkdownEditor": {
+      "types": "./dist/react/editors/RichMarkdownEditor.d.ts",
+      "default": "./dist/react/editors/RichMarkdownEditor.js"
+    },
+    "./lib/pie-allocation": {
+      "types": "./dist/lib/pie-allocation/math.d.ts",
+      "default": "./dist/lib/pie-allocation/math.js"
+    },
+    "./lib/charts": {
+      "types": "./dist/lib/charts/index.d.ts",
+      "default": "./dist/lib/charts/index.js"
+    },
+    "./theme/schemes/*.yaml": "./dist/theme/schemes/*.yaml"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
