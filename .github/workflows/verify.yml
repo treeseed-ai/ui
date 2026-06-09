@@ -35,5 +35,8 @@ jobs:
           }
           install_with_retry npm ci
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Verify package
         run: npm run verify:direct
