@@ -1,0 +1,38 @@
+name: TreeSeed UI Sandbox
+slug: treeseed-ui
+siteUrl: https://ui.treeseed.ai
+contactEmail: hello@treeseed.email
+hosting:
+  kind: self_hosted_project
+  registration: none
+  teamId: treeseed
+  projectId: ui
+hub:
+  mode: treeseed_hosted
+runtime:
+  mode: none
+  registration: none
+cloudflare:
+  workerName: treeseed-ui
+  pages:
+    projectName: treeseed-ui
+    productionBranch: main
+    stagingBranch: staging
+    buildOutputDir: sandbox/dist
+surfaces:
+  web:
+    enabled: true
+    provider: cloudflare
+    rootDir: sandbox
+    publicBaseUrl: https://ui.treeseed.ai
+    localBaseUrl: http://127.0.0.1:4322
+    local:
+      runtime: local
+    environments:
+      staging:
+        domain: ui-staging.treeseed.ai
+      prod:
+        domain: ui.treeseed.ai
+providers:
+  deploy: cloudflare
+  dns: cloudflare-dns
