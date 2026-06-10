@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -8,6 +8,8 @@ const packageRoot = process.cwd();
 const npmCacheDir = mkdtempSync(join(tmpdir(), 'treeseed-ui-npm-cache-'));
 const packDir = mkdtempSync(join(tmpdir(), 'treeseed-ui-pack-'));
 const smokeDir = mkdtempSync(join(tmpdir(), 'treeseed-ui-smoke-'));
+const gitSourceDir = mkdtempSync(join(tmpdir(), 'treeseed-ui-git-source-'));
+const gitSmokeDir = mkdtempSync(join(tmpdir(), 'treeseed-ui-git-smoke-'));
 
 const packageJsonPath = resolve(packageRoot, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
@@ -173,6 +175,67 @@ async function smokeInstall(tarballPath) {
   run(process.execPath, ['--input-type=module', '-e', smokeScript], { cwd: smokeDir });
 }
 
+function createGitDependencyFixture() {
+  const copiedPaths = [
+    'package.json',
+    'package-lock.json',
+    'README.md',
+    'tsconfig.json',
+    'vite.config.ts',
+    'scripts',
+    'src',
+  ];
+
+  for (const copiedPath of copiedPaths) {
+    cpSync(resolve(packageRoot, copiedPath), resolve(gitSourceDir, copiedPath), {
+      recursive: true,
+      dereference: true,
+    });
+  }
+
+  mkdirSync(resolve(gitSourceDir, 'dist'), { recursive: true });
+  rmSync(resolve(gitSourceDir, 'dist'), { recursive: true, force: true });
+
+  run('git', ['init', '--initial-branch=main'], { cwd: gitSourceDir, stdio: 'pipe' });
+  run('git', ['config', 'user.email', 'release-smoke@treeseed.local'], { cwd: gitSourceDir, stdio: 'pipe' });
+  run('git', ['config', 'user.name', 'Treeseed Release Smoke'], { cwd: gitSourceDir, stdio: 'pipe' });
+  run('git', ['add', '-A'], { cwd: gitSourceDir, stdio: 'pipe' });
+  run('git', ['commit', '-m', 'release smoke'], { cwd: gitSourceDir, stdio: 'pipe' });
+  run('git', ['tag', 'release-smoke'], { cwd: gitSourceDir, stdio: 'pipe' });
+}
+
+async function smokeInstallGitDependency() {
+  createGitDependencyFixture();
+
+  writeFileSync(resolve(gitSmokeDir, 'package.json'), JSON.stringify({
+    private: true,
+    type: 'module',
+  }, null, 2));
+
+  run('npm', ['install', '--no-audit', '--no-fund', `git+file://${gitSourceDir}#release-smoke`], { cwd: gitSmokeDir });
+
+  const packageInstallRoot = resolve(gitSmokeDir, 'node_modules', packageName);
+  await access(resolve(packageInstallRoot, 'dist/astro/docs/Footer.astro'));
+  await access(resolve(packageInstallRoot, 'dist/astro/site/Hero.astro'));
+  await access(resolve(packageInstallRoot, 'dist/styles/theme.css'));
+
+  const smokeScript = `
+    import { access } from 'node:fs/promises';
+    import { resolve } from 'node:path';
+    import { getBuiltInColorSchemes } from '@treeseed/ui/theme';
+
+    const packageRoot = resolve('node_modules', '${packageName}');
+    await access(resolve(packageRoot, 'dist/astro/docs/Footer.astro'));
+    await access(resolve(packageRoot, 'dist/astro/docs/Header.astro'));
+    await access(resolve(packageRoot, 'dist/astro/layouts/MainLayout.astro'));
+    if (!getBuiltInColorSchemes().some((scheme) => scheme.id === 'fern')) {
+      throw new Error('Git dependency install did not expose built-in color schemes.');
+    }
+  `;
+
+  run(process.execPath, ['--input-type=module', '-e', smokeScript], { cwd: gitSmokeDir });
+}
+
 async function main() {
   try {
     assertNoLocalDependencyLinks();
@@ -183,10 +246,13 @@ async function main() {
     await assertExportTargetsExist();
     const tarballPath = packPackage();
     await smokeInstall(tarballPath);
+    await smokeInstallGitDependency();
   } finally {
     rmSync(npmCacheDir, { recursive: true, force: true });
     rmSync(packDir, { recursive: true, force: true });
     rmSync(smokeDir, { recursive: true, force: true });
+    rmSync(gitSourceDir, { recursive: true, force: true });
+    rmSync(gitSmokeDir, { recursive: true, force: true });
   }
 }
 

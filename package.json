@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.1.9-dev.staging.20260610T185346Z",
+  "version": "0.1.9-dev.staging.20260610T191631Z",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -23,6 +23,7 @@
     "preview": "astro preview --root sandbox",
     "check": "tsc --noEmit && astro check --root sandbox",
     "prepack": "npm run build",
+    "prepare": "node ./scripts/prepare.mjs",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit tests/component tests/package",
     "test:e2e": "playwright test",
