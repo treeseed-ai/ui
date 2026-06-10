@@ -13,6 +13,7 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const catalogText = readFileSync('sandbox/src/lib/component-catalog.ts', 'utf8');
 const failures = [];
 const warnings = [];
+const sourceCheckoutAvailable = entries.some((entry) => existsSync(entry.sourcePath));
 
 function exportPathFor(uiPath) {
   if (uiPath.startsWith('src/astro/')) {
@@ -37,7 +38,7 @@ function staticClasses(source) {
 
 for (const entry of entries) {
   if (!existsSync(entry.uiPath)) failures.push(`Missing UI file: ${entry.uiPath}`);
-  if (!existsSync(entry.sourcePath)) failures.push(`Missing source file: ${entry.sourcePath}`);
+  if (sourceCheckoutAvailable && !existsSync(entry.sourcePath)) failures.push(`Missing source file: ${entry.sourcePath}`);
 
   const exportPath = exportPathFor(entry.uiPath);
   if (exportPath && !packageJson.exports?.[exportPath]) {
@@ -49,14 +50,14 @@ for (const entry of entries) {
     failures.push(`Missing sandbox route ${entry.sandboxRoute} for ${entry.uiPath}`);
   }
 
-  if (!existsSync(entry.uiPath) || !existsSync(entry.sourcePath)) continue;
+  if (!existsSync(entry.uiPath)) continue;
 
   const uiText = readFileSync(entry.uiPath, 'utf8');
   if (/\/home\/adrian\/Projects\/treeseed\/market|market\/src|packages\/core|packages\/sdk/.test(uiText)) {
     failures.push(`Forbidden market/core/sdk import reference in ${entry.uiPath}`);
   }
 
-  if (entry.uiPath.endsWith('.astro')) {
+  if (sourceCheckoutAvailable && entry.uiPath.endsWith('.astro')) {
     const sourceClasses = staticClasses(readFileSync(entry.sourcePath, 'utf8'));
     const uiClasses = staticClasses(uiText);
     const missingClasses = [...sourceClasses].filter((name) => !uiClasses.has(name));
@@ -75,4 +76,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`[market-parity] Checked ${entries.length} mapped files with ${warnings.length} class coverage warning(s).`);
+const sourceStatus = sourceCheckoutAvailable ? 'source checkout available' : 'source checkout unavailable; skipped source existence and class coverage';
+console.log(`[market-parity] Checked ${entries.length} mapped files with ${warnings.length} class coverage warning(s) (${sourceStatus}).`);
