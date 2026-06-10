@@ -128,9 +128,21 @@ function assertTarballContents(packResult) {
 }
 
 function packPackage() {
-  const result = run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', packDir], { stdio: 'pipe' });
+  const result = run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', packDir], {
+    stdio: 'pipe',
+    env: {
+      TREESEED_SKIP_PACKAGE_PREPARE: '1',
+      NO_COLOR: '1',
+      FORCE_COLOR: '0',
+    },
+  });
   const output = `${result.stdout ?? ''}${result.stderr ?? ''}`.trim();
-  const parsed = JSON.parse(output);
+  const jsonStart = output.indexOf('[');
+  const jsonEnd = output.lastIndexOf(']');
+  if (jsonStart < 0 || jsonEnd < jsonStart) {
+    throw new Error(`Unable to find npm pack JSON output: ${output}`);
+  }
+  const parsed = JSON.parse(output.slice(jsonStart, jsonEnd + 1));
   const packResult = Array.isArray(parsed) ? parsed[0] : parsed;
   if (!packResult?.filename) {
     throw new Error(`Unable to parse npm pack output: ${output}`);
