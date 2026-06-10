@@ -18,6 +18,7 @@ cloudflare:
     projectName: treeseed-ui
     productionBranch: main
     stagingBranch: staging
+    buildCommand: npm run sandbox:build
     buildOutputDir: sandbox/dist
 surfaces:
   web:

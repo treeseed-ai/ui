@@ -17,6 +17,8 @@ import RichMarkdownEditorHarness from '../../components/forms/RichMarkdownEditor
 import { defineTreeseedTheme } from '../../../../src/theme/index.ts';
 import { findComponent, formComponents, type ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
+export const prerender = true;
+
 export function getStaticPaths() {
   return formComponents.map((entry) => ({
     params: { component: entry.id },

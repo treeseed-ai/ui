@@ -4,6 +4,8 @@ import DisplayComponentPreview from '../../components/displays/DisplayComponentP
 import FullPageDisplayPreview from '../../components/displays/FullPageDisplayPreview.astro';
 import { displayComponents, findComponent, type ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
+export const prerender = true;
+
 export function getStaticPaths() {
   return displayComponents.map((entry) => ({
     params: { component: entry.id },

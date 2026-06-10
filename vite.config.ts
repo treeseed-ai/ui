@@ -1,15 +1,15 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   plugins: [
-    react(),
+    react() as unknown as PluginOption,
     dts({
       entryRoot: 'src',
       include: ['src'],
       exclude: ['sandbox', 'tests'],
-    }),
+    }) as unknown as PluginOption,
   ],
   build: {
     lib: {

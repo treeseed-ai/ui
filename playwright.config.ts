@@ -7,7 +7,7 @@ export default defineConfig({
   testDir: 'tests/e2e',
   workers: 1,
   webServer: {
-    command: `npm run dev -- --host 127.0.0.1 --port ${testPort}`,
+    command: `npm run sandbox:build && npm run sandbox:serve -- --host 127.0.0.1 --port ${testPort}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
