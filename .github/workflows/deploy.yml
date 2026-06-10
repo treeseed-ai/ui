@@ -52,6 +52,9 @@ jobs:
       - name: Install Treeseed CLI
         run: npm install --no-save "github:treeseed-ai/cli#${TREESEED_CLI_REF}"
 
+      - name: Check Treeseed CLI
+        run: npx trsd help hosting >/dev/null
+
       - name: Deploy sandbox
         env:
           TREESEED_WORKFLOW_ENVIRONMENT: ${{ github.ref_name == 'main' && 'prod' || 'staging' }}
