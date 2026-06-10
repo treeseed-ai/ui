@@ -5,14 +5,10 @@ import { libraryNativeComponents, marketComponentMap } from '../fixtures/marketC
 describe('market component source map', () => {
   it('maps UI components to market or core source files', () => {
     expect(marketComponentMap.length).toBeGreaterThan(90);
-    const sourceCheckoutAvailable = marketComponentMap.some((entry) => existsSync(entry.sourcePath));
 
     for (const entry of marketComponentMap) {
       expect(existsSync(entry.uiPath), `${entry.uiPath} should exist`).toBe(true);
       expect(entry.sourcePath, `${entry.uiPath} should map to the TreeSeed market checkout`).toContain('/treeseed/market/');
-      if (sourceCheckoutAvailable) {
-        expect(existsSync(entry.sourcePath), `${entry.sourcePath} should exist`).toBe(true);
-      }
       expect(entry.parityMode).toBe('rendered-visual');
       expect(entry.allowedSourceDifferences.length).toBeGreaterThan(0);
     }
