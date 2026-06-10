@@ -315,6 +315,198 @@ export const componentCatalog: ComponentCatalogEntry[] = [
   ], undefined, '@treeseed/ui/components/astro/shell/TopBar.astro'),
 ];
 
+componentCatalog.push(
+  display('content-field-help', 'ContentFieldHelp', 'App Controls', 'astro', 'Reusable ContentFieldHelp component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/ContentFieldHelp.astro'),
+  display('delete-confirmation-modal', 'DeleteConfirmationModal', 'App Controls', 'astro', 'Reusable DeleteConfirmationModal component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/DeleteConfirmationModal.astro'),
+  display('host-credential-permission-note', 'HostCredentialPermissionNote', 'App Controls', 'astro', 'Reusable HostCredentialPermissionNote component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/HostCredentialPermissionNote.astro'),
+  display('launch-requirement-summary', 'LaunchRequirementSummary', 'App Controls', 'astro', 'Reusable LaunchRequirementSummary component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/LaunchRequirementSummary.astro'),
+  display('plain-table', 'PlainTable', 'App Controls', 'astro', 'Reusable PlainTable component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/PlainTable.astro'),
+  display('project-control-nav', 'ProjectControlNav', 'App Controls', 'astro', 'Reusable ProjectControlNav component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/ProjectControlNav.astro'),
+  display('related-content-creator', 'RelatedContentCreator', 'App Controls', 'astro', 'Reusable RelatedContentCreator component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/RelatedContentCreator.astro'),
+  display('template-host-requirement-picker', 'TemplateHostRequirementPicker', 'App Controls', 'astro', 'Reusable TemplateHostRequirementPicker component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/TemplateHostRequirementPicker.astro'),
+  display('template-resource-requirement-picker', 'TemplateResourceRequirementPicker', 'App Controls', 'astro', 'Reusable TemplateResourceRequirementPicker component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/TemplateResourceRequirementPicker.astro'),
+  display('template-secret-requirement-panel', 'TemplateSecretRequirementPanel', 'App Controls', 'astro', 'Reusable TemplateSecretRequirementPanel component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/TemplateSecretRequirementPanel.astro'),
+  display('work-content-nav', 'WorkContentNav', 'App Controls', 'astro', 'Reusable WorkContentNav component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/WorkContentNav.astro'),
+  display('capacity-diagnostics-panel', 'CapacityDiagnosticsPanel', 'Operations', 'astro', 'Reusable CapacityDiagnosticsPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/CapacityDiagnosticsPanel.astro'),
+  display('deployment-timeline', 'DeploymentTimeline', 'Operations', 'astro', 'Reusable DeploymentTimeline component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/DeploymentTimeline.astro'),
+  display('governance-decision-panel', 'GovernanceDecisionPanel', 'Operations', 'astro', 'Reusable GovernanceDecisionPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/GovernanceDecisionPanel.astro'),
+  display('governance-policy-summary', 'GovernancePolicySummary', 'Operations', 'astro', 'Reusable GovernancePolicySummary component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/GovernancePolicySummary.astro'),
+  display('knowledge-artifact-card', 'KnowledgeArtifactCard', 'Operations', 'astro', 'Reusable KnowledgeArtifactCard component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/KnowledgeArtifactCard.astro'),
+  display('operational-timeline', 'OperationalTimeline', 'Operations', 'astro', 'Reusable OperationalTimeline component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/OperationalTimeline.astro'),
+  display('repository-context-panel', 'RepositoryContextPanel', 'Operations', 'astro', 'Reusable RepositoryContextPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/RepositoryContextPanel.astro'),
+  display('seed-operations-panel', 'SeedOperationsPanel', 'Operations', 'astro', 'Reusable SeedOperationsPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/SeedOperationsPanel.astro'),
+  display('worker-queue-panel', 'WorkerQueuePanel', 'Operations', 'astro', 'Reusable WorkerQueuePanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/operations/WorkerQueuePanel.astro'),
+  display('sensitive-data-unlock', 'SensitiveDataUnlock', 'Sensitive Data', 'astro', 'Reusable SensitiveDataUnlock component copied into the TreeSeed UI library.', 'medium', { source: 'Sensitive Data' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/app/sensitive/SensitiveDataUnlock.astro'),
+  display('auth-card', 'AuthCard', 'Auth', 'astro', 'Reusable AuthCard component copied into the TreeSeed UI library.', 'medium', { source: 'Auth' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/auth/AuthCard.astro'),
+  display('auth-divider', 'AuthDivider', 'Auth', 'astro', 'Reusable AuthDivider component copied into the TreeSeed UI library.', 'medium', { source: 'Auth' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/auth/AuthDivider.astro'),
+  display('auth-shell', 'AuthShell', 'Auth', 'astro', 'Reusable AuthShell component copied into the TreeSeed UI library.', 'full-page', { source: 'Auth' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/auth/AuthShell.astro'),
+  display('provider-button-list', 'ProviderButtonList', 'Auth', 'astro', 'Reusable ProviderButtonList component copied into the TreeSeed UI library.', 'medium', { source: 'Auth' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/auth/ProviderButtonList.astro'),
+  display('content-status-legend', 'ContentStatusLegend', 'Content', 'astro', 'Reusable ContentStatusLegend component copied into the TreeSeed UI library.', 'medium', { source: 'Content' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/content/ContentStatusLegend.astro'),
+  display('status-badge', 'StatusBadge', 'Content', 'astro', 'Reusable StatusBadge component copied into the TreeSeed UI library.', 'medium', { source: 'Content' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/content/StatusBadge.astro'),
+  display('dev-watch-reload', 'DevWatchReload', 'Core', 'astro', 'Reusable DevWatchReload component copied into the TreeSeed UI library.', 'medium', { source: 'Core' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/core/DevWatchReload.astro'),
+  display('site-title', 'SiteTitle', 'Core', 'astro', 'Reusable SiteTitle component copied into the TreeSeed UI library.', 'medium', { source: 'Core' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/core/SiteTitle.astro'),
+  display('book-font-controls', 'BookFontControls', 'Docs', 'astro', 'Reusable BookFontControls component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/BookFontControls.astro'),
+  display('desktop-sidebar-toggle', 'DesktopSidebarToggle', 'Docs', 'astro', 'Reusable DesktopSidebarToggle component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/DesktopSidebarToggle.astro'),
+  display('download-book', 'DownloadBook', 'Docs', 'astro', 'Reusable DownloadBook component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/DownloadBook.astro'),
+  display('footer', 'Footer', 'Docs', 'astro', 'Reusable Footer component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/Footer.astro'),
+  display('header', 'Header', 'Docs', 'astro', 'Reusable Header component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/Header.astro'),
+  display('page-frame', 'PageFrame', 'Docs', 'astro', 'Reusable PageFrame component copied into the TreeSeed UI library.', 'full-page', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/PageFrame.astro'),
+  display('page-sidebar', 'PageSidebar', 'Docs', 'astro', 'Reusable PageSidebar component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/PageSidebar.astro'),
+  display('page-title', 'PageTitle', 'Docs', 'astro', 'Reusable PageTitle component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/PageTitle.astro'),
+  display('sidebar', 'Sidebar', 'Docs', 'astro', 'Reusable Sidebar component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/Sidebar.astro'),
+  display('theme-select', 'ThemeSelect', 'Docs', 'astro', 'Reusable ThemeSelect component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/docs/ThemeSelect.astro'),
+  display('contact-form', 'ContactForm', 'Forms', 'astro', 'Reusable ContactForm component copied into the TreeSeed UI library.', 'medium', { source: 'Forms' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/forms/ContactForm.astro'),
+  display('footer-subscribe-form', 'FooterSubscribeForm', 'Forms', 'astro', 'Reusable FooterSubscribeForm component copied into the TreeSeed UI library.', 'medium', { source: 'Forms' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/forms/FooterSubscribeForm.astro'),
+  display('authored-entry-layout', 'AuthoredEntryLayout', 'Layouts', 'astro', 'Reusable AuthoredEntryLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/AuthoredEntryLayout.astro'),
+  display('book-layout', 'BookLayout', 'Layouts', 'astro', 'Reusable BookLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/BookLayout.astro'),
+  display('bridge-layout', 'BridgeLayout', 'Layouts', 'astro', 'Reusable BridgeLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/BridgeLayout.astro'),
+  display('content-layout', 'ContentLayout', 'Layouts', 'astro', 'Reusable ContentLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/ContentLayout.astro'),
+  display('main-layout', 'MainLayout', 'Layouts', 'astro', 'Reusable MainLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/MainLayout.astro'),
+  display('note-layout', 'NoteLayout', 'Layouts', 'astro', 'Reusable NoteLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/NoteLayout.astro'),
+  display('profile-layout', 'ProfileLayout', 'Layouts', 'astro', 'Reusable ProfileLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/ProfileLayout.astro'),
+  display('app-layout', 'AppLayout', 'Layouts', 'astro', 'Reusable AppLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/AppLayout.astro'),
+  display('public-layout', 'PublicLayout', 'Layouts', 'astro', 'Reusable PublicLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/layouts/PublicLayout.astro'),
+  display('product-card', 'ProductCard', 'Market', 'astro', 'Reusable ProductCard component copied into the TreeSeed UI library.', 'medium', { source: 'Market' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/market/ProductCard.astro'),
+  display('book-list', 'BookList', 'Site', 'astro', 'Reusable BookList component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/BookList.astro'),
+  display('ctasection', 'CTASection', 'Site', 'astro', 'Reusable CTASection component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/CTASection.astro'),
+  display('chronicle-list', 'ChronicleList', 'Site', 'astro', 'Reusable ChronicleList component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/ChronicleList.astro'),
+  display('hero', 'Hero', 'Site', 'astro', 'Reusable Hero component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/Hero.astro'),
+  display('notes-list', 'NotesList', 'Site', 'astro', 'Reusable NotesList component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/NotesList.astro'),
+  display('path-card', 'PathCard', 'Site', 'astro', 'Reusable PathCard component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/PathCard.astro'),
+  display('profile-list', 'ProfileList', 'Site', 'astro', 'Reusable ProfileList component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/ProfileList.astro'),
+  display('published-content-body', 'PublishedContentBody', 'Site', 'astro', 'Reusable PublishedContentBody component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/PublishedContentBody.astro'),
+  display('route-not-found', 'RouteNotFound', 'Site', 'astro', 'Reusable RouteNotFound component copied into the TreeSeed UI library.', 'full-page', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/RouteNotFound.astro'),
+  display('section-intro', 'SectionIntro', 'Site', 'astro', 'Reusable SectionIntro component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/SectionIntro.astro'),
+  display('stage-banner', 'StageBanner', 'Site', 'astro', 'Reusable StageBanner component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/StageBanner.astro'),
+  display('trust-callout', 'TrustCallout', 'Site', 'astro', 'Reusable TrustCallout component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+    { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+  ], undefined, '@treeseed/ui/components/astro/site/TrustCallout.astro'),
+);
+
 export const formComponents = componentCatalog.filter((entry) => entry.kind === 'form');
 export const displayComponents = componentCatalog.filter((entry) => entry.kind === 'display');
 

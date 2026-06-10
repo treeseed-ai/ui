@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -30,7 +30,8 @@
     "release:setup": "npm ci",
     "release:check-tag": "node ./scripts/assert-release-tag-version.mjs",
     "release:verify": "node ./scripts/release-verify.mjs",
-    "release:publish": "node ./scripts/publish-package.mjs"
+    "release:publish": "node ./scripts/publish-package.mjs",
+    "audit:market-parity": "node ./scripts/audit-market-parity.mjs"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.5.0",
@@ -78,30 +79,36 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./react": {
-      "types": "./dist/react.d.ts",
-      "default": "./dist/react.js"
-    },
-    "./theme": {
-      "types": "./dist/theme/index.d.ts",
-      "default": "./dist/theme/index.js"
-    },
-    "./styles/tokens.css": "./dist/styles/tokens.css",
-    "./styles/theme.css": "./dist/styles/theme.css",
-    "./styles/ui.css": "./dist/styles/ui.css",
-    "./styles/forms.css": "./dist/styles/forms.css",
-    "./styles/app-shell.css": "./dist/styles/app-shell.css",
-    "./styles/charts.css": "./dist/styles/charts.css",
-    "./styles/pie-allocation.css": "./dist/styles/pie-allocation.css",
-    "./components/astro/forms/Button.astro": "./dist/astro/forms/Button.astro",
-    "./components/astro/forms/Field.astro": "./dist/astro/forms/Field.astro",
-    "./components/astro/forms/FormActions.astro": "./dist/astro/forms/FormActions.astro",
-    "./components/astro/forms/MarkdownField.astro": "./dist/astro/forms/MarkdownField.astro",
-    "./components/astro/forms/PasswordMeter.astro": "./dist/astro/forms/PasswordMeter.astro",
-    "./components/astro/forms/RadioGroup.astro": "./dist/astro/forms/RadioGroup.astro",
-    "./components/astro/forms/Select.astro": "./dist/astro/forms/Select.astro",
-    "./components/astro/forms/TextInput.astro": "./dist/astro/forms/TextInput.astro",
-    "./components/astro/forms/Textarea.astro": "./dist/astro/forms/Textarea.astro",
+    "./components/astro/app/controls/ContentFieldHelp.astro": "./dist/astro/app/controls/ContentFieldHelp.astro",
+    "./components/astro/app/controls/DeleteConfirmationModal.astro": "./dist/astro/app/controls/DeleteConfirmationModal.astro",
+    "./components/astro/app/controls/HostCredentialPermissionNote.astro": "./dist/astro/app/controls/HostCredentialPermissionNote.astro",
+    "./components/astro/app/controls/LaunchRequirementSummary.astro": "./dist/astro/app/controls/LaunchRequirementSummary.astro",
+    "./components/astro/app/controls/MarkdownField.astro": "./dist/astro/app/controls/MarkdownField.astro",
+    "./components/astro/app/controls/PlainTable.astro": "./dist/astro/app/controls/PlainTable.astro",
+    "./components/astro/app/controls/ProjectControlNav.astro": "./dist/astro/app/controls/ProjectControlNav.astro",
+    "./components/astro/app/controls/RelatedContentCreator.astro": "./dist/astro/app/controls/RelatedContentCreator.astro",
+    "./components/astro/app/controls/TemplateHostRequirementPicker.astro": "./dist/astro/app/controls/TemplateHostRequirementPicker.astro",
+    "./components/astro/app/controls/TemplateResourceRequirementPicker.astro": "./dist/astro/app/controls/TemplateResourceRequirementPicker.astro",
+    "./components/astro/app/controls/TemplateSecretRequirementPanel.astro": "./dist/astro/app/controls/TemplateSecretRequirementPanel.astro",
+    "./components/astro/app/controls/WorkContentNav.astro": "./dist/astro/app/controls/WorkContentNav.astro",
+    "./components/astro/app/operations/CapacityDiagnosticsPanel.astro": "./dist/astro/app/operations/CapacityDiagnosticsPanel.astro",
+    "./components/astro/app/operations/DeploymentTimeline.astro": "./dist/astro/app/operations/DeploymentTimeline.astro",
+    "./components/astro/app/operations/GovernanceDecisionPanel.astro": "./dist/astro/app/operations/GovernanceDecisionPanel.astro",
+    "./components/astro/app/operations/GovernancePolicySummary.astro": "./dist/astro/app/operations/GovernancePolicySummary.astro",
+    "./components/astro/app/operations/KnowledgeArtifactCard.astro": "./dist/astro/app/operations/KnowledgeArtifactCard.astro",
+    "./components/astro/app/operations/OperationalTimeline.astro": "./dist/astro/app/operations/OperationalTimeline.astro",
+    "./components/astro/app/operations/RepositoryContextPanel.astro": "./dist/astro/app/operations/RepositoryContextPanel.astro",
+    "./components/astro/app/operations/SeedOperationsPanel.astro": "./dist/astro/app/operations/SeedOperationsPanel.astro",
+    "./components/astro/app/operations/WorkerQueuePanel.astro": "./dist/astro/app/operations/WorkerQueuePanel.astro",
+    "./components/astro/app/sensitive/SensitiveDataUnlock.astro": "./dist/astro/app/sensitive/SensitiveDataUnlock.astro",
+    "./components/astro/auth/AuthCard.astro": "./dist/astro/auth/AuthCard.astro",
+    "./components/astro/auth/AuthDivider.astro": "./dist/astro/auth/AuthDivider.astro",
+    "./components/astro/auth/AuthShell.astro": "./dist/astro/auth/AuthShell.astro",
+    "./components/astro/auth/ProviderButtonList.astro": "./dist/astro/auth/ProviderButtonList.astro",
+    "./components/astro/content/ContentStatusLegend.astro": "./dist/astro/content/ContentStatusLegend.astro",
+    "./components/astro/content/StatusBadge.astro": "./dist/astro/content/StatusBadge.astro",
+    "./components/astro/core/DevWatchReload.astro": "./dist/astro/core/DevWatchReload.astro",
+    "./components/astro/core/SiteTitle.astro": "./dist/astro/core/SiteTitle.astro",
     "./components/astro/data/ActionList.astro": "./dist/astro/data/ActionList.astro",
     "./components/astro/data/Badge.astro": "./dist/astro/data/Badge.astro",
     "./components/astro/data/DataTable.astro": "./dist/astro/data/DataTable.astro",
@@ -109,7 +116,38 @@
     "./components/astro/data/MetricCard.astro": "./dist/astro/data/MetricCard.astro",
     "./components/astro/data/MetricGrid.astro": "./dist/astro/data/MetricGrid.astro",
     "./components/astro/data/StatusPill.astro": "./dist/astro/data/StatusPill.astro",
+    "./components/astro/docs/BookFontControls.astro": "./dist/astro/docs/BookFontControls.astro",
+    "./components/astro/docs/DesktopSidebarToggle.astro": "./dist/astro/docs/DesktopSidebarToggle.astro",
+    "./components/astro/docs/DownloadBook.astro": "./dist/astro/docs/DownloadBook.astro",
+    "./components/astro/docs/Footer.astro": "./dist/astro/docs/Footer.astro",
+    "./components/astro/docs/Header.astro": "./dist/astro/docs/Header.astro",
+    "./components/astro/docs/PageFrame.astro": "./dist/astro/docs/PageFrame.astro",
+    "./components/astro/docs/PageSidebar.astro": "./dist/astro/docs/PageSidebar.astro",
+    "./components/astro/docs/PageTitle.astro": "./dist/astro/docs/PageTitle.astro",
+    "./components/astro/docs/Sidebar.astro": "./dist/astro/docs/Sidebar.astro",
+    "./components/astro/docs/ThemeSelect.astro": "./dist/astro/docs/ThemeSelect.astro",
+    "./components/astro/forms/Button.astro": "./dist/astro/forms/Button.astro",
+    "./components/astro/forms/ContactForm.astro": "./dist/astro/forms/ContactForm.astro",
+    "./components/astro/forms/Field.astro": "./dist/astro/forms/Field.astro",
+    "./components/astro/forms/FooterSubscribeForm.astro": "./dist/astro/forms/FooterSubscribeForm.astro",
+    "./components/astro/forms/FormActions.astro": "./dist/astro/forms/FormActions.astro",
+    "./components/astro/forms/MarkdownField.astro": "./dist/astro/forms/MarkdownField.astro",
+    "./components/astro/forms/PasswordMeter.astro": "./dist/astro/forms/PasswordMeter.astro",
+    "./components/astro/forms/RadioGroup.astro": "./dist/astro/forms/RadioGroup.astro",
+    "./components/astro/forms/Select.astro": "./dist/astro/forms/Select.astro",
+    "./components/astro/forms/Textarea.astro": "./dist/astro/forms/Textarea.astro",
+    "./components/astro/forms/TextInput.astro": "./dist/astro/forms/TextInput.astro",
     "./components/astro/layout/PageHeader.astro": "./dist/astro/layout/PageHeader.astro",
+    "./components/astro/layouts/AppLayout.astro": "./dist/astro/layouts/AppLayout.astro",
+    "./components/astro/layouts/AuthoredEntryLayout.astro": "./dist/astro/layouts/AuthoredEntryLayout.astro",
+    "./components/astro/layouts/BookLayout.astro": "./dist/astro/layouts/BookLayout.astro",
+    "./components/astro/layouts/BridgeLayout.astro": "./dist/astro/layouts/BridgeLayout.astro",
+    "./components/astro/layouts/ContentLayout.astro": "./dist/astro/layouts/ContentLayout.astro",
+    "./components/astro/layouts/MainLayout.astro": "./dist/astro/layouts/MainLayout.astro",
+    "./components/astro/layouts/NoteLayout.astro": "./dist/astro/layouts/NoteLayout.astro",
+    "./components/astro/layouts/ProfileLayout.astro": "./dist/astro/layouts/ProfileLayout.astro",
+    "./components/astro/layouts/PublicLayout.astro": "./dist/astro/layouts/PublicLayout.astro",
+    "./components/astro/market/ProductCard.astro": "./dist/astro/market/ProductCard.astro",
     "./components/astro/shell/AppShell.astro": "./dist/astro/shell/AppShell.astro",
     "./components/astro/shell/BottomNav.astro": "./dist/astro/shell/BottomNav.astro",
     "./components/astro/shell/ProjectHeader.astro": "./dist/astro/shell/ProjectHeader.astro",
@@ -118,6 +156,18 @@
     "./components/astro/shell/RailNav.astro": "./dist/astro/shell/RailNav.astro",
     "./components/astro/shell/ShellIconLink.astro": "./dist/astro/shell/ShellIconLink.astro",
     "./components/astro/shell/TopBar.astro": "./dist/astro/shell/TopBar.astro",
+    "./components/astro/site/BookList.astro": "./dist/astro/site/BookList.astro",
+    "./components/astro/site/ChronicleList.astro": "./dist/astro/site/ChronicleList.astro",
+    "./components/astro/site/CTASection.astro": "./dist/astro/site/CTASection.astro",
+    "./components/astro/site/Hero.astro": "./dist/astro/site/Hero.astro",
+    "./components/astro/site/NotesList.astro": "./dist/astro/site/NotesList.astro",
+    "./components/astro/site/PathCard.astro": "./dist/astro/site/PathCard.astro",
+    "./components/astro/site/ProfileList.astro": "./dist/astro/site/ProfileList.astro",
+    "./components/astro/site/PublishedContentBody.astro": "./dist/astro/site/PublishedContentBody.astro",
+    "./components/astro/site/RouteNotFound.astro": "./dist/astro/site/RouteNotFound.astro",
+    "./components/astro/site/SectionIntro.astro": "./dist/astro/site/SectionIntro.astro",
+    "./components/astro/site/StageBanner.astro": "./dist/astro/site/StageBanner.astro",
+    "./components/astro/site/TrustCallout.astro": "./dist/astro/site/TrustCallout.astro",
     "./components/astro/surface/Card.astro": "./dist/astro/surface/Card.astro",
     "./components/astro/surface/EmptyState.astro": "./dist/astro/surface/EmptyState.astro",
     "./components/astro/surface/Panel.astro": "./dist/astro/surface/Panel.astro",
@@ -125,6 +175,10 @@
     "./components/astro/theme/ThemePreviewSwatch.astro": "./dist/astro/theme/ThemePreviewSwatch.astro",
     "./components/astro/theme/ThemeScript.astro": "./dist/astro/theme/ThemeScript.astro",
     "./components/astro/theme/ThemeSelector.astro": "./dist/astro/theme/ThemeSelector.astro",
+    "./components/react/CheckboxField": {
+      "types": "./dist/react/form-controls/CheckboxField.d.ts",
+      "default": "./dist/react/form-controls/CheckboxField.js"
+    },
     "./components/react/DynamicPieAllocationInput": {
       "types": "./dist/react/pie-allocation/DynamicPieAllocationInput.d.ts",
       "default": "./dist/react/pie-allocation/DynamicPieAllocationInput.js"
@@ -141,10 +195,6 @@
       "types": "./dist/react/editors/RichMarkdownEditor.d.ts",
       "default": "./dist/react/editors/RichMarkdownEditor.js"
     },
-    "./components/react/CheckboxField": {
-      "types": "./dist/react/form-controls/CheckboxField.d.ts",
-      "default": "./dist/react/form-controls/CheckboxField.js"
-    },
     "./components/react/SelectField": {
       "types": "./dist/react/form-controls/SelectField.d.ts",
       "default": "./dist/react/form-controls/SelectField.js"
@@ -153,13 +203,49 @@
       "types": "./dist/react/form-controls/TextField.d.ts",
       "default": "./dist/react/form-controls/TextField.js"
     },
-    "./lib/pie-allocation": {
-      "types": "./dist/lib/pie-allocation/math.d.ts",
-      "default": "./dist/lib/pie-allocation/math.js"
+    "./lib/app/deployment-action-status": {
+      "types": "./dist/lib/app/deployment-action-status.d.ts",
+      "default": "./dist/lib/app/deployment-action-status.js"
+    },
+    "./lib/app/markdown-field": {
+      "types": "./dist/lib/app/markdown-field.d.ts",
+      "default": "./dist/lib/app/markdown-field.js"
+    },
+    "./lib/app/platform-operation-status": {
+      "types": "./dist/lib/app/platform-operation-status.d.ts",
+      "default": "./dist/lib/app/platform-operation-status.js"
+    },
+    "./lib/app/related-content-creator": {
+      "types": "./dist/lib/app/related-content-creator.d.ts",
+      "default": "./dist/lib/app/related-content-creator.js"
     },
     "./lib/charts": {
       "types": "./dist/lib/charts/index.d.ts",
       "default": "./dist/lib/charts/index.js"
+    },
+    "./lib/pie-allocation": {
+      "types": "./dist/lib/pie-allocation/math.d.ts",
+      "default": "./dist/lib/pie-allocation/math.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react.js"
+    },
+    "./styles/app-controls.css": "./dist/styles/app-controls.css",
+    "./styles/app-shell.css": "./dist/styles/app-shell.css",
+    "./styles/auth.css": "./dist/styles/auth.css",
+    "./styles/charts.css": "./dist/styles/charts.css",
+    "./styles/forms.css": "./dist/styles/forms.css",
+    "./styles/market.css": "./dist/styles/market.css",
+    "./styles/operations.css": "./dist/styles/operations.css",
+    "./styles/pie-allocation.css": "./dist/styles/pie-allocation.css",
+    "./styles/site.css": "./dist/styles/site.css",
+    "./styles/theme.css": "./dist/styles/theme.css",
+    "./styles/tokens.css": "./dist/styles/tokens.css",
+    "./styles/ui.css": "./dist/styles/ui.css",
+    "./theme": {
+      "types": "./dist/theme/index.d.ts",
+      "default": "./dist/theme/index.js"
     },
     "./theme/schemes/*.yaml": "./dist/theme/schemes/*.yaml"
   },

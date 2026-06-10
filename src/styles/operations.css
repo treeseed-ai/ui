@@ -1,0 +1,819 @@
+.ts-app-shell {
+	--ts-color-shadow: none;
+	--ts-operational-severity-low: var(--ts-color-text-subtle);
+	--ts-operational-severity-moderate: var(--ts-color-warning);
+	--ts-operational-severity-high: var(--ts-color-danger);
+	--ts-operational-severity-critical: var(--ts-color-danger-text);
+	--ts-operational-phase-research: var(--ts-color-info);
+	--ts-operational-phase-implementation: var(--ts-color-accent);
+	--ts-operational-phase-verification: var(--ts-color-success);
+	--ts-operational-phase-governance: var(--ts-color-warning);
+	--ts-operational-phase-knowledge: var(--ts-color-border-strong);
+	--ts-radius-sm: 0.375rem;
+	--ts-radius-md: 0.5rem;
+	--ts-radius-lg: 0.5rem;
+	font-variant-numeric: tabular-nums;
+}
+
+/* Phase 7 operational identity: app-scoped industrial control plane tokens. */
+.ts-app-shell {
+	--ts-color-shadow: none;
+	--ts-operational-severity-low: var(--ts-color-text-subtle);
+	--ts-operational-severity-moderate: var(--ts-color-warning);
+	--ts-operational-severity-high: var(--ts-color-danger);
+	--ts-operational-severity-critical: var(--ts-color-danger-text);
+	--ts-operational-phase-research: var(--ts-color-info);
+	--ts-operational-phase-implementation: var(--ts-color-accent);
+	--ts-operational-phase-verification: var(--ts-color-success);
+	--ts-operational-phase-governance: var(--ts-color-warning);
+	--ts-operational-phase-knowledge: var(--ts-color-border-strong);
+	--ts-radius-sm: 0.375rem;
+	--ts-radius-md: 0.5rem;
+	--ts-radius-lg: 0.5rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.ts-operational-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.85fr);
+	gap: 1rem;
+	align-items: start;
+}
+
+.ts-operational-timeline {
+	display: grid;
+	gap: 0.9rem;
+	margin: 0;
+	padding: 0;
+}
+
+.ts-operational-timeline__phase {
+	border: 1px solid var(--ts-color-border);
+	border-radius: 0.5rem;
+	background: var(--ts-color-surface);
+	display: grid;
+	gap: 0.85rem;
+	overflow: hidden;
+	padding: 0;
+	position: relative;
+}
+
+.ts-operational-timeline__phase::before {
+	background: var(--ts-color-border-strong);
+	content: "";
+	height: 3px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.ts-operational-timeline__phase[data-phase='research']::before {
+	background: var(--ts-operational-phase-research);
+}
+
+.ts-operational-timeline__phase[data-phase='implementation']::before {
+	background: var(--ts-operational-phase-implementation);
+}
+
+.ts-operational-timeline__phase[data-phase='verification']::before {
+	background: var(--ts-operational-phase-verification);
+}
+
+.ts-operational-timeline__phase[data-phase='governance']::before {
+	background: var(--ts-operational-phase-governance);
+}
+
+.ts-operational-timeline__phase[data-phase='knowledge']::before {
+	background: var(--ts-operational-phase-knowledge);
+}
+
+.ts-operational-timeline__phase-header {
+	align-items: flex-start;
+	border-bottom: 1px solid var(--ts-color-border);
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+	padding: 0.9rem 1rem 0.8rem;
+}
+
+.ts-operational-timeline__phase-header h3,
+.ts-operational-timeline__phase-header p {
+	margin: 0;
+}
+
+.ts-operational-timeline__phase-header h3 {
+	font-size: 1rem;
+	line-height: 1.25;
+}
+
+.ts-operational-timeline__phase-header p + h3 {
+	margin-top: 0.15rem;
+}
+
+.ts-operational-timeline__phase-header h3 + p {
+	color: var(--ts-color-text-muted);
+	font-size: 0.9rem;
+	margin-top: 0.25rem;
+	max-width: 54rem;
+}
+
+.ts-operational-timeline__items {
+	display: grid;
+	gap: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0 1rem 0.95rem;
+}
+
+.ts-operational-timeline__item {
+	display: grid;
+	grid-template-columns: 1.15rem minmax(0, 1fr);
+	gap: 0.85rem;
+	position: relative;
+}
+
+.ts-operational-timeline__item::before {
+	background: var(--ts-color-border);
+	bottom: 0;
+	content: "";
+	left: 0.52rem;
+	position: absolute;
+	top: 1.2rem;
+	width: 1px;
+}
+
+.ts-operational-timeline__item:last-child::before {
+	display: none;
+}
+
+.ts-operational-timeline__marker {
+	background: var(--ts-color-surface-raised);
+	border: 1px solid var(--ts-color-border-strong);
+	border-radius: 999px;
+	height: 0.72rem;
+	margin-top: 0.42rem;
+	width: 0.72rem;
+	z-index: 1;
+}
+
+.ts-operational-timeline__item[data-category='research'] .ts-operational-timeline__marker {
+	border-color: var(--ts-operational-phase-research);
+}
+
+.ts-operational-timeline__item[data-category='implementation'] .ts-operational-timeline__marker,
+.ts-operational-timeline__item[data-category='execution'] .ts-operational-timeline__marker {
+	border-color: var(--ts-operational-phase-implementation);
+}
+
+.ts-operational-timeline__item[data-category='verification'] .ts-operational-timeline__marker {
+	border-color: var(--ts-operational-phase-verification);
+}
+
+.ts-operational-timeline__item[data-category='governance'] .ts-operational-timeline__marker {
+	border-color: var(--ts-operational-phase-governance);
+}
+
+.ts-operational-timeline__item[data-category='knowledge'] .ts-operational-timeline__marker {
+	border-color: var(--ts-operational-phase-knowledge);
+}
+
+.ts-operational-timeline__item:focus-within .ts-operational-timeline__content {
+	box-shadow: inset 3px 0 0 var(--ts-color-focus);
+	padding-left: 0.65rem;
+}
+
+.ts-operational-timeline__content {
+	border-bottom: 1px solid var(--ts-color-border);
+	display: grid;
+	gap: 0.45rem;
+	padding: 0 0 1rem;
+}
+
+.ts-operational-timeline__item + .ts-operational-timeline__item .ts-operational-timeline__content {
+	padding-top: 1rem;
+}
+
+.ts-operational-timeline__header {
+	align-items: flex-start;
+	display: flex;
+	gap: 0.75rem;
+	justify-content: space-between;
+}
+
+.ts-operational-timeline__header h4 {
+	font-size: 0.98rem;
+	line-height: 1.25;
+	margin: 0;
+}
+
+.ts-operational-timeline__category {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.72rem;
+	font-weight: 750;
+	margin: 0 0 0.15rem;
+	text-transform: uppercase;
+}
+
+.ts-operational-timeline__content p {
+	color: var(--ts-color-text-muted);
+	margin: 0;
+}
+
+.ts-operational-card__summary {
+	border-top: 1px solid var(--ts-color-border-muted);
+	margin-top: 0.15rem;
+	padding-top: 0.55rem;
+}
+
+.ts-deploy-launch,
+.ts-deploy-next-action,
+
+.ts-deploy-command-surface {
+	--ts-deploy-accent: var(--ts-color-info);
+	--ts-deploy-accent-soft: var(--ts-color-info-soft);
+	background: var(--ts-color-surface-raised);
+	border: 1px solid var(--ts-color-border);
+	border-radius: 0.5rem;
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: minmax(18rem, 0.85fr) minmax(22rem, 1.15fr);
+	overflow: hidden;
+	padding: 1.15rem;
+	position: relative;
+}
+
+.ts-deploy-command-surface::before {
+	background: var(--ts-deploy-accent);
+	content: "";
+	inset: 0 auto 0 0;
+	position: absolute;
+	width: 0.28rem;
+}
+
+.ts-deploy-command-surface[data-tone='success'] {
+	--ts-deploy-accent: var(--ts-color-success);
+	--ts-deploy-accent-soft: var(--ts-color-success-soft);
+}
+
+.ts-deploy-command-surface[data-tone='warning'] {
+	--ts-deploy-accent: var(--ts-color-warning);
+	--ts-deploy-accent-soft: var(--ts-color-warning-soft);
+	border-color: var(--ts-color-warning-border);
+}
+
+.ts-deploy-command-surface[data-tone='danger'] {
+	--ts-deploy-accent: var(--ts-color-danger);
+	--ts-deploy-accent-soft: var(--ts-color-danger-soft);
+	border-color: var(--ts-color-danger-border);
+}
+
+.ts-deploy-command-surface__main {
+	align-content: start;
+	display: grid;
+	gap: 0.8rem;
+	min-width: 0;
+	padding-left: 0.25rem;
+}
+
+.ts-deploy-command-surface__eyebrow,
+.ts-deploy-signal span {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.76rem;
+	font-weight: 800;
+	letter-spacing: 0;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+.ts-deploy-command-surface h1 {
+	font-size: 2.55rem;
+	line-height: 1;
+	margin: 0;
+	max-width: 12ch;
+}
+
+.ts-deploy-tabs-shell,
+.ts-deploy-tab-panels,
+
+.ts-deploy-subtabs {
+	margin-bottom: 0;
+}
+
+.ts-deploy-tab-panel[hidden] {
+	display: none;
+}
+
+.ts-deploy-command-surface__state {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.65rem;
+}
+
+.ts-deploy-command-surface__state strong {
+	color: var(--ts-color-text);
+	font-size: 1.18rem;
+	line-height: 1.2;
+}
+
+.ts-deploy-command-surface__main > p:not(.ts-deploy-command-surface__eyebrow),
+.ts-deploy-signal p {
+	color: var(--ts-color-text-muted);
+	font-size: 1rem;
+	line-height: 1.45;
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.ts-deploy-command-surface__actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 0.25rem;
+}
+
+.ts-deploy-command-surface__actions .ts-subtle {
+	font-weight: 700;
+	margin: 0;
+}
+
+.ts-deploy-command-surface__actions #deployment-action-status:not(:empty) {
+	background: var(--ts-color-surface);
+	border: 1px solid var(--ts-color-border);
+	border-radius: 0.5rem;
+	color: var(--ts-color-text);
+	padding: 0.55rem 0.7rem;
+}
+
+.ts-deploy-signal-grid {
+	display: grid;
+	gap: 0.65rem;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ts-deploy-signal {
+	--ts-deploy-accent: var(--ts-color-border-strong);
+	--ts-deploy-accent-soft: var(--ts-color-surface);
+	background: var(--ts-deploy-accent-soft);
+	border: 1px solid var(--ts-color-border);
+	border-left: 0.28rem solid var(--ts-deploy-accent);
+	border-radius: 0.5rem;
+	display: grid;
+	gap: 0.35rem;
+	min-height: 8.5rem;
+	padding: 0.85rem 0.9rem;
+}
+
+.ts-deploy-signal[data-tone='warning'],
+.ts-deploy-environment[data-tone='warning'],
+
+.ts-deploy-signal[data-tone='danger'],
+.ts-deploy-checklist li[data-tone='danger'],
+
+.ts-deploy-environment[data-tone='danger'] {
+	background: var(--ts-color-surface);
+	border-color: var(--ts-color-danger-border);
+	color: var(--ts-color-danger-text);
+}
+
+.ts-deploy-signal[data-tone='success'],
+.ts-metric[data-tone='success'],
+
+.ts-deploy-signal[data-tone='warning'],
+.ts-metric[data-tone='warning'],
+
+.ts-deploy-signal[data-tone='danger'],
+.ts-metric[data-tone='danger'],
+
+.ts-deploy-signal[data-tone='info'],
+.ts-metric[data-tone='info'],
+
+.ts-deploy-signal strong {
+	color: var(--ts-color-text);
+	font-size: 1.28rem;
+	line-height: 1.1;
+}
+
+.ts-deploy-signal[data-tone='warning'] strong,
+.ts-deploy-environment[data-tone='warning'] h3,
+
+.ts-deploy-signal[data-tone='danger'] strong,
+.ts-deploy-environment[data-tone='danger'] h3,
+
+.ts-deploy-status-panel .ts-panel__title,
+.ts-deploy-readiness-panel .ts-panel__title,
+
+.ts-deploy-environments {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ts-deploy-environment {
+	--ts-deploy-accent: var(--ts-color-border-strong);
+	--ts-deploy-accent-soft: var(--ts-color-surface);
+	background: var(--ts-deploy-accent-soft);
+	border: 1px solid var(--ts-color-border);
+	border-radius: 0.5rem;
+	border-top: 0.3rem solid var(--ts-deploy-accent);
+	padding: 1rem 1rem 1.05rem;
+}
+
+.ts-deploy-next-action {
+	align-items: center;
+	background: var(--ts-color-surface-raised);
+	border: 1px solid var(--ts-color-border);
+	border-radius: 0.5rem;
+	grid-template-columns: max-content minmax(0, 1fr) max-content;
+	padding: 0.9rem 1rem;
+}
+
+.ts-deploy-next-action p {
+	margin: 0;
+}
+
+.ts-deploy-environment__header,
+.ts-deploy-timeline__header {
+	align-items: flex-start;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+}
+
+.ts-deploy-environment__header h3,
+.ts-deploy-environment__header p,
+
+.ts-deploy-environment__header h3,
+.ts-deploy-timeline__header h3 {
+	font-size: 1.18rem;
+	line-height: 1.25;
+}
+
+.ts-deploy-environment__header p,
+.ts-deploy-action__message,
+
+.ts-deploy-definition-list {
+	margin: 0;
+}
+
+.ts-deploy-definition-list div {
+	border-top: 1px solid var(--ts-color-border-muted);
+	display: grid;
+	gap: 0.25rem;
+	grid-template-columns: minmax(8rem, 0.4fr) minmax(0, 1fr);
+	padding-top: 0.7rem;
+}
+
+.ts-deploy-definition-list dt {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.78rem;
+	font-weight: 750;
+	text-transform: uppercase;
+}
+
+.ts-deploy-definition-list dd {
+	font-size: 0.96rem;
+	font-weight: 650;
+	margin: 0;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.ts-deploy-monitor-summary {
+	align-items: center;
+	gap: 0.45rem;
+	grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.ts-deploy-monitor-summary time {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.78rem;
+	grid-column: 2;
+}
+
+.ts-deploy-monitor-checks {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ts-deploy-monitor-checks li {
+	background: var(--ts-color-surface);
+	border: 1px solid var(--ts-color-border-muted);
+	border-radius: 0.4rem;
+	display: grid;
+	gap: 0.15rem;
+	padding: 0.55rem;
+}
+
+.ts-deploy-monitor-checks strong {
+	font-size: 1rem;
+}
+
+.ts-deploy-monitor-checks span {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.76rem;
+	font-weight: 750;
+	text-transform: uppercase;
+}
+
+.ts-deploy-checklist,
+.ts-deploy-compact-list,
+
+.ts-deploy-checklist li,
+.ts-deploy-attention-list li,
+
+.ts-deploy-checklist li:first-child,
+.ts-deploy-definition-list div:first-child {
+	padding-top: 0.75rem;
+}
+
+.ts-deploy-checklist p,
+.ts-deploy-attention-list p,
+
+.ts-deploy-check-title {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	position: relative;
+}
+
+.ts-deploy-blocker-list {
+	display: grid;
+	gap: 0.7rem;
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+}
+
+.ts-deploy-support-group {
+	background: var(--ts-color-surface-muted);
+	border: 1px solid var(--ts-color-border-muted);
+	border-radius: 0.5rem;
+	display: grid;
+	gap: 0.85rem;
+	margin-top: 1rem;
+	padding: 1rem;
+}
+
+.ts-deploy-support-group__header {
+	display: grid;
+	gap: 0.25rem;
+}
+
+.ts-deploy-support-group__header h3,
+.ts-deploy-support-group__header p {
+	margin: 0;
+}
+
+.ts-deploy-support-group__header h3 {
+	font-size: 1rem;
+	line-height: 1.25;
+}
+
+.ts-deploy-support-group__header p {
+	color: var(--ts-color-text-muted);
+	font-size: 0.92rem;
+	line-height: 1.4;
+}
+
+.ts-deploy-attention-list {
+	gap: 0.7rem;
+	margin: 0;
+}
+
+.ts-deploy-checklist + .ts-deploy-attention-list,
+.ts-deploy-blocker-list + .ts-deploy-attention-list,
+
+.ts-deploy-blocker-list strong {
+	color: var(--ts-color-danger-text);
+	font-size: 0.95rem;
+	text-transform: capitalize;
+}
+
+.ts-deploy-blocker-list p,
+.ts-deploy-attention-list p {
+	color: var(--ts-color-text);
+	font-weight: 650;
+}
+
+.ts-deploy-actions {
+	display: grid;
+	gap: 0.75rem;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ts-deploy-action {
+	align-content: start;
+	background: var(--ts-color-surface);
+	border: 1px solid var(--ts-color-border-muted);
+	border-radius: 0.5rem;
+	padding: 0.9rem 1rem;
+}
+
+.ts-deploy-action__field {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.ts-deploy-action__field span {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.75rem;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.ts-deploy-action__field input {
+	background: var(--ts-color-surface-raised);
+	border: 1px solid var(--ts-color-border);
+	border-radius: 0.45rem;
+	color: var(--ts-color-text);
+	font: inherit;
+	min-height: 2.35rem;
+	padding: 0.45rem 0.6rem;
+}
+
+.ts-deploy-timeline__item {
+	--ts-deploy-accent: var(--ts-color-border-strong);
+	--ts-deploy-accent-soft: var(--ts-color-surface);
+	display: grid;
+	gap: 0.8rem;
+	grid-template-columns: 1rem minmax(0, 1fr);
+	position: relative;
+}
+
+.ts-deploy-timeline__item::before {
+	background: var(--ts-color-border);
+	bottom: 0;
+	content: "";
+	left: 0.48rem;
+	position: absolute;
+	top: 1.2rem;
+	width: 1px;
+}
+
+.ts-deploy-timeline__item:last-child::before {
+	display: none;
+}
+
+.ts-deploy-timeline__marker {
+	background: var(--ts-deploy-accent);
+	border: 1px solid var(--ts-color-border);
+	border-radius: 999px;
+	height: 0.7rem;
+	margin-top: 0.35rem;
+	width: 0.7rem;
+	z-index: 1;
+}
+
+.ts-deploy-timeline__content {
+	background: var(--ts-deploy-accent-soft);
+	border: 1px solid var(--ts-color-border-muted);
+	border-left: 0.25rem solid var(--ts-deploy-accent);
+	border-radius: 0.5rem;
+	display: grid;
+	gap: 0.45rem;
+	padding: 0.85rem;
+}
+
+.ts-deploy-timeline__item:last-child .ts-deploy-timeline__content {
+	padding-bottom: 0.85rem;
+}
+
+.ts-deploy-timeline__phase,
+.ts-deploy-timeline__meta {
+	color: var(--ts-color-text-subtle);
+	font-size: 0.76rem;
+	font-weight: 750;
+	text-transform: uppercase;
+}
+
+.ts-deploy-timeline__item:focus-within .ts-deploy-timeline__content {
+	box-shadow: inset 3px 0 0 var(--ts-color-focus);
+	padding-left: 0.65rem;
+}
+
+.ts-deploy-compact-list li {
+	background: var(--ts-color-surface);
+	border: 1px solid var(--ts-color-border-muted);
+	border-radius: 0.5rem;
+	display: grid;
+	gap: 0.2rem;
+	padding: 0.7rem 0.75rem;
+}
+
+.ts-deploy-compact-list li:first-child {
+	padding-top: 0.7rem;
+}
+
+.ts-governance-queue__severity[data-severity='low'] {
+	background: var(--ts-operational-severity-low);
+}
+
+.ts-governance-queue__severity[data-severity='high'],
+.ts-governance-queue__severity[data-severity='critical'] {
+	background: var(--ts-operational-severity-high);
+}
+
+.ts-governance-queue__severity[data-severity='critical'] {
+	background: var(--ts-operational-severity-critical);
+}
+
+.ts-governance-queue__severity[data-severity='medium'],
+.ts-governance-queue__severity[data-severity='moderate'] {
+	background: var(--ts-operational-severity-moderate);
+}
+
+@media (max-width: 980px) {
+	.ts-hero,
+	.ts-grid-2,
+	.ts-grid-3,
+	.ts-market-grid,
+	.ts-operational-grid,
+	.ts-feature-grid,
+	.ts-section-grid,
+	.ts-metric-strip,
+	.ts-deploy-command-surface,
+	.ts-deploy-signal-grid,
+	.ts-deploy-environments,
+	.ts-deploy-actions,
+	.ts-host-setup-grid,
+	.ts-template-choice-grid,
+	.ts-app-shell {
+		grid-template-columns: 1fr;
+	}
+
+	.ts-workday-phase-strip {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ts-infra-status-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ts-context-panel__forms,
+	.ts-form-grid,
+	.ts-host-actions {
+		grid-template-columns: 1fr;
+	}
+
+	.ts-rail {
+		position: static;
+		height: auto;
+		border-right: none;
+		border-bottom: 1px solid var(--ts-color-border);
+	}
+
+	.ts-brand {
+		margin-bottom: 1.35rem;
+	}
+
+	.ts-brand__tag {
+		max-width: none;
+	}
+
+	.ts-app-main,
+	.ts-public-shell {
+		padding-inline: 1rem;
+	}
+
+	.ts-app-shell .ts-app-shell__header {
+		display: grid;
+	}
+
+	.ts-member-row {
+		grid-template-columns: 1fr;
+		align-items: stretch;
+	}
+
+	.ts-inline-form {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.ts-inline-form .ts-control {
+		min-width: 0;
+	}
+
+	.ts-deploy-command-surface h1 {
+		font-size: 2rem;
+		max-width: none;
+	}
+}
+
+	.ts-deploy-command-surface h1 {
+		font-size: 2rem;
+		max-width: none;
+	}
+
+	.ts-operational-timeline__phase-header {
+		display: grid;
+	}
+
+	.ts-start-flow {
+		grid-template-columns: 1fr;
+	}

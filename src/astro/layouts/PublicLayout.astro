@@ -1,0 +1,69 @@
+---
+import '../../styles/app-controls.css';
+import '../../styles/operations.css';
+import PublicShell from '../shell/PublicShell.astro';
+import ShellIconLink from '../shell/ShellIconLink.astro';
+import type { ThemePreference } from '../../theme/types.ts';
+
+
+interface NavItem {
+	label: string;
+	href: string;
+}
+
+interface Props {
+	title?: string;
+	description?: string;
+	currentPath?: string;
+	appearance?: ThemePreference;
+	navItems?: NavItem[];
+	actions?: Array<{ label: string; href: string; variant?: 'primary' | 'secondary' | 'ghost' | 'danger' }>;
+	isSignedIn?: boolean;
+}
+
+const {
+	title = 'TreeSeed',
+	description = 'Launch, guide, release, and publish knowledge hubs with your team and your agents.',
+	currentPath = '/',
+	appearance = { scheme: 'fern', mode: 'system' },
+	navItems: providedNavItems,
+	actions: providedActions,
+	isSignedIn = false,
+} = Astro.props as Props;
+
+const navItems: NavItem[] = providedNavItems ?? [
+	{ label: 'Home', href: '/' },
+	{ label: 'Resources', href: '/market/' },
+	{ label: 'Workflow Imports', href: '/market/templates/' },
+	{ label: 'Knowledge Imports', href: '/market/knowledge-packs/' },
+];
+
+const actions = providedActions ?? (isSignedIn
+	? []
+	: [
+		{ label: 'Sign in', href: '/auth/sign-in', variant: 'ghost' as const },
+	]);
+---
+
+<PublicShell
+	title={title}
+	description={description}
+	currentPath={currentPath}
+	appearance={appearance}
+	brand={{
+		name: 'TreeSeed',
+		tag: 'Governable AI Infrastructure for Organizational Continuity',
+		href: '/',
+		logoSrc: '/logo.svg',
+		logoAlt: '',
+	}}
+	navItems={navItems}
+	actions={actions}
+	showAppearanceControl
+	preferServerAppearance={isSignedIn}
+>
+	<Fragment slot="actions">
+		<ShellIconLink href="/app/" label="Manager" icon="manager" />
+	</Fragment>
+	<slot />
+</PublicShell>

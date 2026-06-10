@@ -1,0 +1,285 @@
+---
+import ActionList from '../../../../src/astro/data/ActionList.astro';
+import Badge from '../../../../src/astro/data/Badge.astro';
+import DataTable from '../../../../src/astro/data/DataTable.astro';
+import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
+import MetricCard from '../../../../src/astro/data/MetricCard.astro';
+import MetricGrid from '../../../../src/astro/data/MetricGrid.astro';
+import StatusPill from '../../../../src/astro/data/StatusPill.astro';
+import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
+import BottomNav from '../../../../src/astro/shell/BottomNav.astro';
+import ProjectHeader from '../../../../src/astro/shell/ProjectHeader.astro';
+import PublicFooter from '../../../../src/astro/shell/PublicFooter.astro';
+import RailNav from '../../../../src/astro/shell/RailNav.astro';
+import ShellIconLink from '../../../../src/astro/shell/ShellIconLink.astro';
+import TopBar from '../../../../src/astro/shell/TopBar.astro';
+import Card from '../../../../src/astro/surface/Card.astro';
+import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
+import Panel from '../../../../src/astro/surface/Panel.astro';
+import ThemePreviewSwatch from '../../../../src/astro/theme/ThemePreviewSwatch.astro';
+import ContentFieldHelp from '../../../../src/astro/app/controls/ContentFieldHelp.astro';
+import DeleteConfirmationModal from '../../../../src/astro/app/controls/DeleteConfirmationModal.astro';
+import HostCredentialPermissionNote from '../../../../src/astro/app/controls/HostCredentialPermissionNote.astro';
+import LaunchRequirementSummary from '../../../../src/astro/app/controls/LaunchRequirementSummary.astro';
+import PlainTable from '../../../../src/astro/app/controls/PlainTable.astro';
+import ProjectControlNav from '../../../../src/astro/app/controls/ProjectControlNav.astro';
+import RelatedContentCreator from '../../../../src/astro/app/controls/RelatedContentCreator.astro';
+import TemplateHostRequirementPicker from '../../../../src/astro/app/controls/TemplateHostRequirementPicker.astro';
+import TemplateResourceRequirementPicker from '../../../../src/astro/app/controls/TemplateResourceRequirementPicker.astro';
+import TemplateSecretRequirementPanel from '../../../../src/astro/app/controls/TemplateSecretRequirementPanel.astro';
+import WorkContentNav from '../../../../src/astro/app/controls/WorkContentNav.astro';
+import CapacityDiagnosticsPanel from '../../../../src/astro/app/operations/CapacityDiagnosticsPanel.astro';
+import DeploymentTimeline from '../../../../src/astro/app/operations/DeploymentTimeline.astro';
+import GovernanceDecisionPanel from '../../../../src/astro/app/operations/GovernanceDecisionPanel.astro';
+import GovernancePolicySummary from '../../../../src/astro/app/operations/GovernancePolicySummary.astro';
+import KnowledgeArtifactCard from '../../../../src/astro/app/operations/KnowledgeArtifactCard.astro';
+import OperationalTimeline from '../../../../src/astro/app/operations/OperationalTimeline.astro';
+import RepositoryContextPanel from '../../../../src/astro/app/operations/RepositoryContextPanel.astro';
+import SeedOperationsPanel from '../../../../src/astro/app/operations/SeedOperationsPanel.astro';
+import WorkerQueuePanel from '../../../../src/astro/app/operations/WorkerQueuePanel.astro';
+import SensitiveDataUnlock from '../../../../src/astro/app/sensitive/SensitiveDataUnlock.astro';
+import AuthCard from '../../../../src/astro/auth/AuthCard.astro';
+import AuthDivider from '../../../../src/astro/auth/AuthDivider.astro';
+import ProviderButtonList from '../../../../src/astro/auth/ProviderButtonList.astro';
+import ContentStatusLegend from '../../../../src/astro/content/ContentStatusLegend.astro';
+import ContentStatusBadge from '../../../../src/astro/content/StatusBadge.astro';
+import DevWatchReload from '../../../../src/astro/core/DevWatchReload.astro';
+import SiteTitle from '../../../../src/astro/core/SiteTitle.astro';
+import BookFontControls from '../../../../src/astro/docs/BookFontControls.astro';
+import DesktopSidebarToggle from '../../../../src/astro/docs/DesktopSidebarToggle.astro';
+import DownloadBook from '../../../../src/astro/docs/DownloadBook.astro';
+import DocsFooter from '../../../../src/astro/docs/Footer.astro';
+import DocsHeader from '../../../../src/astro/docs/Header.astro';
+import PageFrame from '../../../../src/astro/docs/PageFrame.astro';
+import PageSidebar from '../../../../src/astro/docs/PageSidebar.astro';
+import PageTitle from '../../../../src/astro/docs/PageTitle.astro';
+import DocsSidebar from '../../../../src/astro/docs/Sidebar.astro';
+import ThemeSelect from '../../../../src/astro/docs/ThemeSelect.astro';
+import ContactForm from '../../../../src/astro/forms/ContactForm.astro';
+import FooterSubscribeForm from '../../../../src/astro/forms/FooterSubscribeForm.astro';
+import ProductCard from '../../../../src/astro/market/ProductCard.astro';
+import BookList from '../../../../src/astro/site/BookList.astro';
+import CTASection from '../../../../src/astro/site/CTASection.astro';
+import ChronicleList from '../../../../src/astro/site/ChronicleList.astro';
+import Hero from '../../../../src/astro/site/Hero.astro';
+import NotesList from '../../../../src/astro/site/NotesList.astro';
+import PathCard from '../../../../src/astro/site/PathCard.astro';
+import ProfileList from '../../../../src/astro/site/ProfileList.astro';
+import PublishedContentBody from '../../../../src/astro/site/PublishedContentBody.astro';
+import SectionIntro from '../../../../src/astro/site/SectionIntro.astro';
+import StageBanner from '../../../../src/astro/site/StageBanner.astro';
+import TrustCallout from '../../../../src/astro/site/TrustCallout.astro';
+import MonitoringChartHarness from './MonitoringChartHarness.tsx';
+import ProjectActivityChartHarness from './ProjectActivityChartHarness.tsx';
+import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
+
+const { entry } = Astro.props as { entry: ComponentCatalogEntry };
+const navItems = [
+  { label: 'Overview', href: '/displays/app-shell' },
+  { label: 'Projects', href: '/displays/app-shell/projects' },
+  { label: 'Knowledge', href: '/displays/app-shell/knowledge' },
+  { label: 'Settings', href: '/displays/app-shell/settings' },
+];
+const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+const hostRequirement = {
+  key: 'web-host',
+  type: 'web',
+  displayName: 'Web host',
+  purpose: 'Choose the host that will serve the project web UI.',
+  required: true,
+  compatibleProviders: ['Cloudflare', 'Railway'],
+  choices: [
+    { label: 'Cloudflare Pages', value: 'cloudflare-pages', selected: true },
+    { label: 'Railway Web', value: 'railway-web' },
+  ],
+  configWritePreviews: [{ target: 'treeseed.site.yaml', path: 'hosts.web' }],
+  environmentWritePreviews: [{ env: 'WEB_HOST_ID', targets: ['runtime'] }],
+};
+const resourceRequirement = {
+  key: 'database',
+  type: 'd1',
+  displayName: 'D1 database',
+  purpose: 'Provision or connect the database required by this template.',
+  required: false,
+  compatibleProviders: ['Cloudflare'],
+  configWritePreviews: [{ target: 'wrangler.toml', path: 'd1_databases' }],
+  environmentWritePreviews: [{ env: 'DATABASE_ID', targets: ['worker'] }],
+};
+const secretRequirement = {
+  key: 'openai-api-key',
+  env: 'OPENAI_API_KEY',
+  source: 'team secret',
+  required: true,
+  sensitivity: 'secret',
+  targets: ['worker', 'agent'],
+};
+const templates = [
+  {
+    slug: 'monitoring-console',
+    sourceRef: 'template:monitoring-console',
+    title: 'Monitoring Console',
+    launchRequirements: { hosts: [hostRequirement], resources: [resourceRequirement], secrets: [secretRequirement] },
+  },
+];
+const actionItems = [
+  { title: 'Review deployment guardrails', description: 'Confirm readiness gates.', meta: 'Required', tone: 'warning' as const, actionLabel: 'Open' },
+  { title: 'Sync knowledge pack', description: 'Refresh generated artifacts.', meta: 'Ready', tone: 'success' as const, actionLabel: 'Run' },
+  { title: 'Inspect capacity', description: 'Compare active provider limits.', meta: 'Optional', tone: 'muted' as const, actionLabel: 'View' },
+];
+const tableColumns = [
+  { key: 'name', label: 'Name' },
+  { key: 'type', label: 'Type' },
+  { key: 'status', label: 'Status' },
+  { key: 'owner', label: 'Owner' },
+];
+const tableRows = [
+  { name: '<strong>Monitoring Console</strong><span>Deployment workspace</span>', type: 'Template', status: 'Published', owner: 'Platform' },
+  { name: '<strong>Capacity Diagnostics</strong><span>Operations panel</span>', type: 'Panel', status: 'Draft', owner: 'Ops' },
+  { name: '<strong>Knowledge Pack</strong><span>Generated artifact</span>', type: 'Artifact', status: 'Ready', owner: 'Knowledge' },
+];
+const timelineItems = [
+  { id: 'queued', phase: 'Queue', title: 'Operation queued', description: 'The release was accepted for guarded deployment.', status: 'queued', tone: 'info' as const, createdAt: '2026-06-10', meta: 'release/market-console' },
+  { id: 'verified', phase: 'Verify', title: 'Smoke checks passed', description: 'HTTP checks and worker probes returned healthy results.', status: 'passed', tone: 'success' as const, createdAt: '2026-06-10', meta: '3 checks' },
+  { id: 'approval', phase: 'Governance', title: 'Approval required', description: 'Budget policy requires reviewer sign-off before public promotion.', status: 'waiting', tone: 'warning' as const, createdAt: '2026-06-10', meta: 'policy: budget-threshold' },
+];
+const phases = [
+  { key: 'research', label: 'Research', description: 'Collect context before implementation.', state: 'complete', tone: 'success' },
+  { key: 'implementation', label: 'Implementation', description: 'Ship the planned change.', state: 'active', tone: 'info' },
+  { key: 'verification', label: 'Verification', description: 'Run tests and probes.', state: 'waiting', tone: 'warning' },
+];
+const events = [
+  { phase: 'research', category: 'context', title: 'Repository context collected', description: 'Core templates and runtime constraints were indexed.', state: 'complete', tone: 'success', timestamp: '2026-06-10', meta: '2 repositories' },
+  { phase: 'implementation', category: 'execution', title: 'Worker deployment prepared', description: 'Queue bindings and release notes are staged.', state: 'active', tone: 'info', timestamp: '2026-06-10', repositoryRefs: ['treeseed/market'] },
+];
+const repositories = [
+  { owner: 'treeseed', name: 'market', role: 'application', status: 'connected', description: 'Market UI and launch workflow.', tone: 'success', href: '/displays/repository-context-panel' },
+  { owner: 'treeseed', name: 'core', role: 'content', status: 'indexed', description: 'Docs and site components.', tone: 'info' },
+];
+const capacity = [
+  { title: 'Cloudflare Workers', description: 'Daily request budget remains within threshold.', meta: 'capacity', tone: 'success' },
+  { title: 'LLM budget', description: 'Generation quota needs review before next launch.', meta: 'budget', tone: 'warning' },
+];
+const diagnostics = [
+  { id: 'capacity-region', title: 'Region routing', description: 'Primary region iad-1 is healthy.', meta: 'capacity', tone: 'success' },
+  { id: 'policy-budget', title: 'Budget policy', description: 'Approval needed above the configured threshold.', meta: 'governance', tone: 'warning' },
+];
+const seeds = [
+  { title: 'Team defaults seed', description: 'Creates default roles and operating policies.', meta: 'ready', tone: 'success', href: '/displays/seed-operations-panel' },
+  { title: 'Knowledge starter pack', description: 'Loads initial docs and release templates.', meta: 'queued', tone: 'info' },
+];
+const workers = [
+  { title: 'release-coordinator', description: 'Processing deployment timeline events.', meta: 'active', tone: 'success', href: '/displays/worker-queue-panel' },
+  { title: 'knowledge-indexer', description: 'Waiting for artifact generation.', meta: '2 queued', tone: 'warning' },
+];
+const policies = [
+  { title: 'Budget threshold', description: 'Require approval when launch spend exceeds the team limit.', policyType: 'approval', tone: 'warning', href: '/displays/governance-policy-summary' },
+];
+const constraints = [
+  { title: 'Public release window', description: 'Only promote during staffed operating hours.', constraintType: 'schedule', tone: 'info' },
+];
+const approval = { approvalId: 'approval-42', state: 'pending', severity: 'moderate', tone: 'warning' };
+const artifact = {
+  href: '/displays/knowledge-artifact-card',
+  type: 'Runbook',
+  title: 'Market launch runbook',
+  description: 'Generated checklist tying deployment evidence to governance approvals.',
+  state: 'generated',
+  tone: 'success',
+  repositories: ['treeseed/market', 'treeseed/core'],
+  relationships: { approvals: ['approval-42'], workdays: ['2026-06-10'], releases: ['release-17'] },
+  metadata: { projectName: 'Market Console', producedDuring: 'Release 17' },
+};
+const chronicleItems = [
+  { href: '/notes/release-readiness/', title: 'Release readiness review', summary: 'What changed and what still needs human review.', status: 'live', date: new Date('2026-06-10'), meta: 'market-steward', tags: ['release', 'governance'] },
+  { href: '/notes/capacity/', title: 'Capacity policy update', summary: 'Budget and provider routing notes for operators.', status: 'in progress', date: new Date('2026-06-09'), meta: 'ops', tags: ['capacity'] },
+];
+const bookItems = [
+  { href: '/books/operations/', title: 'Operational Continuity', summary: 'Reusable operating model for TreeSeed launches.', meta: 'Book', landingPath: '/operations/', downloadHref: '/books/operations.md' },
+  { href: '/books/governance/', title: 'Governance Playbook', summary: 'Approval and evidence patterns for releases.', meta: 'Book', landingPath: '/governance/', downloadHref: '/books/governance.md' },
+];
+const profileItems = [
+  { href: '/profiles/market-steward/', name: 'Market Steward', summary: 'Owns public launch readiness and release context.', meta: 'Team role', status: 'live', tags: ['operations'] },
+  { href: '/profiles/knowledge-editor/', name: 'Knowledge Editor', summary: 'Maintains generated docs and public artifacts.', meta: 'Contributor', status: 'planned', tags: ['knowledge'] },
+];
+const notes = chronicleItems.map((item, index) => ({
+  id: `note-${index + 1}`,
+  data: { title: item.title, summary: item.summary, status: item.status, date: item.date, author: item.meta, tags: item.tags },
+}));
+const sidebarItems = [
+  { label: 'Overview', href: '/displays/sidebar' },
+  { label: 'Guides', href: '/displays/sidebar/guides', items: [{ label: 'Launch', href: '/displays/sidebar/guides/launch' }] },
+];
+---
+
+{entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
+{entry.id === 'badge' ? <div class="primitive-inline"><Badge>Default</Badge><Badge tone="success">Success</Badge><Badge tone="warning">Warning</Badge><Badge tone="danger">Danger</Badge></div> : null}
+{entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
+{entry.id === 'data-table' ? <DataTable caption="DataTable preview" columns={tableColumns.slice(0, 3)} rows={[{ name: 'Monitoring Console', type: 'Template', status: 'Published' }, { name: 'Capacity Diagnostics', type: 'Panel', status: 'Draft' }, { name: 'Knowledge Pack', type: 'Artifact', status: 'Ready' }]} /> : null}
+{entry.id === 'empty-state' ? <EmptyState eyebrow="Empty state" title="No pending approvals" description="Reusable quiet state." actions={[{ label: 'Create approval', href: '/displays/empty-state', variant: 'secondary' }]} /> : null}
+{entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
+{entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" /> : null}
+{entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
+{entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
+{entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
+{entry.id === 'panel' ? <Panel title="Panel preview" description="Header, actions, and body."><p>Panel body content sized like an application section.</p></Panel> : null}
+{entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
+{entry.id === 'status-pill' ? <div class="primitive-inline"><StatusPill tone="success">Healthy</StatusPill><StatusPill tone="warning">Delayed</StatusPill><StatusPill tone="danger">Blocked</StatusPill></div> : null}
+{entry.id === 'theme-preview-swatch' ? <ThemePreviewSwatch swatches={['#245b47', '#d8efe2', '#f2b84b', '#273142']} label="Theme preview swatch" /> : null}
+{entry.id === 'bottom-nav' ? <BottomNav items={navItems.slice(0, 3)} currentPath="/displays/bottom-nav" /> : null}
+{entry.id === 'project-header' ? <ProjectHeader title="ProjectHeader" description="Project context header with tabs." badges={['Preview', 'Healthy']} currentPath="/displays/project-header" tabs={[{ label: 'Overview', href: '/displays/project-header' }, { label: 'Agents', href: '/displays/project-header/agents' }]} actions={[{ label: 'Settings', href: '/displays/project-header' }]} /> : null}
+{entry.id === 'public-footer' ? <PublicFooter brandName="TreeSeed UI" summary="Packaged components for TreeSeed applications." groups={[{ label: 'Sandbox', items: [{ label: 'Components', href: '/' }] }, { label: 'Package', items: [{ label: '@treeseed/ui', href: '/' }] }]} /> : null}
+{entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
+{entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
+{entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
+{entry.id === 'content-field-help' ? <div class="primitive-inline"><span>Title</span><ContentFieldHelp label="Title" purpose="A short, scannable name for the record." example="Capacity launch review" /></div> : null}
+{entry.id === 'delete-confirmation-modal' ? <><button class="ts-button" type="button" onclick="window.treeseedDeleteConfirmation?.confirm({ requiredText: 'DELETE', itemName: 'Preview project' })">Open delete modal</button><DeleteConfirmationModal /></> : null}
+{entry.id === 'host-credential-permission-note' ? <HostCredentialPermissionNote hostType="web" /> : null}
+{entry.id === 'launch-requirement-summary' ? <LaunchRequirementSummary templates={templates} defaultTemplateId="template:monitoring-console" /> : null}
+{entry.id === 'plain-table' ? <PlainTable columns={tableColumns} rows={tableRows} interactive pageSize={2} /> : null}
+{entry.id === 'project-control-nav' ? <ProjectControlNav projectId="project-42" current="deploy" /> : null}
+{entry.id === 'related-content-creator' ? <RelatedContentCreator projectId="project-42" parentCollection="objectives" parentSlug="market-launch" parentTitle="Market launch readiness" actions={[{ collection: 'questions', label: 'Question' }, { collection: 'decisions', label: 'Decision' }]} /> : null}
+{entry.id === 'template-host-requirement-picker' ? <TemplateHostRequirementPicker requirement={hostRequirement} selectName="webHost" /> : null}
+{entry.id === 'template-resource-requirement-picker' ? <TemplateResourceRequirementPicker requirement={resourceRequirement} /> : null}
+{entry.id === 'template-secret-requirement-panel' ? <TemplateSecretRequirementPanel requirement={secretRequirement} /> : null}
+{entry.id === 'work-content-nav' ? <WorkContentNav current="objectives" /> : null}
+{entry.id === 'capacity-diagnostics-panel' ? <CapacityDiagnosticsPanel capacity={capacity} diagnostics={diagnostics} /> : null}
+{entry.id === 'deployment-timeline' ? <DeploymentTimeline items={timelineItems} /> : null}
+{entry.id === 'governance-decision-panel' ? <GovernanceDecisionPanel approval={approval} /> : null}
+{entry.id === 'governance-policy-summary' ? <GovernancePolicySummary policies={policies} constraints={constraints} /> : null}
+{entry.id === 'knowledge-artifact-card' ? <KnowledgeArtifactCard artifact={artifact} /> : null}
+{entry.id === 'operational-timeline' ? <OperationalTimeline events={events} phases={phases} /> : null}
+{entry.id === 'repository-context-panel' ? <RepositoryContextPanel repositories={repositories} /> : null}
+{entry.id === 'seed-operations-panel' ? <SeedOperationsPanel seeds={seeds} /> : null}
+{entry.id === 'worker-queue-panel' ? <WorkerQueuePanel workers={workers} /> : null}
+{entry.id === 'sensitive-data-unlock' ? <div><SensitiveDataUnlock part="button" /><SensitiveDataUnlock part="modal" /></div> : null}
+{entry.id === 'auth-card' ? <AuthCard title="Sign in" description="Access your TreeSeed workspace." error="Invalid passphrase." notice="Check your inbox for a sign-in link." appearance={{ scheme: 'fern', mode: 'system' }}><ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" /><AuthDivider label="or continue with email" /></AuthCard> : null}
+{entry.id === 'auth-divider' ? <AuthDivider label="or continue with email" /> : null}
+{entry.id === 'provider-button-list' ? <ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" /> : null}
+{entry.id === 'content-status-legend' ? <ContentStatusLegend /> : null}
+{entry.id === 'status-badge' ? <div class="primitive-inline"><ContentStatusBadge status="live" /><ContentStatusBadge status="in progress" /><ContentStatusBadge status="planned" /></div> : null}
+{entry.id === 'dev-watch-reload' ? <div><p class="ts-subtle">Development reload script is mounted below for local sessions.</p><DevWatchReload /></div> : null}
+{entry.id === 'site-title' ? <SiteTitle siteTitleHref="/" /> : null}
+{entry.id === 'book-font-controls' ? <BookFontControls /> : null}
+{entry.id === 'desktop-sidebar-toggle' ? <div class="primitive-inline"><DesktopSidebarToggle side="left" label="book contents" /><DesktopSidebarToggle side="right" label="page contents" /></div> : null}
+{entry.id === 'download-book' ? <DownloadBook href="/books/operations.md" fileName="operations.md" title="Download operations book" /> : null}
+{entry.id === 'footer' ? <DocsFooter lastUpdated="2026-06-10" editHref="/edit/docs" previous={{ label: 'Overview', href: '/docs/' }} next={{ label: 'Launch', href: '/docs/launch/' }} /> : null}
+{entry.id === 'header' ? <DocsHeader hasSidebar hasToc showSearch contactHref="/contact/" /> : null}
+{entry.id === 'page-frame' ? <PageFrame hasSidebar sidebarLabel="Docs navigation"><DocsHeader slot="header" hasSidebar /><DocsSidebar slot="sidebar" items={sidebarItems} /><PageTitle title="Docs frame" /><p>PageFrame lays out the docs header, sidebar, main content, and footer host.</p></PageFrame> : null}
+{entry.id === 'page-sidebar' ? <PageSidebar label="On this page" items={[{ label: 'Overview', href: '#overview' }, { label: 'Examples', href: '#examples' }]} /> : null}
+{entry.id === 'page-title' ? <PageTitle title="Component documentation page" /> : null}
+{entry.id === 'sidebar' ? <DocsSidebar items={sidebarItems} /> : null}
+{entry.id === 'theme-select' ? <ThemeSelect /> : null}
+{entry.id === 'contact-form' ? <ContactForm status="idle" formsApiBaseUrl="/api/forms" /> : null}
+{entry.id === 'footer-subscribe-form' ? <FooterSubscribeForm currentPath="/displays/footer-subscribe-form" formsApiBaseUrl="/api/forms" /> : null}
+{entry.id === 'product-card' ? <div class="catalog-grid-preview"><ProductCard slug="monitoring-console" title="Monitoring Console" summary="A launch-ready operations console template." category="Workflow Import" featured publisherName="TreeSeed" templateVersion="1.4.0" priceModel="included" badges={['Workers', 'Governance']} /><ProductCard slug="knowledge-pack" title="Knowledge Pack" summary="Reusable public documentation package." category="Knowledge Import" publisherName="TreeSeed" badges={['Docs']} /></div> : null}
+{entry.id === 'book-list' ? <BookList items={bookItems} /> : null}
+{entry.id === 'ctasection' ? <CTASection title="Build a governed launch path" body="Use reusable components to keep market and docs experiences consistent." primaryHref="/displays/ctasection" primaryLabel="Open workflow" secondaryHref="/" secondaryLabel="All components" /> : null}
+{entry.id === 'chronicle-list' ? <ChronicleList items={chronicleItems} /> : null}
+{entry.id === 'hero' ? <Hero><span slot="eyebrow">TreeSeed UI</span><h2 slot="title">Reusable surfaces for launch operations</h2><p slot="body">The hero component presents public site entry points with supporting actions and context.</p><a slot="actions" class="ts-button" href="/displays/hero">Open component</a><Panel slot="aside" title="Launch state"><KeyValueList items={[{ key: 'Status', value: 'Ready' }, { key: 'Updated', value: '2026-06-10' }]} /></Panel></Hero> : null}
+{entry.id === 'notes-list' ? <NotesList notes={notes} /> : null}
+{entry.id === 'path-card' ? <PathCard href="/paths/launch/" title="Launch path" description="A guided path for release, verification, and governance." meta="Workflow" /> : null}
+{entry.id === 'profile-list' ? <ProfileList items={profileItems} /> : null}
+{entry.id === 'published-content-body' ? <PublishedContentBody html="<h2>Release note</h2><p>This body is sanitized upstream and rendered as published content.</p><ul><li>Deployment evidence</li><li>Governance decision</li></ul>" /> : null}
+{entry.id === 'section-intro' ? <SectionIntro eyebrow="Components" title="Operational display surfaces" description="Reusable introductions for public and application sections." /> : null}
+{entry.id === 'stage-banner' ? <StageBanner /> : null}
+{entry.id === 'trust-callout' ? <TrustCallout title="Built for continuity" body="Reusable UI keeps TreeSeed workflows consistent across market, docs, and application surfaces." /> : null}

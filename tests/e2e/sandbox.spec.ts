@@ -17,7 +17,7 @@ test('unified component index groups forms and displays', async ({ page }) => {
   await expect(page.getByRole('link', { name: /RichMarkdownEditor/ })).toHaveAttribute('href', '/forms/rich-markdown-editor');
   await expect(page.getByRole('link', { name: /MonitoringChart/ })).toHaveAttribute('href', '/displays/monitoring-chart');
   await expect(page.getByRole('link', { name: /ProjectActivityChart/ })).toHaveAttribute('href', '/displays/project-activity-chart');
-  await expect(page.getByRole('link', { name: /Button/ })).toHaveAttribute('href', '/forms/button');
+  await expect(page.getByRole('link', { name: /^Button astro form/ })).toHaveAttribute('href', '/forms/button');
   await expect(page.getByRole('link', { name: /DataTable/ })).toHaveAttribute('href', '/displays/data-table');
   await expect(page.getByRole('link', { name: /AppShell/ })).toHaveAttribute('href', '/displays/app-shell');
 });
@@ -28,6 +28,14 @@ test('all registered component pages render preview and metadata', async ({ page
   for (const entry of componentCatalog) {
     await page.goto(entry.route);
     await expect(page.locator('body')).not.toContainText('An error occurred.');
+    await expect(page.locator('body')).not.toContainText('This reusable component is registered in the package and sandbox catalog.');
+    if (entry.kind === 'form') {
+      await expect(page.getByTestId('component-page')).toHaveAttribute('data-component', entry.id);
+      await expect(page.locator('h1').filter({ hasText: entry.name }).first()).toBeVisible();
+      await expect(page.getByLabel('Configuration Options')).toBeVisible();
+      await expect(page.getByLabel('Defaults')).toBeVisible();
+      continue;
+    }
     if (entry.intendedSize === 'full-page') {
       await expect(page.locator('h1').filter({ hasText: entry.name }).first()).toBeVisible();
       continue;
@@ -122,6 +130,25 @@ test('display chart pages poll synthetic realtime endpoints', async ({ page }) =
     expect(state.error).toBeNull();
     return state.pollCount;
   }, { timeout: 8_000 }).toBeGreaterThanOrEqual(3);
+});
+
+test('app control preview pages expose interactive states', async ({ page }) => {
+  await page.goto('/displays/content-field-help');
+  await page.getByLabel('Help for Title').click();
+  await expect(page.locator('[data-content-help][open]')).toBeVisible();
+  await expect(page.locator('[data-content-help-panel]')).toContainText('A short, scannable name');
+
+  await page.goto('/displays/template-host-requirement-picker');
+  await expect(page.locator('[data-requirement-kind="host"]')).toBeVisible();
+  await page.locator('select[name="webHost"]').selectOption('railway-web');
+  await expect(page.locator('select[name="webHost"]')).toHaveValue('railway-web');
+
+  await page.goto('/displays/sensitive-data-unlock');
+  await page.getByRole('button', { name: 'Unlock sensitive data' }).click();
+  await expect(page.getByRole('dialog', { name: 'Unlock encrypted team data' })).toBeVisible();
+  await page.locator('input[name="treeseedSensitivePassphrase"]').fill('preview passphrase');
+  await page.locator('[data-sensitive-mode="unlock"] button[type="submit"]').click();
+  await expect(page.locator('[data-sensitive-unlock-label]')).toContainText('Sensitive data unlocked');
 });
 
 test('theme works on form and display pages without mobile overflow', async ({ page }) => {

@@ -1,0 +1,26 @@
+.market-product-card {
+	height: 100%;
+}
+
+.market-product-card {
+	height: 100%;
+}
+
+.market-product-card__badges,
+
+.market-product-card__badges,
+.market-product-card__footer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+}
+
+.market-product-card__meta {
+	margin: 0;
+	color: var(--ts-color-text-subtle);
+	font-size: 0.9rem;
+}
+
+.market-product-card__footer {
+	margin-top: 0.85rem;
+}

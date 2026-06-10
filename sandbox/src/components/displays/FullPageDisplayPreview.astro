@@ -1,0 +1,168 @@
+---
+import Badge from '../../../../src/astro/data/Badge.astro';
+import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
+import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
+import AppShell from '../../../../src/astro/shell/AppShell.astro';
+import PublicShell from '../../../../src/astro/shell/PublicShell.astro';
+import Panel from '../../../../src/astro/surface/Panel.astro';
+import AuthShell from '../../../../src/astro/auth/AuthShell.astro';
+import AuthCard from '../../../../src/astro/auth/AuthCard.astro';
+import AuthDivider from '../../../../src/astro/auth/AuthDivider.astro';
+import ProviderButtonList from '../../../../src/astro/auth/ProviderButtonList.astro';
+import AppLayout from '../../../../src/astro/layouts/AppLayout.astro';
+import PublicLayout from '../../../../src/astro/layouts/PublicLayout.astro';
+import AuthoredEntryLayout from '../../../../src/astro/layouts/AuthoredEntryLayout.astro';
+import BookLayout from '../../../../src/astro/layouts/BookLayout.astro';
+import BridgeLayout from '../../../../src/astro/layouts/BridgeLayout.astro';
+import ContentLayout from '../../../../src/astro/layouts/ContentLayout.astro';
+import MainLayout from '../../../../src/astro/layouts/MainLayout.astro';
+import NoteLayout from '../../../../src/astro/layouts/NoteLayout.astro';
+import ProfileLayout from '../../../../src/astro/layouts/ProfileLayout.astro';
+import RouteNotFound from '../../../../src/astro/site/RouteNotFound.astro';
+import { defineTreeseedTheme } from '../../../../src/theme/index.ts';
+import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
+
+const { entry } = Astro.props as { entry: ComponentCatalogEntry };
+const appearance = { scheme: 'fern', mode: 'system' } as const;
+const navItems = [
+  { label: 'Overview', href: '/displays/app-shell' },
+  { label: 'Projects', href: '/displays/app-shell/projects' },
+  { label: 'Knowledge', href: '/displays/app-shell/knowledge' },
+  { label: 'Settings', href: '/displays/app-shell/settings' },
+];
+const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+const themeConfig = defineTreeseedTheme({
+  schemeDirectories: ['treeseed.color-schemes'],
+  defaultScheme: 'fern',
+  defaultMode: 'system',
+  cwd: process.cwd(),
+});
+const teams = [
+  { id: 'team-1', name: 'Continuity Studio', slug: 'continuity-studio', displayName: 'Continuity Studio' },
+  { id: 'team-2', name: 'Market Ops', slug: 'market-ops', displayName: 'Market Ops' },
+];
+const entryData = {
+  title: entry.name,
+  description: entry.description,
+  summary: 'A realistic full-page preview using representative TreeSeed content and navigation.',
+  status: 'live' as const,
+  date: new Date('2026-06-10'),
+  updated: new Date('2026-06-10'),
+  motivation: 'Consistent shared layouts keep public, docs, and application experiences aligned.',
+  tags: ['components', 'preview'],
+  canonicalRoute: entry.route,
+};
+const bookEntry = {
+  ...entryData,
+  sectionLabel: 'Book',
+  landingPath: '/books/operations/',
+  downloadHref: '/books/operations.md',
+  basePath: '/books/operations/',
+  downloadFileName: 'operations.md',
+};
+const note = {
+  title: 'NoteLayout',
+  description: 'A reusable note layout preview.',
+  summary: 'Captures launch evidence, reviewers, and next steps.',
+  status: 'live' as const,
+  date: new Date('2026-06-10'),
+  author: 'market-steward',
+  tags: ['launch', 'governance'],
+};
+const profile = {
+  name: 'ProfileLayout',
+  description: 'Profile layout preview.',
+  summary: 'Owns market launch readiness, evidence, and public release coordination.',
+  status: 'live' as const,
+  tags: ['operations', 'governance'],
+  links: [{ label: 'Runbook', href: '/docs/runbook/' }],
+};
+const relatedEntry = { id: 'launch-question', data: { title: 'What blocks public launch?', name: 'Launch question' } };
+---
+
+{entry.id === 'app-shell' ? (
+  <AppShell title="AppShell" description={entry.description} currentPath="/displays/app-shell" appearance={appearance} brand={brand} navItems={navItems} quickActions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig}>
+    <Fragment slot="railContext"><Badge tone="info">Full-page display</Badge></Fragment>
+    <Panel title="AppShell preview" description="This page is rendered by the full AppShell component.">
+      <p>AppShell owns the document, rail, top bar, header, main area, quick actions, and bottom navigation.</p>
+    </Panel>
+  </AppShell>
+) : null}
+
+{entry.id === 'public-shell' ? (
+  <PublicShell title="PublicShell" description={entry.description} currentPath="/displays/public-shell" appearance={appearance} brand={brand} navItems={[{ label: 'Components', href: '/' }, { label: 'PublicShell', href: '/displays/public-shell' }]} actions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig}>
+    <PageHeader title="PublicShell" description="This page is rendered by the full PublicShell component." />
+    <Panel title="Public shell preview"><p>PublicShell owns the document frame, public navigation, appearance controls, content area, and footer.</p></Panel>
+  </PublicShell>
+) : null}
+
+{entry.id === 'auth-shell' ? (
+  <AuthShell title="AuthShell" description={entry.description} appearance={appearance}>
+    <AuthCard title="AuthShell" description="Full-page account access shell." notice="Preview state uses a static account notice." appearance={appearance}>
+      <ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" />
+      <AuthDivider />
+    </AuthCard>
+  </AuthShell>
+) : null}
+
+{entry.id === 'app-layout' ? (
+  <AppLayout title="AppLayout" description={entry.description} currentPath="/displays/app-layout" teams={teams} activeTeam={teams[0]} showSensitiveUnlock appearance={appearance}>
+    <PageHeader title="AppLayout" description="Application layout with team switcher, app nav, modals, and unlock controls." />
+    <Panel title="Active project"><KeyValueList items={[{ key: 'Team', value: 'Continuity Studio' }, { key: 'Route', value: '/app/projects' }]} /></Panel>
+  </AppLayout>
+) : null}
+
+{entry.id === 'public-layout' ? (
+  <PublicLayout title="PublicLayout" description={entry.description} currentPath="/displays/public-layout" appearance={appearance} actions={[{ label: 'Sign in', href: '/auth/sign-in', variant: 'secondary' }]}>
+    <PageHeader title="PublicLayout" description="Market-facing public layout with reusable public navigation." />
+    <Panel title="Public page content"><p>PublicLayout wraps marketing, market, and docs-adjacent public pages.</p></Panel>
+  </PublicLayout>
+) : null}
+
+{entry.id === 'main-layout' ? (
+  <MainLayout title="MainLayout" description={entry.description} currentPath="/displays/main-layout">
+    <PageHeader title="MainLayout" description="Core site document layout." />
+    <Panel title="Site content"><p>MainLayout supplies the public shell and core site theme context.</p></Panel>
+  </MainLayout>
+) : null}
+
+{entry.id === 'authored-entry-layout' ? (
+  <AuthoredEntryLayout entry={entryData} currentPath="/displays/authored-entry-layout" contributor={{ data: { name: 'Market Steward' } }} contentTypeLabel="Decision" contentId="decision-42" collectionLabel="Decisions" metaLabel="Type" metaValue="Approval" relatedQuestions={[relatedEntry]}>
+    <p>This authored entry preview renders metadata, tags, contributor context, and related records.</p>
+  </AuthoredEntryLayout>
+) : null}
+
+{entry.id === 'book-layout' ? (
+  <BookLayout entry={bookEntry} currentPath="/displays/book-layout">
+    <p>BookLayout renders long-form knowledge pages with download and landing links.</p>
+  </BookLayout>
+) : null}
+
+{entry.id === 'bridge-layout' ? (
+  <BridgeLayout entry={entryData} currentPath="/displays/bridge-layout">
+    <PageHeader title="BridgeLayout" description="Bridge layout wraps simple routed content in the public site frame." />
+    <Panel title="Bridge content"><p>BridgeLayout gives simple routed content a full site frame.</p></Panel>
+  </BridgeLayout>
+) : null}
+
+{entry.id === 'content-layout' ? (
+  <ContentLayout entry={entryData} currentPath="/displays/content-layout">
+    <p>ContentLayout renders status, update time, summary, and article body.</p>
+  </ContentLayout>
+) : null}
+
+{entry.id === 'note-layout' ? (
+  <NoteLayout note={note}>
+    <p>NoteLayout is tuned for chronological notes with author and tag metadata.</p>
+  </NoteLayout>
+) : null}
+
+{entry.id === 'profile-layout' ? (
+  <ProfileLayout entry={profile} currentPath="/displays/profile-layout" metaLabel="Role" metaValue="Operations" relatedQuestions={[relatedEntry]} relatedObjectives={[relatedEntry]}>
+    <p>ProfileLayout renders profile summaries, links, and related content.</p>
+  </ProfileLayout>
+) : null}
+
+{entry.id === 'route-not-found' ? (
+  <RouteNotFound title="RouteNotFound" description="The requested TreeSeed preview route could not be found." currentPath="/displays/route-not-found" />
+) : null}

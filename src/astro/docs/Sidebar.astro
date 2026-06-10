@@ -1,0 +1,60 @@
+---
+import { TREESEED_LINKS, getBookForPath } from '../../utils/starlight-nav';
+
+interface SidebarItem {
+	label: string;
+	href: string;
+	items?: SidebarItem[];
+}
+
+interface Props {
+	items?: SidebarItem[];
+}
+
+const { items = [] } = Astro.props as Props;
+const activeBook = getBookForPath(Astro.url.pathname);
+---
+
+<div class="docs-sidebar">
+	{
+		activeBook && (
+			<div class="docs-sidebar-actions">
+				<a href={TREESEED_LINKS.home} class="download-button docs-sidebar-books-button">
+					All Books
+				</a>
+			</div>
+		)
+	}
+	<ul class="docs-sidebar-list">
+		{items.map((item) => (
+			<li>
+				<a href={item.href} aria-current={Astro.url.pathname === item.href ? 'page' : undefined}>{item.label}</a>
+				{item.items?.length ? (
+					<ul>
+						{item.items.map((child) => <li><a href={child.href}>{child.label}</a></li>)}
+					</ul>
+				) : null}
+			</li>
+		))}
+	</ul>
+	<slot />
+</div>
+
+<div class="md:sl-hidden">
+	<slot name="mobileFooter" />
+</div>
+
+<style>
+	@layer starlight.components {
+		.docs-sidebar-actions {
+			margin: 0 0 1.75rem;
+			padding: 0 0.5rem;
+		}
+
+		.docs-sidebar-books-button {
+			display: inline-flex;
+			width: 100%;
+			justify-content: center;
+		}
+	}
+</style>
