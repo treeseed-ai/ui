@@ -55,7 +55,7 @@ test.describe('market visual parity previews', () => {
       await expect(page.locator('body')).not.toContainText('An error occurred.');
       await expectNoOverflow(page);
       await expect(page).toHaveScreenshot(`${route.replaceAll('/', '-').slice(1)}-mobile.png`, {
-        fullPage: true,
+        fullPage: false,
         animations: 'disabled',
         maxDiffPixelRatio: 0.05,
       });
