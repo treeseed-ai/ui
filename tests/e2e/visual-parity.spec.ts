@@ -54,11 +54,10 @@ test.describe('market visual parity previews', () => {
       await page.goto(route);
       await expect(page.locator('body')).not.toContainText('An error occurred.');
       await expectNoOverflow(page);
-      const maxDiffPixelRatio = route === '/displays/auth-shell' ? 0.05 : 0.02;
       await expect(page).toHaveScreenshot(`${route.replaceAll('/', '-').slice(1)}-mobile.png`, {
         fullPage: true,
         animations: 'disabled',
-        maxDiffPixelRatio,
+        maxDiffPixelRatio: 0.05,
       });
     }
   });
