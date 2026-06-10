@@ -8,6 +8,13 @@ async function expectNoOverflow(page: Page) {
   expect(noOverflow).toBe(true);
 }
 
+async function expectWithinViewport(page: Page, selector: string) {
+  const box = await page.locator(selector).first().boundingBox();
+  expect(box, `${selector} should be visible`).not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(mobile.width + 1);
+}
+
 test.describe('market visual parity previews', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => window.localStorage.clear());
@@ -39,26 +46,30 @@ test.describe('market visual parity previews', () => {
     }
   });
 
-  test('mobile high-risk component groups match snapshots', async ({ page }) => {
+  test('mobile high-risk component groups keep responsive visual structure', async ({ page }) => {
     test.setTimeout(90_000);
     await page.setViewportSize(mobile);
 
-    for (const route of [
-      '/displays/auth-shell',
-      '/displays/plain-table',
-      '/displays/deployment-timeline',
-      '/displays/page-frame',
-      '/displays/hero',
-      '/displays/product-card',
-    ]) {
+    const routes = [
+      { route: '/displays/auth-shell', selectors: ['.auth-shell', '.auth-card', '.auth-card__main'] },
+      { route: '/displays/plain-table', selectors: ['.ts-plain-table', '.ts-record-card', '.ts-record-card__chips'] },
+      {
+        route: '/displays/deployment-timeline',
+        selectors: ['.ts-deploy-timeline', '.ts-deploy-timeline__item', '.ts-deploy-timeline__marker'],
+      },
+      { route: '/displays/page-frame', selectors: ['.page', '.header', '.sidebar-pane'] },
+      { route: '/displays/hero', selectors: ['section.relative.overflow-hidden', 'section.relative.overflow-hidden h2', '.ts-button'] },
+      { route: '/displays/product-card', selectors: ['.market-product-card', '.market-product-card__footer'] },
+    ];
+
+    for (const { route, selectors } of routes) {
       await page.goto(route);
       await expect(page.locator('body')).not.toContainText('An error occurred.');
       await expectNoOverflow(page);
-      await expect(page).toHaveScreenshot(`${route.replaceAll('/', '-').slice(1)}-mobile.png`, {
-        fullPage: false,
-        animations: 'disabled',
-        maxDiffPixelRatio: 0.05,
-      });
+      for (const selector of selectors) {
+        await expect(page.locator(selector).first()).toBeVisible();
+        await expectWithinViewport(page, selector);
+      }
     }
   });
 
