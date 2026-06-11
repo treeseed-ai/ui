@@ -14,8 +14,8 @@ import ThemeSelector from '../../../../src/astro/theme/ThemeSelector.astro';
 import DynamicPieAllocationHarness from '../../components/forms/DynamicPieAllocationHarness.tsx';
 import ReactFormControlHarness from '../../components/forms/ReactFormControlHarness.tsx';
 import RichMarkdownEditorHarness from '../../components/forms/RichMarkdownEditorHarness.tsx';
-import { defineTreeseedTheme } from '../../../../src/theme/index.ts';
 import { findComponent, formComponents, type ComponentCatalogEntry } from '../../lib/component-catalog.ts';
+import { sandboxThemeConfig } from '../../lib/theme.ts';
 
 export const prerender = true;
 
@@ -28,12 +28,7 @@ export function getStaticPaths() {
 
 const props = Astro.props as { entry?: ComponentCatalogEntry };
 const entry = props.entry ?? findComponent('form', Astro.params.component) ?? formComponents[0];
-const themeConfig = defineTreeseedTheme({
-  schemeDirectories: ['treeseed.color-schemes'],
-  defaultScheme: 'fern',
-  defaultMode: 'system',
-  cwd: process.cwd(),
-});
+const themeConfig = sandboxThemeConfig;
 const configJson = JSON.stringify({
   packageEntry: entry.packageEntry,
   defaultProps: entry.defaultProps,

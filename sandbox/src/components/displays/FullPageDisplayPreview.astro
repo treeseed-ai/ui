@@ -19,8 +19,8 @@ import MainLayout from '../../../../src/astro/layouts/MainLayout.astro';
 import NoteLayout from '../../../../src/astro/layouts/NoteLayout.astro';
 import ProfileLayout from '../../../../src/astro/layouts/ProfileLayout.astro';
 import RouteNotFound from '../../../../src/astro/site/RouteNotFound.astro';
-import { defineTreeseedTheme } from '../../../../src/theme/index.ts';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
+import { sandboxThemeConfig } from '../../lib/theme.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
 const appearance = { scheme: 'fern', mode: 'system' } as const;
@@ -31,12 +31,7 @@ const navItems = [
   { label: 'Settings', href: '/displays/app-shell/settings' },
 ];
 const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
-const themeConfig = defineTreeseedTheme({
-  schemeDirectories: ['treeseed.color-schemes'],
-  defaultScheme: 'fern',
-  defaultMode: 'system',
-  cwd: process.cwd(),
-});
+const themeConfig = sandboxThemeConfig;
 const teams = [
   { id: 'team-1', name: 'Continuity Studio', slug: 'continuity-studio', displayName: 'Continuity Studio' },
   { id: 'team-2', name: 'Market Ops', slug: 'market-ops', displayName: 'Market Ops' },
