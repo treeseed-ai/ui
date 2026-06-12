@@ -55,6 +55,13 @@ describe('package exports', () => {
     expect(Ui.initializeRelatedContentCreators).toBeDefined();
   });
 
+  it('resolves the public theme subpath through package exports', async () => {
+    const theme = await import('@treeseed/ui/theme');
+
+    expect(theme.normalizeThemePreference).toBeDefined();
+    expect(theme.defineTreeseedTheme).toBeDefined();
+  });
+
   it('catalogs every standalone public component page', () => {
     const catalogNames = new Set(componentCatalog.map((entry) => entry.name));
     const nonStandaloneComponents = new Set(['ThemeScript']);
