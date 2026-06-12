@@ -3,7 +3,11 @@ import { dirname, resolve } from 'node:path';
 
 const copies = [
   ['src/astro', 'dist/astro', false],
+  ['src/lib', 'dist/lib', false],
   ['src/styles', 'dist/styles', true],
+  ['src/utils', 'dist/utils', true],
+  ['src/types', 'dist/types', true],
+  ['src/theme', 'dist/theme', false],
   ['src/theme/schemes', 'dist/theme/schemes', true],
 ];
 

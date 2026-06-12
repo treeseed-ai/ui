@@ -1,15 +1,19 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const testPort = process.env.TREESEED_UI_TEST_PORT ?? '4322';
+const baseURL = `http://127.0.0.1:${testPort}`;
+
 export default defineConfig({
   testDir: 'tests/e2e',
   workers: 1,
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1',
-    url: 'http://127.0.0.1:4321',
+    command: `npm run sandbox:build && npm run sandbox:serve -- --host 127.0.0.1 --port ${testPort}`,
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
   },
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    baseURL,
     trace: 'on-first-retry',
   },
   projects: [

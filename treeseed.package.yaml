@@ -1,0 +1,14 @@
+id: "@treeseed/ui"
+name: TreeSeed UI
+kind: node-typescript
+repository: treeseed-ai/ui
+publishTarget: npm
+verify:
+  fast: npm run verify
+  local: npm run verify:direct
+  release: npm run release:verify
+artifacts:
+  - provider: npm
+    name: "@treeseed/ui"
+releaseGate:
+  workflow: deploy.yml
