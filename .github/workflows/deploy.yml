@@ -1,63 +1,17 @@
-name: Deploy UI Sandbox
+name: Verify TreeSeed UI
 
 on:
   push:
-    branches:
-      - staging
-      - main
+  pull_request:
   workflow_dispatch:
 
 jobs:
-  deploy:
-    if: github.event.repository.fork == false
+  verify:
     runs-on: ubuntu-latest
-    env:
-      CI: "true"
-      TREESEED_CLI_REF: staging
-    permissions:
-      contents: read
-    environment:
-      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: |
-          install_with_retry() {
-            for attempt in 1 2 3; do
-              if "$@"; then
-                return 0
-              fi
-              echo "dependency install failed; retrying (${attempt}/3)."
-              sleep $((attempt * 5))
-            done
-            "$@"
-          }
-          install_with_retry npm run release:setup
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Verify package
-        run: npm run verify:direct
-
-      - name: Install Treeseed CLI
-        run: npm install --no-save "github:treeseed-ai/cli#${TREESEED_CLI_REF}"
-
-      - name: Check Treeseed CLI
-        run: npx trsd help hosting >/dev/null
-
-      - name: Deploy sandbox
-        env:
-          TREESEED_WORKFLOW_ENVIRONMENT: ${{ github.ref_name == 'main' && 'prod' || 'staging' }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx trsd hosting apply --environment "${TREESEED_WORKFLOW_ENVIRONMENT}" --app ui --execute --json
+      - run: npm ci || (echo "dependency install failed; retrying" && npm ci)
+      - run: bash -lc npm run verify:direct
