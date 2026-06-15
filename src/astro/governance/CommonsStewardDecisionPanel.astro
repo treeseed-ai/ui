@@ -1,0 +1,26 @@
+---
+interface Props {
+	proposalId: string;
+	action?: string;
+}
+
+const { proposalId, action = `/v1/commons/proposals/${proposalId}/steward-decision` } = Astro.props as Props;
+---
+
+<form class="ts-governance-panel" method="POST" action={action}>
+	<p class="ts-governance-eyebrow">Steward decision</p>
+	<h2>Bounded authority</h2>
+	<label>
+		<span>Status</span>
+		<select name="status">
+			<option value="accepted">Accepted</option>
+			<option value="rejected">Rejected</option>
+			<option value="deferred">Deferred</option>
+		</select>
+	</label>
+	<label>
+		<span>Reason</span>
+		<textarea name="reason" rows="4"></textarea>
+	</label>
+	<button class="ts-governance-button" type="submit">Record decision</button>
+</form>

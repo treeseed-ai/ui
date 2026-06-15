@@ -1,0 +1,27 @@
+---
+interface Props {
+	participant?: {
+		baseWeight?: number;
+		trustWeight?: number;
+		contributionWeight?: number;
+		stakeholderWeight?: number;
+		delegatedWeight?: number;
+		totalWeight?: number;
+	};
+}
+
+const { participant = {} } = Astro.props as Props;
+---
+
+<section class="ts-governance-panel">
+	<p class="ts-governance-eyebrow">Governance weight</p>
+	<h2>Transparent modular weight</h2>
+	<dl class="ts-governance-kv">
+		<div><dt>Base</dt><dd>{participant.baseWeight ?? 1}</dd></div>
+		<div><dt>Trust</dt><dd>{participant.trustWeight ?? 0}</dd></div>
+		<div><dt>Contribution</dt><dd>{participant.contributionWeight ?? 0}</dd></div>
+		<div><dt>Stakeholder</dt><dd>{participant.stakeholderWeight ?? 0}</dd></div>
+		<div><dt>Delegated</dt><dd>{participant.delegatedWeight ?? 0}</dd></div>
+		<div><dt>Total</dt><dd>{participant.totalWeight ?? 1}</dd></div>
+	</dl>
+</section>
