@@ -21,6 +21,7 @@ describe('package exports', () => {
     expect(packageJson.exports['./styles/app-controls.css']).toBeDefined();
     expect(packageJson.exports['./styles/operations.css']).toBeDefined();
     expect(packageJson.exports['./styles/market.css']).toBeDefined();
+    expect(packageJson.exports['./styles/commerce.css']).toBeDefined();
     expect(packageJson.exports['./styles/site.css']).toBeDefined();
     expect(packageJson.exports['./theme/schemes/*.yaml']).toBeDefined();
     expect(packageJson.exports['./lib/app/deployment-action-status']).toBeDefined();
