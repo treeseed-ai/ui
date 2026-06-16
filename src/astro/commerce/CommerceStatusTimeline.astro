@@ -1,0 +1,35 @@
+---
+interface EventItem {
+	label?: string;
+	action?: string;
+	status?: string;
+	createdAt?: string;
+	message?: string | null;
+}
+
+interface Props {
+	title?: string;
+	events?: EventItem[];
+	emptyText?: string;
+}
+
+const { title = 'Status timeline', events = [], emptyText = 'No timeline events yet.' } = Astro.props as Props;
+---
+
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Timeline</p>
+	<h2>{title}</h2>
+	{events.length ? (
+		<ul class="ts-commerce-timeline">
+			{events.map((event) => (
+				<li>
+					<span>
+						<strong>{event.label ?? event.action ?? event.status ?? 'Event'}</strong>
+						{event.message ? ` · ${event.message}` : ''}
+						{event.createdAt ? <small class="ts-commerce-muted"> · {event.createdAt}</small> : null}
+					</span>
+				</li>
+			))}
+		</ul>
+	) : <p class="ts-commerce-muted">{emptyText}</p>}
+</section>

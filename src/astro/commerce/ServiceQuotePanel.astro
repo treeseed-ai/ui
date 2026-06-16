@@ -1,0 +1,28 @@
+---
+interface Quote {
+	title?: string;
+	status?: string;
+	amount?: number;
+	currency?: string;
+	scopeSummary?: string;
+	quoteVersion?: number;
+}
+interface Props {
+	quote?: Quote | null;
+}
+const { quote = null } = Astro.props as Props;
+const amount = quote?.amount != null && quote.currency
+	? new Intl.NumberFormat('en-US', { style: 'currency', currency: quote.currency.toUpperCase() }).format(quote.amount / 100)
+	: 'Not priced';
+---
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Scoped service quote</p>
+	<h2>{quote?.title ?? 'No active quote'}</h2>
+	<p class="ts-commerce-muted">{quote?.scopeSummary ?? 'The seller will scope this work before checkout is available.'}</p>
+	<dl class="ts-commerce-kv">
+		<div><dt>Status</dt><dd>{quote?.status ?? 'pending'}</dd></div>
+		<div><dt>Version</dt><dd>{quote?.quoteVersion ?? 'n/a'}</dd></div>
+		<div><dt>Amount</dt><dd>{amount}</dd></div>
+	</dl>
+	<slot />
+</section>

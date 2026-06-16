@@ -1,0 +1,19 @@
+---
+interface Props {
+	delegations?: Array<{ id: string; status?: string; scope?: string; toParticipantId?: string; fromParticipantId?: string }>;
+}
+
+const { delegations = [] } = Astro.props as Props;
+---
+
+<section class="ts-governance-panel">
+	<p class="ts-governance-eyebrow">Delegation</p>
+	<h2>Scoped voting delegation</h2>
+	{delegations.length ? (
+		<ul class="ts-governance-timeline">
+			{delegations.map((delegation) => (
+				<li><strong>{delegation.scope ?? 'treeseed_commons'}</strong> · {delegation.status ?? 'active'} · {delegation.fromParticipantId} → {delegation.toParticipantId}</li>
+			))}
+		</ul>
+	) : <p class="ts-governance-muted">No active delegation records.</p>}
+</section>

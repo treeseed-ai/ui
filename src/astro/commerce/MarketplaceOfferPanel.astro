@@ -1,0 +1,61 @@
+---
+interface Offer {
+	id: string;
+	mode: string;
+	title: string;
+	unitAmount?: number | null;
+	currency?: string | null;
+	billingInterval?: string | null;
+	checkoutEligible?: boolean;
+	serviceEligible?: boolean;
+	capacityInquiryEligible?: boolean;
+	stripeSyncStatus?: string | null;
+}
+
+interface Props {
+	offers?: Offer[];
+	productId?: string;
+	capacityListingId?: string | null;
+}
+
+const { offers = [], productId = '', capacityListingId = null } = Astro.props as Props;
+
+function offerAmount(offer: Offer) {
+	if (offer.unitAmount != null && offer.currency) {
+		const amount = new Intl.NumberFormat('en-US', { style: 'currency', currency: offer.currency.toUpperCase() }).format(offer.unitAmount / 100);
+		return offer.billingInterval && offer.billingInterval !== 'one_time' ? `${amount} / ${offer.billingInterval}` : amount;
+	}
+	return offer.mode === 'free' ? 'Free' : 'Scoped by seller';
+}
+---
+
+<section class="ts-commerce-panel">
+	<div class="ts-commerce-panel-header">
+		<div>
+			<p class="ts-commerce-eyebrow">Offers</p>
+			<h2>Choose the clearest next step</h2>
+		</div>
+	</div>
+	{offers.length ? (
+		<div class="ts-commerce-grid">
+			{offers.map((offer) => (
+				<article class="ts-commerce-card">
+					<div>
+						<p class="ts-commerce-eyebrow">{offer.mode.replaceAll('_', ' ')}</p>
+						<h3>{offer.title}</h3>
+					</div>
+					<dl class="ts-commerce-kv">
+						<div><dt>Amount</dt><dd>{offerAmount(offer)}</dd></div>
+						<div><dt>Stripe mirror</dt><dd>{offer.stripeSyncStatus ?? 'not required'}</dd></div>
+					</dl>
+					<div class="ts-commerce-actions">
+						{offer.checkoutEligible ? <button class="ts-commerce-button" type="button" data-checkout-offer-id={offer.id}>Start checkout</button> : null}
+						{offer.serviceEligible ? <a class="ts-commerce-button" href={`/services/new?offerId=${encodeURIComponent(offer.id)}`}>Request scope</a> : null}
+						{offer.capacityInquiryEligible && capacityListingId ? <a class="ts-commerce-button" href={`/capacity/${encodeURIComponent(capacityListingId)}`}>Request capacity review</a> : null}
+						{!offer.checkoutEligible && !offer.serviceEligible && !offer.capacityInquiryEligible ? <a class="ts-commerce-button" data-variant="secondary" href={`/market/products/${encodeURIComponent(productId)}`}>Review terms</a> : null}
+					</div>
+				</article>
+			))}
+		</div>
+	) : <p class="ts-commerce-muted">No buyer-visible offers are available yet.</p>}
+</section>

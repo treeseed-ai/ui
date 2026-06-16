@@ -1,0 +1,21 @@
+---
+interface Props {
+	support?: number;
+	object?: number;
+	abstain?: number;
+	backers?: number;
+}
+
+const { support = 0, object = 0, abstain = 0, backers = 0 } = Astro.props as Props;
+---
+
+<section class="ts-governance-panel">
+	<p class="ts-governance-eyebrow">Vote signal</p>
+	<h2>Weighted advisory tally</h2>
+	<dl class="ts-governance-kv">
+		<div><dt>Backers</dt><dd>{backers}</dd></div>
+		<div><dt>Support</dt><dd>{support}</dd></div>
+		<div><dt>Object</dt><dd>{object}</dd></div>
+		<div><dt>Abstain</dt><dd>{abstain}</dd></div>
+	</dl>
+</section>

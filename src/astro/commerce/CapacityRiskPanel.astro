@@ -1,0 +1,23 @@
+---
+interface Props {
+	runtimeIsolationLevel?: string | null;
+	humanInvolvementLevel?: string | null;
+	aiInvolvementLevel?: string | null;
+	dataAccessLevel?: string | null;
+	secretAccessLevel?: string | null;
+	buyerVisibleRiskSummary?: string | null;
+	supportPolicy?: string | null;
+}
+const props = Astro.props as Props;
+---
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Capacity transparency</p>
+	<h2>Risk and access posture</h2>
+	<p class="ts-commerce-muted">{props.buyerVisibleRiskSummary ?? 'The seller has published buyer-visible capacity readiness information.'}</p>
+	<dl class="ts-commerce-kv">
+		<div><dt>Runtime</dt><dd>{props.runtimeIsolationLevel ?? 'not set'}</dd></div>
+		<div><dt>AI / human</dt><dd>{props.aiInvolvementLevel ?? 'none'} / {props.humanInvolvementLevel ?? 'none'}</dd></div>
+		<div><dt>Data / secrets</dt><dd>{props.dataAccessLevel ?? 'none'} / {props.secretAccessLevel ?? 'none'}</dd></div>
+		<div><dt>Support</dt><dd>{props.supportPolicy ?? 'seller-defined'}</dd></div>
+	</dl>
+</section>

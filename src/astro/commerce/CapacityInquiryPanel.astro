@@ -1,0 +1,20 @@
+---
+interface Props {
+	listingId?: string;
+}
+const { listingId = '' } = Astro.props as Props;
+---
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Buyer inquiry</p>
+	<h2>Request seller review</h2>
+	<form class="ts-commerce-form" id="inquiry-form" data-listing-id={listingId}>
+		<label class="ts-commerce-field"><span>Service type</span><input name="requestedServiceType" autocomplete="off" /></label>
+		<label class="ts-commerce-field"><span>Requested scope</span><textarea name="requestedScope" required></textarea></label>
+		<label class="ts-commerce-field"><span>Data access request</span><textarea name="dataAccessRequested"></textarea></label>
+		<label class="ts-commerce-field"><span>Secret access request</span><textarea name="secretAccessRequested"></textarea></label>
+		<label class="ts-commerce-field"><span>Related project ID</span><input name="relatedProjectId" autocomplete="off" /></label>
+		<label class="ts-commerce-field"><span>Related workday ID</span><input name="relatedWorkdayId" autocomplete="off" /></label>
+		<button class="ts-commerce-button" type="submit">Submit inquiry</button>
+		<p class="ts-commerce-muted" id="inquiry-status" aria-live="polite"></p>
+	</form>
+</section>

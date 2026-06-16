@@ -1,0 +1,26 @@
+---
+interface Props {
+	ownershipModel?: string | null;
+	summary?: string | null;
+	stewards?: Array<Record<string, unknown>>;
+}
+
+const { ownershipModel = null, summary = null, stewards = [] } = Astro.props as Props;
+---
+
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Cooperative ownership</p>
+	<h2>Who owns and stewards this</h2>
+	<p class="ts-commerce-muted">{summary ?? 'Ownership and stewardship are recorded by TreeSeed governance records and snapshotted at purchase time.'}</p>
+	<dl class="ts-commerce-kv">
+		<div><dt>Model</dt><dd>{ownershipModel?.replaceAll('_', ' ') ?? 'documented'}</dd></div>
+		<div><dt>Visible stewards</dt><dd>{stewards.length}</dd></div>
+	</dl>
+	{stewards.length ? (
+		<ul class="ts-commerce-timeline">
+			{stewards.map((steward) => (
+				<li><span>{String(steward.displayName ?? steward.role ?? 'Steward')} · {String(steward.role ?? 'governance')}</span></li>
+			))}
+		</ul>
+	) : null}
+</section>

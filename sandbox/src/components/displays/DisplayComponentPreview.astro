@@ -57,6 +57,14 @@ import DocsSidebar from '../../../../src/astro/docs/Sidebar.astro';
 import ThemeSelect from '../../../../src/astro/docs/ThemeSelect.astro';
 import ContactForm from '../../../../src/astro/forms/ContactForm.astro';
 import FooterSubscribeForm from '../../../../src/astro/forms/FooterSubscribeForm.astro';
+import CommonsDecisionTimeline from '../../../../src/astro/governance/CommonsDecisionTimeline.astro';
+import CommonsDelegationPanel from '../../../../src/astro/governance/CommonsDelegationPanel.astro';
+import CommonsParticipantBadge from '../../../../src/astro/governance/CommonsParticipantBadge.astro';
+import CommonsProposalCard from '../../../../src/astro/governance/CommonsProposalCard.astro';
+import CommonsProposalPipeline from '../../../../src/astro/governance/CommonsProposalPipeline.astro';
+import CommonsStewardDecisionPanel from '../../../../src/astro/governance/CommonsStewardDecisionPanel.astro';
+import CommonsVoteSummary from '../../../../src/astro/governance/CommonsVoteSummary.astro';
+import CommonsWeightBreakdown from '../../../../src/astro/governance/CommonsWeightBreakdown.astro';
 import ProductCard from '../../../../src/astro/market/ProductCard.astro';
 import BookList from '../../../../src/astro/site/BookList.astro';
 import CTASection from '../../../../src/astro/site/CTASection.astro';
@@ -272,6 +280,14 @@ const sidebarItems = [
 {entry.id === 'contact-form' ? <ContactForm status="idle" formsApiBaseUrl="/api/forms" /> : null}
 {entry.id === 'footer-subscribe-form' ? <FooterSubscribeForm currentPath="/displays/footer-subscribe-form" formsApiBaseUrl="/api/forms" /> : null}
 {entry.id === 'product-card' ? <div class="catalog-grid-preview"><ProductCard slug="monitoring-console" title="Monitoring Console" summary="A launch-ready operations console template." category="Workflow Import" featured publisherName="TreeSeed" templateVersion="1.4.0" priceModel="included" badges={['Workers', 'Governance']} /><ProductCard slug="knowledge-pack" title="Knowledge Pack" summary="Reusable public documentation package." category="Knowledge Import" publisherName="TreeSeed" badges={['Docs']} /></div> : null}
+{entry.id === 'commons-proposal-card' ? <CommonsProposalCard proposal={entry.defaultProps.proposal as any} href={entry.defaultProps.href as string} /> : null}
+{entry.id === 'commons-proposal-pipeline' ? <CommonsProposalPipeline status={entry.defaultProps.status as string} /> : null}
+{entry.id === 'commons-vote-summary' ? <CommonsVoteSummary support={entry.defaultProps.support as number} object={entry.defaultProps.object as number} abstain={entry.defaultProps.abstain as number} backers={entry.defaultProps.backers as number} /> : null}
+{entry.id === 'commons-weight-breakdown' ? <CommonsWeightBreakdown participant={entry.defaultProps.participant as any} /> : null}
+{entry.id === 'commons-participant-badge' ? <CommonsParticipantBadge participant={entry.defaultProps.participant as any} /> : null}
+{entry.id === 'commons-decision-timeline' ? <CommonsDecisionTimeline events={entry.defaultProps.events as any[]} /> : null}
+{entry.id === 'commons-delegation-panel' ? <CommonsDelegationPanel delegations={entry.defaultProps.delegations as any[]} /> : null}
+{entry.id === 'commons-steward-decision-panel' ? <CommonsStewardDecisionPanel proposalId={entry.defaultProps.proposalId as string} action={entry.defaultProps.action as string} /> : null}
 {entry.id === 'book-list' ? <BookList items={bookItems} /> : null}
 {entry.id === 'ctasection' ? <CTASection title="Build a governed launch path" body="Use reusable components to keep market and docs experiences consistent." primaryHref="/displays/ctasection" primaryLabel="Open workflow" secondaryHref="/" secondaryLabel="All components" /> : null}
 {entry.id === 'chronicle-list' ? <ChronicleList items={chronicleItems} /> : null}

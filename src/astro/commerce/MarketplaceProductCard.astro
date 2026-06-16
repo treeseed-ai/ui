@@ -1,0 +1,58 @@
+---
+interface OfferSummary {
+	id: string;
+	mode: string;
+	title: string;
+	unitAmount?: number | null;
+	currency?: string | null;
+	checkoutEligible?: boolean;
+	serviceEligible?: boolean;
+	capacityInquiryEligible?: boolean;
+}
+
+interface Props {
+	id: string;
+	title: string;
+	summary?: string | null;
+	kind?: string;
+	vendorDisplayName?: string | null;
+	ownershipModel?: string | null;
+	offers?: OfferSummary[];
+	href?: string;
+}
+
+const {
+	id,
+	title,
+	summary = null,
+	kind = 'product',
+	vendorDisplayName = null,
+	ownershipModel = null,
+	offers = [],
+	href = `/market/products/${encodeURIComponent(id)}`,
+} = Astro.props as Props;
+
+const primaryOffer = offers.find((offer) => offer.checkoutEligible || offer.serviceEligible || offer.capacityInquiryEligible) ?? offers[0] ?? null;
+const amount = primaryOffer?.unitAmount != null && primaryOffer.currency
+	? new Intl.NumberFormat('en-US', { style: 'currency', currency: primaryOffer.currency.toUpperCase() }).format(primaryOffer.unitAmount / 100)
+	: primaryOffer?.mode === 'free' ? 'Free' : 'Seller scoped';
+---
+
+<article class="ts-commerce-card ts-commerce-product-card">
+	<div class="ts-commerce-panel-header">
+		<div>
+			<p class="ts-commerce-eyebrow">{kind.replaceAll('_', ' ')}</p>
+			<h2>{title}</h2>
+		</div>
+		{primaryOffer ? <span class="ts-status-pill" data-tone="muted">{amount}</span> : null}
+	</div>
+	<p>{summary ?? 'Review the marketplace terms and cooperative ownership context before continuing.'}</p>
+	<dl class="ts-commerce-kv">
+		<div><dt>Seller</dt><dd>{vendorDisplayName ?? 'TreeSeed seller'}</dd></div>
+		<div><dt>Ownership</dt><dd>{ownershipModel?.replaceAll('_', ' ') ?? 'documented'}</dd></div>
+		<div><dt>Offers</dt><dd>{offers.length}</dd></div>
+	</dl>
+	<div class="ts-commerce-actions">
+		<a class="ts-commerce-button" href={href}>View details</a>
+	</div>
+</article>
