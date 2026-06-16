@@ -10,6 +10,7 @@ Use this package when you need Treeseed visual primitives. Use `@treeseed/admin`
 - auth cards and account surfaces
 - form controls and data-entry panels
 - operation status panels and deployment timelines
+- reusable capacity/status controls when consumed by Admin or Market
 - market/catalog cards
 - docs and content presentation components
 - React widgets such as editors, charts, and rich controls
@@ -97,6 +98,7 @@ npm run verify:local
 - marketplace business policy
 - checkout, billing, subscriptions, coupons, or licensing
 - capacity-provider runtime
+- capacity allocation policy, assignment selection, mode-run persistence, or capacity ledger behavior
 - TreeDX repository service behavior
 
 Admin, market, and core should compose UI primitives instead of recreating layout-down controls locally.
