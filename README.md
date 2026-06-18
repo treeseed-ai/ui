@@ -2,7 +2,7 @@
 
 `@treeseed/ui` is the reusable Treeseed interface system. It provides layout-down Astro components, React widgets, forms, controls, cards, shells, dashboards, theme utilities, and CSS used by Treeseed admin, market, and core site surfaces.
 
-Use this package when you need Treeseed visual primitives. Use `@treeseed/admin` for admin routes and workflows, `@treeseed/core` for site runtime integration, and the root market app for Treeseed-specific messaging and future ecommerce.
+Use this package when you need Treeseed visual primitives. Use `@treeseed/admin` for admin routes and workflows, `@treeseed/core` for site runtime integration, and the root market app for Treeseed-specific messaging and buyer-facing marketplace pages.
 
 ## What You Can Build With UI
 
@@ -11,6 +11,7 @@ Use this package when you need Treeseed visual primitives. Use `@treeseed/admin`
 - form controls and data-entry panels
 - operation status panels and deployment timelines
 - market/catalog cards
+- commerce marketplace cards, offer panels, ownership summaries, service timelines, capacity risk panels, seller monitoring panels, and governance/Commons presentation components
 - docs and content presentation components
 - React widgets such as editors, charts, and rich controls
 - theme-aware app layouts for admin and market surfaces
@@ -35,6 +36,8 @@ import '@treeseed/ui/styles/app-controls.css';
 import '@treeseed/ui/styles/auth.css';
 import '@treeseed/ui/styles/operations.css';
 import '@treeseed/ui/styles/market.css';
+import '@treeseed/ui/styles/commerce.css';
+import '@treeseed/ui/styles/governance.css';
 ```
 
 Admin contributes these styles through `@treeseed/admin/plugin` when a host app installs the admin portal.
@@ -69,7 +72,7 @@ Use React widgets for interactive controls that need client-side state. Keep rou
 
 ## Theme And Tokens
 
-The package owns reusable tokens, theme CSS, app shell styles, form styles, operation styles, and market/card styles. Tenant-specific brand colors, public marketing art direction, and ecommerce presentation belong in the host app.
+The package owns reusable tokens, theme CSS, app shell styles, form styles, operation styles, market/card styles, and Stripe-free commerce/governance components. Tenant-specific brand colors, public marketing art direction, copy, data loading, and workflow orchestration belong in the host app or Admin/API packages.
 
 ## Sandbox
 
@@ -95,7 +98,8 @@ npm run verify:local
 - package workflow orchestration
 - admin view models
 - marketplace business policy
-- checkout, billing, subscriptions, coupons, or licensing
+- Stripe.js, Stripe Elements, checkout confirmation, backend API behavior, webhooks, billing, subscriptions, coupons, or licensing
+- payout, commission, application-fee, revenue-split, capacity billing, provider execution, grant, reservation, or routing logic
 - capacity-provider runtime
 - TreeDX repository service behavior
 
