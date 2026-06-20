@@ -1,5 +1,5 @@
-import { defineConfig, devices } from '@playwright/test';
 import { createHash } from 'node:crypto';
+import { defineConfig, devices } from '@playwright/test';
 
 const worktreePortOffset = Number.parseInt(createHash('sha1').update(process.cwd()).digest('hex').slice(0, 4), 16) % 1000;
 const testPort = process.env.TREESEED_UI_TEST_PORT ?? String(4322 + worktreePortOffset);

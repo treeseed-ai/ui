@@ -536,6 +536,60 @@ select.ts-control option {
 	overflow: hidden;
 }
 
+.ts-rich-markdown-fallback {
+	background: var(--ts-color-surface);
+	border: 1px solid color-mix(in srgb, var(--ts-color-border) 85%, var(--ts-color-accent));
+	border-radius: var(--ts-radius-md);
+	color: var(--ts-color-text);
+	display: grid;
+	min-height: var(--ts-rich-markdown-min-height);
+	overflow: hidden;
+}
+
+.ts-rich-markdown-fallback__toolbar {
+	align-items: center;
+	background: color-mix(in srgb, var(--ts-color-surface) 86%, var(--ts-color-border));
+	border-bottom: 1px solid var(--ts-color-border);
+	display: flex;
+	gap: 0.55rem;
+	min-height: 2.75rem;
+	padding: 0.42rem 0.65rem;
+}
+
+.ts-rich-markdown-fallback__badge {
+	background: color-mix(in srgb, var(--ts-color-accent-soft) 72%, var(--ts-color-surface));
+	border: 1px solid color-mix(in srgb, var(--ts-color-accent) 36%, var(--ts-color-border));
+	border-radius: var(--ts-radius-sm);
+	color: var(--ts-color-text);
+	font-size: 0.76rem;
+	font-weight: 800;
+	line-height: 1;
+	padding: 0.32rem 0.48rem;
+}
+
+.ts-rich-markdown-fallback__hint {
+	color: var(--ts-color-text-muted);
+	font-size: 0.82rem;
+}
+
+.ts-rich-markdown-fallback__textarea {
+	background: transparent;
+	border: 0;
+	box-sizing: border-box;
+	color: var(--ts-color-text);
+	font: inherit;
+	line-height: 1.62;
+	min-height: calc(var(--ts-rich-markdown-min-height) - 3rem);
+	outline: none;
+	padding: 0.85rem 1rem;
+	resize: vertical;
+	width: 100%;
+}
+
+.ts-rich-markdown-fallback__textarea:focus-visible {
+	box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ts-color-accent) 50%, transparent);
+}
+
 .ts-rich-markdown-editor .mdxeditor-toolbar {
 	background: color-mix(in srgb, var(--ts-color-surface) 86%, var(--ts-color-border));
 	border-bottom: 1px solid var(--ts-color-border);
@@ -557,6 +611,10 @@ select.ts-control option {
 }
 
 html[data-ts-mode='dark'] .ts-rich-markdown-editor .mdxeditor-toolbar {
+	background: color-mix(in srgb, var(--ts-color-surface-raised) 82%, var(--ts-color-border));
+}
+
+html[data-ts-mode='dark'] .ts-rich-markdown-fallback__toolbar {
 	background: color-mix(in srgb, var(--ts-color-surface-raised) 82%, var(--ts-color-border));
 }
 

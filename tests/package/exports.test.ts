@@ -47,6 +47,7 @@ describe('package exports', () => {
     expect(Ui.MonitoringChart).toBeDefined();
     expect(Ui.ProjectActivityChart).toBeDefined();
     expect(Ui.RichMarkdownEditor).toBeDefined();
+    expect(Ui.initializeRichMarkdownEditors).toBeDefined();
     expect(Ui.CheckboxField).toBeDefined();
     expect(Ui.SelectField).toBeDefined();
     expect(Ui.TextField).toBeDefined();
@@ -54,6 +55,33 @@ describe('package exports', () => {
     expect(Ui.defineTreeseedTheme).toBeDefined();
     expect(Ui.platformOperationHref).toBeDefined();
     expect(Ui.initializeRelatedContentCreators).toBeDefined();
+  });
+
+  it('keeps shared app-control and rich markdown styles in the UI package', () => {
+    const appControls = readFileSync('src/styles/app-controls.css', 'utf8');
+    const forms = readFileSync('src/styles/forms.css', 'utf8');
+
+    for (const marker of [
+      '.ts-icon-button',
+      '.ts-link-button',
+      '.ts-link-button--primary',
+      '.ts-default-label',
+      '.ts-team-selector .ts-icon-button',
+      '.ts-project-lineage-card',
+    ]) {
+      expect(appControls).toContain(marker);
+    }
+
+    for (const marker of [
+      '.ts-rich-markdown-field',
+      '.ts-rich-markdown-editor',
+      '.ts-rich-markdown-editor__textarea',
+      '.ts-rich-markdown-editor__mount',
+      '.ts-rich-markdown-mdx__toolbar',
+      '.ts-rich-markdown-mdx__content',
+    ]) {
+      expect(forms).toContain(marker);
+    }
   });
 
   it('resolves the public theme subpath through package exports', async () => {

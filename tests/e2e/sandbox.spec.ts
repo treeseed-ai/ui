@@ -1,7 +1,7 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from 'playwright/test';
 import { componentCatalog, formComponents } from '../../sandbox/src/lib/component-catalog';
 
-const readPollingState = async (page: import('@playwright/test').Page) => {
+const readPollingState = async (page: import('playwright/test').Page) => {
   const text = await page.getByLabel('Polling State').locator('pre').innerText();
   return JSON.parse(text) as { pollCount: number; sampleCount?: number; retainedEvents?: number; error: string | null };
 };

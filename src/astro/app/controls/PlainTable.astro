@@ -136,6 +136,7 @@ function rowSortValues(row: Record<string, any>): Record<string, string> {
 						id={row.id ? String(row.id) : undefined}
 						class="ts-record-card"
 						role="listitem"
+						data-scene={row.sceneId ? String(row.sceneId) : undefined}
 						data-table-row
 						data-sort-values={JSON.stringify(sortValues)}
 						data-filter-text={stripHtml(Object.values(row).join(' ')).toLowerCase()}

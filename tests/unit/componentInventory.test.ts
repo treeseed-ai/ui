@@ -35,4 +35,39 @@ describe('component inventory boundaries', () => {
     expect(componentNames).toContain('PublicLayout');
     expect(componentNames).toContain('ProductCard');
   });
+
+  it('keeps utility-class use in exported public Astro components explicit', () => {
+    const publicAstroFiles = [
+      ...walkFiles('src/astro/layouts').filter((file) => extname(file) === '.astro'),
+      ...walkFiles('src/astro/site').filter((file) => extname(file) === '.astro'),
+      ...walkFiles('src/astro/forms').filter((file) => extname(file) === '.astro'),
+    ];
+    const utilityClassPattern = /class(?::list)?=\{?["'`][^"'`]*(?:max-w-|space-y-|grid|flex|text-|border|p-|m-|gap-|rounded|shadow|bg-|font-|leading-|tracking-|uppercase|md:|lg:|xl:)/u;
+    const utilityUsers = publicAstroFiles
+      .filter((file) => utilityClassPattern.test(readFileSync(file, 'utf8')))
+      .map((file) => file.replace(/\\/gu, '/'))
+      .sort();
+
+    expect(utilityUsers).toEqual([
+      'src/astro/forms/ContactForm.astro',
+      'src/astro/forms/FooterSubscribeForm.astro',
+      'src/astro/layouts/AppLayout.astro',
+      'src/astro/layouts/AuthoredEntryLayout.astro',
+      'src/astro/layouts/BookLayout.astro',
+      'src/astro/layouts/BridgeLayout.astro',
+      'src/astro/layouts/ContentLayout.astro',
+      'src/astro/layouts/NoteLayout.astro',
+      'src/astro/layouts/ProfileLayout.astro',
+      'src/astro/site/BookList.astro',
+      'src/astro/site/CTASection.astro',
+      'src/astro/site/ChronicleList.astro',
+      'src/astro/site/Hero.astro',
+      'src/astro/site/PathCard.astro',
+      'src/astro/site/ProfileList.astro',
+      'src/astro/site/RouteNotFound.astro',
+      'src/astro/site/SectionIntro.astro',
+      'src/astro/site/StageBanner.astro',
+      'src/astro/site/TrustCallout.astro',
+    ]);
+  });
 });

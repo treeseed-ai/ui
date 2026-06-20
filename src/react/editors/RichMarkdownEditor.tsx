@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import {
 	BlockTypeSelect,
 	BoldItalicUnderlineToggles,
@@ -214,27 +213,39 @@ function initializeRichMarkdownEditor(root: RichMarkdownEditorRoot) {
 	const error = root.querySelector<HTMLElement>('[data-rich-markdown-error]');
 	if (!textarea || !mount) return;
 	root.dataset.richMarkdownInitializing = 'true';
-	const reactRoot = createRoot(mount);
-	reactRoot.render(
-		<MdxEditorSurface
-			initialMarkdown={textarea.value}
-			onReady={() => {
-				root.dataset.richMarkdownReady = 'true';
-				delete root.dataset.richMarkdownInitializing;
-			}}
-			onChange={(markdown) => {
-				textarea.value = markdown;
-				root.dataset.invalid = 'false';
-				if (error) error.hidden = true;
-			}}
-		/>,
-	);
+	mount.replaceChildren();
+	const shell = document.createElement('div');
+	shell.className = 'ts-rich-markdown-fallback';
+	const toolbar = document.createElement('div');
+	toolbar.className = 'ts-rich-markdown-fallback__toolbar';
+	const badge = document.createElement('span');
+	badge.className = 'ts-rich-markdown-fallback__badge';
+	badge.textContent = 'Markdown';
+	const hint = document.createElement('span');
+	hint.className = 'ts-rich-markdown-fallback__hint';
+	hint.textContent = 'Use headings, lists, links, and MDX snippets.';
+	toolbar.append(badge, hint);
+	const editor = document.createElement('textarea');
+	editor.className = 'ts-rich-markdown-fallback__textarea';
+	editor.value = textarea.value;
+	editor.rows = 12;
+	editor.spellcheck = true;
+	editor.setAttribute('aria-label', textarea.getAttribute('aria-label') || textarea.getAttribute('name') || 'Markdown content');
+	editor.addEventListener('input', () => {
+		textarea.value = editor.value;
+		root.dataset.invalid = 'false';
+		if (error) error.hidden = true;
+	});
+	shell.append(toolbar, editor);
+	mount.append(shell);
+	root.dataset.richMarkdownReady = 'true';
+	delete root.dataset.richMarkdownInitializing;
 	textarea.form?.addEventListener('submit', (event) => {
 		if (textarea.value.trim()) return;
 		event.preventDefault();
 		root.dataset.invalid = 'true';
 		if (error) error.hidden = false;
-		mount.querySelector<HTMLElement>('[contenteditable="true"]')?.focus();
+		editor.focus();
 	});
 }
 

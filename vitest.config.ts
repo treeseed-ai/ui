@@ -1,18 +1,24 @@
-import { defineConfig } from 'vitest/config';
 import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 const require = createRequire(import.meta.url);
-const testingLibraryReact = require.resolve('@testing-library/react');
-const dependencyRoot = testingLibraryReact.slice(0, testingLibraryReact.indexOf('/node_modules/@testing-library/react'));
+const testingLibraryPath = dirname(require.resolve('@testing-library/react/package.json'));
+const testReactPath = require.resolve('react', { paths: [testingLibraryPath] });
+const testReactDomPath = require.resolve('react-dom', { paths: [testingLibraryPath] });
+const testReactDomClientPath = require.resolve('react-dom/client', { paths: [testingLibraryPath] });
+const testReactJsxRuntimePath = require.resolve('react/jsx-runtime', { paths: [testingLibraryPath] });
+const testReactJsxDevRuntimePath = require.resolve('react/jsx-dev-runtime', { paths: [testingLibraryPath] });
 
 export default defineConfig({
   resolve: {
-    alias: {
-      react: `${dependencyRoot}/node_modules/react`,
-      'react-dom': `${dependencyRoot}/node_modules/react-dom`,
-      'react-dom/client': `${dependencyRoot}/node_modules/react-dom/client.js`,
-      'react/jsx-runtime': `${dependencyRoot}/node_modules/react/jsx-runtime.js`,
-    },
+    alias: [
+      { find: /^react$/, replacement: testReactPath },
+      { find: /^react-dom$/, replacement: testReactDomPath },
+      { find: /^react-dom\/client$/, replacement: testReactDomClientPath },
+      { find: /^react\/jsx-runtime$/, replacement: testReactJsxRuntimePath },
+      { find: /^react\/jsx-dev-runtime$/, replacement: testReactJsxDevRuntimePath },
+    ],
     dedupe: ['react', 'react-dom'],
   },
   test: {

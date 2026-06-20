@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import RichMarkdownEditor from '../../src/react/editors/RichMarkdownEditor.tsx';
+import RichMarkdownEditor, { initializeRichMarkdownEditors } from '../../src/react/editors/RichMarkdownEditor.tsx';
 
 vi.mock('@mdxeditor/editor', async () => {
   const React = await import('react');
@@ -88,5 +88,9 @@ describe('RichMarkdownEditor', () => {
 
     expect(backingField).toHaveValue('Updated objective');
     expect(onChange).toHaveBeenLastCalledWith('Updated objective');
+  });
+
+  it('exports an initializer for server-rendered editor shells', () => {
+    expect(initializeRichMarkdownEditors).toBeTypeOf('function');
   });
 });

@@ -34,7 +34,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: [/^node:/, 'astro', 'react', 'react-dom', 'react/jsx-runtime', 'recharts', 'yaml', '@mdxeditor/editor'],
+      external: [/^node:/, /^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/, 'astro', 'recharts', 'yaml', '@mdxeditor/editor'],
       output: {
         preserveModules: false,
       },

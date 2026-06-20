@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from 'playwright/test';
 
 const desktop = { width: 1280, height: 900 };
 const mobile = { width: 390, height: 844 };
