@@ -48,7 +48,7 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
       <a class="ts-button" data-variant="secondary" href="/">All components</a>
     </header>
 
-    {entry.runtime === 'react' && entry.id === 'dynamic-pie-allocation' ? <DynamicPieAllocationHarness client:load /> : null}
+    {entry.runtime === 'react' && entry.id === 'dynamic-pie-allocation' ? <DynamicPieAllocationHarness client:only="react" /> : null}
     {entry.runtime === 'react' && entry.id === 'rich-markdown-editor' ? <RichMarkdownEditorHarness client:only="react" /> : null}
     {entry.runtime === 'react' && ['checkbox-field', 'select-field', 'text-field'].includes(entry.id) ? (
       <ReactFormControlHarness
