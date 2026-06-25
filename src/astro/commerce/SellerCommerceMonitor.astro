@@ -1,0 +1,24 @@
+---
+interface Props {
+	monitor?: Record<string, unknown> | null;
+}
+const { monitor = null } = Astro.props as Props;
+const metrics = [
+	['Stripe ready', monitor?.stripeReady ? 'yes' : 'no'],
+	['Blocked sync', monitor?.blockedStripeSyncCount ?? 0],
+	['Drifted sync', monitor?.driftedStripeSyncCount ?? 0],
+	['Pending fulfillment', monitor?.pendingFulfillmentCount ?? 0],
+	['Failed refunds', monitor?.failedRefundCount ?? 0],
+	['Failed webhooks', monitor?.failedWebhookCount ?? 0],
+	['Service requests', monitor?.pendingServiceRequestCount ?? 0],
+	['Capacity inquiries', monitor?.pendingCapacityInquiryCount ?? 0],
+	['Governance transfers', monitor?.pendingGovernanceTransferCount ?? 0],
+];
+---
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Commerce monitor</p>
+	<h2>Seller operations health</h2>
+	<dl class="ts-commerce-kv">
+		{metrics.map(([label, value]) => <div><dt>{label}</dt><dd>{String(value)}</dd></div>)}
+	</dl>
+</section>

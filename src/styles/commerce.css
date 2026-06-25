@@ -1,0 +1,226 @@
+.ts-commerce-page {
+	background: var(--ts-color-surface);
+	color: var(--ts-color-text);
+	min-height: 72vh;
+}
+
+.ts-commerce-band {
+	border-bottom: 1px solid var(--ts-color-border);
+	background:
+		linear-gradient(180deg, color-mix(in srgb, var(--ts-color-surface-raised) 82%, transparent), var(--ts-color-surface));
+}
+
+.ts-commerce-inner {
+	inline-size: min(1180px, calc(100% - 32px));
+	margin-inline: auto;
+}
+
+.ts-commerce-hero {
+	display: grid;
+	gap: 1rem;
+	padding-block: clamp(2.75rem, 7vw, 5.25rem) 2rem;
+}
+
+.ts-commerce-eyebrow {
+	margin: 0;
+	color: var(--ts-color-text-subtle);
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0;
+	text-transform: uppercase;
+}
+
+.ts-commerce-title {
+	max-inline-size: 860px;
+	margin: 0;
+	color: var(--ts-color-text);
+	font-size: clamp(2.2rem, 6vw, 4.85rem);
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: 0.98;
+}
+
+.ts-commerce-lede {
+	max-inline-size: 760px;
+	margin: 0;
+	color: var(--ts-color-text-muted);
+	font-size: clamp(1rem, 2vw, 1.12rem);
+	line-height: 1.65;
+}
+
+.ts-commerce-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+	gap: 1rem;
+	padding-block: 1.5rem 4rem;
+}
+
+.ts-commerce-two-column {
+	display: grid;
+	grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+	gap: 1rem;
+	padding-block: 1.5rem 4rem;
+}
+
+.ts-commerce-panel {
+	border: 1px solid var(--ts-color-border);
+	border-radius: var(--ts-radius-md, 8px);
+	background: var(--ts-color-surface-raised);
+	box-shadow: var(--ts-shadow-sm);
+	padding: 1rem;
+}
+
+.ts-commerce-panel-header {
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-block-end: 1rem;
+}
+
+.ts-commerce-panel h2,
+.ts-commerce-card h2,
+.ts-commerce-card h3 {
+	margin: 0;
+	color: var(--ts-color-text);
+	font-size: 1rem;
+	line-height: 1.25;
+}
+
+.ts-commerce-card {
+	display: grid;
+	gap: 0.9rem;
+	border: 1px solid var(--ts-color-border);
+	border-radius: var(--ts-radius-md, 8px);
+	background: var(--ts-color-surface-raised);
+	padding: 1rem;
+}
+
+.ts-commerce-card p {
+	margin: 0;
+	color: var(--ts-color-text-muted);
+	line-height: 1.55;
+}
+
+.ts-commerce-actions,
+.ts-commerce-badges {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.ts-commerce-button {
+	display: inline-flex;
+	min-block-size: 2.45rem;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--ts-color-border-strong);
+	border-radius: var(--ts-radius-sm, 6px);
+	background: var(--ts-color-accent);
+	color: var(--ts-color-accent-text);
+	font: inherit;
+	font-weight: 800;
+	padding-inline: 0.9rem;
+	text-decoration: none;
+}
+
+.ts-commerce-button[data-variant='secondary'] {
+	background: var(--ts-color-surface);
+	color: var(--ts-color-text);
+}
+
+.ts-commerce-kv {
+	display: grid;
+	gap: 0.55rem;
+	margin: 0;
+}
+
+.ts-commerce-kv div {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	border-top: 1px solid var(--ts-color-border);
+	padding-block-start: 0.55rem;
+}
+
+.ts-commerce-kv dt {
+	color: var(--ts-color-text-subtle);
+}
+
+.ts-commerce-kv dd {
+	margin: 0;
+	color: var(--ts-color-text);
+	font-weight: 800;
+	text-align: end;
+	overflow-wrap: anywhere;
+}
+
+.ts-commerce-timeline {
+	display: grid;
+	gap: 0.7rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ts-commerce-timeline li {
+	display: grid;
+	grid-template-columns: 0.75rem minmax(0, 1fr);
+	gap: 0.75rem;
+	align-items: start;
+}
+
+.ts-commerce-timeline li::before {
+	content: '';
+	inline-size: 0.55rem;
+	block-size: 0.55rem;
+	margin-block-start: 0.4rem;
+	border-radius: 999px;
+	background: var(--ts-color-accent);
+}
+
+.ts-commerce-form {
+	display: grid;
+	gap: 0.85rem;
+}
+
+.ts-commerce-field {
+	display: grid;
+	gap: 0.35rem;
+	color: var(--ts-color-text-muted);
+	font-weight: 700;
+}
+
+.ts-commerce-field input,
+.ts-commerce-field textarea,
+.ts-commerce-field select {
+	inline-size: 100%;
+	box-sizing: border-box;
+	border: 1px solid var(--ts-color-border);
+	border-radius: var(--ts-radius-sm, 6px);
+	background: var(--ts-color-surface);
+	color: var(--ts-color-text);
+	font: inherit;
+	padding: 0.72rem 0.78rem;
+}
+
+.ts-commerce-field textarea {
+	min-block-size: 6rem;
+	resize: vertical;
+}
+
+.ts-commerce-muted {
+	color: var(--ts-color-text-muted);
+}
+
+.ts-commerce-error {
+	color: var(--ts-color-danger);
+	font-weight: 700;
+}
+
+@media (max-width: 820px) {
+	.ts-commerce-two-column {
+		grid-template-columns: 1fr;
+	}
+}

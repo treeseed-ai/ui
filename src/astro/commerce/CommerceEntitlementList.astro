@@ -1,0 +1,21 @@
+---
+interface Entitlement {
+	id?: string;
+	status?: string;
+	productId?: string;
+	renewalState?: string;
+}
+interface Props {
+	entitlements?: Entitlement[];
+}
+const { entitlements = [] } = Astro.props as Props;
+---
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Access</p>
+	<h2>Entitlements</h2>
+	{entitlements.length ? (
+		<dl class="ts-commerce-kv">
+			{entitlements.map((entitlement) => <div><dt>{entitlement.productId ?? entitlement.id}</dt><dd>{entitlement.status ?? 'pending'} · {entitlement.renewalState ?? 'none'}</dd></div>)}
+		</dl>
+	) : <p class="ts-commerce-muted">No active entitlements yet.</p>}
+</section>

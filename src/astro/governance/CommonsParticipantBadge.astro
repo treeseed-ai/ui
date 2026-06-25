@@ -1,0 +1,16 @@
+---
+interface Props {
+	participant?: {
+		displayName?: string | null;
+		status?: string;
+		totalWeight?: number;
+		verifiedEmail?: boolean;
+	};
+}
+
+const { participant = {} } = Astro.props as Props;
+---
+
+<span class="ts-governance-badge">
+	{participant.displayName ?? 'Commons participant'} · {participant.status ?? 'active'} · weight {participant.totalWeight ?? 1}{participant.verifiedEmail ? ' · verified' : ''}
+</span>

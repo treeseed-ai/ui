@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.11.1-dev.demo.20260625T142712Z",
+  "version": "0.11.1-dev.demo.20260625T232138Z",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -283,7 +283,30 @@
       "types": "./dist/theme/index.d.ts",
       "default": "./dist/theme/index.js"
     },
-    "./theme/schemes/*.yaml": "./dist/theme/schemes/*.yaml"
+    "./theme/schemes/*.yaml": "./dist/theme/schemes/*.yaml",
+    "./components/astro/commerce/CapacityInquiryPanel.astro": "./dist/astro/commerce/CapacityInquiryPanel.astro",
+    "./components/astro/commerce/CapacityRiskPanel.astro": "./dist/astro/commerce/CapacityRiskPanel.astro",
+    "./components/astro/commerce/CommerceEntitlementList.astro": "./dist/astro/commerce/CommerceEntitlementList.astro",
+    "./components/astro/commerce/CommerceOwnershipSummary.astro": "./dist/astro/commerce/CommerceOwnershipSummary.astro",
+    "./components/astro/commerce/CommercePaymentGroupPanel.astro": "./dist/astro/commerce/CommercePaymentGroupPanel.astro",
+    "./components/astro/commerce/CommerceStatusTimeline.astro": "./dist/astro/commerce/CommerceStatusTimeline.astro",
+    "./components/astro/commerce/CommerceTrustChecklist.astro": "./dist/astro/commerce/CommerceTrustChecklist.astro",
+    "./components/astro/commerce/MarketplaceOfferPanel.astro": "./dist/astro/commerce/MarketplaceOfferPanel.astro",
+    "./components/astro/commerce/MarketplaceProductCard.astro": "./dist/astro/commerce/MarketplaceProductCard.astro",
+    "./components/astro/commerce/SellerCommerceMonitor.astro": "./dist/astro/commerce/SellerCommerceMonitor.astro",
+    "./components/astro/commerce/SellerReadinessChecklist.astro": "./dist/astro/commerce/SellerReadinessChecklist.astro",
+    "./components/astro/commerce/ServiceQuotePanel.astro": "./dist/astro/commerce/ServiceQuotePanel.astro",
+    "./components/astro/commerce/ServiceRequestTimeline.astro": "./dist/astro/commerce/ServiceRequestTimeline.astro",
+    "./components/astro/governance/CommonsDecisionTimeline.astro": "./dist/astro/governance/CommonsDecisionTimeline.astro",
+    "./components/astro/governance/CommonsDelegationPanel.astro": "./dist/astro/governance/CommonsDelegationPanel.astro",
+    "./components/astro/governance/CommonsParticipantBadge.astro": "./dist/astro/governance/CommonsParticipantBadge.astro",
+    "./components/astro/governance/CommonsProposalCard.astro": "./dist/astro/governance/CommonsProposalCard.astro",
+    "./components/astro/governance/CommonsProposalPipeline.astro": "./dist/astro/governance/CommonsProposalPipeline.astro",
+    "./components/astro/governance/CommonsStewardDecisionPanel.astro": "./dist/astro/governance/CommonsStewardDecisionPanel.astro",
+    "./components/astro/governance/CommonsVoteSummary.astro": "./dist/astro/governance/CommonsVoteSummary.astro",
+    "./components/astro/governance/CommonsWeightBreakdown.astro": "./dist/astro/governance/CommonsWeightBreakdown.astro",
+    "./styles/commerce.css": "./dist/styles/commerce.css",
+    "./styles/governance.css": "./dist/styles/governance.css"
   },
   "publishConfig": {
     "access": "public"

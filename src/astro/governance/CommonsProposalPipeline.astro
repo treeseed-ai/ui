@@ -1,0 +1,22 @@
+---
+interface Props {
+	status?: string;
+}
+
+const { status = 'draft' } = Astro.props as Props;
+const steps = ['draft', 'submitted', 'backing', 'qualified', 'under_review', 'voting', 'accepted', 'implemented'];
+const activeIndex = Math.max(0, steps.indexOf(status));
+---
+
+<section class="ts-governance-panel">
+	<p class="ts-governance-eyebrow">Proposal pipeline</p>
+	<h2>{status}</h2>
+	<ul class="ts-governance-timeline">
+		{steps.map((step, index) => (
+			<li>
+				<strong>{step}</strong>
+				<span class="ts-governance-muted"> {index < activeIndex ? 'completed' : index === activeIndex ? 'current' : 'pending'}</span>
+			</li>
+		))}
+	</ul>
+</section>

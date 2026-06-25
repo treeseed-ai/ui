@@ -1,0 +1,21 @@
+---
+interface Item {
+	label: string;
+	value: string | boolean | number | null | undefined;
+}
+
+interface Props {
+	title?: string;
+	items?: Item[];
+}
+
+const { title = 'Trust checklist', items = [] } = Astro.props as Props;
+---
+
+<section class="ts-commerce-panel">
+	<p class="ts-commerce-eyebrow">Readiness</p>
+	<h2>{title}</h2>
+	<dl class="ts-commerce-kv">
+		{items.map((item) => <div><dt>{item.label}</dt><dd>{String(item.value ?? 'not set')}</dd></div>)}
+	</dl>
+</section>

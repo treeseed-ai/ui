@@ -1,0 +1,32 @@
+---
+interface EventItem {
+	eventType?: string;
+	message?: string | null;
+	priorState?: string | null;
+	nextState?: string | null;
+	createdAt?: string;
+}
+
+interface Props {
+	events?: EventItem[];
+}
+
+const { events = [] } = Astro.props as Props;
+---
+
+<section class="ts-governance-panel">
+	<p class="ts-governance-eyebrow">Governance evidence</p>
+	<h2>Decision timeline</h2>
+	{events.length ? (
+		<ul class="ts-governance-timeline">
+			{events.map((event) => (
+				<li>
+					<strong>{event.eventType ?? 'event'}</strong>
+					<span> {event.priorState ?? 'new'} → {event.nextState ?? 'recorded'}</span>
+					{event.message ? <p>{event.message}</p> : null}
+					{event.createdAt ? <small class="ts-governance-muted">{event.createdAt}</small> : null}
+				</li>
+			))}
+		</ul>
+	) : <p class="ts-governance-muted">No governance events yet.</p>}
+</section>

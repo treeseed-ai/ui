@@ -1,0 +1,33 @@
+---
+interface Props {
+	proposal: {
+		id: string;
+		title?: string;
+		summary?: string | null;
+		status?: string;
+		scope?: string;
+		backingCount?: number;
+		voteSupportWeight?: number;
+		voteObjectWeight?: number;
+		updatedAt?: string;
+	};
+	href?: string;
+}
+
+const { proposal, href } = Astro.props as Props;
+---
+
+<article class="ts-governance-card">
+	<div class="ts-governance-badges">
+		<span class="ts-governance-badge">{proposal.status ?? 'draft'}</span>
+		<span class="ts-governance-badge">{proposal.scope ?? 'treeseed_commons'}</span>
+	</div>
+	<h3>{proposal.title ?? proposal.id}</h3>
+	<p>{proposal.summary ?? 'No summary supplied yet.'}</p>
+	<dl class="ts-governance-kv">
+		<div><dt>Backers</dt><dd>{proposal.backingCount ?? 0}</dd></div>
+		<div><dt>Support weight</dt><dd>{proposal.voteSupportWeight ?? 0}</dd></div>
+		<div><dt>Object weight</dt><dd>{proposal.voteObjectWeight ?? 0}</dd></div>
+	</dl>
+	{href ? <a class="ts-governance-button" data-variant="secondary" href={href}>Open proposal</a> : null}
+</article>
