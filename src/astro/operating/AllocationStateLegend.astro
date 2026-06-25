@@ -1,0 +1,17 @@
+---
+import StatusPill from '../data/StatusPill.astro';
+import { labelForOperatingStatus, toneForOperatingStatus } from './status.ts';
+import type { OperatingStatus } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	statuses?: OperatingStatus[];
+}
+
+const { statuses = ['ready', 'running', 'waiting', 'blocked', 'failed', 'completed', 'needsReview'] } = Astro.props as Props;
+---
+
+<div class="ts-operating-legend" aria-label="Allocation and work state legend">
+	{statuses.map((status) => (
+		<StatusPill tone={toneForOperatingStatus(status)} label={labelForOperatingStatus(status)} />
+	))}
+</div>

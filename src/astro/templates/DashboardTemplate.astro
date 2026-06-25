@@ -1,0 +1,137 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import ResourceCard from '../surface/ResourceCard.astro';
+import StatusPill from '../data/StatusPill.astro';
+import type { DashboardSection, DashboardViewModel, ResolvedAction } from '../../lib/foundation/contracts.ts';
+import type { Tone } from '../types.ts';
+
+interface Props {
+	viewModel: DashboardViewModel;
+	actions?: ResolvedAction[];
+	class?: string;
+}
+
+const {
+	viewModel,
+	actions = [],
+	class: className,
+} = Astro.props as Props;
+
+const dashboardToneToUiTone = (tone?: string): Tone => {
+	if (tone === 'success' || tone === 'warning' || tone === 'danger' || tone === 'info' || tone === 'muted') return tone;
+	return 'default';
+};
+
+const sections = [
+	viewModel.context,
+	viewModel.status,
+	viewModel.setup,
+	viewModel.deployment,
+	viewModel.allocation,
+	viewModel.notifications,
+].filter(Boolean) as DashboardSection[];
+---
+
+<section class:list={['ts-template ts-template--dashboard', className]} aria-label={viewModel.title}>
+	<PageHeader title={viewModel.title} description={viewModel.description}>
+		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
+	</PageHeader>
+
+	{viewModel.alerts?.length ? (
+		<div class="ts-dashboard-alerts" aria-label="Dashboard alerts">
+			{viewModel.alerts.map((alert) => (
+				<a
+					class="ts-dashboard-alert"
+					data-tone={alert.tone}
+					href={alert.href}
+					aria-label={alert.href ? `${alert.title}: ${alert.description ?? ''}` : undefined}
+				>
+					<StatusPill tone={dashboardToneToUiTone(alert.tone)} label={alert.title} />
+					{alert.description ? <span>{alert.description}</span> : null}
+				</a>
+			))}
+		</div>
+	) : null}
+
+	<slot name="beforeContent" />
+
+	{sections.length > 0 ? (
+		<div class="ts-dashboard-grid" aria-label="Dashboard summary">
+			{sections.map((section) => (
+				<section class="ts-dashboard-section" aria-labelledby={`dashboard-section-${section.id}`}>
+					<header class="ts-dashboard-section__header">
+						<h2 id={`dashboard-section-${section.id}`}>{section.title}</h2>
+						{section.description ? <p>{section.description}</p> : null}
+					</header>
+					{section.items.length > 0 ? (
+						<div class="ts-dashboard-metrics">
+							{section.items.map((item) => (
+								<a class="ts-dashboard-metric" data-tone={item.tone ?? 'default'} href={item.href}>
+									<span class="ts-dashboard-metric__label">{item.label}</span>
+									<strong>{item.value}</strong>
+									{item.description ? <span>{item.description}</span> : null}
+								</a>
+							))}
+						</div>
+					) : (
+						<EmptyState title={section.emptyTitle ?? 'Nothing to show'} description={section.emptyDescription} />
+					)}
+				</section>
+			))}
+		</div>
+	) : (
+		<EmptyState title={viewModel.emptyTitle ?? 'No dashboard context yet'} description={viewModel.emptyDescription} />
+	)}
+
+	{viewModel.nextActions?.length || viewModel.primaryResources?.length ? (
+		<div class="ts-dashboard-columns">
+			{viewModel.nextActions?.length ? (
+				<section class="ts-dashboard-section" aria-labelledby="dashboard-next-actions">
+					<header class="ts-dashboard-section__header">
+						<h2 id="dashboard-next-actions">Next actions</h2>
+					</header>
+					<div class="ts-resource-grid">
+						{viewModel.nextActions.map((resource) => (
+							<ResourceCard title={resource.title} description={resource.description} href={resource.href} status={resource.status} meta={resource.meta} />
+						))}
+					</div>
+				</section>
+			) : null}
+			{viewModel.primaryResources?.length ? (
+				<section class="ts-dashboard-section" aria-labelledby="dashboard-primary-resources">
+					<header class="ts-dashboard-section__header">
+						<h2 id="dashboard-primary-resources">Primary resources</h2>
+					</header>
+					<div class="ts-resource-grid">
+						{viewModel.primaryResources.map((resource) => (
+							<ResourceCard title={resource.title} description={resource.description} href={resource.href} status={resource.status} meta={resource.meta} />
+						))}
+					</div>
+				</section>
+			) : null}
+		</div>
+	) : null}
+
+	{viewModel.activity?.length ? (
+		<section class="ts-dashboard-section" aria-labelledby="dashboard-recent-activity">
+			<header class="ts-dashboard-section__header">
+				<h2 id="dashboard-recent-activity">Recent activity</h2>
+			</header>
+			<ol class="ts-dashboard-activity">
+				{viewModel.activity.map((item) => (
+					<li class="ts-dashboard-activity__item" data-tone={item.tone ?? 'default'}>
+						<a href={item.href}>
+							<strong>{item.title}</strong>
+							{item.description ? <span>{item.description}</span> : null}
+							{item.timestamp || item.meta ? <small>{[item.timestamp, item.meta].filter(Boolean).join(' · ')}</small> : null}
+						</a>
+					</li>
+				))}
+			</ol>
+		</section>
+	) : null}
+
+	<slot />
+</section>

@@ -1,0 +1,53 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import StatusPill from '../data/StatusPill.astro';
+import AllocationStateLegend from './AllocationStateLegend.astro';
+import AllocationTree from './AllocationTree.astro';
+import { labelForOperatingStatus, toneForOperatingStatus } from './status.ts';
+import type { AllocationViewModel } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	viewModel: AllocationViewModel;
+	showTree?: boolean;
+	class?: string;
+}
+
+const { viewModel, showTree = true, class: className } = Astro.props as Props;
+---
+
+<Panel class:list={['ts-allocation-panel', className]} title={viewModel.title} description={viewModel.description}>
+	<div class="ts-allocation-panel__meta">
+		<strong>{viewModel.scopeLabel}</strong>
+		<AllocationStateLegend />
+	</div>
+	{showTree && viewModel.tree?.length ? <AllocationTree nodes={viewModel.tree} /> : null}
+	{viewModel.items.length ? (
+		<div class="ts-allocation-grid">
+			{viewModel.items.map((item) => (
+				<article class="ts-allocation-item" data-status={item.status}>
+					<header>
+						<div>
+							<strong>{item.href ? <a href={item.href}>{item.label}</a> : item.label}</strong>
+							{item.message ? <p>{item.message}</p> : null}
+						</div>
+						<StatusPill tone={toneForOperatingStatus(item.status)} label={labelForOperatingStatus(item.status)} />
+					</header>
+					<dl>
+						{item.desired !== undefined ? <><dt>Desired</dt><dd>{item.desired}</dd></> : null}
+						{item.inheritedLimit !== undefined ? <><dt>Inherited limit</dt><dd>{item.inheritedLimit}</dd></> : null}
+						{item.override !== undefined ? <><dt>Override</dt><dd>{item.override}</dd></> : null}
+						{item.scheduledReservation !== undefined ? <><dt>Scheduled</dt><dd>{item.scheduledReservation}</dd></> : null}
+						{item.activeAssignment !== undefined ? <><dt>Active</dt><dd>{item.activeAssignment}</dd></> : null}
+						{item.actualUsage !== undefined ? <><dt>Actual</dt><dd>{item.actualUsage}</dd></> : null}
+					</dl>
+					{item.action ? <ActionBar actions={[item.action]} /> : null}
+				</article>
+			))}
+		</div>
+	) : (
+		<EmptyState title={viewModel.emptyTitle ?? 'No allocation signals'} description={viewModel.emptyDescription} />
+	)}
+	{viewModel.actions?.length ? <ActionBar actions={viewModel.actions} /> : null}
+</Panel>

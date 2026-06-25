@@ -107,7 +107,7 @@ function assertTarballContents(packResult) {
     'dist/styles/forms.css',
     'dist/astro/forms/Button.astro',
     'dist/astro/forms/MarkdownField.astro',
-    'dist/astro/shell/AppShell.astro',
+    'dist/astro/shell/ProductShell.astro',
     'dist/react/pie-allocation/DynamicPieAllocationInput.js',
     'dist/react/charts/MonitoringChart.js',
     'dist/react/editors/RichMarkdownEditor.js',

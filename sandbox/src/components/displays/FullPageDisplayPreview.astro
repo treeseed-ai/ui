@@ -2,7 +2,7 @@
 import Badge from '../../../../src/astro/data/Badge.astro';
 import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
 import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
-import AppShell from '../../../../src/astro/shell/AppShell.astro';
+import ProductShell from '../../../../src/astro/shell/ProductShell.astro';
 import PublicShell from '../../../../src/astro/shell/PublicShell.astro';
 import Panel from '../../../../src/astro/surface/Panel.astro';
 import AuthShell from '../../../../src/astro/auth/AuthShell.astro';
@@ -25,12 +25,24 @@ import { sandboxThemeConfig } from '../../lib/theme.ts';
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
 const appearance = { scheme: 'fern', mode: 'system' } as const;
 const navItems = [
-  { label: 'Overview', href: '/displays/app-shell' },
-  { label: 'Projects', href: '/displays/app-shell/projects' },
-  { label: 'Knowledge', href: '/displays/app-shell/knowledge' },
-  { label: 'Settings', href: '/displays/app-shell/settings' },
+  { label: 'Overview', href: '/displays/product-shell' },
+  { label: 'Projects', href: '/displays/product-shell/projects' },
+  { label: 'Knowledge', href: '/displays/product-shell/knowledge' },
+  { label: 'Settings', href: '/displays/product-shell/settings' },
 ];
 const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+const feedbackContext = {
+  url: 'https://ui.treeseed.test/displays/product-shell',
+  canonicalPath: '/displays/product-shell',
+  title: entry.name,
+  shell: entry.id === 'auth-shell' ? 'auth' as const : entry.id === 'public-shell' ? 'public' as const : 'product' as const,
+  context: entry.id === 'public-shell' ? 'public' as const : 'project' as const,
+  submissionEndpoint: '/api/feedback/submit',
+  allowAnonymous: entry.id !== 'product-shell',
+  screenshotPolicy: 'optional' as const,
+  attachmentStoragePolicy: entry.id === 'public-shell' ? 'public' as const : 'private' as const,
+  environment: 'local' as const,
+};
 const themeConfig = sandboxThemeConfig;
 const teams = [
   { id: 'team-1', name: 'Continuity Studio', slug: 'continuity-studio', displayName: 'Continuity Studio' },
@@ -75,24 +87,24 @@ const profile = {
 const relatedEntry = { id: 'launch-question', data: { title: 'What blocks public launch?', name: 'Launch question' } };
 ---
 
-{entry.id === 'app-shell' ? (
-  <AppShell title="AppShell" description={entry.description} currentPath="/displays/app-shell" appearance={appearance} brand={brand} navItems={navItems} quickActions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig}>
+{entry.id === 'product-shell' ? (
+  <ProductShell title="ProductShell" description={entry.description} currentPath="/displays/product-shell" appearance={appearance} brand={brand} navItems={navItems} quickActions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig} feedbackContext={feedbackContext}>
     <Fragment slot="railContext"><Badge tone="info">Full-page display</Badge></Fragment>
-    <Panel title="AppShell preview" description="This page is rendered by the full AppShell component.">
-      <p>AppShell owns the document, rail, top bar, header, main area, quick actions, and bottom navigation.</p>
+    <Panel title="ProductShell preview" description="This page is rendered by the full ProductShell component.">
+      <p>ProductShell owns the document, rail, top bar, header, main area, quick actions, and bottom navigation.</p>
     </Panel>
-  </AppShell>
+  </ProductShell>
 ) : null}
 
 {entry.id === 'public-shell' ? (
-  <PublicShell title="PublicShell" description={entry.description} currentPath="/displays/public-shell" appearance={appearance} brand={brand} navItems={[{ label: 'Components', href: '/' }, { label: 'PublicShell', href: '/displays/public-shell' }]} actions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig}>
+  <PublicShell title="PublicShell" description={entry.description} currentPath="/displays/public-shell" appearance={appearance} brand={brand} navItems={[{ label: 'Components', href: '/' }, { label: 'PublicShell', href: '/displays/public-shell' }]} actions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig} feedbackContext={feedbackContext}>
     <PageHeader title="PublicShell" description="This page is rendered by the full PublicShell component." />
     <Panel title="Public shell preview"><p>PublicShell owns the document frame, public navigation, appearance controls, content area, and footer.</p></Panel>
   </PublicShell>
 ) : null}
 
 {entry.id === 'auth-shell' ? (
-  <AuthShell title="AuthShell" description={entry.description} appearance={appearance}>
+  <AuthShell title="AuthShell" description={entry.description} appearance={appearance} feedbackContext={feedbackContext}>
     <AuthCard title="AuthShell" description="Full-page account access shell." notice="Preview state uses a static account notice." appearance={appearance}>
       <ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" />
       <AuthDivider />

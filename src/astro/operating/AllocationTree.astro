@@ -1,0 +1,63 @@
+---
+import StatusPill from '../data/StatusPill.astro';
+import { labelForOperatingStatus, toneForOperatingStatus } from './status.ts';
+import type { AllocationTreeNode } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	nodes: AllocationTreeNode[];
+	label?: string;
+}
+
+const { nodes, label = 'Allocation tree' } = Astro.props as Props;
+
+const renderNode = (node: AllocationTreeNode) => node;
+---
+
+<nav class="ts-allocation-tree" aria-label={label}>
+	<ul>
+		{nodes.map((node) => (
+			<li>
+				<a class="ts-allocation-tree__node" data-level={node.level} data-current={node.current ? 'true' : 'false'} href={node.href}>
+					<span>
+						<small>{node.level}</small>
+						<strong>{node.label}</strong>
+						{node.value !== undefined ? <em>{node.value}</em> : null}
+					</span>
+					<StatusPill tone={toneForOperatingStatus(node.status)} label={labelForOperatingStatus(node.status)} />
+				</a>
+				{node.children?.length ? (
+					<ul>
+						{node.children.map((child) => (
+							<li>
+								<a class="ts-allocation-tree__node" data-level={child.level} data-current={child.current ? 'true' : 'false'} href={child.href}>
+									<span>
+										<small>{child.level}</small>
+										<strong>{child.label}</strong>
+										{child.value !== undefined ? <em>{child.value}</em> : null}
+									</span>
+									<StatusPill tone={toneForOperatingStatus(child.status)} label={labelForOperatingStatus(child.status)} />
+								</a>
+								{renderNode(child).children?.length ? (
+									<ul>
+										{child.children?.map((grandchild) => (
+											<li>
+												<a class="ts-allocation-tree__node" data-level={grandchild.level} data-current={grandchild.current ? 'true' : 'false'} href={grandchild.href}>
+													<span>
+														<small>{grandchild.level}</small>
+														<strong>{grandchild.label}</strong>
+														{grandchild.value !== undefined ? <em>{grandchild.value}</em> : null}
+													</span>
+													<StatusPill tone={toneForOperatingStatus(grandchild.status)} label={labelForOperatingStatus(grandchild.status)} />
+												</a>
+											</li>
+										))}
+									</ul>
+								) : null}
+							</li>
+						))}
+					</ul>
+				) : null}
+			</li>
+		))}
+	</ul>
+</nav>

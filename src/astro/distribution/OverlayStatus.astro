@@ -1,0 +1,28 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import StatusPill from '../data/StatusPill.astro';
+import type { OverlayStatusViewModel } from '../../lib/foundation/contracts.ts';
+import type { Tone } from '../types.ts';
+
+interface Props {
+	viewModel: OverlayStatusViewModel;
+	class?: string;
+}
+
+const { viewModel, class: className } = Astro.props as Props;
+
+function toneForState(state: string): Tone {
+	if (state === 'available' || state === 'preview') return 'success';
+	if (state === 'requiresSignIn') return 'warning';
+	if (state === 'denied') return 'danger';
+	return 'muted';
+}
+---
+
+<section class:list={['ts-overlay-status', className]} data-overlay-state={viewModel.state} aria-label="Overlay editing status">
+	<div>
+		<StatusPill tone={toneForState(viewModel.state)} label={viewModel.label} />
+		<p>{viewModel.message}</p>
+	</div>
+	{viewModel.action ? <ActionBar actions={[viewModel.action]} label="Overlay actions" /> : null}
+</section>

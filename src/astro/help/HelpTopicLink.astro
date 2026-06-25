@@ -1,0 +1,15 @@
+---
+import type { HelpTopicLink } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	topic: HelpTopicLink;
+}
+
+const { topic } = Astro.props as Props;
+---
+
+<a class:list={['ts-help-topic-link', topic.current && 'ts-help-topic-link--current']} href={topic.href} data-ts-help-topic-id={topic.topicId}>
+	<span class="ts-help-topic-link__title">{topic.title}</span>
+	{topic.summary ? <span class="ts-help-topic-link__summary">{topic.summary}</span> : null}
+	<span class="ts-help-topic-link__meta">{topic.source ?? 'topic'}</span>
+</a>

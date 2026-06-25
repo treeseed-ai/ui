@@ -12,7 +12,12 @@ import BottomNav from './BottomNav.astro';
 import TopBar from './TopBar.astro';
 import ShellIconLink from './ShellIconLink.astro';
 import Button from '../forms/Button.astro';
+import FeedbackButton from '../feedback/FeedbackButton.astro';
+import FeedbackDialog from '../feedback/FeedbackDialog.astro';
+import HelpButton from '../help/HelpButton.astro';
+import HelpDrawer from '../help/HelpDrawer.astro';
 import type { ButtonAction } from '../types.ts';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
 
 interface Brand {
@@ -40,6 +45,8 @@ interface Props {
 	quickActions?: ButtonAction[];
 	bottomNavItems?: NavItem[];
 	themeConfig?: TreeseedThemeConfig;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
 }
 
 const {
@@ -52,7 +59,11 @@ const {
 	quickActions = [],
 	bottomNavItems = navItems.slice(0, 5),
 	themeConfig,
+	helpContext,
+	feedbackContext,
 } = Astro.props as Props;
+const feedbackDialogId = 'product-shell-feedback';
+const helpDrawerId = 'product-shell-help';
 ---
 
 <!doctype html>
@@ -103,6 +114,8 @@ const {
 				<TopBar brand={brand} class="ts-app-shell__mobile-top">
 					<Fragment slot="actions">
 						<ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} />
+						{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
+						{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
 						<ShellIconLink href="/" label="Book home" icon="book" />
 					</Fragment>
 				</TopBar>
@@ -114,6 +127,8 @@ const {
 					<div class="ts-app-shell__header-actions">
 						<div class="ts-shell-utility-actions">
 							<ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} />
+							{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
+							{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
 							<ShellIconLink href="/" label="Book home" icon="book" />
 						</div>
 						<slot name="headerAction" />
@@ -126,5 +141,7 @@ const {
 		</div>
 		<slot name="sensitiveModal" />
 		<slot name="modal" />
+		{helpContext ? <HelpDrawer id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
+		{feedbackContext ? <FeedbackDialog id={feedbackDialogId} context={feedbackContext} /> : null}
 	</body>
 </html>

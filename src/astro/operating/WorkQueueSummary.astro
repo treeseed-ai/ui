@@ -1,0 +1,35 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import StatusPill from '../data/StatusPill.astro';
+import { labelForOperatingStatus, toneForOperatingStatus } from './status.ts';
+import type { WorkQueueViewModel } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	viewModel: WorkQueueViewModel;
+	class?: string;
+}
+
+const { viewModel, class: className } = Astro.props as Props;
+---
+
+<Panel class:list={['ts-work-queue', className]} title={viewModel.title} description={viewModel.description}>
+	{viewModel.items.length ? (
+		<ul class="ts-work-queue__list">
+			{viewModel.items.map((item) => (
+				<li class="ts-work-queue__item" data-status={item.status}>
+					<div>
+						<StatusPill tone={toneForOperatingStatus(item.status)} label={labelForOperatingStatus(item.status)} />
+						<strong>{item.href ? <a href={item.href}>{item.title}</a> : item.title}</strong>
+						{item.description ? <p>{item.description}</p> : null}
+						{item.project || item.agent ? <small>{[item.project, item.agent].filter(Boolean).join(' · ')}</small> : null}
+					</div>
+					{item.action ? <ActionBar actions={[item.action]} /> : null}
+				</li>
+			))}
+		</ul>
+	) : (
+		<EmptyState title={viewModel.emptyTitle ?? 'No work queued'} description={viewModel.emptyDescription} />
+	)}
+</Panel>

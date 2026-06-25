@@ -1,0 +1,26 @@
+---
+interface Props {
+	targetId: string;
+	label?: string;
+	title?: string;
+	class?: string;
+}
+
+const {
+	targetId,
+	label = 'Feedback',
+	title = 'Send feedback',
+	class: className = 'ts-shell-context-action',
+} = Astro.props as Props;
+---
+
+<button
+	class={className}
+	type="button"
+	title={title}
+	aria-label={title}
+	aria-haspopup="dialog"
+	data-ts-feedback-open={targetId}
+>
+	{label}
+</button>

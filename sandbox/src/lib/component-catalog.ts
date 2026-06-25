@@ -237,6 +237,35 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'href', type: 'string', defaultValue: undefined, description: 'Turns card into a link.' },
     { name: 'tone', type: 'Tone', defaultValue: 'default', description: 'Semantic color tone.' },
   ], undefined, '@treeseed/ui/components/astro/surface/Card.astro'),
+  display('resource-card', 'ResourceCard', 'Surface', 'astro', 'Compact resource summary card.', 'medium', { title: 'Question record', status: 'recorded' }, [
+    { name: 'title', type: 'string', defaultValue: 'Question record', description: 'Resource title.' },
+    { name: 'status', type: 'string', defaultValue: 'recorded', description: 'Optional status badge.' },
+  ], undefined, '@treeseed/ui/components/astro/surface/ResourceCard.astro'),
+  display('readiness-summary', 'ReadinessSummary', 'Service', 'astro', 'Service readiness list with setup and advanced diagnostics states.', 'large', { items: 3 }, [
+    { name: 'viewModel', type: 'ReadinessSummaryViewModel', defaultValue: { items: 3 }, description: 'Policy-safe readiness summary.' },
+    { name: 'showAdvanced', type: 'boolean', defaultValue: false, description: 'Shows advanced diagnostics when enabled.' },
+  ], undefined, '@treeseed/ui/components/astro/service/ReadinessSummary.astro'),
+  display('distribution-summary', 'DistributionSummary', 'Distribution', 'astro', 'Distribution listing with release, entitlement, delivery, and action state.', 'large', { items: 3 }, [
+    { name: 'viewModel', type: 'DistributionSummaryViewModel', defaultValue: { items: 3 }, description: 'Policy-safe distribution summary.' },
+  ], undefined, '@treeseed/ui/components/astro/distribution/DistributionSummary.astro'),
+  display('overlay-status', 'OverlayStatus', 'Distribution', 'astro', 'Policy-gated overlay editing status with lazy editor intent action.', 'medium', { state: 'preview' }, [
+    { name: 'viewModel', type: 'OverlayStatusViewModel', defaultValue: { state: 'preview' }, description: 'Overlay bootstrap state.' },
+  ], undefined, '@treeseed/ui/components/astro/distribution/OverlayStatus.astro'),
+  display('allocation-panel', 'AllocationPanel', 'Operating Loop', 'astro', 'Allocation summary with desired, inherited, scheduled, active, and actual states.', 'large', { items: 2 }, [
+    { name: 'viewModel', type: 'AllocationViewModel', defaultValue: { items: 2 }, description: 'Policy-shaped allocation view model.' },
+  ], undefined, '@treeseed/ui/components/astro/operating/AllocationPanel.astro'),
+  display('allocation-tree', 'AllocationTree', 'Operating Loop', 'astro', 'Nested allocation drilldown tree from team portfolio to provider grants.', 'large', { nodes: 3 }, [
+    { name: 'nodes', type: 'AllocationTreeNode[]', defaultValue: 3, description: 'Nested allocation nodes.' },
+  ], undefined, '@treeseed/ui/components/astro/operating/AllocationTree.astro'),
+  display('allocation-state-legend', 'AllocationStateLegend', 'Operating Loop', 'astro', 'Shared legend for allocation and workday operating states.', 'inline', { statuses: 7 }, [
+    { name: 'statuses', type: 'OperatingStatus[]', defaultValue: 7, description: 'Statuses to explain.' },
+  ], undefined, '@treeseed/ui/components/astro/operating/AllocationStateLegend.astro'),
+  display('work-queue-summary', 'WorkQueueSummary', 'Operating Loop', 'astro', 'Work queue summary for running, blocked, failed, and review-needed items.', 'large', { items: 2 }, [
+    { name: 'viewModel', type: 'WorkQueueViewModel', defaultValue: { items: 2 }, description: 'Policy-shaped work queue.' },
+  ], undefined, '@treeseed/ui/components/astro/operating/WorkQueueSummary.astro'),
+  display('activity-timeline', 'ActivityTimeline', 'Operating Loop', 'astro', 'Direction, allocation, agent, workday, and audit timeline.', 'large', { items: 2 }, [
+    { name: 'viewModel', type: 'ActivityTimelineViewModel', defaultValue: { items: 2 }, description: 'Timeline view model.' },
+  ], undefined, '@treeseed/ui/components/astro/operating/ActivityTimeline.astro'),
   display('data-table', 'DataTable', 'Data', 'astro', 'Responsive tabular data.', 'large', { columns: 3, rows: 3 }, [
     { name: 'columns', type: 'DataTableColumn[]', defaultValue: 3, description: 'Column definitions.' },
     { name: 'rows', type: 'Record<string, unknown>[]', defaultValue: 3, description: 'Table rows.' },
@@ -266,6 +295,46 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'title', type: 'string', defaultValue: 'PageHeader preview', description: 'Heading text.' },
     { name: 'actions', type: 'ButtonAction[]', defaultValue: 1, description: 'Header actions.' },
   ], undefined, '@treeseed/ui/components/astro/layout/PageHeader.astro'),
+  display('action-bar', 'ActionBar', 'Layout', 'astro', 'Resolved action renderer with disabled reasons.', 'medium', { actions: 2 }, [
+    { name: 'actions', type: 'ResolvedAction[]', defaultValue: 2, description: 'Policy-resolved actions.' },
+    { name: 'label', type: 'string', defaultValue: 'Page actions', description: 'Navigation label.' },
+  ], undefined, '@treeseed/ui/components/astro/layout/ActionBar.astro'),
+  display('feedback-button', 'FeedbackButton', 'Feedback', 'astro', 'Shell feedback trigger bound to a shared dialog.', 'inline', { targetId: 'catalog-feedback' }, [
+    { name: 'targetId', type: 'string', defaultValue: 'catalog-feedback', description: 'Dialog id to open.' },
+    { name: 'label', type: 'string', defaultValue: 'Feedback', description: 'Visible button text.' },
+  ], undefined, '@treeseed/ui/components/astro/feedback/FeedbackButton.astro'),
+  display('feedback-dialog', 'FeedbackDialog', 'Feedback', 'astro', 'Feedback form with typed context and optional screenshot capture.', 'medium', { typeOptions: 5, screenshot: 'optional' }, [
+    { name: 'context', type: 'FeedbackContext', defaultValue: { shell: 'public' }, description: 'Policy-safe page context.' },
+    { name: 'id', type: 'string', defaultValue: 'catalog-feedback', description: 'Dialog id.' },
+  ], undefined, '@treeseed/ui/components/astro/feedback/FeedbackDialog.astro'),
+  display('feedback-redaction-boundary', 'FeedbackRedactionBoundary', 'Feedback', 'astro', 'Marks sensitive DOM regions for feedback screenshot masking.', 'inline', { reason: 'secret' }, [
+    { name: 'reason', type: 'string', defaultValue: 'secret', description: 'Redaction reason marker.' },
+  ], undefined, '@treeseed/ui/components/astro/feedback/FeedbackRedactionBoundary.astro'),
+  display('help-button', 'HelpButton', 'Help', 'astro', 'Shell help trigger bound to the shared contextual drawer.', 'inline', { targetId: 'catalog-help' }, [
+    { name: 'targetId', type: 'string', defaultValue: 'catalog-help', description: 'Drawer id to open.' },
+    { name: 'label', type: 'string', defaultValue: 'Help', description: 'Visible button text.' },
+  ], undefined, '@treeseed/ui/components/astro/help/HelpButton.astro'),
+  display('help-drawer', 'HelpDrawer', 'Help', 'astro', 'Contextual help drawer with lazy scoped search and feedback handoff.', 'medium', { topics: 2, actions: 2 }, [
+    { name: 'context', type: 'HelpContext', defaultValue: { shell: 'product' }, description: 'Policy-safe help context.' },
+    { name: 'id', type: 'string', defaultValue: 'catalog-help', description: 'Drawer id.' },
+  ], undefined, '@treeseed/ui/components/astro/help/HelpDrawer.astro'),
+  display('help-popover', 'HelpPopover', 'Help', 'astro', 'Compact contextual help summary for shell drawers.', 'small', { topics: 2 }, [
+    { name: 'context', type: 'HelpContext', defaultValue: { shell: 'product' }, description: 'Policy-safe help context.' },
+  ], undefined, '@treeseed/ui/components/astro/help/HelpPopover.astro'),
+  display('contextual-help-panel', 'ContextualHelpPanel', 'Help', 'astro', 'Full help panel with topics, action explanations, and feedback handoff.', 'medium', { topics: 2, actions: 2 }, [
+    { name: 'context', type: 'HelpContext', defaultValue: { shell: 'product' }, description: 'Policy-safe help context.' },
+    { name: 'feedbackTargetId', type: 'string | undefined', defaultValue: 'catalog-feedback', description: 'Optional feedback dialog id.' },
+  ], undefined, '@treeseed/ui/components/astro/help/ContextualHelpPanel.astro'),
+  display('help-topic-link', 'HelpTopicLink', 'Help', 'astro', 'Policy-safe link to a contextual help topic.', 'inline', { topicId: 'questions' }, [
+    { name: 'topic', type: 'HelpTopicLink', defaultValue: { title: 'Questions' }, description: 'Topic link metadata.' },
+  ], undefined, '@treeseed/ui/components/astro/help/HelpTopicLink.astro'),
+  display('help-action-list', 'HelpActionList', 'Help', 'astro', 'Resolved action help with unavailable-state reasons and remediation.', 'medium', { actions: 2 }, [
+    { name: 'actions', type: 'ResolvedAction[]', defaultValue: 2, description: 'Policy-resolved actions.' },
+  ], undefined, '@treeseed/ui/components/astro/help/HelpActionList.astro'),
+  display('permission-boundary', 'PermissionBoundary', 'Patterns', 'astro', 'Permission state boundary for allowed and denied content.', 'medium', { state: 'allowed' }, [
+    { name: 'state', type: 'ResolvedActionState', defaultValue: 'allowed', description: 'Resolved permission state.' },
+    { name: 'remediation', type: 'string', defaultValue: undefined, description: 'Optional remediation text.' },
+  ], undefined, '@treeseed/ui/components/astro/patterns/PermissionBoundary.astro'),
   display('panel', 'Panel', 'Surface', 'astro', 'Section panel with header, actions, and body.', 'medium', { title: 'Panel preview', tone: 'default' }, [
     { name: 'title', type: 'string', defaultValue: 'Panel preview', description: 'Panel heading.' },
     { name: 'tone', type: 'Tone', defaultValue: 'default', description: 'Semantic color tone.' },
@@ -282,10 +351,10 @@ export const componentCatalog: ComponentCatalogEntry[] = [
   display('theme-preview-swatch', 'ThemePreviewSwatch', 'Theme', 'astro', 'Color scheme preview swatch.', 'inline', { swatches: 4 }, [
     { name: 'swatches', type: 'string[]', defaultValue: 4, description: 'Preview colors.' },
   ], undefined, '@treeseed/ui/components/astro/theme/ThemePreviewSwatch.astro'),
-  display('app-shell', 'AppShell', 'Shell', 'astro', 'Full application shell layout.', 'full-page', { navItems: 4, quickActions: 1 }, [
+  display('product-shell', 'ProductShell', 'Shell', 'astro', 'Full authenticated product shell layout.', 'full-page', { navItems: 4, quickActions: 1 }, [
     { name: 'brand', type: 'Brand', defaultValue: 'TreeSeed', description: 'Shell brand.' },
     { name: 'navItems', type: 'NavItem[]', defaultValue: 4, description: 'Rail navigation.' },
-  ], undefined, '@treeseed/ui/components/astro/shell/AppShell.astro'),
+  ], undefined, '@treeseed/ui/components/astro/shell/ProductShell.astro'),
   display('bottom-nav', 'BottomNav', 'Shell', 'astro', 'Mobile bottom navigation.', 'medium', { items: 3, currentPath: '/displays/bottom-nav' }, [
     { name: 'items', type: 'NavItem[]', defaultValue: 3, description: 'Navigation items.' },
     { name: 'currentPath', type: 'string', defaultValue: '/displays/bottom-nav', description: 'Current path marker.' },
@@ -302,6 +371,30 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'brand', type: 'Brand', defaultValue: 'TreeSeed', description: 'Shell brand.' },
     { name: 'navItems', type: 'NavItem[]', defaultValue: 2, description: 'Public navigation.' },
   ], undefined, '@treeseed/ui/components/astro/shell/PublicShell.astro'),
+  display('collection-template', 'CollectionTemplate', 'Templates', 'astro', 'Collection page template for resource lists.', 'full-page', { rows: 3, actions: 1 }, [
+    { name: 'viewModel', type: 'CollectionViewModel', defaultValue: { rows: 3 }, description: 'Collection view model.' },
+    { name: 'actions', type: 'ResolvedAction[]', defaultValue: 1, description: 'Resolved actions.' },
+  ], undefined, '@treeseed/ui/components/astro/templates/CollectionTemplate.astro'),
+  display('dashboard-template', 'DashboardTemplate', 'Templates', 'astro', 'Context dashboard template for personal, team, project, and market surfaces.', 'full-page', { sections: 4, actions: 2 }, [
+    { name: 'viewModel', type: 'DashboardViewModel', defaultValue: { sections: 4 }, description: 'Dashboard view model.' },
+    { name: 'actions', type: 'ResolvedAction[]', defaultValue: 2, description: 'Resolved actions.' },
+  ], undefined, '@treeseed/ui/components/astro/templates/DashboardTemplate.astro'),
+  display('detail-template', 'DetailTemplate', 'Templates', 'astro', 'Detail page template for one resource.', 'full-page', { metadata: 3, actions: 1 }, [
+    { name: 'title', type: 'string', defaultValue: 'Question detail', description: 'Detail title.' },
+    { name: 'metadata', type: 'MetadataItem[]', defaultValue: 3, description: 'Aside metadata.' },
+  ], undefined, '@treeseed/ui/components/astro/templates/DetailTemplate.astro'),
+  display('reader-template', 'ReaderTemplate', 'Templates', 'astro', 'Reader page template for long-form knowledge.', 'full-page', { navItems: 3 }, [
+    { name: 'title', type: 'string', defaultValue: 'Knowledge page', description: 'Reader title.' },
+    { name: 'navItems', type: 'NavItem[]', defaultValue: 3, description: 'Reader navigation.' },
+  ], undefined, '@treeseed/ui/components/astro/templates/ReaderTemplate.astro'),
+  display('settings-template', 'SettingsTemplate', 'Templates', 'astro', 'Settings page template with section navigation.', 'full-page', { sections: 3 }, [
+    { name: 'title', type: 'string', defaultValue: 'Settings', description: 'Settings title.' },
+    { name: 'sections', type: 'SectionLink[]', defaultValue: 3, description: 'Settings sections.' },
+  ], undefined, '@treeseed/ui/components/astro/templates/SettingsTemplate.astro'),
+  display('workspace-template', 'WorkspaceTemplate', 'Templates', 'astro', 'Operating workspace template for workdays, agents, and allocation loops.', 'full-page', { sections: 3 }, [
+    { name: 'viewModel', type: 'WorkspaceViewModel', defaultValue: { sections: 3 }, description: 'Workspace view model.' },
+    { name: 'actions', type: 'ResolvedAction[]', defaultValue: 1, description: 'Resolved actions.' },
+  ], undefined, '@treeseed/ui/components/astro/templates/WorkspaceTemplate.astro'),
   display('rail-nav', 'RailNav', 'Shell', 'astro', 'Application rail navigation.', 'medium', { items: 4, currentPath: '/displays/rail-nav' }, [
     { name: 'items', type: 'NavItem[]', defaultValue: 4, description: 'Navigation links.' },
   ], undefined, '@treeseed/ui/components/astro/shell/RailNav.astro'),

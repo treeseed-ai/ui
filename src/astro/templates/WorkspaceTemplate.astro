@@ -1,0 +1,62 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import ResourceCard from '../surface/ResourceCard.astro';
+import AllocationPanel from '../operating/AllocationPanel.astro';
+import ActivityTimeline from '../operating/ActivityTimeline.astro';
+import WorkQueueSummary from '../operating/WorkQueueSummary.astro';
+import type { ResolvedAction, WorkspaceViewModel } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	viewModel: WorkspaceViewModel;
+	actions?: ResolvedAction[];
+	class?: string;
+}
+
+const { viewModel, actions = [], class: className } = Astro.props as Props;
+---
+
+<section class:list={['ts-template ts-template--workspace', className]} aria-label={viewModel.title}>
+	<PageHeader title={viewModel.title} description={viewModel.description}>
+		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
+	</PageHeader>
+	{viewModel.context.items.length ? (
+		<section class="ts-dashboard-section" aria-labelledby="workspace-context">
+			<header class="ts-dashboard-section__header">
+				<h2 id="workspace-context">{viewModel.context.title}</h2>
+				{viewModel.context.description ? <p>{viewModel.context.description}</p> : null}
+			</header>
+			<div class="ts-dashboard-metrics">
+				{viewModel.context.items.map((item) => (
+					<a class="ts-dashboard-metric" data-tone={item.tone ?? 'default'} href={item.href}>
+						<span class="ts-dashboard-metric__label">{item.label}</span>
+						<strong>{item.value}</strong>
+						{item.description ? <span>{item.description}</span> : null}
+					</a>
+				))}
+			</div>
+		</section>
+	) : (
+		<EmptyState title={viewModel.emptyTitle ?? 'No workspace context'} description={viewModel.emptyDescription} />
+	)}
+	<slot name="beforeContent" />
+	<div class="ts-workspace-grid">
+		{viewModel.allocation ? <AllocationPanel viewModel={viewModel.allocation} /> : null}
+		{viewModel.queue ? <WorkQueueSummary viewModel={viewModel.queue} /> : null}
+		{viewModel.timeline ? <ActivityTimeline viewModel={viewModel.timeline} /> : null}
+	</div>
+	{viewModel.resources?.length ? (
+		<section class="ts-dashboard-section" aria-labelledby="workspace-resources">
+			<header class="ts-dashboard-section__header">
+				<h2 id="workspace-resources">Related resources</h2>
+			</header>
+			<div class="ts-resource-grid">
+				{viewModel.resources.map((resource) => (
+					<ResourceCard title={resource.title} description={resource.description} href={resource.href} status={resource.status} meta={resource.meta} />
+				))}
+			</div>
+		</section>
+	) : null}
+	<slot />
+</section>

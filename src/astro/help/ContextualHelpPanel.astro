@@ -1,0 +1,95 @@
+---
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
+import HelpActionList from './HelpActionList.astro';
+import HelpTopicLink from './HelpTopicLink.astro';
+
+interface Props {
+	context: HelpContext;
+	feedbackTargetId?: string;
+	feedbackContext?: FeedbackContext;
+}
+
+const { context, feedbackTargetId, feedbackContext } = Astro.props as Props;
+const topics = context.topics ?? [];
+const topicLinks = context.relatedDocs;
+const primaryTopic = topics[0] ?? null;
+const feedbackPatch = {
+	source: 'help',
+	helpTopicId: primaryTopic?.id ?? context.topicIds[0],
+	helpTopicTitle: primaryTopic?.title ?? context.summary ?? 'Contextual help',
+	capabilityId: context.capabilityId,
+	routePattern: context.routePattern,
+	canonicalPath: context.canonicalPath,
+	resourceType: context.resourceType,
+	resourceId: context.resourceId,
+	shell: context.shell,
+	context: context.context,
+} satisfies Partial<FeedbackContext>;
+---
+
+<section class="ts-help-panel" data-ts-help-panel>
+	<header class="ts-help-panel__header">
+		<p class="ts-section__eyebrow">Contextual help</p>
+		<h2>{primaryTopic?.title ?? 'Help for this page'}</h2>
+		{context.summary ? <p>{context.summary}</p> : null}
+	</header>
+
+	<div class="ts-help-search" data-ts-help-search-root>
+		<label class="ts-field">
+			<span class="ts-field__label">Search this context</span>
+			<input
+				class="ts-control"
+				type="search"
+				placeholder={context.searchPlaceholder ?? 'Search help topics and actions'}
+				autocomplete="off"
+				data-ts-help-search-input
+			/>
+		</label>
+		<div class="ts-help-search__results" role="list" aria-live="polite" data-ts-help-search-results></div>
+		<script is:inline type="application/json" data-ts-help-search-data set:html={JSON.stringify({ topics, relatedDocs: topicLinks, actions: context.relatedActions })} />
+	</div>
+
+	{topics.length > 0 ? (
+		<div class="ts-help-panel__topics">
+			{topics.map((topic) => (
+				<article class="ts-help-topic" id={`help-topic-${topic.id}`}>
+					<div>
+						<h3>{topic.title}</h3>
+						<p>{topic.summary}</p>
+					</div>
+					{topic.bodyHtml ? <div class="ts-help-topic__body" set:html={topic.bodyHtml} /> : null}
+					{topic.href ? <a class="ts-help-topic__open" href={topic.href}>Open topic</a> : null}
+				</article>
+			))}
+		</div>
+	) : null}
+
+	{topicLinks.length > 0 ? (
+		<nav class="ts-help-panel__links" aria-label="Related help topics">
+			<h3>Related topics</h3>
+			{topicLinks.map((topic) => <HelpTopicLink topic={topic} />)}
+		</nav>
+	) : null}
+
+	{context.relatedActions.length > 0 ? (
+		<section class="ts-help-panel__actions" aria-labelledby="help-actions-heading">
+			<h3 id="help-actions-heading">Actions on this page</h3>
+			<HelpActionList actions={context.relatedActions} />
+		</section>
+	) : null}
+
+	{feedbackTargetId && feedbackContext ? (
+		<footer class="ts-help-panel__footer">
+			<button
+				class="ts-button"
+				data-variant="secondary"
+				type="button"
+				data-ts-feedback-open={feedbackTargetId}
+				data-ts-feedback-context-patch={JSON.stringify(feedbackPatch)}
+				data-ts-feedback-type={context.feedbackType ?? 'question'}
+			>
+				Send feedback about this help
+			</button>
+		</footer>
+	) : null}
+</section>

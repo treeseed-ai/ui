@@ -1,9 +1,10 @@
 ---
 import '../../styles/app-controls.css';
 import '../../styles/operations.css';
-import AppShell from '../shell/AppShell.astro';
+import ProductShell from '../shell/ProductShell.astro';
 import DeleteConfirmationModal from '../app/controls/DeleteConfirmationModal.astro';
 import SensitiveDataUnlock from '../app/sensitive/SensitiveDataUnlock.astro';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
 
 
@@ -24,6 +25,8 @@ interface Props {
 	appearance?: ThemePreference;
 	navItems?: Array<{ label: string; href: string }>;
 	quickActions?: Array<{ label: string; href: string; variant?: 'primary' | 'secondary' | 'ghost' | 'danger'; reload?: boolean }>;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
 	appearanceEndpoint?: string;
 }
 
@@ -37,15 +40,17 @@ const {
 	appearance = { scheme: 'fern', mode: 'system' },
 	navItems: providedNavItems,
 	quickActions: providedQuickActions,
+	helpContext,
+	feedbackContext,
 	appearanceEndpoint = '/v1/auth/web/appearance',
 } = Astro.props as Props;
 
 const railItems = providedNavItems ?? [
 	{ label: 'Start', href: '/app/' },
-	{ label: 'Hosts', href: '/app/hosts' },
+	{ label: 'Services', href: '/app/services' },
 	{ label: 'Projects', href: '/app/projects' },
 	{ label: 'Capacity', href: '/app/capacity/providers' },
-	{ label: 'Work', href: '/app/work/objectives' },
+	{ label: 'Work', href: '/app/work' },
 	{ label: 'Knowledge', href: '/app/knowledge/artifacts' },
 ];
 
@@ -74,7 +79,7 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 )) || forceSensitiveUnlock;
 ---
 
-<AppShell
+<ProductShell
 	title={title}
 	description={description}
 	currentPath={currentPath}
@@ -88,6 +93,8 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 	}}
 	navItems={railItems}
 	quickActions={quickActions}
+	helpContext={helpContext}
+	feedbackContext={feedbackContext}
 >
 	<div slot="railContext" class="ts-team-switcher">
 		<div class="ts-section__eyebrow">Team</div>
@@ -110,7 +117,7 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 	<slot />
 	{showSensitiveUnlock ? <SensitiveDataUnlock part="modal" slot="sensitiveModal" /> : null}
 	<DeleteConfirmationModal slot="modal" />
-</AppShell>
+</ProductShell>
 
 <script>
 	document.querySelectorAll('[data-team-switcher]').forEach((form) => {

@@ -17,6 +17,7 @@ export default defineConfig({
         index: 'src/index.ts',
         react: 'src/react.ts',
         'theme/index': 'src/theme/index.ts',
+        'lib/foundation/contracts': 'src/lib/foundation/contracts.ts',
         'lib/charts/index': 'src/lib/charts/index.ts',
         'lib/pie-allocation/math': 'src/lib/pie-allocation/math.ts',
         'react/pie-allocation/DynamicPieAllocationInput': 'src/react/pie-allocation/DynamicPieAllocationInput.tsx',

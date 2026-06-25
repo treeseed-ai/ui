@@ -6,8 +6,17 @@ import { SITE_NAV_GROUPS } from '../../utils/routes.ts';
 import { SITE } from '../../utils/seo.ts';
 import { SITE_THEME_CSS } from '../../utils/site-config.ts';
 import { normalizeThemePreference } from '../../utils/theme.ts';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 
-const { title, description, currentPath = '/' } = Astro.props;
+interface Props {
+	title?: string;
+	description?: string;
+	currentPath?: string;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
+}
+
+const { title, description, currentPath = '/', helpContext, feedbackContext } = Astro.props as Props;
 const appearance = normalizeThemePreference({
 	scheme: SITE.theme?.defaultScheme,
 	mode: SITE.theme?.defaultMode,
@@ -30,6 +39,8 @@ const navItems = SITE_NAV_GROUPS.flatMap((group) => group.items);
 	navItems={navItems}
 	navGroups={SITE_NAV_GROUPS}
 	contentWidth="content"
+	helpContext={helpContext}
+	feedbackContext={feedbackContext}
 >
 	<Fragment slot="head">
 		{SITE_THEME_CSS && <style is:global>{SITE_THEME_CSS}</style>}

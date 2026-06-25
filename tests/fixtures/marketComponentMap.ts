@@ -718,8 +718,8 @@ export const marketComponentMap = [
     "sandboxRoute": "/displays/page-header"
   },
   {
-    "uiPath": "src/astro/shell/AppShell.astro",
-    "sourcePath": "/home/adrian/Projects/treeseed/market/packages/core/src/components/ui/shell/AppShell.astro",
+    "uiPath": "src/astro/shell/ProductShell.astro",
+    "sourcePath": "/home/adrian/Projects/treeseed/market/packages/core/src/components/ui/shell/ProductShell.astro",
     "category": "Shell",
     "parityMode": "rendered-visual",
     "allowedSourceDifferences": [
@@ -729,7 +729,7 @@ export const marketComponentMap = [
       "route-base-props",
       "generic-component-names"
     ],
-    "sandboxRoute": "/displays/app-shell"
+    "sandboxRoute": "/displays/product-shell"
   },
   {
     "uiPath": "src/astro/shell/BottomNav.astro",

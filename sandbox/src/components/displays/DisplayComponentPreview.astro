@@ -6,8 +6,26 @@ import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
 import MetricCard from '../../../../src/astro/data/MetricCard.astro';
 import MetricGrid from '../../../../src/astro/data/MetricGrid.astro';
 import StatusPill from '../../../../src/astro/data/StatusPill.astro';
+import DistributionSummary from '../../../../src/astro/distribution/DistributionSummary.astro';
+import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
+import FeedbackButton from '../../../../src/astro/feedback/FeedbackButton.astro';
+import FeedbackDialog from '../../../../src/astro/feedback/FeedbackDialog.astro';
+import FeedbackRedactionBoundary from '../../../../src/astro/feedback/FeedbackRedactionBoundary.astro';
+import ContextualHelpPanel from '../../../../src/astro/help/ContextualHelpPanel.astro';
+import HelpActionList from '../../../../src/astro/help/HelpActionList.astro';
+import HelpButton from '../../../../src/astro/help/HelpButton.astro';
+import HelpDrawer from '../../../../src/astro/help/HelpDrawer.astro';
+import HelpPopover from '../../../../src/astro/help/HelpPopover.astro';
+import HelpTopicLink from '../../../../src/astro/help/HelpTopicLink.astro';
+import ActionBar from '../../../../src/astro/layout/ActionBar.astro';
 import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
+import ActivityTimeline from '../../../../src/astro/operating/ActivityTimeline.astro';
+import AllocationPanel from '../../../../src/astro/operating/AllocationPanel.astro';
+import AllocationStateLegend from '../../../../src/astro/operating/AllocationStateLegend.astro';
+import AllocationTree from '../../../../src/astro/operating/AllocationTree.astro';
+import WorkQueueSummary from '../../../../src/astro/operating/WorkQueueSummary.astro';
 import BottomNav from '../../../../src/astro/shell/BottomNav.astro';
+import ReadinessSummary from '../../../../src/astro/service/ReadinessSummary.astro';
 import ProjectHeader from '../../../../src/astro/shell/ProjectHeader.astro';
 import PublicFooter from '../../../../src/astro/shell/PublicFooter.astro';
 import RailNav from '../../../../src/astro/shell/RailNav.astro';
@@ -16,6 +34,14 @@ import TopBar from '../../../../src/astro/shell/TopBar.astro';
 import Card from '../../../../src/astro/surface/Card.astro';
 import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
 import Panel from '../../../../src/astro/surface/Panel.astro';
+import ResourceCard from '../../../../src/astro/surface/ResourceCard.astro';
+import PermissionBoundary from '../../../../src/astro/patterns/PermissionBoundary.astro';
+import CollectionTemplate from '../../../../src/astro/templates/CollectionTemplate.astro';
+import DashboardTemplate from '../../../../src/astro/templates/DashboardTemplate.astro';
+import DetailTemplate from '../../../../src/astro/templates/DetailTemplate.astro';
+import ReaderTemplate from '../../../../src/astro/templates/ReaderTemplate.astro';
+import SettingsTemplate from '../../../../src/astro/templates/SettingsTemplate.astro';
+import WorkspaceTemplate from '../../../../src/astro/templates/WorkspaceTemplate.astro';
 import ThemePreviewSwatch from '../../../../src/astro/theme/ThemePreviewSwatch.astro';
 import ContentFieldHelp from '../../../../src/astro/app/controls/ContentFieldHelp.astro';
 import DeleteConfirmationModal from '../../../../src/astro/app/controls/DeleteConfirmationModal.astro';
@@ -75,10 +101,10 @@ import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
 const navItems = [
-  { label: 'Overview', href: '/displays/app-shell' },
-  { label: 'Projects', href: '/displays/app-shell/projects' },
-  { label: 'Knowledge', href: '/displays/app-shell/knowledge' },
-  { label: 'Settings', href: '/displays/app-shell/settings' },
+  { label: 'Overview', href: '/displays/product-shell' },
+  { label: 'Projects', href: '/displays/product-shell/projects' },
+  { label: 'Knowledge', href: '/displays/product-shell/knowledge' },
+  { label: 'Settings', href: '/displays/product-shell/settings' },
 ];
 const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
 const hostRequirement = {
@@ -137,6 +163,174 @@ const tableRows = [
   { name: '<strong>Capacity Diagnostics</strong><span>Operations panel</span>', type: 'Panel', status: 'Draft', owner: 'Ops' },
   { name: '<strong>Knowledge Pack</strong><span>Generated artifact</span>', type: 'Artifact', status: 'Ready', owner: 'Knowledge' },
 ];
+const resolvedActions = [
+  { id: 'question.create', label: 'New question', state: 'allowed' as const, href: '/forms/button' },
+  { id: 'question.export', label: 'Export', state: 'disabledWithReason' as const, reason: 'Export arrives with the direction vertical.' },
+];
+const feedbackContext = {
+  url: 'https://ui.treeseed.test/displays/feedback-dialog',
+  canonicalPath: '/displays/feedback-dialog',
+  title: 'Feedback preview',
+  shell: 'public' as const,
+  context: 'public' as const,
+  submissionEndpoint: '/api/feedback/submit',
+  allowAnonymous: true,
+  screenshotPolicy: 'optional' as const,
+  attachmentStoragePolicy: 'public' as const,
+  environment: 'local' as const,
+};
+const helpContext = {
+  capabilityId: 'work.questions',
+  topicIds: ['work-content', 'questions'],
+  shell: 'product' as const,
+  context: 'project' as const,
+  resourceType: 'question',
+  routePattern: '/app/work/questions',
+  canonicalPath: '/app/work/questions',
+  template: 'collection' as const,
+  summary: 'Questions capture uncertainty that directs project work.',
+  topics: [
+    { id: 'questions', title: 'Question records', summary: 'Use questions to preserve the decisions and research the team still needs.', href: '/displays/help-topic-link', visibility: 'team' as const, source: 'capability' as const },
+    { id: 'question-actions', title: 'Action availability', summary: 'Unavailable actions explain their blocker and the next safe step.', visibility: 'team' as const, source: 'action-state' as const },
+  ],
+  relatedDocs: [
+    { topicId: 'questions', title: 'Questions overview', href: '/displays/help-topic-link', visibility: 'team' as const, summary: 'How question records guide work.', source: 'capability' as const, current: true },
+  ],
+  relatedActions: resolvedActions,
+  searchScope: 'project' as const,
+  searchPlaceholder: 'Search question help',
+  visibility: 'team' as const,
+  feedbackType: 'question' as const,
+};
+const collectionViewModel = {
+  title: 'Questions',
+  description: 'Reusable collection template preview.',
+  columns: tableColumns.slice(0, 3),
+  rows: [
+    { name: 'Launch risks', type: 'Question', status: 'Open' },
+    { name: 'Knowledge gaps', type: 'Question', status: 'Recorded' },
+  ],
+  resources: [
+    { id: 'launch-risks', title: 'Launch risks', description: 'What still blocks launch?', href: '/displays/resource-card', status: 'Open' },
+    { id: 'knowledge-gaps', title: 'Knowledge gaps', description: 'What should agents research next?', href: '/displays/resource-card', status: 'Recorded' },
+  ],
+  emptyTitle: 'No questions yet',
+  emptyDescription: 'Questions appear when users guide project direction.',
+};
+const dashboardViewModel = {
+  title: 'Project dashboard',
+  description: 'Context dashboard template preview.',
+  context: {
+    id: 'context',
+    title: 'Where you are',
+    description: 'Current scope and ownership.',
+    items: [
+      { label: 'Scope', value: 'Project', description: 'Monitoring Console', tone: 'info' as const },
+      { label: 'Team', value: 'Launch', description: 'Active operating team' },
+    ],
+  },
+  status: {
+    id: 'status',
+    title: 'Status',
+    description: 'Readiness at a glance.',
+    items: [
+      { label: 'Knowledge', value: 'Ready', description: 'Runtime content available', tone: 'success' as const },
+      { label: 'Open questions', value: 2, description: 'Needs direction', tone: 'warning' as const, href: '/displays/collection-template' },
+    ],
+  },
+  nextActions: [
+    { id: 'new-question', title: 'Clarify project direction', description: 'Capture the next uncertainty for the team.', href: '/displays/collection-template', status: 'Recommended' },
+    { id: 'review-reader', title: 'Review Knowledge Hub', description: 'Check the public runtime reader proof.', href: '/displays/reader-template', status: 'Ready' },
+  ],
+  primaryResources: [
+    { id: 'questions', title: 'Questions', description: 'Project direction records.', href: '/displays/collection-template', status: 'Level 5' },
+    { id: 'knowledge', title: 'Knowledge', description: 'Runtime reader resources.', href: '/displays/reader-template', status: 'Level 5' },
+  ],
+  alerts: [
+    { id: 'setup', title: 'Setup attention', description: 'Add capacity before the next workday.', tone: 'warning' as const, href: '/displays/resource-card' },
+  ],
+  activity: [
+    { id: 'question', title: 'Question added', description: 'Launch risks were recorded.', timestamp: '2026-06-10', tone: 'info' as const },
+  ],
+};
+const readinessViewModel = {
+  title: 'Service readiness',
+  description: 'Readiness summary preview.',
+  items: [
+    { id: 'hosts', label: 'Hosts', status: 'ready' as const, message: 'Repository and web hosts are connected.', href: '/displays/resource-card' },
+    { id: 'capacity', label: 'Capacity provider', status: 'warning' as const, message: 'Provider heartbeat has not reported recently.', href: '/displays/status-pill' },
+    { id: 'runtime', label: 'Runtime diagnostics', status: 'unknown' as const, message: 'Advanced diagnostics are hidden by default.', advanced: true },
+  ],
+};
+const distributionViewModel = {
+  title: 'Distribution readiness',
+  description: 'Release, entitlement, delivery, and install/import action state.',
+  items: [
+    { id: 'pack', title: 'Operations Knowledge Pack', description: 'Reusable project context and runbooks.', status: 'published' as const, entitlement: 'public' as const, delivery: 'cdn' as const, href: '/displays/distribution-summary', meta: 'knowledge import' },
+    { id: 'template', title: 'Workflow Import', description: 'Template gated by entitlement resolution.', status: 'review' as const, entitlement: 'authenticated' as const, delivery: 'contentProxy' as const, href: '/displays/distribution-summary', meta: 'workflow import' },
+    { id: 'release', title: 'Release Review', description: 'Publication is awaiting reviewer approval.', status: 'blocked' as const, entitlement: 'team' as const, delivery: 'queued' as const, meta: 'release' },
+  ],
+};
+const overlayStatusViewModel = {
+  state: 'preview' as const,
+  label: 'Overlay gated',
+  message: 'Editor and search bundles load only after authorized edit intent.',
+  routePattern: '/knowledge/:slug*',
+  resourceType: 'knowledge-page',
+  action: { id: 'overlay.intent', label: 'Prepare overlay', state: 'allowed' as const, href: '/displays/overlay-status#overlay' },
+};
+const allocationViewModel = {
+  title: 'Portfolio allocation',
+  description: 'Desired allocation, limits, reservations, active assignments, and actual usage.',
+  scopeLabel: 'Team portfolio',
+  tree: [{
+    id: 'team',
+    label: 'Launch team',
+    level: 'team' as const,
+    status: 'running' as const,
+    value: '100%',
+    current: true,
+    children: [
+      { id: 'project-a', label: 'Market Console', level: 'project' as const, status: 'ready' as const, value: '60%' },
+      { id: 'project-b', label: 'Knowledge Hub', level: 'project' as const, status: 'needsReview' as const, value: '40%' },
+    ],
+  }],
+  items: [
+    { id: 'desired', label: 'Market Console', status: 'ready' as const, desired: '60%', inheritedLimit: '80 credits', scheduledReservation: '18 credits', activeAssignment: '4 agents', actualUsage: '12 credits', message: 'Inside inherited limits.' },
+    { id: 'review', label: 'Knowledge Hub', status: 'needsReview' as const, desired: '40%', inheritedLimit: '50 credits', override: 'Pending', scheduledReservation: '20 credits', actualUsage: '31 credits', message: 'Review override before the next workday.' },
+  ],
+};
+const workQueueViewModel = {
+  title: 'Work queue',
+  description: 'Running, blocked, failed, and needs-review work.',
+  items: [
+    { id: 'running', title: 'Planning workday', status: 'running' as const, project: 'Market Console', agent: 'planner', description: 'Collecting project context.' },
+    { id: 'blocked', title: 'Release verification', status: 'blocked' as const, project: 'Knowledge Hub', agent: 'reviewer', description: 'Capacity approval required.' },
+  ],
+};
+const activityTimelineViewModel = {
+  title: 'Operating timeline',
+  description: 'Direction, allocation, agent, and review events.',
+  items: [
+    { id: 'direction', title: 'Question resolved', status: 'completed' as const, description: 'Launch risk was linked to a decision.', timestamp: '2026-06-10', meta: 'direction' },
+    { id: 'approval', title: 'Approval requested', status: 'needsReview' as const, description: 'Budget policy requires review.', timestamp: '2026-06-10', meta: 'governance' },
+  ],
+};
+const workspaceViewModel = {
+  title: 'Workday workspace',
+  description: 'Operating loop workspace preview.',
+  context: {
+    id: 'workspace-context',
+    title: 'Where you are',
+    items: [
+      { label: 'Project', value: 'Market Console', description: 'Active workday' },
+      { label: 'State', value: 'Running', tone: 'info' as const },
+    ],
+  },
+  allocation: allocationViewModel,
+  queue: workQueueViewModel,
+  timeline: activityTimelineViewModel,
+};
 const timelineItems = [
   { id: 'queued', phase: 'Queue', title: 'Operation queued', description: 'The release was accepted for guarded deployment.', status: 'queued', tone: 'info' as const, createdAt: '2026-06-10', meta: 'release/market-console' },
   { id: 'verified', phase: 'Verify', title: 'Smoke checks passed', description: 'HTTP checks and worker probes returned healthy results.', status: 'passed', tone: 'success' as const, createdAt: '2026-06-10', meta: '3 checks' },
@@ -214,6 +408,15 @@ const sidebarItems = [
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
 {entry.id === 'badge' ? <div class="primitive-inline"><Badge>Default</Badge><Badge tone="success">Success</Badge><Badge tone="warning">Warning</Badge><Badge tone="danger">Danger</Badge></div> : null}
 {entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
+{entry.id === 'resource-card' ? <ResourceCard title="Question record" description="What should the launch team clarify before agent work starts?" href="/displays/resource-card" status="recorded" meta="Project direction" /> : null}
+{entry.id === 'readiness-summary' ? <ReadinessSummary viewModel={readinessViewModel} /> : null}
+{entry.id === 'distribution-summary' ? <DistributionSummary viewModel={distributionViewModel} actions={resolvedActions} /> : null}
+{entry.id === 'overlay-status' ? <OverlayStatus viewModel={overlayStatusViewModel} /> : null}
+{entry.id === 'allocation-panel' ? <AllocationPanel viewModel={allocationViewModel} /> : null}
+{entry.id === 'allocation-tree' ? <AllocationTree nodes={allocationViewModel.tree} /> : null}
+{entry.id === 'allocation-state-legend' ? <AllocationStateLegend /> : null}
+{entry.id === 'work-queue-summary' ? <WorkQueueSummary viewModel={workQueueViewModel} /> : null}
+{entry.id === 'activity-timeline' ? <ActivityTimeline viewModel={activityTimelineViewModel} /> : null}
 {entry.id === 'data-table' ? <DataTable caption="DataTable preview" columns={tableColumns.slice(0, 3)} rows={[{ name: 'Monitoring Console', type: 'Template', status: 'Published' }, { name: 'Capacity Diagnostics', type: 'Panel', status: 'Draft' }, { name: 'Knowledge Pack', type: 'Artifact', status: 'Ready' }]} /> : null}
 {entry.id === 'empty-state' ? <EmptyState eyebrow="Empty state" title="No pending approvals" description="Reusable quiet state." actions={[{ label: 'Create approval', href: '/displays/empty-state', variant: 'secondary' }]} /> : null}
 {entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
@@ -221,6 +424,17 @@ const sidebarItems = [
 {entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
 {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
+{entry.id === 'action-bar' ? <ActionBar actions={resolvedActions} /> : null}
+{entry.id === 'feedback-button' ? <div class="primitive-inline"><FeedbackButton targetId="catalog-feedback" /><FeedbackDialog id="catalog-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'feedback-dialog' ? <div><FeedbackButton targetId="catalog-feedback-dialog" /><FeedbackDialog id="catalog-feedback-dialog" context={feedbackContext} /></div> : null}
+{entry.id === 'feedback-redaction-boundary' ? <p>Public value <FeedbackRedactionBoundary reason="secret">secret-token-preview</FeedbackRedactionBoundary></p> : null}
+{entry.id === 'help-button' ? <div class="primitive-inline"><HelpButton targetId="catalog-help" /><HelpDrawer id="catalog-help" context={helpContext} feedbackTargetId="catalog-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'help-drawer' ? <div class="primitive-inline"><HelpButton targetId="catalog-help-drawer" /><HelpDrawer id="catalog-help-drawer" context={helpContext} feedbackTargetId="catalog-help-drawer-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-drawer-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'help-popover' ? <HelpPopover context={helpContext} /> : null}
+{entry.id === 'contextual-help-panel' ? <div><ContextualHelpPanel context={helpContext} feedbackTargetId="catalog-contextual-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-contextual-help-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'help-topic-link' ? <HelpTopicLink topic={helpContext.relatedDocs[0]} /> : null}
+{entry.id === 'help-action-list' ? <HelpActionList actions={resolvedActions} /> : null}
+{entry.id === 'permission-boundary' ? <PermissionBoundary state="disabledWithReason" title="Read-only context" remediation="Create access is unavailable in this preview."><Panel title="Allowed content"><p>This slot renders when permission is allowed or read-only.</p></Panel></PermissionBoundary> : null}
 {entry.id === 'panel' ? <Panel title="Panel preview" description="Header, actions, and body."><p>Panel body content sized like an application section.</p></Panel> : null}
 {entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
 {entry.id === 'status-pill' ? <div class="primitive-inline"><StatusPill tone="success">Healthy</StatusPill><StatusPill tone="warning">Delayed</StatusPill><StatusPill tone="danger">Blocked</StatusPill></div> : null}
@@ -231,6 +445,12 @@ const sidebarItems = [
 {entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
 {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
 {entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
+{entry.id === 'collection-template' ? <CollectionTemplate viewModel={collectionViewModel} actions={resolvedActions} /> : null}
+{entry.id === 'dashboard-template' ? <DashboardTemplate viewModel={dashboardViewModel} actions={resolvedActions} /> : null}
+{entry.id === 'detail-template' ? <DetailTemplate title="Question detail" description="Detail template preview." actions={resolvedActions} metadata={[{ key: 'Status', value: 'Open' }, { key: 'Type', value: 'Research' }]}><Panel title="Question body"><p>What should the launch team clarify before agent work starts?</p></Panel></DetailTemplate> : null}
+{entry.id === 'reader-template' ? <ReaderTemplate title="Knowledge page" description="Reader template preview." actions={resolvedActions} navItems={[{ label: 'Overview', href: '/displays/reader-template', current: true }, { label: 'Next', href: '/displays/reader-template/next' }]}><p>Reader content uses runtime data in later phases while keeping the frame reusable.</p></ReaderTemplate> : null}
+{entry.id === 'settings-template' ? <SettingsTemplate title="Settings" description="Settings template preview." actions={resolvedActions} sections={[{ label: 'General', href: '/displays/settings-template', current: true }, { label: 'Danger', href: '/displays/settings-template#danger' }]}><Panel title="General"><p>Settings content is supplied by route view models.</p></Panel></SettingsTemplate> : null}
+{entry.id === 'workspace-template' ? <WorkspaceTemplate viewModel={workspaceViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'content-field-help' ? <div class="primitive-inline"><span>Title</span><ContentFieldHelp label="Title" purpose="A short, scannable name for the record." example="Capacity launch review" /></div> : null}
 {entry.id === 'delete-confirmation-modal' ? <><button class="ts-button" type="button" onclick="window.treeseedDeleteConfirmation?.confirm({ requiredText: 'DELETE', itemName: 'Preview project' })">Open delete modal</button><DeleteConfirmationModal /></> : null}
 {entry.id === 'host-credential-permission-note' ? <HostCredentialPermissionNote hostType="web" /> : null}

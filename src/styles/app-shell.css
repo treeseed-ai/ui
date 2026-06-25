@@ -126,6 +126,25 @@
 	gap: var(--ts-space-1);
 }
 
+.ts-shell-context-action {
+	background: var(--ts-color-surface);
+	border: 1px solid var(--ts-color-border);
+	border-radius: var(--ts-radius-md);
+	color: var(--ts-color-text-muted);
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	min-height: 2rem;
+	padding: 0.32rem 0.55rem;
+}
+
+.ts-shell-context-action:hover,
+.ts-shell-context-action:focus-visible {
+	border-color: var(--ts-color-border-strong);
+	color: var(--ts-color-text);
+}
+
 .ts-app-shell__rail-context,
 .ts-app-shell__quick-actions {
 	border-top: 1px solid var(--ts-color-border);

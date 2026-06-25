@@ -1,0 +1,26 @@
+---
+interface Props {
+	targetId: string;
+	label?: string;
+	title?: string;
+	class?: string;
+}
+
+const {
+	targetId,
+	label = 'Help',
+	title = 'Open contextual help',
+	class: className = 'ts-shell-context-action',
+} = Astro.props as Props;
+---
+
+<button
+	class={className}
+	type="button"
+	title={title}
+	aria-label={title}
+	aria-haspopup="dialog"
+	data-ts-help-open={targetId}
+>
+	{label}
+</button>

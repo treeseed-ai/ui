@@ -19,7 +19,7 @@ test('unified component index groups forms and displays', async ({ page }) => {
   await expect(page.getByRole('link', { name: /ProjectActivityChart/ })).toHaveAttribute('href', '/displays/project-activity-chart');
   await expect(page.getByRole('link', { name: /^Button astro form/ })).toHaveAttribute('href', '/forms/button');
   await expect(page.getByRole('link', { name: /DataTable/ })).toHaveAttribute('href', '/displays/data-table');
-  await expect(page.getByRole('link', { name: /AppShell/ })).toHaveAttribute('href', '/displays/app-shell');
+  await expect(page.getByRole('link', { name: /ProductShell/ })).toHaveAttribute('href', '/displays/product-shell');
 });
 
 test('all registered component pages render preview and metadata', async ({ page }) => {
@@ -169,7 +169,7 @@ test('theme works on form and display pages without mobile overflow', async ({ p
   noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
   expect(noOverflow).toBe(true);
 
-  await page.goto('/displays/app-shell');
+  await page.goto('/displays/product-shell');
   await expect(page.locator('html')).toHaveAttribute('data-ts-scheme', 'moss-lab');
   await expect(page.locator('html')).toHaveAttribute('data-ts-mode', 'dark');
   noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);

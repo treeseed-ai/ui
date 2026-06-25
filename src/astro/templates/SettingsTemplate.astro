@@ -1,0 +1,48 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface SectionLink {
+	label: string;
+	href: string;
+	current?: boolean;
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	actions?: ResolvedAction[];
+	sections?: SectionLink[];
+	class?: string;
+}
+
+const {
+	title,
+	description,
+	actions = [],
+	sections = [],
+	class: className,
+} = Astro.props as Props;
+---
+
+<section class:list={['ts-template ts-template--settings', className]}>
+	<PageHeader title={title} description={description}>
+		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
+	</PageHeader>
+	<div class="ts-template__main">
+		{sections.length > 0 ? (
+			<nav class="ts-template__aside" aria-label="Settings sections">
+				<ul class="ts-settings-nav">
+					{sections.map((section) => (
+						<li><a href={section.href} aria-current={section.current ? 'page' : undefined}>{section.label}</a></li>
+					))}
+				</ul>
+			</nav>
+		) : null}
+		<div class="ts-template__body">
+			<slot />
+		</div>
+	</div>
+</section>
+

@@ -1,0 +1,51 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import StatusPill from '../data/StatusPill.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import type { DistributionSummaryViewModel, ResolvedAction } from '../../lib/foundation/contracts.ts';
+import type { Tone } from '../types.ts';
+
+interface Props {
+	viewModel: DistributionSummaryViewModel;
+	actions?: ResolvedAction[];
+	class?: string;
+}
+
+const { viewModel, actions = [], class: className } = Astro.props as Props;
+const labelId = `distribution-${viewModel.title.replace(/\W+/gu, '-').toLowerCase()}`;
+
+function toneForStatus(status: string): Tone {
+	if (status === 'published' || status === 'installed') return 'success';
+	if (status === 'review' || status === 'packaging') return 'info';
+	if (status === 'blocked' || status === 'unavailable') return 'danger';
+	return 'muted';
+}
+---
+
+<section class:list={['ts-distribution-summary', className]} aria-labelledby={labelId}>
+	<header class="ts-distribution-summary__header">
+		<div>
+			<h2 id={labelId}>{viewModel.title}</h2>
+			{viewModel.description ? <p>{viewModel.description}</p> : null}
+		</div>
+		<ActionBar actions={actions} label={`${viewModel.title} actions`} />
+	</header>
+	{viewModel.items.length > 0 ? (
+		<div class="ts-distribution-summary__grid">
+			{viewModel.items.map((item) => (
+				<a class="ts-distribution-card" href={item.href} data-status={item.status} data-entitlement={item.entitlement}>
+					<span class="ts-distribution-card__topline">
+						<StatusPill tone={toneForStatus(item.status)} label={item.status.replaceAll('_', ' ')} />
+						{item.entitlement ? <span>{item.entitlement.replaceAll('_', ' ')}</span> : null}
+					</span>
+					<strong>{item.title}</strong>
+					{item.description ? <span>{item.description}</span> : null}
+					{item.meta || item.delivery ? <small>{[item.meta, item.delivery?.replaceAll('_', ' ')].filter(Boolean).join(' · ')}</small> : null}
+					{item.action ? <em>{item.action.label}: {item.action.message ?? item.action.state}</em> : null}
+				</a>
+			))}
+		</div>
+	) : (
+		<EmptyState title={viewModel.emptyTitle ?? 'Nothing distributed yet'} description={viewModel.emptyDescription} />
+	)}
+</section>

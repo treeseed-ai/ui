@@ -16,7 +16,7 @@ export function getStaticPaths() {
 const props = Astro.props as { entry?: ComponentCatalogEntry };
 const entry = props.entry ?? findComponent('display', Astro.params.component) ?? displayComponents[0];
 const fullPagePreviewIds = new Set([
-  'app-shell',
+  'product-shell',
   'public-shell',
   'auth-shell',
   'app-layout',

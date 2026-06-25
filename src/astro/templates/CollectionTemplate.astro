@@ -1,0 +1,69 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import DataTable from '../data/DataTable.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import ResourceCard from '../surface/ResourceCard.astro';
+import type { CollectionViewModel, ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	viewModel: CollectionViewModel;
+	actions?: ResolvedAction[];
+	mode?: 'table' | 'cards';
+	class?: string;
+}
+
+const {
+	viewModel,
+	actions = [],
+	mode = viewModel.resources?.length ? 'cards' : 'table',
+	class: className,
+} = Astro.props as Props;
+---
+
+<section class:list={['ts-template ts-template--collection', className]} aria-label={viewModel.title}>
+	<PageHeader title={viewModel.title} description={viewModel.description}>
+		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
+	</PageHeader>
+	{viewModel.filters?.length ? (
+		<form class="ts-template__filters" method="get" aria-label={`${viewModel.title} filters`}>
+			{viewModel.filters.map((filter) => (
+				<label class="ts-field ts-template__filter">
+					<span class="ts-field__label">{filter.label}</span>
+					{filter.type === 'search' ? (
+						<input class="ts-control" type="search" name={filter.key} value={filter.value ?? ''} />
+					) : (
+						<select class="ts-control" name={filter.key}>
+							{filter.options?.map((option) => (
+								<option value={option.value} selected={(filter.value ?? '') === option.value}>{option.label}</option>
+							))}
+						</select>
+					)}
+				</label>
+			))}
+			<div class="ts-template__filter-actions">
+				<button class="ts-button" data-variant="secondary" data-size="sm" type="submit">Apply</button>
+				<a class="ts-button" data-variant="ghost" data-size="sm" href={Astro.url.pathname}>Reset</a>
+			</div>
+		</form>
+	) : null}
+	<slot name="beforeContent" />
+	{mode === 'cards' && viewModel.resources?.length ? (
+		<div class="ts-resource-grid">
+			{viewModel.resources.map((resource) => (
+				<ResourceCard
+					title={resource.title}
+					description={resource.description}
+					href={resource.href}
+					status={resource.status}
+					meta={resource.meta}
+				/>
+			))}
+		</div>
+	) : viewModel.rows.length > 0 ? (
+		<DataTable columns={viewModel.columns} rows={viewModel.rows} />
+	) : (
+		<EmptyState title={viewModel.emptyTitle} description={viewModel.emptyDescription} />
+	)}
+	<slot />
+</section>

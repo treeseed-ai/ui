@@ -1,0 +1,78 @@
+---
+import type { FeedbackContext } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	id: string;
+	context: FeedbackContext;
+}
+
+const { id, context } = Astro.props as Props;
+const title = context.title ? `Feedback about ${context.title}` : 'Send feedback';
+const screenshotEnabled = context.screenshotPolicy !== 'disabled';
+---
+
+<div class="ts-feedback-dialog" data-ts-feedback-dialog={id} hidden>
+	<div class="ts-feedback-dialog__backdrop" data-ts-feedback-close></div>
+	<section
+		class="ts-feedback-dialog__panel"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby={`${id}-title`}
+		aria-describedby={`${id}-description`}
+		tabindex="-1"
+	>
+		<header class="ts-feedback-dialog__header">
+			<div>
+				<p class="ts-section__eyebrow">Feedback</p>
+				<h2 id={`${id}-title`}>{title}</h2>
+				<p id={`${id}-description`}>Share what happened and the context will be attached safely.</p>
+			</div>
+			<button class="ts-feedback-dialog__close" type="button" aria-label="Close feedback" data-ts-feedback-close>Close</button>
+		</header>
+		<form class="ts-feedback-form" data-ts-feedback-form>
+			<script is:inline type="application/json" data-ts-feedback-context set:html={JSON.stringify(context)} />
+			<label class="ts-field">
+				<span class="ts-field__label">Type</span>
+				<select class="ts-control" name="type" required>
+					<option value="bug">Bug</option>
+					<option value="feature_suggestion">Feature suggestion</option>
+					<option value="question">Question</option>
+					<option value="content_issue">Content issue</option>
+					<option value="ux_issue">UX issue</option>
+				</select>
+			</label>
+			<label class="ts-field">
+				<span class="ts-field__label">Details</span>
+				<textarea class="ts-control" name="message" rows="6" maxlength="4000" required placeholder="What did you expect, and what happened?"></textarea>
+			</label>
+			<label class="ts-field">
+				<span class="ts-field__label">Contact email</span>
+				<input class="ts-control" type="email" name="contactEmail" autocomplete="email" placeholder="Optional" />
+			</label>
+			{ screenshotEnabled ? (
+				<div class="ts-feedback-screenshot" data-ts-feedback-screenshot>
+					<div class="ts-feedback-screenshot__copy">
+						<strong>Attach a redacted screenshot</strong>
+						<span>Optional. Private pages stay private and fields marked for redaction are masked.</span>
+					</div>
+					<div class="ts-feedback-screenshot__actions">
+						<button class="ts-button" data-variant="secondary" data-size="sm" type="button" data-ts-feedback-capture>Capture</button>
+						<button class="ts-button" data-variant="ghost" data-size="sm" type="button" data-ts-feedback-remove hidden>Remove</button>
+					</div>
+					<img class="ts-feedback-screenshot__preview" alt="Feedback screenshot preview" data-ts-feedback-preview hidden />
+				</div>
+			) : null}
+			<p class="ts-feedback-dialog__status" role="status" data-ts-feedback-status></p>
+			<footer class="ts-feedback-dialog__footer">
+				<button class="ts-button" data-variant="secondary" type="button" data-ts-feedback-close>Cancel</button>
+				<button class="ts-button" data-variant="primary" type="submit">Send feedback</button>
+			</footer>
+		</form>
+	</section>
+</div>
+
+<script>
+	import { initializeFeedbackDialogs } from '../../lib/feedback/dialog.ts';
+
+	initializeFeedbackDialogs();
+</script>

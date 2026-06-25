@@ -1,0 +1,33 @@
+---
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import StatusPill from '../data/StatusPill.astro';
+import { labelForOperatingStatus, toneForOperatingStatus } from './status.ts';
+import type { ActivityTimelineViewModel } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	viewModel: ActivityTimelineViewModel;
+	class?: string;
+}
+
+const { viewModel, class: className } = Astro.props as Props;
+---
+
+<Panel class:list={['ts-activity-timeline', className]} title={viewModel.title} description={viewModel.description}>
+	{viewModel.items.length ? (
+		<ol class="ts-activity-timeline__list">
+			{viewModel.items.map((item) => (
+				<li class="ts-activity-timeline__item" data-status={item.status}>
+					<StatusPill tone={toneForOperatingStatus(item.status)} label={labelForOperatingStatus(item.status)} />
+					<div>
+						<strong>{item.href ? <a href={item.href}>{item.title}</a> : item.title}</strong>
+						{item.description ? <p>{item.description}</p> : null}
+						{item.timestamp || item.meta ? <small>{[item.timestamp, item.meta].filter(Boolean).join(' · ')}</small> : null}
+					</div>
+				</li>
+			))}
+		</ol>
+	) : (
+		<EmptyState title={viewModel.emptyTitle ?? 'No activity yet'} description={viewModel.emptyDescription} />
+	)}
+</Panel>

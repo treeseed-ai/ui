@@ -1,0 +1,44 @@
+---
+import Button from '../forms/Button.astro';
+import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	actions?: ResolvedAction[];
+	label?: string;
+	class?: string;
+}
+
+const { actions = [], label = 'Page actions', class: className } = Astro.props as Props;
+const visibleActions = actions.filter((action) => action.state !== 'hidden');
+
+function disabledReason(action: ResolvedAction): string | undefined {
+	return action.reason || action.remediation;
+}
+---
+
+{visibleActions.length > 0 ? (
+	<nav class:list={['ts-action-bar', className]} aria-label={label}>
+		{visibleActions.map((action) => {
+			const disabled = action.state !== 'allowed';
+			const reason = disabledReason(action);
+			return (
+				<span class="ts-action-bar__item">
+					<Button
+						href={disabled ? undefined : action.href}
+						type={action.href ? undefined : 'button'}
+						variant={action.auditSensitivity === 'danger' ? 'danger' : action.state === 'allowed' ? 'primary' : 'secondary'}
+						disabled={disabled}
+						ariaLabel={reason ? `${action.label}. ${reason}` : action.label}
+						size="sm"
+						data-action-id={action.id}
+						data-action-state={action.state}
+					>
+						{action.label}
+					</Button>
+					{reason ? <span class="ts-action-bar__reason">{reason}</span> : null}
+				</span>
+			);
+		})}
+	</nav>
+) : null}
+

@@ -1,11 +1,12 @@
 ---
 interface Props {
 	projectId: string;
-	current: 'settings' | 'hosts' | 'deploy' | 'guidance' | 'decisions' | 'workdays' | 'agents' | 'artifacts' | 'delete';
+	current: 'overview' | 'settings' | 'hosts' | 'deploy' | 'guidance' | 'decisions' | 'workdays' | 'agents' | 'artifacts' | 'delete';
 }
 const { projectId, current } = Astro.props as Props;
 const encoded = encodeURIComponent(projectId);
 const items = [
+	{ key: 'overview', label: 'Overview', href: `/app/projects/${encoded}` },
 	{ key: 'settings', label: 'Settings', href: `/app/projects/${encoded}/settings` },
 	{ key: 'deploy', label: 'Deploy', href: `/app/projects/${encoded}/deploy` },
 	{ key: 'guidance', label: 'Guidance', href: `/app/projects/${encoded}/guidance` },

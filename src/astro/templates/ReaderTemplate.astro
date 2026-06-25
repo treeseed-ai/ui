@@ -1,0 +1,68 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface NavItem {
+	label: string;
+	href: string;
+	current?: boolean;
+}
+
+interface NavGroup {
+	label: string;
+	items: NavItem[];
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	actions?: ResolvedAction[];
+	navItems?: NavItem[];
+	navGroups?: NavGroup[];
+	class?: string;
+}
+
+const {
+	title,
+	description,
+	actions = [],
+	navItems = [],
+	navGroups = [],
+	class: className,
+} = Astro.props as Props;
+
+const hasGroupedNav = navGroups.some((group) => group.items.length > 0);
+---
+
+<article class:list={['ts-template ts-template--reader', className]}>
+	<PageHeader title={title} description={description}>
+		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
+	</PageHeader>
+	<div class="ts-template__main">
+		{hasGroupedNav || navItems.length > 0 ? (
+			<nav class="ts-template__aside" aria-label="Reader navigation">
+				<ul class="ts-reader-nav">
+					{navGroups.map((group) => (
+						group.items.length > 0 ? (
+							<li>
+								<span class="ts-reader-nav__group">{group.label}</span>
+								<ul>
+									{group.items.map((item) => (
+										<li><a href={item.href} aria-current={item.current ? 'page' : undefined}>{item.label}</a></li>
+									))}
+								</ul>
+							</li>
+						) : null
+					))}
+					{navItems.map((item) => (
+						<li><a href={item.href} aria-current={item.current ? 'page' : undefined}>{item.label}</a></li>
+					))}
+				</ul>
+			</nav>
+		) : null}
+		<section class="ts-template__reader-body">
+			<slot />
+		</section>
+	</div>
+</article>

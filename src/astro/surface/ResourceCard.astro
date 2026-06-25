@@ -1,0 +1,52 @@
+---
+import Badge from '../data/Badge.astro';
+import type { Tone } from '../types.ts';
+
+interface Props {
+	title: string;
+	description?: string;
+	href?: string;
+	status?: string;
+	meta?: string;
+	tone?: Tone;
+	class?: string;
+}
+
+const {
+	title,
+	description,
+	href,
+	status,
+	meta,
+	tone = 'default',
+	class: className,
+} = Astro.props as Props;
+---
+
+{href ? (
+	<a class:list={['ts-resource-card', className]} href={href}>
+		<div class="ts-resource-card__content">
+			<h3 class="ts-resource-card__title">{title}</h3>
+			{description && <p class="ts-resource-card__description">{description}</p>}
+		</div>
+		{(status || meta) && (
+			<div class="ts-resource-card__meta">
+				{status && <Badge tone={tone} size="sm">{status}</Badge>}
+				{meta && <span>{meta}</span>}
+			</div>
+		)}
+	</a>
+) : (
+	<article class:list={['ts-resource-card', className]}>
+		<div class="ts-resource-card__content">
+			<h3 class="ts-resource-card__title">{title}</h3>
+			{description && <p class="ts-resource-card__description">{description}</p>}
+		</div>
+		{(status || meta) && (
+			<div class="ts-resource-card__meta">
+				{status && <Badge tone={tone} size="sm">{status}</Badge>}
+				{meta && <span>{meta}</span>}
+			</div>
+		)}
+	</article>
+)}

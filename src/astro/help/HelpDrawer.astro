@@ -1,0 +1,41 @@
+---
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
+import ContextualHelpPanel from './ContextualHelpPanel.astro';
+import HelpPopover from './HelpPopover.astro';
+
+interface Props {
+	id: string;
+	context: HelpContext;
+	feedbackTargetId?: string;
+	feedbackContext?: FeedbackContext;
+}
+
+const { id, context, feedbackTargetId, feedbackContext } = Astro.props as Props;
+---
+
+<div class="ts-help-drawer" data-ts-help-drawer={id} hidden>
+	<div class="ts-help-drawer__backdrop" data-ts-help-close></div>
+	<section
+		class="ts-help-drawer__panel"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby={`${id}-title`}
+		tabindex="-1"
+	>
+		<header class="ts-help-drawer__header">
+			<div>
+				<p class="ts-section__eyebrow">Help</p>
+				<h2 id={`${id}-title`}>Page guidance</h2>
+			</div>
+			<button class="ts-help-drawer__close" type="button" aria-label="Close help" data-ts-help-close>Close</button>
+		</header>
+		<HelpPopover context={context} />
+		<ContextualHelpPanel context={context} feedbackTargetId={feedbackTargetId} feedbackContext={feedbackContext} />
+	</section>
+</div>
+
+<script>
+	import { initializeHelpDrawers } from '../../lib/help/drawer.ts';
+
+	initializeHelpDrawers();
+</script>

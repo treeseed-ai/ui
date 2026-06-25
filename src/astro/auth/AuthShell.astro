@@ -8,15 +8,30 @@ import { ClientRouter } from 'astro:transitions';
 import ThemeScript from '../theme/ThemeScript.astro';
 import ThemeMenu from '../theme/ThemeMenu.astro';
 import DevWatchReload from '../core/DevWatchReload.astro';
+import FeedbackButton from '../feedback/FeedbackButton.astro';
+import FeedbackDialog from '../feedback/FeedbackDialog.astro';
+import HelpButton from '../help/HelpButton.astro';
+import HelpDrawer from '../help/HelpDrawer.astro';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
 
 interface Props {
 	title: string;
 	description?: string;
 	appearance: ThemePreference;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
 }
 
-const { title, description = 'TreeSeed account access.', appearance } = Astro.props as Props;
+const {
+	title,
+	description = 'TreeSeed account access.',
+	appearance,
+	helpContext,
+	feedbackContext,
+} = Astro.props as Props;
+const feedbackDialogId = 'auth-shell-feedback';
+const helpDrawerId = 'auth-shell-help';
 ---
 
 <!doctype html>
@@ -31,11 +46,15 @@ const { title, description = 'TreeSeed account access.', appearance } = Astro.pr
 	</head>
 	<body>
 		<div class="auth-shell__appearance">
+			{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
+			{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
 			<ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} />
 		</div>
 		<main class="auth-shell">
 			<slot />
 		</main>
+		{helpContext ? <HelpDrawer id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
+		{feedbackContext ? <FeedbackDialog id={feedbackDialogId} context={feedbackContext} /> : null}
 		<DevWatchReload />
 		<script is:inline data-astro-rerun>
 			(() => {

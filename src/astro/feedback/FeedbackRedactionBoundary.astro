@@ -1,0 +1,11 @@
+---
+interface Props {
+	reason?: string;
+}
+
+const { reason = 'sensitive' } = Astro.props as Props;
+---
+
+<span data-ts-feedback-redact={reason}>
+	<slot />
+</span>

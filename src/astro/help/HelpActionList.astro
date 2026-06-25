@@ -1,0 +1,35 @@
+---
+import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	actions: ResolvedAction[];
+}
+
+const { actions } = Astro.props as Props;
+const visibleActions = actions.filter((action) => action.state !== 'hidden');
+const stateLabel: Record<string, string> = {
+	allowed: 'Available',
+	readOnly: 'Read only',
+	denied: 'Unavailable',
+	disabledWithReason: 'Unavailable',
+	requiresSignIn: 'Sign in required',
+	requiresUpgrade: 'Upgrade required',
+	requiresSetup: 'Setup required',
+	requiresEntitlement: 'Entitlement required',
+};
+---
+
+{visibleActions.length > 0 ? (
+	<ul class="ts-help-action-list" aria-label="Action help">
+		{visibleActions.map((action) => (
+			<li class="ts-help-action-list__item">
+				<div>
+					<strong>{action.label}</strong>
+					<span>{stateLabel[action.state] ?? action.state}</span>
+				</div>
+				{action.reason ? <p>{action.reason}</p> : null}
+				{action.remediation ? <p class="ts-help-action-list__remediation">{action.remediation}</p> : null}
+			</li>
+		))}
+	</ul>
+) : null}

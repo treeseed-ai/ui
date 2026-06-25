@@ -1,0 +1,14 @@
+---
+import type { HelpContext } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	context: HelpContext;
+}
+
+const { context } = Astro.props as Props;
+---
+
+<aside class="ts-help-popover" aria-label="Help summary">
+	<strong>{context.summary ?? 'Help is available for this page.'}</strong>
+	<span>{context.relatedActions.length} page actions · {context.relatedDocs.length + (context.topics?.length ?? 0)} topics</span>
+</aside>

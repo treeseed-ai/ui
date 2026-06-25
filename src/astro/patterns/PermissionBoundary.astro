@@ -1,0 +1,36 @@
+---
+import EmptyState from '../surface/EmptyState.astro';
+import type { ResolvedActionState } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	state?: ResolvedActionState;
+	title?: string;
+	description?: string;
+	remediation?: string;
+	class?: string;
+}
+
+const {
+	state = 'allowed',
+	title = 'Action unavailable',
+	description = 'This view is not available with the current permissions.',
+	remediation,
+	class: className,
+} = Astro.props as Props;
+
+const allowed = state === 'allowed' || state === 'readOnly';
+---
+
+{allowed ? (
+	<div class:list={['ts-permission-boundary', className]} data-permission-state={state}>
+		<slot />
+	</div>
+) : (
+	<EmptyState
+		class={className}
+		eyebrow="Permission"
+		title={title}
+		description={remediation ?? description}
+	/>
+)}
+

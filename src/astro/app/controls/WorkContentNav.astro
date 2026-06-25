@@ -1,10 +1,12 @@
 ---
 interface Props {
-	current: 'questions' | 'objectives' | 'notes' | 'proposals' | 'decisions';
+	current: 'work' | 'review' | 'questions' | 'objectives' | 'notes' | 'proposals' | 'decisions';
 }
 
 const { current } = Astro.props as Props;
 const items = [
+	{ key: 'work', label: 'Work', href: '/app/work' },
+	{ key: 'review', label: 'Review', href: '/app/work/review' },
 	{ key: 'objectives', label: 'Objectives', href: '/app/work/objectives' },
 	{ key: 'questions', label: 'Questions', href: '/app/work/questions' },
 	{ key: 'notes', label: 'Notes', href: '/app/work/notes' },

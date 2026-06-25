@@ -1,0 +1,51 @@
+---
+import ActionBar from '../layout/ActionBar.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import KeyValueList from '../data/KeyValueList.astro';
+import Panel from '../surface/Panel.astro';
+import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface MetadataItem {
+	key: string;
+	value: string;
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	eyebrow?: string;
+	actions?: ResolvedAction[];
+	metadata?: MetadataItem[];
+	class?: string;
+}
+
+const {
+	title,
+	description,
+	eyebrow,
+	actions = [],
+	metadata = [],
+	class: className,
+} = Astro.props as Props;
+---
+
+<article class:list={['ts-template ts-template--detail', className]}>
+	<PageHeader eyebrow={eyebrow} title={title} description={description}>
+		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
+	</PageHeader>
+	<div class="ts-template__main">
+		<section class="ts-template__body">
+			<slot />
+		</section>
+		{metadata.length > 0 || Astro.slots.has('aside') ? (
+			<aside class="ts-template__aside">
+				{metadata.length > 0 ? (
+					<Panel title="Details">
+						<KeyValueList items={metadata} />
+					</Panel>
+				) : null}
+				<slot name="aside" />
+			</aside>
+		) : null}
+	</div>
+</article>
