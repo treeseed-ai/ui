@@ -322,6 +322,69 @@ export interface OverlayStatusViewModel {
 	action?: ResolvedAction;
 }
 
+export type CommerceActionKind =
+	| 'browse'
+	| 'checkout'
+	| 'install'
+	| 'download'
+	| 'requestService'
+	| 'capacityInquiry'
+	| 'sellerSetup'
+	| 'stewardReview';
+
+export type CommerceEntitlementState =
+	| 'public'
+	| 'requiresSignIn'
+	| 'requiresPurchase'
+	| 'active'
+	| 'pendingPayment'
+	| 'expired'
+	| 'denied';
+
+export type CheckoutPaymentGroupState = 'pending' | 'requiresConfirmation' | 'processing' | 'succeeded' | 'failed' | 'canceled';
+
+export interface CommercePaymentGroupViewModel {
+	id: string;
+	label: string;
+	state: CheckoutPaymentGroupState;
+	amountLabel: string;
+	sellerLabel?: string;
+	action?: ResolvedAction;
+}
+
+export interface SellerReadinessViewModel {
+	status: ReadinessStatus;
+	items: ReadinessItem[];
+	nextAction?: ResolvedAction;
+}
+
+export interface CommerceOwnershipSummaryViewModel {
+	model: string;
+	summary: string;
+	stewards: Array<{ id?: string; label: string; role?: string }>;
+}
+
+export type GovernanceSignalKind = 'question' | 'proposal' | 'backing' | 'vote' | 'decision' | 'event';
+export type ProposalDecisionState = 'draft' | 'submitted' | 'underReview' | 'voting' | 'accepted' | 'rejected' | 'archived';
+
+export interface GovernanceSignalViewModel {
+	id: string;
+	kind: GovernanceSignalKind;
+	label: string;
+	description?: string;
+	weight?: number;
+	href?: string;
+}
+
+export interface ProposalDecisionViewModel {
+	id: string;
+	title: string;
+	state: ProposalDecisionState;
+	scope: string;
+	signals: GovernanceSignalViewModel[];
+	actions: ResolvedAction[];
+}
+
 export type OperatingStatus = 'ready' | 'running' | 'waiting' | 'blocked' | 'failed' | 'completed' | 'needsReview' | 'unknown';
 
 export interface AllocationSummaryItem {
