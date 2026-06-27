@@ -16,7 +16,7 @@ const {
 const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_required'].includes(String(approval?.state ?? '').toLowerCase());
 ---
 
-<Panel eyebrow="Decision" title="Review decision" description="Approve or reject this request with a short note.">
+<Panel eyebrow="Approval request" title="Review request" description="Approve or reject this operational request with a short note.">
 	<div class="ts-governance-decision">
 		<div class="ts-governance-decision__state">
 			<Badge tone={approval?.tone ?? 'default'}>{approval?.state ?? 'recorded'}</Badge>
@@ -25,8 +25,8 @@ const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_re
 		{pending ? (
 			<form method="post" action={action} class="ts-governance-decision__form">
 				<label>
-					<span>Decision note</span>
-					<textarea name="note" rows="4" placeholder="Record the operational rationale for this decision."></textarea>
+					<span>Approval note</span>
+					<textarea name="note" rows="4" placeholder="Record the operational rationale for this approval."></textarea>
 				</label>
 				<div class="ts-governance-decision__actions">
 					{(options.length > 0 ? options : [
@@ -38,7 +38,7 @@ const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_re
 				</div>
 			</form>
 		) : (
-			<p class="ts-empty-inline">This request has already been decided.</p>
+			<p class="ts-empty-inline">This request has already been reviewed.</p>
 		)}
 	</div>
 </Panel>
@@ -60,7 +60,7 @@ const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_re
 				return;
 			}
 			const envelope = await response.json().catch(() => null);
-			alert(envelope?.error ?? 'Decision could not be recorded.');
+			alert(envelope?.error ?? 'Approval could not be recorded.');
 		});
 	});
 </script>
