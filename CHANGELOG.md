@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.3] - 2026-07-02
+
+### Tests
+
+- test: reuse ui sandbox during release verify (878567aee3e1)
+
 ## [0.12.2] - 2026-07-01
 
 ### Changed
