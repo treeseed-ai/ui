@@ -253,7 +253,9 @@ async function main() {
     assertNoLocalDependencyLinks();
     run('npm', ['run', 'check']);
     run('npm', ['run', 'test:unit']);
-    run('npm', ['run', 'test:e2e']);
+    run('npm', ['run', 'test:e2e'], {
+      env: { TREESEED_UI_REUSE_TEST_SERVER: '1' },
+    });
     run('npm', ['run', 'build']);
     await assertExportTargetsExist();
     const tarballPath = packPackage();
