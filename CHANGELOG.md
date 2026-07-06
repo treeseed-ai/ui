@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.6] - 2026-07-06
+
+### Added
+
+- feat(agents): add starter agent profiles and configurations (58a67d7dc21e)
+
 ## [0.12.5] - 2026-07-02
 
 ### Changed
