@@ -1,4 +1,6 @@
 ---
+import SurfaceTabs from '../../shell/SurfaceTabs.astro';
+
 interface Props {
 	current: 'work' | 'review' | 'questions' | 'objectives' | 'notes' | 'proposals' | 'decisions';
 }
@@ -15,8 +17,4 @@ const items = [
 ];
 ---
 
-<nav class="ts-tabs" aria-label="Work content">
-	{items.map((item) => (
-		<a class="ts-tab" href={item.href} aria-current={item.key === current ? 'page' : undefined}>{item.label}</a>
-	))}
-</nav>
+<SurfaceTabs items={items.map((item) => ({ id: item.key, label: item.label, href: item.href }))} current={current} label="Work content" />

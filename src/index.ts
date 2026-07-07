@@ -6,4 +6,12 @@ export * from './lib/app/deployment-action-status.ts';
 export * from './lib/app/platform-operation-status.ts';
 export * from './lib/app/related-content-creator.ts';
 export * from './lib/app/markdown-field.ts';
+export type {
+	PublicSectionAction,
+	ShellBrand,
+	ShellNavItem,
+	SiteUserControlItem,
+	SurfaceTabItem,
+	TeamOperationItem,
+} from './astro/types.ts';
 export * from './react.ts';

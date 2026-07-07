@@ -43,10 +43,12 @@ import ReaderTemplate from '../../../../src/astro/templates/ReaderTemplate.astro
 import SettingsTemplate from '../../../../src/astro/templates/SettingsTemplate.astro';
 import WorkspaceTemplate from '../../../../src/astro/templates/WorkspaceTemplate.astro';
 import ThemePreviewSwatch from '../../../../src/astro/theme/ThemePreviewSwatch.astro';
+import ThemeScript from '../../../../src/astro/theme/ThemeScript.astro';
 import ContentFieldHelp from '../../../../src/astro/app/controls/ContentFieldHelp.astro';
 import DeleteConfirmationModal from '../../../../src/astro/app/controls/DeleteConfirmationModal.astro';
 import HostCredentialPermissionNote from '../../../../src/astro/app/controls/HostCredentialPermissionNote.astro';
 import LaunchRequirementSummary from '../../../../src/astro/app/controls/LaunchRequirementSummary.astro';
+import AppMarkdownField from '../../../../src/astro/app/controls/MarkdownField.astro';
 import PlainTable from '../../../../src/astro/app/controls/PlainTable.astro';
 import ProjectControlNav from '../../../../src/astro/app/controls/ProjectControlNav.astro';
 import RelatedContentCreator from '../../../../src/astro/app/controls/RelatedContentCreator.astro';
@@ -92,6 +94,17 @@ import CommonsStewardDecisionPanel from '../../../../src/astro/governance/Common
 import CommonsVoteSummary from '../../../../src/astro/governance/CommonsVoteSummary.astro';
 import CommonsWeightBreakdown from '../../../../src/astro/governance/CommonsWeightBreakdown.astro';
 import ProductCard from '../../../../src/astro/market/ProductCard.astro';
+import ControlSurface from '../../../../src/astro/shell/ControlSurface.astro';
+import ShellHeader from '../../../../src/astro/shell/ShellHeader.astro';
+import SiteUserControls from '../../../../src/astro/shell/SiteUserControls.astro';
+import SurfaceTabs from '../../../../src/astro/shell/SurfaceTabs.astro';
+import TeamOperationsDrawer from '../../../../src/astro/shell/TeamOperationsDrawer.astro';
+import TeamOperationsPanel from '../../../../src/astro/shell/TeamOperationsPanel.astro';
+import PublicHeroSection from '../../../../src/astro/public/PublicHeroSection.astro';
+import PublicKnowledgeSection from '../../../../src/astro/public/PublicKnowledgeSection.astro';
+import PublicProfileHeader from '../../../../src/astro/public/PublicProfileHeader.astro';
+import PublicSection from '../../../../src/astro/public/PublicSection.astro';
+import PublicStack from '../../../../src/astro/public/PublicStack.astro';
 import BookList from '../../../../src/astro/site/BookList.astro';
 import CTASection from '../../../../src/astro/site/CTASection.astro';
 import ChronicleList from '../../../../src/astro/site/ChronicleList.astro';
@@ -115,6 +128,23 @@ const navItems = [
   { label: 'Settings', href: '/displays/product-shell/settings' },
 ];
 const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+const appearance = { scheme: 'fern', mode: 'system' } as const;
+const siteItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Knowledge', href: '/knowledge/' },
+  { label: 'Market', href: '/market/' },
+];
+const teamOperationItems = [
+  { label: 'Dashboard', href: '/app/' },
+  { label: 'Projects', href: '/app/projects' },
+  { label: 'Knowledge', href: '/app/knowledge' },
+  { label: 'Market', href: '/market/' },
+];
+const surfaceTabItems = [
+  { id: 'overview', label: 'Overview', href: '/displays/surface-tabs', count: 2, panelId: 'surface-tabs-overview' },
+  { id: 'activity', label: 'Activity', href: '/displays/surface-tabs/activity', panelId: 'surface-tabs-activity' },
+  { id: 'settings', label: 'Settings', href: '/displays/surface-tabs/settings', panelId: 'surface-tabs-settings' },
+];
 const hostRequirement = {
   key: 'web-host',
   type: 'web',
@@ -447,9 +477,21 @@ const sidebarItems = [
 {entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
 {entry.id === 'status-pill' ? <div class="primitive-inline"><StatusPill tone="success">Healthy</StatusPill><StatusPill tone="warning">Delayed</StatusPill><StatusPill tone="danger">Blocked</StatusPill></div> : null}
 {entry.id === 'theme-preview-swatch' ? <ThemePreviewSwatch swatches={['#245b47', '#d8efe2', '#f2b84b', '#273142']} label="Theme preview swatch" /> : null}
+{entry.id === 'theme-script' ? <div><ThemeScript defaultScheme="fern" defaultMode="system" includeCss={false} /><p class="ts-subtle">ThemeScript is mounted for this preview with generated CSS disabled.</p><KeyValueList items={[{ key: 'Scheme', value: 'fern' }, { key: 'Mode', value: 'system' }]} /></div> : null}
+{entry.id === 'shell-header' ? <ShellHeader brand={brand} showMenuButton><Fragment slot="actions"><ShellIconLink href="/" label="Book home" icon="book" /></Fragment></ShellHeader> : null}
+{entry.id === 'site-user-controls' ? <SiteUserControls items={siteItems} currentPath="/knowledge/" appearance={appearance} helpContext={helpContext} feedbackContext={feedbackContext} showHomeLink showManagerLink /> : null}
+{entry.id === 'team-operations-panel' ? <TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }, { label: 'Browse market', href: '/market/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }, { label: 'Sign out', href: '/auth/sign-out', variant: 'ghost' }]}><Fragment slot="teamSelector"><Badge tone="info">Continuity Studio</Badge></Fragment></TeamOperationsPanel> : null}
+{entry.id === 'team-operations-drawer' ? <div><button class="ts-button" type="button" data-ts-team-drawer-open="catalog-team-drawer">Open drawer</button><TeamOperationsDrawer id="catalog-team-drawer"><TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }]} /><SiteUserControls items={siteItems} currentPath="/market/" appearance={appearance} showAppearanceControl={false} /></TeamOperationsDrawer></div> : null}
+{entry.id === 'control-surface' ? <ControlSurface title="Control surface" description="Header, actions, tabs, and body stay stable across app pages."><Fragment slot="actions"><a class="ts-button" href="/displays/control-surface">Action</a></Fragment><Fragment slot="tabs"><SurfaceTabs items={surfaceTabItems} current="overview" label="Control surface tabs" /></Fragment><Panel title="Surface body"><p>Application page content is rendered here.</p></Panel></ControlSurface> : null}
+{entry.id === 'surface-tabs' ? <div class="ts-public-stack"><SurfaceTabs items={surfaceTabItems} current="overview" label="Link tabs" /><div><SurfaceTabs items={surfaceTabItems} current="overview" label="Panel tabs" mode="panels" persist="none" /><section id="surface-tabs-overview"><Panel title="Overview panel"><p>Panel mode supports arrow-key navigation.</p></Panel></section><section id="surface-tabs-activity" hidden><Panel title="Activity panel"><p>Activity content.</p></Panel></section><section id="surface-tabs-settings" hidden><Panel title="Settings panel"><p>Settings content.</p></Panel></section></div></div> : null}
 {entry.id === 'bottom-nav' ? <BottomNav items={navItems.slice(0, 3)} currentPath="/displays/bottom-nav" /> : null}
 {entry.id === 'project-header' ? <ProjectHeader title="ProjectHeader" description="Project context header with tabs." badges={['Preview', 'Healthy']} currentPath="/displays/project-header" tabs={[{ label: 'Overview', href: '/displays/project-header' }, { label: 'Agents', href: '/displays/project-header/agents' }]} actions={[{ label: 'Settings', href: '/displays/project-header' }]} /> : null}
 {entry.id === 'public-footer' ? <PublicFooter brandName="TreeSeed UI" summary="Packaged components for TreeSeed applications." groups={[{ label: 'Sandbox', items: [{ label: 'Components', href: '/' }] }, { label: 'Package', items: [{ label: '@treeseed/ui', href: '/' }] }]} /> : null}
+{entry.id === 'public-stack' ? <PublicStack><PublicSection eyebrow="One" title="First section" description="Stacked public section." /><PublicSection eyebrow="Two" title="Second section" description="Consistent spacing between public page sections." /></PublicStack> : null}
+{entry.id === 'public-section' ? <PublicSection eyebrow="Public" title="Public section" description="Reusable single-column section with action slot." actions={[{ label: 'Open', href: '/displays/public-section', variant: 'secondary' }]}><Panel title="Section body"><p>Any public body content can render inside the section.</p></Panel></PublicSection> : null}
+{entry.id === 'public-hero-section' ? <PublicHeroSection eyebrow="TreeSeed" title="Public hero section" description="Accent section for public landing pages." actions={[{ label: 'Start', href: '/auth/register', variant: 'primary' }, { label: 'Read', href: '/knowledge/', variant: 'secondary' }]}><p>Hero body content remains stacked, readable, and inspectable.</p></PublicHeroSection> : null}
+{entry.id === 'public-profile-header' ? <PublicProfileHeader eyebrow="Public project" name="Market Console" handle="/p/market-console" meta="Public project profile" description="Public profile shell for shareable users, teams, and projects." /> : null}
+{entry.id === 'public-knowledge-section' ? <PublicKnowledgeSection title="Knowledge hub" description="Public knowledge and book pages use shared single-column sections." actions={[{ label: 'Open book', href: '/books/operations/', variant: 'secondary' }]}><Panel title="Book page"><p>Readable public knowledge content without app operations chrome.</p></Panel></PublicKnowledgeSection> : null}
 {entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
 {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
 {entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
@@ -460,6 +502,7 @@ const sidebarItems = [
 {entry.id === 'settings-template' ? <SettingsTemplate title="Settings" description="Settings template preview." actions={resolvedActions} sections={[{ label: 'General', href: '/displays/settings-template', current: true }, { label: 'Danger', href: '/displays/settings-template#danger' }]}><Panel title="General"><p>Settings content is supplied by route view models.</p></Panel></SettingsTemplate> : null}
 {entry.id === 'workspace-template' ? <WorkspaceTemplate viewModel={workspaceViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'content-field-help' ? <div class="primitive-inline"><span>Title</span><ContentFieldHelp label="Title" purpose="A short, scannable name for the record." example="Capacity launch review" /></div> : null}
+{entry.id === 'app-markdown-field' ? <AppMarkdownField label="Project note" name="project_note" value="## Launch note\n\nCapture the next review step." rows={8} help="Application work surfaces use this Markdown field variant." /> : null}
 {entry.id === 'delete-confirmation-modal' ? <><button class="ts-button" type="button" onclick="window.treeseedDeleteConfirmation?.confirm({ requiredText: 'DELETE', itemName: 'Preview project' })">Open delete modal</button><DeleteConfirmationModal /></> : null}
 {entry.id === 'host-credential-permission-note' ? <HostCredentialPermissionNote hostType="web" /> : null}
 {entry.id === 'launch-requirement-summary' ? <LaunchRequirementSummary templates={templates} defaultTemplateId="template:monitoring-console" /> : null}

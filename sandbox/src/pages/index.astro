@@ -42,8 +42,10 @@ const displayGroups = groupByCategory(displayComponents);
                     <span class="catalog-component-card__meta">
                       <span class="ts-badge" data-tone="info">{entry.runtime}</span>
                       <span class="ts-badge" data-tone="success">form</span>
+                      {entry.status === 'deprecated' ? <span class="ts-badge" data-tone="warning">deprecated</span> : null}
                     </span>
                     <span class="catalog-component-card__description">{entry.description}</span>
+                    {entry.replacement ? <span class="catalog-component-card__description">Use {entry.replacement} instead.</span> : null}
                   </a>
                 ))}
               </div>
@@ -74,8 +76,10 @@ const displayGroups = groupByCategory(displayComponents);
                     <span class="catalog-component-card__meta">
                       <span class="ts-badge" data-tone="info">{entry.runtime}</span>
                       <span class="ts-badge" data-tone="muted">display</span>
+                      {entry.status === 'deprecated' ? <span class="ts-badge" data-tone="warning">deprecated</span> : null}
                     </span>
                     <span class="catalog-component-card__description">{entry.description}</span>
+                    {entry.replacement ? <span class="catalog-component-card__description">Use {entry.replacement} instead.</span> : null}
                   </a>
                 ))}
               </div>

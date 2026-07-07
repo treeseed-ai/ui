@@ -2,8 +2,14 @@
 import Badge from '../../../../src/astro/data/Badge.astro';
 import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
 import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
+import ControlSurface from '../../../../src/astro/shell/ControlSurface.astro';
 import ProductShell from '../../../../src/astro/shell/ProductShell.astro';
 import PublicShell from '../../../../src/astro/shell/PublicShell.astro';
+import ShellFrame from '../../../../src/astro/shell/ShellFrame.astro';
+import ShellHeader from '../../../../src/astro/shell/ShellHeader.astro';
+import SiteUserControls from '../../../../src/astro/shell/SiteUserControls.astro';
+import SurfaceTabs from '../../../../src/astro/shell/SurfaceTabs.astro';
+import TeamOperationsPanel from '../../../../src/astro/shell/TeamOperationsPanel.astro';
 import Panel from '../../../../src/astro/surface/Panel.astro';
 import AuthShell from '../../../../src/astro/auth/AuthShell.astro';
 import AuthCard from '../../../../src/astro/auth/AuthCard.astro';
@@ -18,6 +24,11 @@ import ContentLayout from '../../../../src/astro/layouts/ContentLayout.astro';
 import MainLayout from '../../../../src/astro/layouts/MainLayout.astro';
 import NoteLayout from '../../../../src/astro/layouts/NoteLayout.astro';
 import ProfileLayout from '../../../../src/astro/layouts/ProfileLayout.astro';
+import PublicHeroSection from '../../../../src/astro/public/PublicHeroSection.astro';
+import PublicKnowledgeSection from '../../../../src/astro/public/PublicKnowledgeSection.astro';
+import PublicProfileHeader from '../../../../src/astro/public/PublicProfileHeader.astro';
+import PublicSingleColumnShell from '../../../../src/astro/public/PublicSingleColumnShell.astro';
+import PublicStack from '../../../../src/astro/public/PublicStack.astro';
 import RouteNotFound from '../../../../src/astro/site/RouteNotFound.astro';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 import { sandboxThemeConfig } from '../../lib/theme.ts';
@@ -85,6 +96,22 @@ const profile = {
   links: [{ label: 'Runbook', href: '/docs/runbook/' }],
 };
 const relatedEntry = { id: 'launch-question', data: { title: 'What blocks public launch?', name: 'Launch question' } };
+const siteItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Knowledge', href: '/knowledge/' },
+  { label: 'Market', href: '/market/' },
+];
+const teamOperationItems = [
+  { label: 'Dashboard', href: '/app/' },
+  { label: 'Projects', href: '/app/projects' },
+  { label: 'Knowledge', href: '/app/knowledge' },
+  { label: 'Market', href: '/market/' },
+];
+const surfaceTabs = [
+  { id: 'overview', label: 'Overview', href: '/displays/shell-frame', count: 3 },
+  { id: 'activity', label: 'Activity', href: '/displays/shell-frame/activity' },
+  { id: 'settings', label: 'Settings', href: '/displays/shell-frame/settings' },
+];
 ---
 
 {entry.id === 'product-shell' ? (
@@ -112,11 +139,44 @@ const relatedEntry = { id: 'launch-question', data: { title: 'What blocks public
   </AuthShell>
 ) : null}
 
+{entry.id === 'shell-frame' ? (
+  <ShellFrame title="ShellFrame" description={entry.description} appearance={appearance} feedbackContext={feedbackContext}>
+    <div class="ts-product-shell">
+      <ShellHeader brand={brand}>
+        <Fragment slot="actions">
+          <SiteUserControls items={siteItems} currentPath="/displays/shell-frame" appearance={appearance} showManagerLink />
+        </Fragment>
+      </ShellHeader>
+      <div class="ts-product-shell__layout">
+        <TeamOperationsPanel items={teamOperationItems} currentPath="/app/" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }]} />
+        <ControlSurface title="ShellFrame" description="Document, theme, feedback, and help frame with app-shell primitives.">
+          <Fragment slot="tabs"><SurfaceTabs items={surfaceTabs} current="overview" label="ShellFrame preview sections" /></Fragment>
+          <Panel title="Frame content"><p>ShellFrame supplies the shared document and global shell services while child primitives compose the visible layout.</p></Panel>
+        </ControlSurface>
+      </div>
+    </div>
+  </ShellFrame>
+) : null}
+
 {entry.id === 'app-layout' ? (
   <AppLayout title="AppLayout" description={entry.description} currentPath="/displays/app-layout" teams={teams} activeTeam={teams[0]} showSensitiveUnlock appearance={appearance}>
     <PageHeader title="AppLayout" description="Application layout with team switcher, app nav, modals, and unlock controls." />
     <Panel title="Active project"><KeyValueList items={[{ key: 'Team', value: 'Continuity Studio' }, { key: 'Route', value: '/app/projects' }]} /></Panel>
   </AppLayout>
+) : null}
+
+{entry.id === 'public-single-column-shell' ? (
+  <PublicSingleColumnShell title="PublicSingleColumnShell" description={entry.description} currentPath="/displays/public-single-column-shell" appearance={appearance} brand={brand} navItems={siteItems} actions={[{ label: 'Create account', href: '/auth/register', variant: 'primary' }]} feedbackContext={feedbackContext}>
+    <PublicStack>
+      <PublicHeroSection eyebrow="Public shell" title="Single-column public pages" description="Marketing, profiles, and knowledge pages share stacked sections without app operations chrome." actions={[{ label: 'Explore components', href: '/', variant: 'secondary' }]}>
+        <p>PublicShell compatibility delegates to this structure for signed-out experiences.</p>
+      </PublicHeroSection>
+      <PublicProfileHeader eyebrow="Public team" name="PublicSingleColumnShell" handle="@continuity" meta="Public team profile" description="Reusable profile masthead for users, teams, and projects." />
+      <PublicKnowledgeSection title="Knowledge hub section" description="Books and public knowledge can use the same stacked public section primitives." actions={[{ label: 'Open book', href: '/books/operations/', variant: 'secondary' }]}>
+        <Panel title="Knowledge preview"><p>Public knowledge content stays outside authenticated app shells.</p></Panel>
+      </PublicKnowledgeSection>
+    </PublicStack>
+  </PublicSingleColumnShell>
 ) : null}
 
 {entry.id === 'public-layout' ? (

@@ -12,6 +12,8 @@ export type ComponentCatalogEntry = {
   description: string;
   intendedSize: ComponentSize;
   packageEntry?: string;
+  status?: 'active' | 'deprecated';
+  replacement?: string;
   defaultProps: Record<string, unknown>;
   configurableProps: Array<{
     name: string;
@@ -32,7 +34,9 @@ const form = (
   defaultProps: Record<string, unknown>,
   configurableProps: ComponentCatalogEntry['configurableProps'],
   stateShape: Record<string, unknown> = { value: 'component-specific', submitted: null },
-  packageEntry?: string
+  packageEntry?: string,
+  status: ComponentCatalogEntry['status'] = 'active',
+  replacement?: string
 ): ComponentCatalogEntry => ({
   id,
   name,
@@ -45,6 +49,8 @@ const form = (
   packageEntry: packageEntry ?? (runtime === 'astro'
     ? `@treeseed/ui/components/astro/forms/${name}.astro`
     : `@treeseed/ui/components/react/${name}`),
+  status,
+  replacement,
   defaultProps,
   configurableProps,
   stateShape,
@@ -62,7 +68,9 @@ const display = (
   stateShape?: Record<string, unknown>,
   packageEntry = runtime === 'astro'
     ? `@treeseed/ui/components/astro/${category.toLowerCase()}/${name}.astro`
-    : `@treeseed/ui/components/react/${name}`
+    : `@treeseed/ui/components/react/${name}`,
+  status: ComponentCatalogEntry['status'] = 'active',
+  replacement?: string
 ): ComponentCatalogEntry => ({
   id,
   name,
@@ -73,6 +81,8 @@ const display = (
   description,
   intendedSize,
   packageEntry,
+  status,
+  replacement,
   defaultProps,
   configurableProps,
   stateShape,
@@ -351,26 +361,82 @@ export const componentCatalog: ComponentCatalogEntry[] = [
   display('theme-preview-swatch', 'ThemePreviewSwatch', 'Theme', 'astro', 'Color scheme preview swatch.', 'inline', { swatches: 4 }, [
     { name: 'swatches', type: 'string[]', defaultValue: 4, description: 'Preview colors.' },
   ], undefined, '@treeseed/ui/components/astro/theme/ThemePreviewSwatch.astro'),
-  display('product-shell', 'ProductShell', 'Shell', 'astro', 'Full authenticated product shell layout.', 'full-page', { navItems: 4, quickActions: 1 }, [
+  display('theme-script', 'ThemeScript', 'Theme', 'astro', 'Document theme bootstrap script and optional generated theme CSS.', 'inline', { defaultScheme: 'fern', defaultMode: 'system', includeCss: false }, [
+    { name: 'defaultScheme', type: 'ThemePreference["scheme"]', defaultValue: 'fern', description: 'Initial color scheme.' },
+    { name: 'defaultMode', type: 'ThemePreference["mode"]', defaultValue: 'system', description: 'Initial theme mode.' },
+    { name: 'includeCss', type: 'boolean', defaultValue: false, description: 'Whether to emit generated theme CSS.' },
+  ], undefined, '@treeseed/ui/components/astro/theme/ThemeScript.astro'),
+  display('product-shell', 'ProductShell', 'Shells', 'astro', 'Authenticated application shell compatibility wrapper backed by the new shell primitives.', 'full-page', { navItems: 4, quickActions: 1 }, [
     { name: 'brand', type: 'Brand', defaultValue: 'TreeSeed', description: 'Shell brand.' },
     { name: 'navItems', type: 'NavItem[]', defaultValue: 4, description: 'Rail navigation.' },
   ], undefined, '@treeseed/ui/components/astro/shell/ProductShell.astro'),
-  display('bottom-nav', 'BottomNav', 'Shell', 'astro', 'Mobile bottom navigation.', 'medium', { items: 3, currentPath: '/displays/bottom-nav' }, [
+  display('shell-frame', 'ShellFrame', 'Shells', 'astro', 'Shared document, theme, help, and feedback frame for TreeSeed shells.', 'full-page', { shell: 'document frame' }, [
+    { name: 'title', type: 'string', defaultValue: 'ShellFrame', description: 'Document title.' },
+    { name: 'appearance', type: 'ThemePreference', defaultValue: { scheme: 'fern', mode: 'system' }, description: 'Initial appearance.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/ShellFrame.astro'),
+  display('shell-header', 'ShellHeader', 'Shells', 'astro', 'Responsive brand header with optional mobile operations trigger.', 'medium', { brand: 'TreeSeed', showMenuButton: true }, [
+    { name: 'brand', type: 'ShellBrand', defaultValue: 'TreeSeed', description: 'Brand identity.' },
+    { name: 'showMenuButton', type: 'boolean', defaultValue: true, description: 'Shows the mobile drawer trigger.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/ShellHeader.astro'),
+  display('site-user-controls', 'SiteUserControls', 'Shells', 'astro', 'Site links, theme selection, help, feedback, and account utility controls.', 'large', { links: 3, utilities: 4 }, [
+    { name: 'items', type: 'SiteUserControlItem[]', defaultValue: 3, description: 'Site-level links.' },
+    { name: 'showAppearanceControl', type: 'boolean', defaultValue: true, description: 'Shows theme controls.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/SiteUserControls.astro'),
+  display('team-operations-panel', 'TeamOperationsPanel', 'Shells', 'astro', 'Desktop team selector, team operations navigation, team actions, and account actions.', 'large', { items: 5, quickActions: 2 }, [
+    { name: 'items', type: 'ShellNavItem[]', defaultValue: 5, description: 'Team operation links.' },
+    { name: 'quickActions', type: 'ButtonAction[]', defaultValue: 2, description: 'Team action buttons.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/TeamOperationsPanel.astro'),
+  display('team-operations-drawer', 'TeamOperationsDrawer', 'Shells', 'astro', 'Mobile drawer container for team operations, site controls, and account actions.', 'large', { title: 'Team operations' }, [
+    { name: 'id', type: 'string', defaultValue: 'team-operations-drawer', description: 'Drawer id.' },
+    { name: 'title', type: 'string', defaultValue: 'Team operations', description: 'Drawer heading.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/TeamOperationsDrawer.astro'),
+  display('control-surface', 'ControlSurface', 'Shells', 'astro', 'Canonical display/control surface with header, actions, tabs, and content slots.', 'large', { title: 'Control surface', actions: 1, tabs: 3 }, [
+    { name: 'title', type: 'string', defaultValue: 'Control surface', description: 'Surface heading.' },
+    { name: 'description', type: 'string', defaultValue: 'Page content container.', description: 'Surface description.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/ControlSurface.astro'),
+  display('surface-tabs', 'SurfaceTabs', 'Shells', 'astro', 'Responsive canonical surface tabs for link navigation and in-page panels.', 'large', { mode: 'links', items: 3 }, [
+    { name: 'items', type: 'SurfaceTabItem[]', defaultValue: 3, description: 'Tabs to render.' },
+    { name: 'mode', type: "'links' | 'panels'", defaultValue: 'links', description: 'Navigation or panel behavior.' },
+  ], undefined, '@treeseed/ui/components/astro/shell/SurfaceTabs.astro'),
+  display('bottom-nav', 'BottomNav', 'Deprecated compatibility', 'astro', 'Deprecated mobile bottom navigation kept for one migration cycle; use ShellHeader and TeamOperationsDrawer instead.', 'medium', { items: 3, currentPath: '/displays/bottom-nav' }, [
     { name: 'items', type: 'NavItem[]', defaultValue: 3, description: 'Navigation items.' },
     { name: 'currentPath', type: 'string', defaultValue: '/displays/bottom-nav', description: 'Current path marker.' },
-  ], undefined, '@treeseed/ui/components/astro/shell/BottomNav.astro'),
-  display('project-header', 'ProjectHeader', 'Shell', 'astro', 'Project context header with badges, actions, and tabs.', 'large', { badges: 2, tabs: 2, actions: 1 }, [
+  ], undefined, '@treeseed/ui/components/astro/shell/BottomNav.astro', 'deprecated', 'ShellHeader + TeamOperationsDrawer'),
+  display('project-header', 'ProjectHeader', 'Shells', 'astro', 'Project context header with badges, actions, and tabs.', 'large', { badges: 2, tabs: 2, actions: 1 }, [
     { name: 'title', type: 'string', defaultValue: 'ProjectHeader', description: 'Project title.' },
     { name: 'tabs', type: 'TabItem[]', defaultValue: 2, description: 'Project tabs.' },
   ], undefined, '@treeseed/ui/components/astro/shell/ProjectHeader.astro'),
-  display('public-footer', 'PublicFooter', 'Shell', 'astro', 'Public marketing footer.', 'large', { groups: 2 }, [
+  display('public-footer', 'PublicFooter', 'Shells', 'astro', 'Public marketing footer.', 'large', { groups: 2 }, [
     { name: 'brandName', type: 'string', defaultValue: 'TreeSeed UI', description: 'Footer brand.' },
     { name: 'groups', type: 'FooterGroup[]', defaultValue: 2, description: 'Footer link groups.' },
   ], undefined, '@treeseed/ui/components/astro/shell/PublicFooter.astro'),
-  display('public-shell', 'PublicShell', 'Shell', 'astro', 'Full public site shell layout.', 'full-page', { navItems: 2, actions: 1 }, [
+  display('public-shell', 'PublicShell', 'Shells', 'astro', 'Public shell compatibility wrapper backed by PublicSingleColumnShell.', 'full-page', { navItems: 2, actions: 1 }, [
     { name: 'brand', type: 'Brand', defaultValue: 'TreeSeed', description: 'Shell brand.' },
     { name: 'navItems', type: 'NavItem[]', defaultValue: 2, description: 'Public navigation.' },
   ], undefined, '@treeseed/ui/components/astro/shell/PublicShell.astro'),
+  display('public-single-column-shell', 'PublicSingleColumnShell', 'Public', 'astro', 'Public single-column shell for marketing, profile, and knowledge pages.', 'full-page', { sections: 3, actions: 1 }, [
+    { name: 'brand', type: 'ShellBrand', defaultValue: 'TreeSeed', description: 'Public brand identity.' },
+    { name: 'navItems', type: 'SiteUserControlItem[]', defaultValue: 3, description: 'Public site links.' },
+  ], undefined, '@treeseed/ui/components/astro/public/PublicSingleColumnShell.astro'),
+  display('public-stack', 'PublicStack', 'Public', 'astro', 'Vertical stack primitive for public single-column pages.', 'large', { sections: 3 }, [
+    { name: 'class', type: 'string', defaultValue: undefined, description: 'Optional class name.' },
+  ], undefined, '@treeseed/ui/components/astro/public/PublicStack.astro'),
+  display('public-section', 'PublicSection', 'Public', 'astro', 'Reusable public page section with heading, actions, and tone.', 'large', { title: 'Public section', tone: 'panel' }, [
+    { name: 'tone', type: "'plain' | 'panel' | 'accent'", defaultValue: 'panel', description: 'Section treatment.' },
+    { name: 'actions', type: 'PublicSectionAction[]', defaultValue: 1, description: 'Section actions.' },
+  ], undefined, '@treeseed/ui/components/astro/public/PublicSection.astro'),
+  display('public-hero-section', 'PublicHeroSection', 'Public', 'astro', 'Accent public hero section for single-column pages.', 'large', { title: 'Public hero', actions: 2 }, [
+    { name: 'title', type: 'string', defaultValue: 'Public hero', description: 'Hero title.' },
+    { name: 'actions', type: 'PublicSectionAction[]', defaultValue: 2, description: 'Hero actions.' },
+  ], undefined, '@treeseed/ui/components/astro/public/PublicHeroSection.astro'),
+  display('public-profile-header', 'PublicProfileHeader', 'Public', 'astro', 'Public user, team, or project profile masthead.', 'large', { name: 'Continuity Studio', handle: '@continuity' }, [
+    { name: 'name', type: 'string', defaultValue: 'Continuity Studio', description: 'Profile display name.' },
+    { name: 'handle', type: 'string', defaultValue: '@continuity', description: 'Optional handle.' },
+  ], undefined, '@treeseed/ui/components/astro/public/PublicProfileHeader.astro'),
+  display('public-knowledge-section', 'PublicKnowledgeSection', 'Public', 'astro', 'Public knowledge/book section variant for single-column pages.', 'large', { title: 'Knowledge section' }, [
+    { name: 'title', type: 'string', defaultValue: 'Knowledge section', description: 'Knowledge section heading.' },
+    { name: 'actions', type: 'PublicSectionAction[]', defaultValue: 1, description: 'Knowledge section actions.' },
+  ], undefined, '@treeseed/ui/components/astro/public/PublicKnowledgeSection.astro'),
   display('collection-template', 'CollectionTemplate', 'Templates', 'astro', 'Collection page template for resource lists.', 'full-page', { rows: 3, actions: 1 }, [
     { name: 'viewModel', type: 'CollectionViewModel', defaultValue: { rows: 3 }, description: 'Collection view model.' },
     { name: 'actions', type: 'ResolvedAction[]', defaultValue: 1, description: 'Resolved actions.' },
@@ -395,20 +461,24 @@ export const componentCatalog: ComponentCatalogEntry[] = [
     { name: 'viewModel', type: 'WorkspaceViewModel', defaultValue: { sections: 3 }, description: 'Workspace view model.' },
     { name: 'actions', type: 'ResolvedAction[]', defaultValue: 1, description: 'Resolved actions.' },
   ], undefined, '@treeseed/ui/components/astro/templates/WorkspaceTemplate.astro'),
-  display('rail-nav', 'RailNav', 'Shell', 'astro', 'Application rail navigation.', 'medium', { items: 4, currentPath: '/displays/rail-nav' }, [
+  display('rail-nav', 'RailNav', 'Deprecated compatibility', 'astro', 'Deprecated application rail navigation kept for one migration cycle; use TeamOperationsPanel instead.', 'medium', { items: 4, currentPath: '/displays/rail-nav' }, [
     { name: 'items', type: 'NavItem[]', defaultValue: 4, description: 'Navigation links.' },
-  ], undefined, '@treeseed/ui/components/astro/shell/RailNav.astro'),
-  display('shell-icon-link', 'ShellIconLink', 'Shell', 'astro', 'Icon-only shell utility link.', 'inline', { icon: 'book' }, [
+  ], undefined, '@treeseed/ui/components/astro/shell/RailNav.astro', 'deprecated', 'TeamOperationsPanel'),
+  display('shell-icon-link', 'ShellIconLink', 'Shells', 'astro', 'Icon-only shell utility link.', 'inline', { icon: 'book' }, [
     { name: 'icon', type: "'book' | 'manager'", defaultValue: 'book', description: 'Icon glyph.' },
     { name: 'label', type: 'string', defaultValue: 'Book home', description: 'Accessible label.' },
   ], undefined, '@treeseed/ui/components/astro/shell/ShellIconLink.astro'),
-  display('top-bar', 'TopBar', 'Shell', 'astro', 'Brand and utility action bar.', 'large', { brand: 'TreeSeed', actions: 1 }, [
+  display('top-bar', 'TopBar', 'Shells', 'astro', 'Brand and utility action bar.', 'large', { brand: 'TreeSeed', actions: 1 }, [
     { name: 'brand', type: 'Brand', defaultValue: 'TreeSeed', description: 'Top bar brand.' },
     { name: 'actions', type: 'ButtonAction[]', defaultValue: 1, description: 'Utility actions.' },
   ], undefined, '@treeseed/ui/components/astro/shell/TopBar.astro'),
 ];
 
 componentCatalog.push(
+  display('app-markdown-field', 'AppMarkdownField', 'App Controls', 'astro', 'Application Markdown field variant used by authenticated work surfaces.', 'large', { label: 'Project note', rows: 8 }, [
+    { name: 'label', type: 'string', defaultValue: 'Project note', description: 'Field label.' },
+    { name: 'rows', type: 'number', defaultValue: 8, description: 'Editor height hint.' },
+  ], undefined, '@treeseed/ui/components/astro/app/controls/MarkdownField.astro'),
   display('content-field-help', 'ContentFieldHelp', 'App Controls', 'astro', 'Reusable ContentFieldHelp component copied into the TreeSeed UI library.', 'medium', { source: 'App Controls' }, [
     { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
   ], undefined, '@treeseed/ui/components/astro/app/controls/ContentFieldHelp.astro'),

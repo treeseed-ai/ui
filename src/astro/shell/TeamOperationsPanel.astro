@@ -1,0 +1,67 @@
+---
+import Button from '../forms/Button.astro';
+import type { ButtonAction, ShellNavItem } from '../types.ts';
+
+interface Props {
+	items: ShellNavItem[];
+	currentPath: string;
+	quickActions?: ButtonAction[];
+	accountActions?: ButtonAction[];
+	label?: string;
+	class?: string;
+}
+
+const {
+	items,
+	currentPath,
+	quickActions = [],
+	accountActions = [],
+	label = 'Team operations',
+	class: className,
+} = Astro.props as Props;
+
+function normalizePath(path: string) {
+	if (path.length <= 1) return path;
+	return path.replace(/\/+$/u, '');
+}
+
+function isCurrentPath(href: string) {
+	const current = normalizePath(currentPath);
+	const target = normalizePath(href);
+	if (target === '/') return current === '/';
+	if (target === '/app') return current === '/app';
+	return current === target || current.startsWith(`${target}/`);
+}
+---
+
+<aside class:list={['ts-team-operations', className]} aria-label={label}>
+	<div class="ts-team-operations__selector">
+		<slot name="teamSelector" />
+	</div>
+	<nav class="ts-team-operations__nav" aria-label={label}>
+		{items.map((item) => (
+			<a class="ts-team-operations__link" href={item.href} aria-label={item.ariaLabel} aria-current={isCurrentPath(item.href) ? 'page' : undefined}>
+				<span>{item.label}</span>
+			</a>
+		))}
+	</nav>
+	{quickActions.length > 0 ? (
+		<div class="ts-team-operations__actions">
+			<p class="ts-team-operations__eyebrow">Team actions</p>
+			{quickActions.map((action) => (
+				<Button href={action.href} type={action.type} variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} reload={action.reload} size="sm">
+					{action.label}
+				</Button>
+			))}
+		</div>
+	) : null}
+	{accountActions.length > 0 ? (
+		<div class="ts-team-operations__account">
+			{accountActions.map((action) => (
+				<Button href={action.href} type={action.type} variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} reload={action.reload} size="sm">
+					{action.label}
+				</Button>
+			))}
+		</div>
+	) : null}
+</aside>

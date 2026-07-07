@@ -1,0 +1,17 @@
+---
+import PublicSection from './PublicSection.astro';
+import type { PublicSectionAction } from '../types.ts';
+
+interface Props {
+	eyebrow?: string;
+	title: string;
+	description?: string;
+	actions?: PublicSectionAction[];
+	class?: string;
+}
+
+const { eyebrow, title, description, actions = [], class: className } = Astro.props as Props;
+---
+<PublicSection eyebrow={eyebrow} title={title} description={description} actions={actions} tone="accent" class={['ts-public-hero-section', className].filter(Boolean).join(' ')}>
+	<slot />
+</PublicSection>

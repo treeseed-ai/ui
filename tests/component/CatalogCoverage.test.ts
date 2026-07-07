@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { componentCatalog, formComponents } from '../../sandbox/src/lib/component-catalog';
@@ -12,6 +12,38 @@ function walkFiles(root: string): string[] {
 }
 
 describe('component catalog coverage', () => {
+  it('catalogs every exported Astro component package entry exactly once', () => {
+    const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+    const exportedAstroEntries = Object.keys(packageJson.exports)
+      .filter((key) => key.startsWith('./components/astro/') && key.endsWith('.astro'))
+      .map((key) => `@treeseed/ui/${key.slice(2)}`)
+      .sort();
+    const catalogAstroEntries = componentCatalog
+      .map((entry) => entry.packageEntry)
+      .filter((entry): entry is string => Boolean(entry?.startsWith('@treeseed/ui/components/astro/')))
+      .sort();
+    const duplicateCatalogEntries = catalogAstroEntries.filter((entry, index) => catalogAstroEntries.indexOf(entry) !== index);
+
+    expect(duplicateCatalogEntries, 'catalog package entries should be unique').toEqual([]);
+    expect(catalogAstroEntries, 'catalog should cover exported Astro components').toEqual(exportedAstroEntries);
+  });
+
+  it('keeps every full-page display wired to the full-page preview renderer', () => {
+    const displayRoute = readFileSync('sandbox/src/pages/displays/[component].astro', 'utf8');
+    const fullPagePreviewIds = new Set(
+      [...displayRoute.matchAll(/'([^']+)'/g)]
+        .map((match) => match[1])
+        .filter((id) => componentCatalog.some((entry) => entry.id === id)),
+    );
+    const missingFullPageIds = componentCatalog
+      .filter((entry) => entry.kind === 'display' && entry.intendedSize === 'full-page')
+      .filter((entry) => /\/(?:layouts|shell|public)\//.test(entry.packageEntry ?? '') || entry.packageEntry?.endsWith('/auth/AuthShell.astro'))
+      .filter((entry) => !fullPagePreviewIds.has(entry.id) && !displayRoute.includes(`entry.id === '${entry.id}'`))
+      .map((entry) => entry.id);
+
+    expect(missingFullPageIds, 'full-page displays should have explicit full-page previews').toEqual([]);
+  });
+
   it('catalogs every standalone source component with classification and package metadata', () => {
     const nonStandaloneComponents = new Set(['ThemeScript']);
     const catalogByName = new Map(componentCatalog.map((entry) => [entry.name, entry]));

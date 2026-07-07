@@ -1,0 +1,66 @@
+---
+import '../../styles/tokens.css';
+import '../../styles/theme.css';
+import '../../styles/ui.css';
+import '../../styles/forms.css';
+import '../../styles/app-shell.css';
+import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../theme/ThemeScript.astro';
+import FeedbackDialog from '../feedback/FeedbackDialog.astro';
+import HelpDrawer from '../help/HelpDrawer.astro';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
+import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
+
+interface Props {
+	title: string;
+	description?: string;
+	appearance: ThemePreference;
+	themeConfig?: TreeseedThemeConfig;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
+	helpDrawerId?: string;
+	feedbackDialogId?: string;
+	bodyClass?: string;
+	preferServerAppearance?: boolean;
+}
+
+const {
+	title,
+	description = 'TreeSeed',
+	appearance,
+	themeConfig,
+	helpContext,
+	feedbackContext,
+	helpDrawerId = 'shell-help',
+	feedbackDialogId = 'shell-feedback',
+	bodyClass,
+	preferServerAppearance = false,
+} = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+		<ThemeScript
+			defaultScheme={appearance.scheme}
+			defaultMode={appearance.mode}
+			preferDefaultPreference={preferServerAppearance}
+			themeConfig={themeConfig}
+		/>
+		<ClientRouter />
+		<slot name="head" />
+	</head>
+	<body class={bodyClass}>
+		<a class="ts-skip-link" href="#main-content">Skip to content</a>
+		<slot />
+		{helpContext ? <HelpDrawer id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
+		{feedbackContext ? <FeedbackDialog id={feedbackDialogId} context={feedbackContext} /> : null}
+		<slot name="bodyEnd" />
+	</body>
+</html>

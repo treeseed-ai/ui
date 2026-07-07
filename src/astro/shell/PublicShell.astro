@@ -1,41 +1,14 @@
 ---
-import '../../styles/tokens.css';
-import '../../styles/theme.css';
-import '../../styles/ui.css';
-import '../../styles/forms.css';
-import '../../styles/app-shell.css';
-import { ClientRouter } from 'astro:transitions';
-import ThemeScript from '../theme/ThemeScript.astro';
-import ThemeMenu from '../theme/ThemeMenu.astro';
-import TopBar from './TopBar.astro';
-import Button from '../forms/Button.astro';
-import PublicFooter from './PublicFooter.astro';
-import FeedbackButton from '../feedback/FeedbackButton.astro';
-import FeedbackDialog from '../feedback/FeedbackDialog.astro';
-import HelpButton from '../help/HelpButton.astro';
-import HelpDrawer from '../help/HelpDrawer.astro';
-import type { ButtonAction } from '../types.ts';
+import PublicSingleColumnShell from '../public/PublicSingleColumnShell.astro';
+import type { ButtonAction, ShellBrand, ShellNavItem } from '../types.ts';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
 
-interface Brand {
-	name: string;
-	tag?: string;
-	href: string;
-	logoSrc?: string;
-	logoAlt?: string;
-	mark?: string;
-}
-
-interface NavItem {
-	label: string;
-	href: string;
-	ariaLabel?: string;
-}
+// FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through PublicSingleColumnShell.
 
 interface NavGroup {
 	label: string;
-	items: NavItem[];
+	items: ShellNavItem[];
 }
 
 interface Props {
@@ -43,8 +16,8 @@ interface Props {
 	description: string;
 	currentPath: string;
 	appearance: ThemePreference;
-	brand: Brand;
-	navItems: NavItem[];
+	brand: ShellBrand;
+	navItems: ShellNavItem[];
 	navGroups?: NavGroup[];
 	actions?: ButtonAction[];
 	showAppearanceControl?: boolean;
@@ -66,135 +39,28 @@ const {
 	actions = [],
 	showAppearanceControl = true,
 	preferServerAppearance = false,
-	contentWidth = 'shell',
 	themeConfig,
 	helpContext,
 	feedbackContext,
 } = Astro.props as Props;
-const feedbackDialogId = 'public-shell-feedback';
-const helpDrawerId = 'public-shell-help';
-
-function isCurrentPath(href: string) {
-	if (href === '/') return currentPath === '/';
-	return currentPath === href || currentPath.startsWith(href);
-}
+const flattenedNav = navGroups.length > 0 ? navGroups.flatMap((group) => group.items) : navItems;
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-		<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
-		<ThemeScript
-			defaultScheme={appearance.scheme}
-			defaultMode={appearance.mode}
-			preferDefaultPreference={preferServerAppearance}
-			themeConfig={themeConfig}
-		/>
-		<ClientRouter />
-		<slot name="head" />
-	</head>
-	<body>
-		<a class="ts-skip-link" href="#main-content">Skip to content</a>
-		<div class:list={['ts-public-shell', contentWidth === 'content' && 'ts-public-shell--content']}>
-			<header class="ts-public-shell__header">
-				<TopBar brand={brand}>
-					<Fragment slot="actions">
-						<nav class="ts-public-shell__nav" aria-label="Primary" data-ts-public-nav>
-							{navGroups.length > 0 ? (
-								navGroups.map((group) => (
-									<details class="ts-public-shell__nav-group" data-ts-public-nav-group>
-										<summary
-											class:list={[
-												'ts-public-shell__link ts-public-shell__summary',
-												group.items.some((item) => isCurrentPath(item.href)) && 'ts-public-shell__summary--active',
-											]}
-										>
-											{group.label}
-											<span aria-hidden="true">▾</span>
-										</summary>
-										<div class="ts-public-shell__menu">
-											{group.items.map((item) => (
-												<a
-													class="ts-public-shell__menu-link"
-													href={item.href}
-													aria-label={item.ariaLabel}
-													aria-current={isCurrentPath(item.href) ? 'page' : undefined}
-												>
-													{item.label}
-												</a>
-											))}
-										</div>
-									</details>
-								))
-							) : (
-								navItems.map((item) => (
-									<a class="ts-public-shell__link" href={item.href} aria-label={item.ariaLabel} aria-current={isCurrentPath(item.href) ? 'page' : undefined}>
-										{item.label}
-									</a>
-								))
-							)}
-						</nav>
-						{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} /> : null}
-						{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
-						{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
-						{actions.map((action) => (
-							<Button
-								href={action.href}
-								type={action.type}
-								variant={action.variant ?? 'secondary'}
-								ariaLabel={action.ariaLabel}
-								disabled={action.disabled}
-								reload={action.reload}
-								size="sm"
-							>
-								{action.label}
-							</Button>
-						))}
-						<slot name="actions" />
-					</Fragment>
-				</TopBar>
-			</header>
-			<main class="ts-public-shell__main" id="main-content">
-				<slot />
-			</main>
-			{Astro.slots.has('footer') ? <slot name="footer" /> : <PublicFooter />}
-			<slot name="afterFooter" />
-		</div>
-		{helpContext ? <HelpDrawer id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
-		{feedbackContext ? <FeedbackDialog id={feedbackDialogId} context={feedbackContext} /> : null}
-		<script>
-			const publicNav = document.querySelector('[data-ts-public-nav]');
-			const navGroups = document.querySelectorAll<HTMLDetailsElement>('[data-ts-public-nav-group]');
-
-			navGroups.forEach((group) => {
-				group.addEventListener('toggle', () => {
-					if (!group.open) return;
-					navGroups.forEach((otherGroup) => {
-						if (otherGroup !== group) otherGroup.open = false;
-					});
-				});
-			});
-
-			document.addEventListener('click', (event) => {
-				if (!(publicNav instanceof HTMLElement)) return;
-				if (event.target instanceof Node && publicNav.contains(event.target)) return;
-				navGroups.forEach((group) => {
-					group.open = false;
-				});
-			});
-
-			publicNav?.addEventListener('click', (event) => {
-				const target = event.target;
-				if (!(target instanceof HTMLElement) || !target.closest('a')) return;
-				navGroups.forEach((group) => {
-					group.open = false;
-				});
-			});
-		</script>
-	</body>
-</html>
+<PublicSingleColumnShell
+	title={title}
+	description={description}
+	currentPath={currentPath}
+	appearance={appearance}
+	brand={brand}
+	navItems={flattenedNav}
+	actions={actions}
+	showAppearanceControl={showAppearanceControl}
+	preferServerAppearance={preferServerAppearance}
+	themeConfig={themeConfig}
+	helpContext={helpContext}
+	feedbackContext={feedbackContext}
+>
+	<Fragment slot="actions"><slot name="actions" /></Fragment>
+	<slot />
+	{Astro.slots.has('footer') ? <Fragment slot="footer"><slot name="footer" /></Fragment> : null}
+</PublicSingleColumnShell>

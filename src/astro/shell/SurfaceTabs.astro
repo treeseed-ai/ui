@@ -1,0 +1,127 @@
+---
+import type { SurfaceTabItem } from '../types.ts';
+
+interface Props {
+	items: SurfaceTabItem[];
+	current: string;
+	label?: string;
+	mode?: 'links' | 'panels';
+	variant?: 'surface' | 'compact';
+	wrap?: boolean;
+	persist?: 'hash' | 'query' | 'none';
+	queryParam?: string;
+	class?: string;
+}
+
+const {
+	items,
+	current,
+	label = 'Sections',
+	mode = 'links',
+	variant = 'surface',
+	wrap = false,
+	persist = 'hash',
+	queryParam = 'tab',
+	class: className,
+} = Astro.props as Props;
+const rootId = `tabs-${Math.random().toString(36).slice(2)}`;
+---
+
+<nav
+	id={rootId}
+	class:list={['ts-surface-tabs', `ts-surface-tabs--${variant}`, wrap && 'ts-surface-tabs--wrap', className]}
+	aria-label={label}
+	role={mode === 'panels' ? 'tablist' : undefined}
+	data-ts-surface-tabs={mode === 'panels' ? '' : undefined}
+	data-persist={persist}
+	data-query-param={queryParam}
+>
+	{items.map((item) => (
+		mode === 'panels' ? (
+			<button
+				class="ts-surface-tab"
+				type="button"
+				role="tab"
+				id={`${rootId}-${item.id}`}
+				aria-controls={item.panelId}
+				aria-selected={item.id === current ? 'true' : 'false'}
+				tabindex={item.id === current ? undefined : '-1'}
+				disabled={item.disabled}
+				data-ts-surface-tab={item.id}
+			>
+				<span>{item.label}</span>
+				{item.count !== undefined ? <small>{item.count}</small> : null}
+			</button>
+		) : (
+			<a
+				class="ts-surface-tab"
+				href={item.href}
+				aria-current={item.id === current ? 'page' : undefined}
+				aria-disabled={item.disabled ? 'true' : undefined}
+			>
+				<span>{item.label}</span>
+				{item.count !== undefined ? <small>{item.count}</small> : null}
+			</a>
+		)
+	))}
+</nav>
+
+{mode === 'panels' ? (
+	<script is:inline>
+		(() => {
+			const bindingKey = '__treeseedSurfaceTabsBound';
+			if (window[bindingKey]) return;
+			window[bindingKey] = true;
+
+			function activate(root, tab, updateUrl = true) {
+				const id = tab.dataset.tsSurfaceTab;
+				if (!id) return;
+				root.querySelectorAll('[data-ts-surface-tab]').forEach((candidate) => {
+					const selected = candidate === tab;
+					candidate.setAttribute('aria-selected', selected ? 'true' : 'false');
+					candidate.tabIndex = selected ? 0 : -1;
+				});
+				root.querySelectorAll('[data-ts-surface-tab]').forEach((candidate) => {
+					const panelId = candidate.getAttribute('aria-controls');
+					const panel = panelId ? document.getElementById(panelId) : null;
+					if (panel) panel.hidden = candidate !== tab;
+				});
+				if (!updateUrl) return;
+				const persist = root.dataset.persist || 'hash';
+				if (persist === 'hash') history.replaceState(null, '', `#${id}`);
+				if (persist === 'query') {
+					const url = new URL(window.location.href);
+					url.searchParams.set(root.dataset.queryParam || 'tab', id);
+					history.replaceState(null, '', url);
+				}
+			}
+
+			document.querySelectorAll('[data-ts-surface-tabs]').forEach((root) => {
+				const tabs = [...root.querySelectorAll('[data-ts-surface-tab]')];
+				const initial = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0];
+				if (initial) activate(root, initial, false);
+				root.addEventListener('click', (event) => {
+					const tab = event.target instanceof Element ? event.target.closest('[data-ts-surface-tab]') : null;
+					if (tab instanceof HTMLButtonElement) activate(root, tab);
+				});
+				root.addEventListener('keydown', (event) => {
+					if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+					const enabled = tabs.filter((tab) => !tab.disabled);
+					const currentIndex = enabled.indexOf(document.activeElement);
+					if (currentIndex < 0) return;
+					event.preventDefault();
+					const nextIndex = event.key === 'Home'
+						? 0
+						: event.key === 'End'
+							? enabled.length - 1
+							: event.key === 'ArrowLeft'
+								? (currentIndex - 1 + enabled.length) % enabled.length
+								: (currentIndex + 1) % enabled.length;
+					const next = enabled[nextIndex];
+					next.focus();
+					activate(root, next);
+				});
+			});
+		})();
+	</script>
+) : null}

@@ -1,0 +1,67 @@
+---
+interface Props {
+	id?: string;
+	title?: string;
+}
+
+const { id = 'team-operations-drawer', title = 'Team operations' } = Astro.props as Props;
+---
+
+<div class="ts-team-drawer" id={id} hidden data-ts-team-drawer>
+	<div class="ts-team-drawer__backdrop" data-ts-team-drawer-close={id}></div>
+	<section class="ts-team-drawer__panel" role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
+		<header class="ts-team-drawer__header">
+			<h2 id={`${id}-title`}>{title}</h2>
+			<button class="ts-shell-context-action" type="button" data-ts-team-drawer-close={id}>Close</button>
+		</header>
+		<slot />
+	</section>
+</div>
+
+<script is:inline>
+	(() => {
+		const bindingKey = '__treeseedTeamOperationsDrawerBound';
+		if (window[bindingKey]) return;
+		window[bindingKey] = true;
+
+		function drawerById(id) {
+			const drawer = document.getElementById(id);
+			return drawer?.matches('[data-ts-team-drawer]') ? drawer : null;
+		}
+
+		function openDrawer(id) {
+			const drawer = drawerById(id);
+			if (!drawer) return;
+			drawer.hidden = false;
+			document.documentElement.setAttribute('data-ts-drawer-open', 'true');
+			const closeButton = drawer.querySelector('[data-ts-team-drawer-close]');
+			if (closeButton instanceof HTMLElement) closeButton.focus();
+		}
+
+		function closeDrawer(id) {
+			const drawer = drawerById(id);
+			if (!drawer) return;
+			drawer.hidden = true;
+			document.documentElement.removeAttribute('data-ts-drawer-open');
+		}
+
+		document.addEventListener('click', (event) => {
+			const target = event.target;
+			if (!(target instanceof HTMLElement)) return;
+			const opener = target.closest('[data-ts-team-drawer-open]');
+			if (opener instanceof HTMLElement) {
+				openDrawer(opener.dataset.tsTeamDrawerOpen || 'team-operations-drawer');
+				return;
+			}
+			const closer = target.closest('[data-ts-team-drawer-close]');
+			if (closer instanceof HTMLElement) closeDrawer(closer.dataset.tsTeamDrawerClose || 'team-operations-drawer');
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key !== 'Escape') return;
+			document.querySelectorAll('[data-ts-team-drawer]:not([hidden])').forEach((drawer) => {
+				if (drawer instanceof HTMLElement) closeDrawer(drawer.id);
+			});
+		});
+	})();
+</script>

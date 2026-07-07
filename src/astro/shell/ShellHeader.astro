@@ -1,0 +1,39 @@
+---
+import type { ShellBrand } from '../types.ts';
+
+interface Props {
+	brand: ShellBrand;
+	showMenuButton?: boolean;
+	menuTargetId?: string;
+	class?: string;
+}
+
+const {
+	brand,
+	showMenuButton = false,
+	menuTargetId = 'team-operations-drawer',
+	class: className,
+} = Astro.props as Props;
+---
+
+<header class:list={['ts-shell-header', className]}>
+	<a class="ts-shell-brand" href={brand.href}>
+		<span class="ts-shell-brand__mark">
+			{brand.logoSrc ? <img src={brand.logoSrc} alt={brand.logoAlt ?? ''} width="60" height="60" loading="eager" /> : brand.mark}
+		</span>
+		<span class="ts-shell-brand__text">
+			<span class="ts-shell-brand__name">{brand.name}</span>
+			{brand.tag ? <span class="ts-shell-brand__tag">{brand.tag}</span> : null}
+		</span>
+	</a>
+	<div class="ts-shell-header__actions">
+		<slot name="actions" />
+		{showMenuButton ? (
+			<button class="ts-shell-menu-button" type="button" aria-label="Open team operations" aria-controls={menuTargetId} data-ts-team-drawer-open={menuTargetId}>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+			</button>
+		) : null}
+	</div>
+</header>

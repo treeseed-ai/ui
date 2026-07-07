@@ -19,8 +19,10 @@ const fullPagePreviewIds = new Set([
   'product-shell',
   'public-shell',
   'auth-shell',
+  'shell-frame',
   'app-layout',
   'public-layout',
+  'public-single-column-shell',
   'main-layout',
   'authored-entry-layout',
   'book-layout',
@@ -47,6 +49,7 @@ const configJson = JSON.stringify({
           <p class="sandbox-eyebrow">Displays / {entry.category}</p>
           <h1>{entry.name}</h1>
           <p>{entry.description}</p>
+          {entry.status === 'deprecated' ? <p><span class="ts-badge" data-tone="warning">deprecated</span>{entry.replacement ? ` Use ${entry.replacement} instead.` : ''}</p> : null}
         </div>
         <a class="ts-button" data-variant="secondary" href="/">All components</a>
       </header>

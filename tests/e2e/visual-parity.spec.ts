@@ -52,6 +52,8 @@ test.describe('market visual parity previews', () => {
 
     const routes = [
       { route: '/displays/auth-shell', selectors: ['.auth-shell', '.auth-card', '.auth-card__main'] },
+      { route: '/displays/shell-frame', selectors: ['.ts-shell-header', '.ts-control-surface', '.ts-surface-tabs'] },
+      { route: '/displays/public-single-column-shell', selectors: ['.ts-public-single-shell', '.ts-public-section', '.ts-public-profile-header'] },
       { route: '/displays/plain-table', selectors: ['.ts-plain-table', '.ts-record-card', '.ts-record-card__chips'] },
       {
         route: '/displays/deployment-timeline',

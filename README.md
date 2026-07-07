@@ -6,7 +6,9 @@ Use this package when you need Treeseed visual primitives. Use `@treeseed/admin`
 
 ## What You Can Build With UI
 
-- Treeseed app shells and public shells
+- Treeseed shell primitives for authenticated app, operational market, auth, and public single-column layouts
+- shared public stacked-section components for marketing, profiles, books, and Knowledge Hub pages
+- `SurfaceTabs` for routed and in-page control-surface subpages
 - auth cards and account surfaces
 - form controls and data-entry panels
 - operation status panels and deployment timelines
@@ -50,9 +52,13 @@ Admin contributes these styles through `@treeseed/admin/plugin` when a host app 
 import AppLayout from '@treeseed/ui/components/astro/layouts/AppLayout.astro';
 import Button from '@treeseed/ui/components/astro/forms/Button.astro';
 import Panel from '@treeseed/ui/components/astro/surface/Panel.astro';
+import SurfaceTabs from '@treeseed/ui/components/astro/shell/SurfaceTabs.astro';
 ---
 
 <AppLayout title="Operations">
+  <Fragment slot="tabs">
+    <SurfaceTabs label="Project controls" current="overview" items={[{ id: 'overview', label: 'Overview', href: '/app/projects/1' }]} />
+  </Fragment>
   <Panel title="Deployments">
     <Button type="submit">Deploy</Button>
   </Panel>
@@ -60,6 +66,19 @@ import Panel from '@treeseed/ui/components/astro/surface/Panel.astro';
 ```
 
 Import from package exports such as `@treeseed/ui/components/astro/...`. Do not import from `packages/ui/src`.
+
+## Shells And Registry
+
+Current shell work should compose these exported primitives:
+
+- `ShellFrame`, `ShellHeader`, `SiteUserControls`, `TeamOperationsPanel`, `TeamOperationsDrawer`, and `ControlSurface` for authenticated app and operational market shells.
+- `AuthShell` for authentication flows.
+- `PublicSingleColumnShell`, `PublicStack`, `PublicSection`, `PublicHeroSection`, `PublicProfileHeader`, and `PublicKnowledgeSection` for public marketing, profile, book, and Knowledge Hub pages.
+- `SurfaceTabs` for link tabs and accessible in-page tab panels inside a `ControlSurface` tab slot.
+
+`ProductShell`, `PublicShell`, `RailNav`, and `BottomNav` remain exported as compatibility/deprecated surfaces for one migration cycle. New host pages should use Admin/Core/Market layout wrappers that compose the current shell primitives.
+
+Every exported Astro component must appear in the sandbox registry at `sandbox/src/lib/component-catalog.ts`. Shells and layout-level components need representative full-page previews; deprecated compatibility entries must be labeled as deprecated.
 
 ## Use React Components
 

@@ -20,6 +20,13 @@ test('unified component index groups forms and displays', async ({ page }) => {
   await expect(page.getByRole('link', { name: /^Button astro form/ })).toHaveAttribute('href', '/forms/button');
   await expect(page.getByRole('link', { name: /DataTable/ })).toHaveAttribute('href', '/displays/data-table');
   await expect(page.getByRole('link', { name: /ProductShell/ })).toHaveAttribute('href', '/displays/product-shell');
+  await expect(page.getByRole('heading', { name: 'Shells' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Public' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Deprecated compatibility' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /ShellFrame/ })).toHaveAttribute('href', '/displays/shell-frame');
+  await expect(page.getByRole('link', { name: /SurfaceTabs/ })).toHaveAttribute('href', '/displays/surface-tabs');
+  await expect(page.getByRole('link', { name: /^PublicSingleColumnShell/ })).toHaveAttribute('href', '/displays/public-single-column-shell');
+  await expect(page.getByRole('link', { name: /BottomNav/ })).toContainText('deprecated');
 });
 
 test('all registered component pages render preview and metadata', async ({ page }) => {
@@ -149,6 +156,29 @@ test('app control preview pages expose interactive states', async ({ page }) => 
   await page.locator('input[name="treeseedSensitivePassphrase"]').fill('preview passphrase');
   await page.locator('[data-sensitive-mode="unlock"] button[type="submit"]').click();
   await expect(page.locator('[data-sensitive-unlock-label]')).toContainText('Sensitive data unlocked');
+});
+
+test('new shell registry previews expose responsive shell primitives', async ({ page }) => {
+  await page.goto('/displays/shell-frame');
+  await expect(page.locator('.ts-shell-header')).toBeVisible();
+  await expect(page.locator('.ts-team-operations')).toBeVisible();
+  await expect(page.locator('.ts-control-surface')).toBeVisible();
+
+  await page.goto('/displays/public-single-column-shell');
+  await expect(page.locator('.ts-public-single-shell')).toBeVisible();
+  await expect(page.locator('.ts-public-profile-header')).toBeVisible();
+  await expect(page.locator('.ts-public-section').first()).toBeVisible();
+
+  await page.goto('/displays/team-operations-drawer');
+  await page.getByRole('button', { name: 'Open drawer' }).click();
+  await expect(page.getByRole('dialog', { name: 'Team operations' })).toBeVisible();
+
+  await page.goto('/displays/surface-tabs');
+  const panelTabs = page.getByRole('tablist', { name: 'Panel tabs' });
+  await expect(panelTabs.getByRole('tab', { name: /Overview/ })).toHaveAttribute('aria-selected', 'true');
+  await panelTabs.getByRole('tab', { name: /Overview/ }).press('ArrowRight');
+  await expect(panelTabs.getByRole('tab', { name: /Activity/ })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('Activity content.')).toBeVisible();
 });
 
 test('theme works on form and display pages without mobile overflow', async ({ page }) => {

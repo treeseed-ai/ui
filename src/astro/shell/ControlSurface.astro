@@ -1,0 +1,25 @@
+---
+interface Props {
+	title?: string;
+	description?: string;
+	class?: string;
+}
+
+const { title, description, class: className } = Astro.props as Props;
+---
+
+<main class:list={['ts-control-surface', className]} id="main-content">
+	{title || description || Astro.slots.has('actions') ? (
+		<header class="ts-control-surface__header">
+			<div class="ts-control-surface__title">
+				{title ? <h1>{title}</h1> : null}
+				{description ? <p>{description}</p> : null}
+			</div>
+			{Astro.slots.has('actions') ? <div class="ts-control-surface__actions"><slot name="actions" /></div> : null}
+		</header>
+	) : null}
+	{Astro.slots.has('tabs') ? <div class="ts-control-surface__tabs"><slot name="tabs" /></div> : null}
+	<div class="ts-control-surface__body">
+		<slot />
+	</div>
+</main>

@@ -1,0 +1,41 @@
+---
+import type { PublicSectionAction } from '../types.ts';
+
+interface Props {
+	eyebrow?: string;
+	title?: string;
+	description?: string;
+	actions?: PublicSectionAction[];
+	tone?: 'plain' | 'panel' | 'accent';
+	class?: string;
+}
+
+const {
+	eyebrow,
+	title,
+	description,
+	actions = [],
+	tone = 'panel',
+	class: className,
+} = Astro.props as Props;
+---
+
+<section class:list={['ts-public-section', `ts-public-section--${tone}`, className]}>
+	{eyebrow || title || description || actions.length > 0 ? (
+		<header class="ts-public-section__header">
+			<div>
+				{eyebrow ? <p class="ts-public-section__eyebrow">{eyebrow}</p> : null}
+				{title ? <h2>{title}</h2> : null}
+				{description ? <p>{description}</p> : null}
+			</div>
+			{actions.length > 0 ? (
+				<div class="ts-public-section__actions">
+					{actions.map((action) => (
+						<a class="ts-button" data-variant={action.variant ?? 'secondary'} href={action.href} aria-label={action.ariaLabel}>{action.label}</a>
+					))}
+				</div>
+			) : null}
+		</header>
+	) : null}
+	<slot />
+</section>

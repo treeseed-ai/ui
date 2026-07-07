@@ -1,0 +1,7 @@
+---
+interface Props {
+	class?: string;
+}
+const { class: className } = Astro.props as Props;
+---
+<div class:list={['ts-public-stack', className]}><slot /></div>

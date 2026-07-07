@@ -1,0 +1,26 @@
+---
+interface Props {
+	eyebrow: string;
+	name: string;
+	handle?: string;
+	description?: string | null;
+	imageSrc?: string | null;
+	meta?: string;
+}
+
+const { eyebrow, name, handle, description, imageSrc, meta } = Astro.props as Props;
+const initial = name.trim().slice(0, 1).toUpperCase();
+---
+
+<section class="ts-public-profile-header">
+	<div class="ts-public-profile-header__avatar" aria-hidden="true">
+		{imageSrc ? <img src={imageSrc} alt="" loading="lazy" /> : <span>{initial}</span>}
+	</div>
+	<div class="ts-public-profile-header__content">
+		<p class="ts-public-section__eyebrow">{eyebrow}</p>
+		<h1>{name}</h1>
+		{handle ? <p class="ts-public-profile-header__handle">{handle}</p> : null}
+		{meta ? <p class="ts-public-profile-header__meta">{meta}</p> : null}
+		{description ? <p class="ts-public-profile-header__description">{description}</p> : null}
+	</div>
+</section>

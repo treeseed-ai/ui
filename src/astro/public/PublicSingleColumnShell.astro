@@ -1,0 +1,82 @@
+---
+import ShellFrame from '../shell/ShellFrame.astro';
+import ShellHeader from '../shell/ShellHeader.astro';
+import SiteUserControls from '../shell/SiteUserControls.astro';
+import PublicFooter from '../shell/PublicFooter.astro';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
+import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
+import type { ButtonAction, ShellBrand, SiteUserControlItem } from '../types.ts';
+
+interface Props {
+	title: string;
+	description?: string;
+	currentPath: string;
+	appearance: ThemePreference;
+	brand: ShellBrand;
+	navItems?: SiteUserControlItem[];
+	actions?: ButtonAction[];
+	showAppearanceControl?: boolean;
+	preferServerAppearance?: boolean;
+	themeConfig?: TreeseedThemeConfig;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
+}
+
+const {
+	title,
+	description = 'TreeSeed',
+	currentPath,
+	appearance,
+	brand,
+	navItems = [],
+	actions = [],
+	showAppearanceControl = true,
+	preferServerAppearance = false,
+	themeConfig,
+	helpContext,
+	feedbackContext,
+} = Astro.props as Props;
+const feedbackDialogId = 'public-shell-feedback';
+const helpDrawerId = 'public-shell-help';
+---
+
+<ShellFrame
+	title={title}
+	description={description}
+	appearance={appearance}
+	themeConfig={themeConfig}
+	helpContext={helpContext}
+	feedbackContext={feedbackContext}
+	helpDrawerId={helpDrawerId}
+	feedbackDialogId={feedbackDialogId}
+	preferServerAppearance={preferServerAppearance}
+	bodyClass="ts-public-single-body"
+>
+	<div class="ts-public-single-shell">
+		<ShellHeader brand={brand}>
+			<Fragment slot="actions">
+				<SiteUserControls
+					items={navItems}
+					currentPath={currentPath}
+					appearance={appearance}
+					themeConfig={themeConfig}
+					helpContext={helpContext}
+					feedbackContext={feedbackContext}
+					helpDrawerId={helpDrawerId}
+					feedbackDialogId={feedbackDialogId}
+					showAppearanceControl={showAppearanceControl}
+					showManagerLink
+				>
+					{actions.map((action) => (
+						<a class="ts-button" data-variant={action.variant ?? 'secondary'} data-size="sm" href={action.href} aria-label={action.ariaLabel}>{action.label}</a>
+					))}
+					<slot name="actions" />
+				</SiteUserControls>
+			</Fragment>
+		</ShellHeader>
+		<main class="ts-public-single-main" id="main-content">
+			<slot />
+		</main>
+		{Astro.slots.has('footer') ? <slot name="footer" /> : <PublicFooter />}
+	</div>
+</ShellFrame>

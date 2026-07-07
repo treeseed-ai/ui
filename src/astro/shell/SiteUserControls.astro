@@ -1,0 +1,62 @@
+---
+import ThemeMenu from '../theme/ThemeMenu.astro';
+import HelpButton from '../help/HelpButton.astro';
+import FeedbackButton from '../feedback/FeedbackButton.astro';
+import ShellIconLink from './ShellIconLink.astro';
+import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
+import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
+import type { SiteUserControlItem } from '../types.ts';
+
+interface Props {
+	items?: SiteUserControlItem[];
+	currentPath?: string;
+	appearance: ThemePreference;
+	themeConfig?: TreeseedThemeConfig;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
+	helpDrawerId?: string;
+	feedbackDialogId?: string;
+	showAppearanceControl?: boolean;
+	showHomeLink?: boolean;
+	showManagerLink?: boolean;
+	class?: string;
+}
+
+const {
+	items = [],
+	currentPath = '/',
+	appearance,
+	themeConfig,
+	helpContext,
+	feedbackContext,
+	helpDrawerId = 'shell-help',
+	feedbackDialogId = 'shell-feedback',
+	showAppearanceControl = true,
+	showHomeLink = false,
+	showManagerLink = false,
+	class: className,
+} = Astro.props as Props;
+
+function isCurrentPath(href: string) {
+	if (href === '/') return currentPath === '/';
+	return currentPath === href || currentPath.startsWith(href);
+}
+---
+
+<div class:list={['ts-site-user-controls', className]}>
+	{items.length > 0 ? (
+		<nav class="ts-site-user-controls__nav" aria-label="Site links">
+			{items.map((item) => (
+				<a class="ts-site-user-controls__link" href={item.href} aria-label={item.ariaLabel} aria-current={isCurrentPath(item.href) ? 'page' : undefined}>{item.label}</a>
+			))}
+		</nav>
+	) : null}
+	<div class="ts-site-user-controls__utilities">
+		{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} /> : null}
+		{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
+		{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
+		{showHomeLink ? <ShellIconLink href="/" label="TreeSeed home" icon="book" /> : null}
+		{showManagerLink ? <ShellIconLink href="/app/" label="Manager" icon="manager" /> : null}
+		<slot />
+	</div>
+</div>

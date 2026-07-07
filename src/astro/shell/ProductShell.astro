@@ -1,49 +1,27 @@
 ---
-import '../../styles/tokens.css';
-import '../../styles/theme.css';
-import '../../styles/ui.css';
-import '../../styles/forms.css';
-import '../../styles/app-shell.css';
-import { ClientRouter } from 'astro:transitions';
-import ThemeScript from '../theme/ThemeScript.astro';
-import ThemeMenu from '../theme/ThemeMenu.astro';
-import RailNav from './RailNav.astro';
-import BottomNav from './BottomNav.astro';
-import TopBar from './TopBar.astro';
-import ShellIconLink from './ShellIconLink.astro';
-import Button from '../forms/Button.astro';
-import FeedbackButton from '../feedback/FeedbackButton.astro';
-import FeedbackDialog from '../feedback/FeedbackDialog.astro';
-import HelpButton from '../help/HelpButton.astro';
-import HelpDrawer from '../help/HelpDrawer.astro';
-import type { ButtonAction } from '../types.ts';
+import ShellFrame from './ShellFrame.astro';
+import ShellHeader from './ShellHeader.astro';
+import SiteUserControls from './SiteUserControls.astro';
+import TeamOperationsPanel from './TeamOperationsPanel.astro';
+import TeamOperationsDrawer from './TeamOperationsDrawer.astro';
+import ControlSurface from './ControlSurface.astro';
+import type { ButtonAction, ShellBrand, ShellNavItem, SiteUserControlItem } from '../types.ts';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
 
-interface Brand {
-	name: string;
-	tag?: string;
-	href: string;
-	logoSrc?: string;
-	logoAlt?: string;
-	mark?: string;
-}
-
-interface NavItem {
-	label: string;
-	href: string;
-	ariaLabel?: string;
-}
+// FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through SiteUserControls and ShellFrame.
 
 interface Props {
 	title: string;
 	description: string;
 	currentPath: string;
 	appearance: ThemePreference;
-	brand: Brand;
-	navItems: NavItem[];
+	brand: ShellBrand;
+	navItems: ShellNavItem[];
+	siteItems?: SiteUserControlItem[];
 	quickActions?: ButtonAction[];
-	bottomNavItems?: NavItem[];
+	accountActions?: ButtonAction[];
+	bottomNavItems?: ShellNavItem[];
 	themeConfig?: TreeseedThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
@@ -56,92 +34,80 @@ const {
 	appearance,
 	brand,
 	navItems,
+	siteItems = [
+		{ label: 'Home', href: '/' },
+		{ label: 'Market', href: '/market/' },
+		{ label: 'Knowledge', href: '/knowledge/' },
+	],
 	quickActions = [],
-	bottomNavItems = navItems.slice(0, 5),
+	accountActions = [],
 	themeConfig,
 	helpContext,
 	feedbackContext,
 } = Astro.props as Props;
 const feedbackDialogId = 'product-shell-feedback';
 const helpDrawerId = 'product-shell-help';
+const drawerId = 'team-operations-drawer';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-		<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
-		<ThemeScript defaultScheme={appearance.scheme} defaultMode={appearance.mode} themeConfig={themeConfig} />
-		<ClientRouter />
-	</head>
-	<body>
-		<a class="ts-skip-link" href="#main-content">Skip to content</a>
-		<div class="ts-app-shell">
-			<aside class="ts-app-shell__rail">
-				<div class="ts-app-shell__rail-scroll">
-					<TopBar brand={brand} />
-					<div class="ts-app-shell__rail-context">
-						<slot name="railContext" />
-					</div>
-					<RailNav items={navItems} currentPath={currentPath} />
-				</div>
-				{quickActions.length > 0 ? (
-					<div class="ts-app-shell__quick-actions">
-						<p class="ts-app-shell__eyebrow">Quick actions</p>
-						<div class="ts-app-shell__quick-list">
-							{quickActions.map((action) => (
-								<Button
-									href={action.href}
-									type={action.type}
-									variant={action.variant ?? 'secondary'}
-									ariaLabel={action.ariaLabel}
-									disabled={action.disabled}
-									reload={action.reload}
-									size="sm"
-								>
-									{action.label}
-								</Button>
-							))}
-						</div>
-					</div>
-				) : null}
-			</aside>
-			<main class="ts-app-shell__main" id="main-content">
-				<TopBar brand={brand} class="ts-app-shell__mobile-top">
-					<Fragment slot="actions">
-						<ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} />
-						{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
-						{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
-						<ShellIconLink href="/" label="Book home" icon="book" />
-					</Fragment>
-				</TopBar>
-				<header class="ts-app-shell__header">
-					<div class="ts-app-shell__title">
-						<h1>{title}</h1>
-						<p>{description}</p>
-					</div>
-					<div class="ts-app-shell__header-actions">
-						<div class="ts-shell-utility-actions">
-							<ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} />
-							{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
-							{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
-							<ShellIconLink href="/" label="Book home" icon="book" />
-						</div>
-						<slot name="headerAction" />
-					</div>
-				</header>
+<ShellFrame
+	title={title}
+	description={description}
+	appearance={appearance}
+	themeConfig={themeConfig}
+	helpContext={helpContext}
+	feedbackContext={feedbackContext}
+	helpDrawerId={helpDrawerId}
+	feedbackDialogId={feedbackDialogId}
+	bodyClass="ts-product-shell-body"
+>
+	<div class="ts-product-shell">
+		<div class="ts-product-shell__header">
+			<ShellHeader brand={brand} showMenuButton menuTargetId={drawerId}>
+				<Fragment slot="actions">
+					<SiteUserControls
+						items={siteItems}
+						currentPath={currentPath}
+						appearance={appearance}
+						themeConfig={themeConfig}
+						helpContext={helpContext}
+						feedbackContext={feedbackContext}
+						helpDrawerId={helpDrawerId}
+						feedbackDialogId={feedbackDialogId}
+						showHomeLink
+					/>
+				</Fragment>
+			</ShellHeader>
+		</div>
+		<div class="ts-product-shell__body">
+			<div class="ts-product-shell__desktop-operations">
+				<TeamOperationsPanel items={navItems} currentPath={currentPath} quickActions={quickActions} accountActions={accountActions}>
+					<Fragment slot="teamSelector"><slot name="railContext" /></Fragment>
+				</TeamOperationsPanel>
+			</div>
+			<ControlSurface title={title} description={description}>
+				<Fragment slot="actions"><slot name="headerAction" /></Fragment>
 				<slot name="projectContext" />
 				<slot />
-			</main>
-			{bottomNavItems.length > 0 ? <BottomNav items={bottomNavItems} currentPath={currentPath} /> : null}
+			</ControlSurface>
 		</div>
-		<slot name="sensitiveModal" />
-		<slot name="modal" />
-		{helpContext ? <HelpDrawer id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
-		{feedbackContext ? <FeedbackDialog id={feedbackDialogId} context={feedbackContext} /> : null}
-	</body>
-</html>
+	</div>
+	<TeamOperationsDrawer id={drawerId}>
+		<TeamOperationsPanel items={navItems} currentPath={currentPath} quickActions={quickActions} accountActions={accountActions}>
+			<Fragment slot="teamSelector"><slot name="railContext" /></Fragment>
+		</TeamOperationsPanel>
+		<SiteUserControls
+			items={siteItems}
+			currentPath={currentPath}
+			appearance={appearance}
+			themeConfig={themeConfig}
+			helpContext={helpContext}
+			feedbackContext={feedbackContext}
+			helpDrawerId={helpDrawerId}
+			feedbackDialogId={feedbackDialogId}
+			showHomeLink
+		/>
+	</TeamOperationsDrawer>
+	<slot name="sensitiveModal" />
+	<slot name="modal" />
+</ShellFrame>
