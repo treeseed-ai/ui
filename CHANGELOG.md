@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.12.9] - 2026-07-11
+
+### Added
+
+- feat(source): release guarantee reviewer and coverage updates (c6b8fb5b0dc0)
+
+### Fixed
+
+- build(source): lock in UI shell architecture and test fixes (85567b3ef10c)
+
+### Tests
+
+- ci(ci): recover reliable save stage release workflow (7afd10a1113d)
+
 ## [0.12.8] - 2026-07-06
 
 ### Changed
