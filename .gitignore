@@ -5,6 +5,7 @@ sandbox/node_modules/
 # Build output
 dist/
 *.tgz
+.treeseed/cache/
 
 # Astro/Vite caches
 .astro/
