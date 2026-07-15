@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.17] - 2026-07-15
+
+### Fixed
+
+- build(source): update package metadata (cddc0870e388)
+- build(build): update package metadata (50f11172ebef)
+
 ## [0.12.16] - 2026-07-12
 
 ### Changed
