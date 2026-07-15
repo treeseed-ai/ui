@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.16",
+  "version": "0.12.17-dev.fix-scalable-hosting-release.20260715T103719Z",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -27,7 +27,7 @@
     "prepare": "node --import tsx ./scripts/prepare.ts",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit tests/component tests/package",
-    "test:e2e": "playwright test",
+    "test:e2e": "node --import tsx ./scripts/run-playwright.ts test",
     "test:all": "npm run build && npm run test && npm run test:e2e",
     "verify:direct": "npm run release:verify",
     "verify:local": "npm run verify:direct",
