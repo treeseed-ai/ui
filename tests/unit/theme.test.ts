@@ -4,10 +4,12 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   buildTreeseedThemeCss,
+  compileGuidedThemePalette,
   defineTreeseedTheme,
   loadTreeseedColorSchemes,
   parseTreeseedColorSchemeYaml,
   resolveTreeseedThemeConfig,
+  validateGuidedThemePalette,
 } from '../../src/theme/index.ts';
 
 const validYaml = `
@@ -85,5 +87,24 @@ describe('YAML themes', () => {
     const css = buildTreeseedThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
     expect(css).toContain('html[data-ts-scheme="test-scheme"][data-ts-mode="light"]');
     expect(css).toContain('--ts-color-accent: #336633;');
+  });
+
+  it('compiles accessible guided personal-theme palettes without activating them', () => {
+    const palette = {
+      light: { canvas: '#ffffff', surface: '#f5f5f5', text: '#111111', accent: '#176b45' },
+      dark: { canvas: '#101510', surface: '#182018', text: '#f5fff5', accent: '#69d69a' },
+    };
+    expect(validateGuidedThemePalette(palette)).toEqual({ ok: true, errors: [] });
+    const tokens = compileGuidedThemePalette(palette, 'fern');
+    expect(tokens.light.canvas).toBe('#ffffff');
+    expect(tokens.dark.accent).toBe('#69d69a');
+    expect(tokens.light.danger).toBeTruthy();
+  });
+
+  it('rejects guided palettes that fail text contrast', () => {
+    expect(validateGuidedThemePalette({
+      light: { canvas: '#ffffff', surface: '#ffffff', text: '#eeeeee', accent: '#dddddd' },
+      dark: { canvas: '#000000', surface: '#111111', text: '#222222', accent: '#333333' },
+    }).ok).toBe(false);
   });
 });

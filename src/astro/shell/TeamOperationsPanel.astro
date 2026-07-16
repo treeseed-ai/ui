@@ -58,9 +58,12 @@ function isCurrentPath(href: string) {
 	{accountActions.length > 0 ? (
 		<div class="ts-team-operations__account">
 			{accountActions.map((action) => (
-				<Button href={action.href} type={action.type} variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} reload={action.reload} size="sm">
-					{action.label}
-				</Button>
+				action.method === 'post' && action.action ? (
+					<form method="post" action={action.action}>
+						{Object.entries(action.hiddenFields ?? {}).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
+						<Button type="submit" variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} size="sm">{action.label}</Button>
+					</form>
+				) : <Button href={action.href} type={action.type} variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} reload={action.reload} size="sm">{action.label}</Button>
 			))}
 		</div>
 	) : null}

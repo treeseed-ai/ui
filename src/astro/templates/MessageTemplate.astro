@@ -1,0 +1,19 @@
+---
+import PageHeader from '../layout/PageHeader.astro';
+import ActionBar from '../layout/ActionBar.astro';
+import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	title: string;
+	description?: string;
+	tone?: 'default' | 'success' | 'warning' | 'danger';
+	actions?: ResolvedAction[];
+}
+const { title, description, tone = 'default', actions = [] } = Astro.props as Props;
+---
+
+<section class="ts-template ts-template--message" data-tone={tone} data-scene="message-template" role={tone === 'danger' ? 'alert' : 'status'}>
+	<PageHeader title={title} description={description} />
+	<div class="ts-template__body"><slot /></div>
+	<ActionBar actions={actions} />
+</section>

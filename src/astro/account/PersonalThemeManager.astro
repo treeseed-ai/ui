@@ -1,0 +1,49 @@
+---
+import Panel from '../surface/Panel.astro';
+import Field from '../forms/Field.astro';
+import TextInput from '../forms/TextInput.astro';
+import Select from '../forms/Select.astro';
+import Button from '../forms/Button.astro';
+import FormActions from '../forms/FormActions.astro';
+import AccessibleDialog from '../overlays/AccessibleDialog.astro';
+import ThemePreviewSwatch from '../theme/ThemePreviewSwatch.astro';
+import { loadTreeseedColorSchemes, TREESEED_PERSONAL_THEME_DEFAULT_PALETTE } from '../../theme/index.ts';
+
+interface PersonalThemeItem { id: string; schemeId: string; name: string; baseScheme: string; palette: { light: Record<'canvas' | 'surface' | 'text' | 'accent', string>; dark: Record<'canvas' | 'surface' | 'text' | 'accent', string> }; }
+interface Props { themes: PersonalThemeItem[]; activeScheme: string; csrfToken: string; status?: string | null; error?: string | null; }
+const { themes, activeScheme, csrfToken, status, error } = Astro.props as Props;
+const defaults = TREESEED_PERSONAL_THEME_DEFAULT_PALETTE;
+const schemes = loadTreeseedColorSchemes().map((scheme) => ({ value: scheme.id, label: scheme.name }));
+---
+
+<div class="ts-stack" data-scene="account-appearance">
+	{status ? <p class="ts-alert" data-tone="success" role="status">{status}</p> : null}
+	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+	<Panel eyebrow="Built in" title="TreeSeed themes" description="Use the theme selector in the application header to choose the active theme.">
+		<div class="ts-choice-grid">{schemes.map((scheme) => <div><strong>{scheme.label}</strong><span>{activeScheme === scheme.value ? 'Active' : 'Available'}</span></div>)}</div>
+	</Panel>
+	<Panel eyebrow="Personal" title="Your themes" description="Create reusable color systems. Creating or editing a theme never activates it.">
+		<Button type="button" data-dialog-open="create-personal-theme">Create theme</Button>
+		<div class="ts-stack">{themes.length ? themes.map((theme) => (
+			<details>
+				<summary><ThemePreviewSwatch swatches={[theme.palette.light.accent, theme.palette.light.surface, theme.palette.dark.accent, theme.palette.dark.canvas]} label={`${theme.name} preview`} /> <strong>{theme.name}</strong>{activeScheme === theme.schemeId ? ' · active' : ''}</summary>
+				<form method="post" class="ts-form-grid">
+					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="themeId" value={theme.id} /><input type="hidden" name="intent" value="update-theme" />
+					<Field label="Theme name" name={`name-${theme.id}`}><TextInput id={`name-${theme.id}`} name="name" value={theme.name} required /></Field>
+					<Field label="Base theme" name={`base-${theme.id}`}><Select id={`base-${theme.id}`} name="baseScheme" options={schemes} value={theme.baseScheme} /></Field>
+					{(['light', 'dark'] as const).flatMap((mode) => (['canvas', 'surface', 'text', 'accent'] as const).map((key) => <Field label={`${mode} ${key}`} name={`${mode}.${key}`}><input id={`${theme.id}-${mode}-${key}`} class="ts-control" type="color" name={`${mode}.${key}`} value={theme.palette[mode][key]} /></Field>))}
+					<FormActions><Button type="submit">Save theme</Button><Button type="submit" name="intent" value="delete-theme" variant="danger" disabled={activeScheme === theme.schemeId}>Delete theme</Button></FormActions>
+				</form>
+			</details>
+		)) : <p>No personal themes yet.</p>}</div>
+	</Panel>
+	<AccessibleDialog id="create-personal-theme" title="Create a personal theme" description="Choose a base and eight key colors. TreeSeed derives the complete accessible token set.">
+		<form method="post" class="ts-form-grid">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="intent" value="create-theme" />
+			<Field label="Theme name" name="name"><TextInput id="theme-name" name="name" required /></Field>
+			<Field label="Base theme" name="baseScheme"><Select id="theme-base" name="baseScheme" options={schemes} value="fern" /></Field>
+			{(['light', 'dark'] as const).flatMap((mode) => (['canvas', 'surface', 'text', 'accent'] as const).map((key) => <Field label={`${mode} ${key}`} name={`${mode}.${key}`}><input id={`create-${mode}-${key}`} class="ts-control" type="color" name={`${mode}.${key}`} value={defaults[mode][key]} /></Field>))}
+			<FormActions><Button type="submit">Create theme</Button><Button type="button" variant="secondary" data-dialog-close>Cancel</Button></FormActions>
+		</form>
+	</AccessibleDialog>
+</div>

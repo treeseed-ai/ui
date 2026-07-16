@@ -1,0 +1,91 @@
+---
+import Field from '../forms/Field.astro';
+import TextInput from '../forms/TextInput.astro';
+import Button from '../forms/Button.astro';
+import FormActions from '../forms/FormActions.astro';
+import PasswordMeter from '../forms/PasswordMeter.astro';
+interface Props {
+	action: string;
+	values?: { firstName?: string; lastName?: string; username?: string; email?: string };
+	appearance: { scheme: string; mode: string };
+	inviteToken?: string;
+	invitedEmailReadonly?: boolean;
+	usernameAvailabilityEndpoint?: string;
+	emailAvailabilityEndpoint?: string;
+}
+const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly = false, usernameAvailabilityEndpoint = '/v1/auth/availability/username', emailAvailabilityEndpoint = '/v1/auth/availability/email' } = Astro.props as Props;
+---
+
+<form class="auth-form" method="post" action={action} data-registration-form data-scene="registration-form">
+	<input type="hidden" name="colorScheme" value={appearance.scheme} data-auth-theme-scheme-field />
+	<input type="hidden" name="themeMode" value={appearance.mode} data-auth-theme-mode-field />
+	{inviteToken ? <input type="hidden" name="inviteToken" value={inviteToken} /> : null}
+	<div class="auth-form-grid">
+		<Field label="First name" name="firstName" required><TextInput name="firstName" autocomplete="given-name" value={values.firstName ?? ''} required /></Field>
+		<Field label="Last name" name="lastName" required><TextInput name="lastName" autocomplete="family-name" value={values.lastName ?? ''} required /></Field>
+	</div>
+	<Field label="Username" name="username" help="Your username is public and cannot be changed after registration." required>
+		<TextInput name="username" autocomplete="username" value={values.username ?? ''} required maxlength={39} pattern="[A-Za-z0-9](?:(?:[A-Za-z0-9]|-){0,37}[A-Za-z0-9])?" data-availability-input="username" aria-describedby="username-help username-availability" />
+		<span id="username-availability" class="auth-field-help" data-availability-status="username">Enter a username to check availability.</span>
+	</Field>
+	<Field label="Email" name="email" required>
+		<TextInput name="email" type="email" autocomplete="email" value={values.email ?? ''} required readonly={invitedEmailReadonly} data-availability-input="email" aria-describedby="email-availability" />
+		<span id="email-availability" class="auth-field-help" data-availability-status="email">Enter an email to check availability.</span>
+	</Field>
+	<Field label="Password" name="password" required><TextInput id="registerPassword" name="password" type="password" autocomplete="new-password" minlength={12} required data-password-input /></Field>
+	<Field label="Confirm password" name="confirmPassword" required><TextInput name="confirmPassword" type="password" autocomplete="new-password" minlength={12} required data-confirm-password-input /></Field>
+	<PasswordMeter inputId="registerPassword" />
+	<FormActions><Button type="submit" disabled data-registration-submit>Create account</Button></FormActions>
+</form>
+
+<script is:inline define:vars={{ usernameAvailabilityEndpoint, emailAvailabilityEndpoint }}>
+	(() => {
+		const form = document.querySelector('[data-registration-form]');
+		if (!(form instanceof HTMLFormElement)) return;
+		const submit = form.querySelector('[data-registration-submit]');
+		const schemeField = form.querySelector('[data-auth-theme-scheme-field]');
+		const modeField = form.querySelector('[data-auth-theme-mode-field]');
+		const states = { username: false, email: false };
+		const timers = {};
+		const sequences = { username: 0, email: 0 };
+		const endpoints = { username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint };
+		function updateSubmit() { if (submit instanceof HTMLButtonElement) submit.disabled = !states.username || !states.email; }
+		function syncTheme(event) {
+			const detail = event?.detail || {};
+			if (schemeField instanceof HTMLInputElement) schemeField.value = detail.scheme || document.documentElement.dataset.tsScheme || schemeField.value;
+			if (modeField instanceof HTMLInputElement) modeField.value = detail.mode || (document.documentElement.dataset.tsModeSource === 'system' ? 'system' : document.documentElement.dataset.tsMode) || modeField.value;
+		}
+		async function check(kind) {
+			const input = form.querySelector(`[data-availability-input="${kind}"]`);
+			const status = form.querySelector(`[data-availability-status="${kind}"]`);
+			if (!(input instanceof HTMLInputElement) || !status) return;
+			const value = input.value.trim();
+			const sequence = ++sequences[kind];
+			states[kind] = false; updateSubmit();
+			if (!value || !input.checkValidity()) { status.textContent = `Enter a valid ${kind}.`; status.setAttribute('data-tone', 'danger'); return; }
+			status.textContent = `Checking ${kind} availability…`; status.removeAttribute('data-tone');
+			try {
+				const response = await fetch(`${endpoints[kind]}?value=${encodeURIComponent(value)}`, { headers: { accept: 'application/json' } });
+				const result = await response.json();
+				if (sequence !== sequences[kind] || input.value.trim() !== value) return;
+				const payload = result?.payload ?? result;
+				states[kind] = payload.available === true;
+				status.textContent = payload.message || (states[kind] ? `${kind} is available.` : `This ${kind} can’t be used.`);
+				status.setAttribute('data-tone', states[kind] ? 'success' : 'danger');
+			} catch { status.textContent = `${kind[0].toUpperCase() + kind.slice(1)} availability could not be checked.`; status.setAttribute('data-tone', 'danger'); }
+			updateSubmit();
+		}
+		for (const kind of ['username', 'email']) {
+			const input = form.querySelector(`[data-availability-input="${kind}"]`);
+			input?.addEventListener('input', () => { clearTimeout(timers[kind]); timers[kind] = setTimeout(() => check(kind), 350); });
+			input?.addEventListener('change', () => check(kind));
+			if (input?.value) check(kind);
+		}
+		const password = form.querySelector('[data-password-input]');
+		const confirm = form.querySelector('[data-confirm-password-input]');
+		function match() { if (confirm instanceof HTMLInputElement) confirm.setCustomValidity(confirm.value && password?.value !== confirm.value ? 'Passwords do not match.' : ''); }
+		password?.addEventListener('input', match); confirm?.addEventListener('input', match);
+		window.addEventListener('treeseed:theme-change', syncTheme);
+		form.addEventListener('submit', (event) => { syncTheme(); match(); if (!states.username || !states.email || !form.checkValidity()) { event.preventDefault(); form.reportValidity(); } });
+	})();
+</script>

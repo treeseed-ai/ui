@@ -1,0 +1,27 @@
+---
+import CollectionTemplate from '../templates/CollectionTemplate.astro';
+import Panel from '../surface/Panel.astro';
+import Button from '../forms/Button.astro';
+
+interface SessionItem { id: string; provider: string; current: boolean; expiresAt: string; revokedAt?: string | null; authenticatedAt: string; lastSeenAt?: string | null; userAgent?: string | null; ipAddress?: string | null; }
+interface Props { sessions: SessionItem[]; csrfToken: string; status?: string | null; error?: string | null; }
+const { sessions, csrfToken, status, error } = Astro.props as Props;
+const viewModel = { title: 'Sessions', description: 'Review devices signed in to your account.', columns: [], rows: [], emptyTitle: 'No sessions', emptyDescription: 'No sessions are available.' };
+---
+
+<div data-scene="account-sessions">
+	{status ? <p class="ts-alert" data-tone="success" role="status">{status}</p> : null}
+	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+	<CollectionTemplate viewModel={viewModel} renderDefault={false}>
+		{sessions.length ? <div class="ts-stack">{sessions.map((session) => (
+			<Panel title={session.current ? 'Current session' : (session.userAgent ?? session.provider)} description={`${session.ipAddress ?? 'Unknown IP'} · last seen ${session.lastSeenAt ?? session.authenticatedAt}`}>
+				<p>{session.revokedAt ? `Revoked ${session.revokedAt}` : `Expires ${session.expiresAt}`}</p>
+				{session.current ? (
+					<form method="post" action="/auth/logout"><input type="hidden" name="csrfToken" value={csrfToken} /><Button type="submit" variant="danger">Sign out this device</Button></form>
+				) : !session.revokedAt ? (
+					<form method="post"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="sessionId" value={session.id} /><Button type="submit" name="intent" value="revoke" variant="danger">Revoke session</Button></form>
+				) : null}
+			</Panel>
+		))}</div> : <p>No sessions are available.</p>}
+	</CollectionTemplate>
+</div>

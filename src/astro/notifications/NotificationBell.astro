@@ -1,0 +1,23 @@
+---
+interface NotificationItem { id: string; title: string; summary?: string | null; targetUrl: string; createdAt: string; readAt?: string | null; }
+interface Props { notifications?: NotificationItem[]; readEndpointBase?: string; csrfToken?: string; }
+const { notifications = [], readEndpointBase = '/v1/auth/web/notifications', csrfToken = '' } = Astro.props as Props;
+const unread = notifications.filter((entry) => !entry.readAt).length;
+---
+
+<details class="ts-notification-bell" data-notification-bell>
+	<summary class="ts-icon-button" aria-label={`${unread} unread notifications`}>Notifications{unread ? <span class="ts-badge">{unread}</span> : null}</summary>
+	<div class="ts-notification-bell__panel">
+		<h2>Notifications</h2>
+		{notifications.length ? <ul>{notifications.map((entry) => <li data-notification-id={entry.id} data-read={entry.readAt ? 'true' : 'false'}><a href={entry.targetUrl}>{entry.title}</a>{entry.summary ? <p>{entry.summary}</p> : null}</li>)}</ul> : <p>No notifications yet.</p>}
+		<a href="/app/account/notifications">Notification preferences</a>
+	</div>
+</details>
+
+<script is:inline define:vars={{ readEndpointBase, csrfToken }}>
+	document.querySelectorAll('[data-notification-bell] a[data-notification-link], [data-notification-bell] li a').forEach((link) => link.addEventListener('click', () => {
+		const item = link.closest('[data-notification-id]');
+		if (!item || item.dataset.read === 'true') return;
+		fetch(`${readEndpointBase}/${encodeURIComponent(item.dataset.notificationId)}/read`, { method: 'POST', headers: { accept: 'application/json', 'x-treeseed-csrf': csrfToken }, keepalive: true }).catch(() => {});
+	}));
+</script>

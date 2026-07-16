@@ -1,0 +1,30 @@
+---
+import PageHeader from '../layout/PageHeader.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+	image?: string | null;
+	handle?: string;
+	metadata?: Array<{ label: string; value: string }>;
+	class?: string;
+}
+
+const { title, description, image, handle, metadata = [], class: className } = Astro.props as Props;
+---
+
+<article class:list={['ts-template ts-template--profile', className]} data-scene="profile-template">
+	<PageHeader title={title} description={description} />
+	<div class="ts-template__main">
+		<div class="ts-template__body">
+			{image ? <img src={image} alt="" class="ts-profile-template__image" loading="lazy" /> : null}
+			{handle ? <p class="ts-section__eyebrow">@{handle}</p> : null}
+			{metadata.length ? (
+				<dl class="ts-key-value-list">
+					{metadata.map((entry) => <><dt>{entry.label}</dt><dd>{entry.value}</dd></>)}
+				</dl>
+			) : null}
+			<slot />
+		</div>
+	</div>
+</article>

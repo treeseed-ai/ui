@@ -1,0 +1,33 @@
+---
+interface Props { id: string; title: string; description?: string; }
+const { id, title, description } = Astro.props as Props;
+---
+
+<dialog id={id} class="ts-dialog" aria-labelledby={`${id}-title`} aria-describedby={description ? `${id}-description` : undefined} data-ts-dialog>
+	<div class="ts-dialog__surface">
+		<header class="ts-dialog__header"><div><h2 id={`${id}-title`}>{title}</h2>{description ? <p id={`${id}-description`}>{description}</p> : null}</div><button type="button" class="ts-icon-button" data-dialog-close aria-label="Close dialog">Close</button></header>
+		<div class="ts-dialog__body"><slot /></div>
+	</div>
+</dialog>
+
+<script is:inline>
+	(() => {
+		if (window.__treeseedAccessibleDialogBound) return;
+		window.__treeseedAccessibleDialogBound = true;
+		let opener = null;
+		document.addEventListener('click', (event) => {
+			const open = event.target instanceof Element ? event.target.closest('[data-dialog-open]') : null;
+			if (open) {
+				const dialog = document.getElementById(open.getAttribute('data-dialog-open') || '');
+				if (dialog instanceof HTMLDialogElement) { opener = open; dialog.showModal(); dialog.querySelector('input,select,button')?.focus(); }
+				return;
+			}
+			const close = event.target instanceof Element ? event.target.closest('[data-dialog-close]') : null;
+			if (close) {
+				const dialog = close.closest('dialog');
+				if (dialog instanceof HTMLDialogElement) { dialog.close(); if (opener instanceof HTMLElement) opener.focus(); }
+			}
+		});
+		document.addEventListener('cancel', (event) => { if (event.target instanceof HTMLDialogElement && opener instanceof HTMLElement) setTimeout(() => opener.focus()); }, true);
+	})();
+</script>

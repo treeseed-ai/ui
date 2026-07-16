@@ -1,0 +1,40 @@
+---
+import Panel from '../surface/Panel.astro';
+import Button from '../forms/Button.astro';
+import FormActions from '../forms/FormActions.astro';
+
+interface NotificationPreferencesModel { emailCadence: 'immediate' | 'daily' | 'weekly'; timeZone: string; globalContentTypes: string[]; projectOverrides: Array<{ projectId: string; contentTypes: string[] }>; }
+interface ContentCapability { id: string; label: string; description: string; }
+interface ProjectOption { id: string; name?: string | null; slug: string; }
+interface Props { preferences: NotificationPreferencesModel; capabilities: ContentCapability[]; projects: ProjectOption[]; csrfToken: string; status?: string | null; error?: string | null; }
+const { preferences, capabilities, projects, csrfToken, status, error } = Astro.props as Props;
+const overrides = new Map<string, string[]>(preferences.projectOverrides.map((entry) => [entry.projectId, entry.contentTypes]));
+---
+
+<form method="post" class="ts-stack" data-scene="account-notifications">
+	<input type="hidden" name="csrfToken" value={csrfToken} />
+	<input type="hidden" name="timeZone" value={preferences.timeZone} data-time-zone />
+	{status ? <p class="ts-alert" data-tone="success" role="status">{status}</p> : null}
+	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+	<Panel eyebrow="Delivery" title="Email cadence" description="In-app notifications remain immediate.">
+		<div class="ts-choice-grid">
+			{['immediate', 'daily', 'weekly'].map((cadence) => <label><input type="radio" name="emailCadence" value={cadence} checked={preferences.emailCadence === cadence} /> {cadence === 'immediate' ? 'As posted' : cadence[0].toUpperCase() + cadence.slice(1)}</label>)}
+		</div>
+	</Panel>
+	<Panel eyebrow="All projects" title="Content types" description="These choices apply to every project you can access unless a project override replaces them.">
+		<div class="ts-choice-grid">{capabilities.map((capability) => <label><input type="checkbox" name="globalContentTypes" value={capability.id} checked={preferences.globalContentTypes.includes(capability.id)} /> <strong>{capability.label}</strong><small>{capability.description}</small></label>)}</div>
+	</Panel>
+	<Panel eyebrow="Optional" title="Project overrides" description="Select a project to replace the all-project choices for that project.">
+		<div class="ts-stack">{projects.map((project) => {
+			const selected = overrides.has(project.id);
+			const types = overrides.get(project.id) ?? [];
+			return <details open={selected}><summary><label><input type="checkbox" name="overrideProjects" value={project.id} checked={selected} /> {project.name ?? project.slug}</label></summary><div class="ts-choice-grid">{capabilities.map((capability) => <label><input type="checkbox" name={`projectTypes:${project.id}`} value={capability.id} checked={types.includes(capability.id)} /> {capability.label}</label>)}</div></details>;
+		})}</div>
+	</Panel>
+	<FormActions><Button type="submit">Save notification preferences</Button></FormActions>
+</form>
+
+<script is:inline>
+	const input = document.querySelector('[data-time-zone]');
+	if (input instanceof HTMLInputElement) input.value = Intl.DateTimeFormat().resolvedOptions().timeZone || input.value || 'UTC';
+</script>

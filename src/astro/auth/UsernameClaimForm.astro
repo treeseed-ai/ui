@@ -1,0 +1,33 @@
+---
+import Field from '../forms/Field.astro';
+import TextInput from '../forms/TextInput.astro';
+import Button from '../forms/Button.astro';
+import FormActions from '../forms/FormActions.astro';
+interface Props { csrfToken: string; value?: string; endpoint?: string; }
+const { csrfToken, value = '', endpoint = '/v1/auth/availability/username' } = Astro.props as Props;
+---
+<form method="post" class="auth-form" data-username-claim data-scene="username-claim">
+	<input type="hidden" name="csrfToken" value={csrfToken} />
+	<Field label="Username" name="username" help="Your username is public and cannot be changed after you continue." required>
+		<TextInput name="username" value={value} autocomplete="username" required maxlength={39} data-claim-input />
+		<span class="auth-field-help" data-claim-status>Enter a username to check availability.</span>
+	</Field>
+	<FormActions><Button type="submit" disabled data-claim-submit>Set permanent username</Button></FormActions>
+</form>
+<script is:inline define:vars={{ endpoint }}>
+	const form = document.querySelector('[data-username-claim]');
+	const input = form?.querySelector('[data-claim-input]');
+	const status = form?.querySelector('[data-claim-status]');
+	const submit = form?.querySelector('[data-claim-submit]');
+	let timer;
+	async function check() {
+		if (!(input instanceof HTMLInputElement) || !(submit instanceof HTMLButtonElement) || !status) return;
+		submit.disabled = true;
+		const value = input.value.trim();
+		if (!value) return;
+		status.textContent = 'Checking username availability…';
+		try { const response = await fetch(`${endpoint}?value=${encodeURIComponent(value)}`); const result = await response.json(); const payload = result.payload ?? result; status.textContent = payload.message; status.setAttribute('data-tone', payload.available ? 'success' : 'danger'); submit.disabled = !payload.available; } catch { status.textContent = 'Username availability could not be checked.'; }
+	}
+	input?.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(check, 350); });
+	if (input?.value) check();
+</script>

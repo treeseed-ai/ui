@@ -1,0 +1,37 @@
+---
+import Panel from '../surface/Panel.astro';
+import Field from '../forms/Field.astro';
+import TextInput from '../forms/TextInput.astro';
+import Button from '../forms/Button.astro';
+interface Props {
+	blockers: Array<{ code: string; message: string }>;
+	csrfToken: string;
+	hasCredential: boolean;
+	providers?: Array<{ id: string; label: string }>;
+	connectedProviderIds?: string[];
+	callbackBaseUrl?: string;
+	reauthenticationGrantId?: string | null;
+	error?: string | null;
+}
+const { blockers, csrfToken, hasCredential, providers = [], connectedProviderIds = [], callbackBaseUrl = '', reauthenticationGrantId = null, error } = Astro.props as Props;
+const reauthUrl = (provider: { id: string }) => {
+	const query = new URLSearchParams({ purpose: 'reauthenticate', action: 'account_delete', returnTo: '/app/account/delete' });
+	if (callbackBaseUrl) query.set('callbackUrl', `${callbackBaseUrl}/auth/callback/${provider.id}`);
+	return `/v1/auth/oauth/${provider.id}/start?${query}`;
+};
+---
+
+<div data-scene="account-delete">
+	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+	<Panel eyebrow="Danger" title="Delete account" description="This permanently removes account data and signs out every device." tone="danger">
+		{blockers.length ? <ul>{blockers.map((blocker) => <li>{blocker.message}</li>)}</ul> : (
+			<form method="post" class="ts-form-grid">
+				<input type="hidden" name="csrfToken" value={csrfToken} />
+				{reauthenticationGrantId ? <input type="hidden" name="reauthenticationGrantId" value={reauthenticationGrantId} /> : null}
+				<Field label='Type "DELETE MY ACCOUNT"' name="confirmation"><TextInput id="confirmation" name="confirmation" autocomplete="off" required /></Field>
+				{hasCredential ? <Field label="Current password" name="currentPassword"><TextInput id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required /></Field> : reauthenticationGrantId ? <p>Provider reauthentication is complete. The grant expires after five minutes and can be used once.</p> : <div class="ts-stack"><p>Reauthenticate with a connected provider before deletion.</p>{providers.filter((provider) => connectedProviderIds.includes(provider.id)).map((provider) => <a class="ts-button ts-button--secondary" href={reauthUrl(provider)}>Verify with {provider.label}</a>)}</div>}
+				<Button type="submit" variant="danger" disabled={!hasCredential && !reauthenticationGrantId}>Delete my account</Button>
+			</form>
+		)}
+	</Panel>
+</div>

@@ -1,0 +1,112 @@
+---
+import Panel from '../surface/Panel.astro';
+import Field from '../forms/Field.astro';
+import TextInput from '../forms/TextInput.astro';
+import Button from '../forms/Button.astro';
+import FormActions from '../forms/FormActions.astro';
+interface AccountIdentity {
+	id: string;
+	username: string;
+	firstName?: string | null;
+	lastName?: string | null;
+	image?: string | null;
+	hasCredential: boolean;
+	emails: Array<{ id: string; email: string; status: string; isPrimary: boolean }>;
+	providers: Array<{ id: string; provider: string; email?: string | null; canUnlink: boolean }>;
+}
+interface AuthProviderCapability { id: string; label: string; }
+
+interface Props {
+	identity: AccountIdentity;
+	availableProviders?: AuthProviderCapability[];
+	callbackBaseUrl?: string;
+	passwordGrantId?: string | null;
+	csrfToken: string;
+	status?: string | null;
+	error?: string | null;
+}
+const { identity, availableProviders = [], callbackBaseUrl = '', passwordGrantId = null, csrfToken, status, error } = Astro.props as Props;
+const linkedProviderIds = new Set(identity.providers.map((provider) => provider.provider));
+const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'reauthenticate', action?: string) => {
+	const query = new URLSearchParams({ purpose, returnTo: '/app/account' });
+	if (callbackBaseUrl) query.set('callbackUrl', `${callbackBaseUrl}/auth/callback/${provider.id}`);
+	if (action) query.set('action', action);
+	return `/v1/auth/oauth/${provider.id}/start?${query}`;
+};
+---
+
+<div class="ts-stack" data-scene="account-identity">
+	{status ? <p class="ts-alert" data-tone="success" role="status">{status}</p> : null}
+	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+	<Panel eyebrow="Identity" title="Public profile" description="Your permanent handle and public identity.">
+		<form method="post" class="ts-form-grid">
+			<input type="hidden" name="csrfToken" value={csrfToken} />
+			<input type="hidden" name="intent" value="profile" />
+			<Field label="Username" help="Your username is public and cannot be changed.">
+				<TextInput name="username" value={identity.username} disabled />
+			</Field>
+			<Field label="First name" name="firstName"><TextInput id="firstName" name="firstName" value={identity.firstName ?? ''} autocomplete="given-name" /></Field>
+			<Field label="Last name" name="lastName"><TextInput id="lastName" name="lastName" value={identity.lastName ?? ''} autocomplete="family-name" /></Field>
+			<Field label="Profile image URL" name="image" help="Use an HTTPS image URL."><TextInput id="image" name="image" type="url" value={identity.image ?? ''} /></Field>
+			<FormActions><Button type="submit">Save identity</Button></FormActions>
+		</form>
+	</Panel>
+
+	<Panel eyebrow="Email" title="Email addresses" description="Keep at least one verified address.">
+		<div class="ts-stack">
+			{identity.emails.map((email) => (
+				<form method="post" class="ts-inline-form">
+					<input type="hidden" name="csrfToken" value={csrfToken} />
+					<input type="hidden" name="emailId" value={email.id} />
+					<strong>{email.email}</strong>
+					<span>{email.status}{email.isPrimary ? ' · primary' : ''}</span>
+					{email.status !== 'verified' ? <Button type="submit" name="intent" value="resend-email" variant="secondary" size="sm">Resend verification</Button> : null}
+					{email.status === 'verified' && !email.isPrimary ? <Button type="submit" name="intent" value="primary-email" variant="secondary" size="sm">Make primary</Button> : null}
+					{!email.isPrimary ? <Button type="submit" name="intent" value="delete-email" variant="danger" size="sm">Remove</Button> : null}
+				</form>
+			))}
+			<form method="post" class="ts-inline-form">
+				<input type="hidden" name="csrfToken" value={csrfToken} />
+				<input type="hidden" name="intent" value="add-email" />
+				<Field label="Add email" name="email"><TextInput id="email" name="email" type="email" autocomplete="email" required /></Field>
+				<Button type="submit">Add and verify</Button>
+			</form>
+		</div>
+	</Panel>
+
+	<Panel eyebrow="Security" title={identity.hasCredential ? 'Change password' : 'Set a password'}>
+		<form method="post" class="ts-form-grid">
+			<input type="hidden" name="csrfToken" value={csrfToken} />
+			<input type="hidden" name="intent" value="password" />
+			{passwordGrantId ? <input type="hidden" name="reauthenticationGrantId" value={passwordGrantId} /> : null}
+			{identity.hasCredential ? <Field label="Current password" name="currentPassword"><TextInput id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required /></Field> : null}
+			<Field label="New password" name="password" help="Use at least 12 characters."><TextInput id="password" name="password" type="password" autocomplete="new-password" minlength={12} required /></Field>
+			<FormActions><Button type="submit" disabled={!identity.hasCredential && !passwordGrantId}>{identity.hasCredential ? 'Change password' : 'Set password'}</Button></FormActions>
+		</form>
+	</Panel>
+
+	<Panel eyebrow="Sign-in" title="Connected identities">
+		<div class="ts-stack">
+			{identity.providers.length ? identity.providers.map((provider) => (
+				<form method="post" class="ts-inline-form">
+					<input type="hidden" name="csrfToken" value={csrfToken} />
+					<input type="hidden" name="intent" value="unlink-provider" />
+					<input type="hidden" name="identityId" value={provider.id} />
+					<strong>{provider.provider}</strong><span>{provider.email ?? ''}</span>
+					<Button type="submit" variant="danger" size="sm" disabled={!provider.canUnlink}>Unlink</Button>
+				</form>
+			)) : <p>No external providers are connected.</p>}
+			{availableProviders.filter((provider) => !linkedProviderIds.has(provider.id)).map((provider) => (
+				<a class="ts-button ts-button--secondary ts-button--sm" href={providerStartUrl(provider, 'link')}>Connect {provider.label}</a>
+			))}
+			{!identity.hasCredential && identity.providers.length ? (
+				<div class="ts-stack">
+					<p>Reauthenticate with a connected provider before setting a password.</p>
+					{availableProviders.filter((provider) => linkedProviderIds.has(provider.id)).map((provider) => (
+						<a class="ts-button ts-button--secondary ts-button--sm" href={providerStartUrl(provider, 'reauthenticate', 'password_change')}>Verify with {provider.label}</a>
+					))}
+				</div>
+			) : null}
+		</div>
+	</Panel>
+</div>

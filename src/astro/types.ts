@@ -12,6 +12,9 @@ export type ButtonAction = {
 	ariaLabel?: string;
 	disabled?: boolean;
 	reload?: boolean;
+	action?: string;
+	method?: 'post';
+	hiddenFields?: Record<string, string>;
 };
 
 export type ShellBrand = {
