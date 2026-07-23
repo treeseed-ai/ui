@@ -1,0 +1,76 @@
+import type { MarketComponentMapEntry } from '../marketComponentMap.ts';
+
+export const LAYOUTS_COMPONENTS = [
+{
+    uiPath: "src/astro/layouts/AppLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/layouts/TreeseedAppLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/app-layout",
+  },
+{
+    uiPath: "src/astro/layouts/PublicLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/layouts/TreeseedPublicLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/public-layout",
+  },
+{
+    uiPath: "src/astro/layouts/AuthoredEntryLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/AuthoredEntryLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/authored-entry-layout",
+  },
+{
+    uiPath: "src/astro/layouts/BookLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/BookLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/book-layout",
+  },
+{
+    uiPath: "src/astro/layouts/BridgeLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/BridgeLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/bridge-layout",
+  },
+{
+    uiPath: "src/astro/layouts/ContentLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/ContentLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/content-layout",
+  },
+{
+    uiPath: "src/astro/layouts/MainLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/MainLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/main-layout",
+  },
+{
+    uiPath: "src/astro/layouts/NoteLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/NoteLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/note-layout",
+  },
+{
+    uiPath: "src/astro/layouts/ProfileLayout.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/ProfileLayout.astro",
+    category: "Layouts",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/profile-layout",
+  }
+] as const satisfies readonly MarketComponentMapEntry[];

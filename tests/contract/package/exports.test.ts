@@ -1,15 +1,20 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { basename, extname, join, relative } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { basename, dirname, extname, join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { componentCatalog } from '../../sandbox/src/lib/component-catalog';
-import * as Ui from '../../src/index';
-import { marketComponentMap } from '../fixtures/marketComponentMap';
+import { componentCatalog } from '../../../sandbox/src/lib/component-catalog';
+import * as Ui from '../../../src/index';
+import { marketComponentMap } from '../../fixtures/marketComponentMap';
 
 function walkFiles(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = join(root, entry.name);
     return entry.isDirectory() ? walkFiles(fullPath) : [fullPath];
   });
+}
+
+function isPublicComponentEntry(file: string): boolean {
+  const ownerDirectory = dirname(file);
+  return !existsSync(`${ownerDirectory}.tsx`) && !existsSync(`${ownerDirectory}.astro`);
 }
 
 describe('package exports', () => {
@@ -34,7 +39,7 @@ describe('package exports', () => {
       expect(packageJson.exports[exportPath], exportPath).toBeDefined();
     }
 
-    const reactComponents = walkFiles('src/react').filter((file) => extname(file) === '.tsx');
+    const reactComponents = walkFiles('src/react').filter((file) => extname(file) === '.tsx' && isPublicComponentEntry(file));
     for (const componentPath of reactComponents) {
       const componentName = basename(componentPath, '.tsx');
       const exportPath = `./components/react/${componentName}`;
@@ -95,8 +100,8 @@ describe('package exports', () => {
     const catalogNames = new Set(componentCatalog.map((entry) => entry.name));
     const nonStandaloneComponents = new Set(['ThemeScript']);
     const sourceComponents = [
-      ...walkFiles('src/astro').filter((file) => extname(file) === '.astro'),
-      ...walkFiles('src/react').filter((file) => extname(file) === '.tsx'),
+      ...walkFiles('src/astro').filter((file) => extname(file) === '.astro' && isPublicComponentEntry(file)),
+      ...walkFiles('src/react').filter((file) => extname(file) === '.tsx' && isPublicComponentEntry(file)),
     ];
 
     for (const componentPath of sourceComponents) {

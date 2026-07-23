@@ -33,6 +33,7 @@ function rewriteDeclarationSpecifiers(contents: string, filePath: string): strin
   return contents.replace(/(['"])(\.{1,2}\/[^'"]+)\.ts\1/g, (match, quote: string, specifier: string) => {
     const targetBase = resolve(dirname(filePath), specifier);
     if (existsSync(`${targetBase}.js`)) return `${quote}${specifier}.js${quote}`;
+    if (existsSync(`${targetBase}.d.ts`)) return `${quote}${specifier}.d.ts${quote}`;
     return `${quote}${specifier}${quote}`;
   });
 }
@@ -60,7 +61,8 @@ for (const filePath of walkFiles(resolve('dist'))) {
   const hasDeclaration = existsSync(`${withoutExtension}.d.ts`);
   const hasRuntime = existsSync(`${withoutExtension}.js`);
   const isThemeTypeSource = filePath.includes('/dist/theme/');
-  if ((hasRuntime || isThemeTypeSource) && hasDeclaration && statSync(filePath).isFile()) {
+  const isFoundationContractSource = filePath.includes('/dist/lib/foundation/contracts/');
+  if ((hasRuntime || isThemeTypeSource || isFoundationContractSource) && hasDeclaration && statSync(filePath).isFile()) {
     unlinkSync(filePath);
   }
 }

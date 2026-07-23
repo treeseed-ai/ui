@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import DynamicPieAllocationInput, { type PieAllocationSlice } from '../../src/react/pie-allocation/DynamicPieAllocationInput.tsx';
+import DynamicPieAllocationInput, { type PieAllocationSlice } from '../../../src/react/pie-allocation/DynamicPieAllocationInput.tsx';
 
 const sample: PieAllocationSlice[] = [
   { id: 'planning', name: 'Planning', percentage: 30 },

@@ -1,8 +1,8 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { componentCatalog, formComponents } from '../../sandbox/src/lib/component-catalog';
-import { marketComponentMap } from '../fixtures/marketComponentMap';
+import { componentCatalog, formComponents } from '../../../sandbox/src/lib/component-catalog';
+import { marketComponentMap } from '../../fixtures/marketComponentMap';
 
 function walkFiles(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
@@ -49,7 +49,9 @@ describe('component catalog coverage', () => {
     const catalogByName = new Map(componentCatalog.map((entry) => [entry.name, entry]));
     const sourceComponents = [
       ...walkFiles('src/astro').filter((file) => extname(file) === '.astro'),
-      ...walkFiles('src/react').filter((file) => extname(file) === '.tsx'),
+      ...walkFiles('src/react')
+        .filter((file) => extname(file) === '.tsx')
+        .filter((file) => !/\/charts\/(?:MonitoringChart|ProjectActivityChart)\//u.test(file)),
     ];
 
     for (const componentPath of sourceComponents) {

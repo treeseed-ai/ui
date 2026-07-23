@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import MonitoringChart from '../../src/react/charts/MonitoringChart.tsx';
-import ProjectActivityChart from '../../src/react/charts/ProjectActivityChart.tsx';
+import MonitoringChart from '../../../src/react/charts/MonitoringChart.tsx';
+import ProjectActivityChart from '../../../src/react/charts/ProjectActivityChart.tsx';
 
 afterEach(() => {
   vi.unstubAllGlobals();

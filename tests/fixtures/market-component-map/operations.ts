@@ -1,0 +1,76 @@
+import type { MarketComponentMapEntry } from '../marketComponentMap.ts';
+
+export const OPERATIONS_COMPONENTS = [
+{
+    uiPath: "src/astro/app/operations/CapacityDiagnosticsPanel.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/CapacityDiagnosticsPanel.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/capacity-diagnostics-panel",
+  },
+{
+    uiPath: "src/astro/app/operations/DeploymentTimeline.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/DeploymentTimeline.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/deployment-timeline",
+  },
+{
+    uiPath: "src/astro/app/operations/GovernanceDecisionPanel.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/GovernanceDecisionPanel.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/governance-decision-panel",
+  },
+{
+    uiPath: "src/astro/app/operations/GovernancePolicySummary.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/GovernancePolicySummary.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/governance-policy-summary",
+  },
+{
+    uiPath: "src/astro/app/operations/KnowledgeArtifactCard.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/KnowledgeArtifactCard.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/knowledge-artifact-card",
+  },
+{
+    uiPath: "src/astro/app/operations/OperationalTimeline.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/OperationalTimeline.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/operational-timeline",
+  },
+{
+    uiPath: "src/astro/app/operations/RepositoryContextPanel.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/RepositoryContextPanel.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/repository-context-panel",
+  },
+{
+    uiPath: "src/astro/app/operations/SeedOperationsPanel.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/SeedOperationsPanel.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/seed-operations-panel",
+  },
+{
+    uiPath: "src/astro/app/operations/WorkerQueuePanel.astro",
+    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/WorkerQueuePanel.astro",
+    category: "Operations",
+    parityMode: "rendered-visual",
+    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
+    sandboxRoute: "/displays/worker-queue-panel",
+  }
+] as const satisfies readonly MarketComponentMapEntry[];

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { CheckboxField, SelectField, TextField } from '../../src/react.ts';
+import { CheckboxField, SelectField, TextField } from '../../../src/react.ts';
 
 describe('React form controls', () => {
   it('renders and updates TextField input values', async () => {
