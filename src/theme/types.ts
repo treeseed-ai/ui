@@ -1,8 +1,8 @@
-export type TreeseedThemeMode = 'light' | 'dark' | 'system';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
-export type TreeseedColorSchemeId = 'fern' | 'lichen' | 'cedar' | 'tidepool' | (string & {});
+export type ColorSchemeId = 'fern' | 'lichen' | 'cedar' | 'tidepool' | (string & {});
 
-export interface TreeseedSemanticColorTokens {
+export interface SemanticColorTokens {
   canvas: string;
   canvasSubtle: string;
   surface: string;
@@ -44,7 +44,7 @@ export interface TreeseedSemanticColorTokens {
   grid: string;
 }
 
-export type RequiredSchemeTokenInput = Pick<TreeseedSemanticColorTokens,
+export type RequiredSchemeTokenInput = Pick<SemanticColorTokens,
   | 'canvas'
   | 'canvasSubtle'
   | 'surface'
@@ -64,27 +64,27 @@ export type RequiredSchemeTokenInput = Pick<TreeseedSemanticColorTokens,
   | 'danger'
 >;
 
-export interface TreeseedSchemeTokens {
-  light: TreeseedSemanticColorTokens;
-  dark: TreeseedSemanticColorTokens;
+export interface SchemeTokens {
+  light: SemanticColorTokens;
+  dark: SemanticColorTokens;
 }
 
-export interface TreeseedThemeConfig {
-  defaultScheme?: TreeseedColorSchemeId;
-  defaultMode?: TreeseedThemeMode;
-  schemes?: Partial<Record<TreeseedColorSchemeId, Partial<{
-    light: Partial<TreeseedSemanticColorTokens>;
-    dark: Partial<TreeseedSemanticColorTokens>;
+export interface ThemeConfig {
+  defaultScheme?: ColorSchemeId;
+  defaultMode?: ThemeMode;
+  schemes?: Partial<Record<ColorSchemeId, Partial<{
+    light: Partial<SemanticColorTokens>;
+    dark: Partial<SemanticColorTokens>;
   }>>>;
 }
 
 export type ThemePreference = {
-  scheme: TreeseedColorSchemeId;
-  mode: TreeseedThemeMode;
+  scheme: ColorSchemeId;
+  mode: ThemeMode;
 };
 
-export type TreeseedColorSchemeSummary = {
-  id: TreeseedColorSchemeId;
+export type ColorSchemeSummary = {
+  id: ColorSchemeId;
   name: string;
   swatches: string[];
   modeSwatches: {
@@ -93,22 +93,22 @@ export type TreeseedColorSchemeSummary = {
   };
 };
 
-export type ResolvedTreeseedThemeConfig = {
-  defaultScheme: TreeseedColorSchemeId;
-  defaultMode: TreeseedThemeMode;
-  schemes: Record<TreeseedColorSchemeId, TreeseedSchemeTokens>;
-  summaries: TreeseedColorSchemeSummary[];
+export type ResolvedThemeConfig = {
+  defaultScheme: ColorSchemeId;
+  defaultMode: ThemeMode;
+  schemes: Record<ColorSchemeId, SchemeTokens>;
+  summaries: ColorSchemeSummary[];
 };
 
 export type BuiltInColorSchemeDefinition = {
-  id: TreeseedColorSchemeId;
+  id: ColorSchemeId;
   name: string;
   swatches: string[];
   modeSwatches: {
     light: string[];
     dark: string[];
   };
-  tokens: TreeseedSchemeTokens;
+  tokens: SchemeTokens;
 };
 
 export type RawYamlColorScheme = {

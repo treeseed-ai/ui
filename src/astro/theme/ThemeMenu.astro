@@ -1,12 +1,12 @@
 ---
 import ThemeSelector from './ThemeSelector.astro';
-import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
+import type { ThemePreference, ThemeConfig } from '../../theme/index.ts';
 
 interface Props {
 	selectedScheme?: ThemePreference['scheme'];
 	selectedMode?: ThemePreference['mode'];
 	label?: string;
-	themeConfig?: TreeseedThemeConfig;
+	themeConfig?: ThemeConfig;
 }
 
 const {

@@ -1,7 +1,7 @@
 ---
 import Panel from '../surface/Panel.astro';
-import Button from '../forms/Button.astro';
-import FormActions from '../forms/FormActions.astro';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
 
 interface NotificationPreferencesModel { emailCadence: 'immediate' | 'daily' | 'weekly'; timeZone: string; globalContentTypes: string[]; projectOverrides: Array<{ projectId: string; contentTypes: string[] }>; }
 interface ContentCapability { id: string; label: string; description: string; }

@@ -3,12 +3,12 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  buildTreeseedThemeCss,
+  buildThemeCss,
   compileGuidedThemePalette,
-  defineTreeseedTheme,
-  loadTreeseedColorSchemes,
-  parseTreeseedColorSchemeYaml,
-  resolveTreeseedThemeConfig,
+  defineTheme,
+  loadColorSchemes,
+  parseColorSchemeYaml,
+  resolveThemeConfig,
   validateGuidedThemePalette,
 } from '../../src/theme/index.ts';
 
@@ -55,12 +55,12 @@ dark:
 
 describe('YAML themes', () => {
   it('loads built-in YAML schemes', () => {
-    const schemes = loadTreeseedColorSchemes();
+    const schemes = loadColorSchemes();
     expect(schemes.map((scheme) => scheme.id)).toEqual(expect.arrayContaining(['fern', 'lichen', 'cedar', 'tidepool']));
   });
 
   it('parses and completes a custom scheme', () => {
-    const scheme = parseTreeseedColorSchemeYaml(validYaml);
+    const scheme = parseColorSchemeYaml(validYaml);
     expect(scheme.id).toBe('test-scheme');
     expect(scheme.tokens.light.surfaceOverlay).toBeTruthy();
     expect(scheme.modeSwatches.dark).toHaveLength(4);
@@ -71,20 +71,20 @@ describe('YAML themes', () => {
     const directory = resolve(root, 'schemes');
     mkdirSync(directory, { recursive: true });
     writeFileSync(resolve(directory, 'test.yaml'), validYaml);
-    const theme = defineTreeseedTheme({ cwd: root, schemeDirectories: ['schemes'], defaultScheme: 'test-scheme' });
-    const resolved = resolveTreeseedThemeConfig(theme);
+    const theme = defineTheme({ cwd: root, schemeDirectories: ['schemes'], defaultScheme: 'test-scheme' });
+    const resolved = resolveThemeConfig(theme);
     expect(resolved.defaultScheme).toBe('test-scheme');
     expect(resolved.summaries.some((summary) => summary.id === 'test-scheme')).toBe(true);
   });
 
   it('rejects malformed YAML schemes', () => {
-    expect(() => parseTreeseedColorSchemeYaml('id: Bad Scheme')).toThrow(/Invalid color scheme id/);
-    expect(() => parseTreeseedColorSchemeYaml('id: missing-dark\nlight: {}')).toThrow(/missing light tokens/);
+    expect(() => parseColorSchemeYaml('id: Bad Scheme')).toThrow(/Invalid color scheme id/);
+    expect(() => parseColorSchemeYaml('id: missing-dark\nlight: {}')).toThrow(/missing light tokens/);
   });
 
   it('generates CSS selectors for custom schemes', () => {
-    const scheme = parseTreeseedColorSchemeYaml(validYaml);
-    const css = buildTreeseedThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
+    const scheme = parseColorSchemeYaml(validYaml);
+    const css = buildThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
     expect(css).toContain('html[data-ts-scheme="test-scheme"][data-ts-mode="light"]');
     expect(css).toContain('--ts-color-accent: #336633;');
   });

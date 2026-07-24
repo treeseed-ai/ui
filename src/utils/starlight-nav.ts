@@ -1,4 +1,4 @@
-export const TREESEED_LINKS = {
+export const LINKS = {
   home: '/',
 };
 

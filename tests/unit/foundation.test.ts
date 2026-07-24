@@ -41,9 +41,9 @@ describe('UI foundation', () => {
 	it('exports ProductShell as the canonical authenticated shell', () => {
 		const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
 
-		expect(packageJson.exports['./components/astro/shell/ProductShell.astro']).toBe('./dist/astro/shell/ProductShell.astro');
+		expect(packageJson.exports['./components/astro/shell/ProductShell.astro']).toBe('./dist/astro/shell/layout/ProductShell.astro');
 		expect(packageJson.exports['./components/astro/shell/AppShell.astro']).toBeUndefined();
-		expect(existsSync('src/astro/shell/ProductShell.astro')).toBe(true);
+		expect(existsSync('src/astro/shell/layout/ProductShell.astro')).toBe(true);
 		expect(existsSync('src/astro/shell/AppShell.astro')).toBe(false);
 	});
 
@@ -87,8 +87,8 @@ describe('UI foundation', () => {
 		const dialog = readFileSync('src/lib/feedback/dialog.ts', 'utf8');
 		const capture = readFileSync('src/lib/feedback/dom-capture.ts', 'utf8');
 		const shellSources = [
-			readFileSync('src/astro/shell/ProductShell.astro', 'utf8'),
-			readFileSync('src/astro/shell/PublicShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/PublicShell.astro', 'utf8'),
 			readFileSync('src/astro/auth/AuthShell.astro', 'utf8'),
 		].join('\n');
 
@@ -101,8 +101,8 @@ describe('UI foundation', () => {
 		const helpDrawer = readFileSync('src/lib/help/drawer.ts', 'utf8');
 		const feedbackDialog = readFileSync('src/lib/feedback/dialog.ts', 'utf8');
 		const shellSources = [
-			readFileSync('src/astro/shell/ProductShell.astro', 'utf8'),
-			readFileSync('src/astro/shell/PublicShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/PublicShell.astro', 'utf8'),
 			readFileSync('src/astro/auth/AuthShell.astro', 'utf8'),
 		].join('\n');
 
@@ -117,8 +117,8 @@ describe('UI foundation', () => {
 	it('keeps overlay editor bootstrap lazy and policy-gated', () => {
 		const overlayLoader = readFileSync('src/lib/distribution/overlay-loader.ts', 'utf8');
 		const shellSources = [
-			readFileSync('src/astro/shell/ProductShell.astro', 'utf8'),
-			readFileSync('src/astro/shell/PublicShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/PublicShell.astro', 'utf8'),
 			readFileSync('src/astro/auth/AuthShell.astro', 'utf8'),
 		].join('\n');
 

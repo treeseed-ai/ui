@@ -1,25 +1,25 @@
 import { completeTokens } from '../color-schemes/shared.ts';
-import type { BuiltInColorSchemeDefinition, RequiredSchemeTokenInput, TreeseedColorSchemeId, TreeseedSchemeTokens, TreeseedSemanticColorTokens, TreeseedThemeMode } from '../types.ts';
-import { resolveTreeseedThemeConfig } from './define-treeseed-theme.ts';
+import type { BuiltInColorSchemeDefinition, RequiredSchemeTokenInput, ColorSchemeId, SchemeTokens, SemanticColorTokens, ThemeMode } from '../types.ts';
+import { resolveThemeConfig } from './define-theme.ts';
 
 export type {
   BuiltInColorSchemeDefinition,
   RequiredSchemeTokenInput,
-  ResolvedTreeseedThemeConfig,
+  ResolvedThemeConfig,
   ThemePreference,
-  TreeseedColorSchemeId,
-  TreeseedColorSchemeSummary,
-  TreeseedSchemeTokens,
-  TreeseedSemanticColorTokens,
-  TreeseedThemeConfig,
-  TreeseedThemeMode,
-} from '.././types.ts';
+  ColorSchemeId,
+  ColorSchemeSummary,
+  SchemeTokens,
+  SemanticColorTokens,
+  ThemeConfig,
+  ThemeMode,
+} from '../types.ts';
 
-export const DEFAULT_SCHEME: TreeseedColorSchemeId = 'fern';
+export const DEFAULT_SCHEME: ColorSchemeId = 'fern';
 
-export const DEFAULT_MODE: TreeseedThemeMode = 'system';
+export const DEFAULT_MODE: ThemeMode = 'system';
 
-export const THEME_MODES = new Set<TreeseedThemeMode>(['light', 'dark', 'system']);
+export const THEME_MODES = new Set<ThemeMode>(['light', 'dark', 'system']);
 
 export const REQUIRED_TOKEN_KEYS = [
   'canvas',
@@ -50,7 +50,7 @@ export interface GuidedThemePaletteMode {
 	accent: string;
 }
 
-export const TREESEED_PERSONAL_THEME_DEFAULT_PALETTE = {
+export const PERSONAL_THEME_DEFAULT_PALETTE = {
 	light: { canvas: '#f4f7f2', surface: '#ffffff', text: '#17211b', accent: '#2f6f4e' },
 	dark: { canvas: '#101612', surface: '#18201a', text: '#e8f0e8', accent: '#8fcca7' },
 } as const;
@@ -98,12 +98,12 @@ export function validateGuidedThemePalette(palette: GuidedThemePalette) {
 	return { ok: errors.length === 0, errors };
 }
 
-export function compileGuidedThemePalette(palette: GuidedThemePalette, baseScheme: TreeseedColorSchemeId = DEFAULT_SCHEME): TreeseedSchemeTokens {
+export function compileGuidedThemePalette(palette: GuidedThemePalette, baseScheme: ColorSchemeId = DEFAULT_SCHEME): SchemeTokens {
 	const validation = validateGuidedThemePalette(palette);
 	if (!validation.ok) throw new Error(validation.errors.join(' '));
-	const resolved = resolveTreeseedThemeConfig({ defaultScheme: baseScheme });
+	const resolved = resolveThemeConfig({ defaultScheme: baseScheme });
 	const base = resolved.schemes[baseScheme] ?? resolved.schemes[DEFAULT_SCHEME];
-	const compile = (mode: 'light' | 'dark'): TreeseedSemanticColorTokens => {
+	const compile = (mode: 'light' | 'dark'): SemanticColorTokens => {
 		const colors = palette[mode];
 		const source = base[mode];
 		return completeTokens({

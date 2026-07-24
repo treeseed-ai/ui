@@ -1,10 +1,10 @@
 ---
 import {
-	buildTreeseedThemeCss,
+	buildThemeCss,
 	normalizeThemePreference,
-	resolveTreeseedThemeConfig,
+	resolveThemeConfig,
 	type ThemePreference,
-	type TreeseedThemeConfig,
+	type ThemeConfig,
 } from '../../theme/index.ts';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 	defaultMode?: ThemePreference['mode'];
 	includeCss?: boolean;
 	preferDefaultPreference?: boolean;
-	themeConfig?: TreeseedThemeConfig;
+	themeConfig?: ThemeConfig;
 }
 
 const themeConfig = (Astro.props as Props).themeConfig;
@@ -21,9 +21,9 @@ const preference = normalizeThemePreference({
 	mode: (Astro.props as Props).defaultMode,
 });
 const { includeCss = true, preferDefaultPreference = false } = Astro.props as Props;
-const resolvedTheme = resolveTreeseedThemeConfig(themeConfig);
+const resolvedTheme = resolveThemeConfig(themeConfig);
 const builtInSchemeIds = resolvedTheme.summaries.map((scheme) => scheme.id);
-const themeCss = buildTreeseedThemeCss(themeConfig);
+const themeCss = buildThemeCss(themeConfig);
 ---
 
 {includeCss ? <style is:inline set:html={themeCss}></style> : null}

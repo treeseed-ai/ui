@@ -1,6 +1,6 @@
 import YAML from 'yaml';
-import { completeTokens } from ".././color-schemes/shared.ts";
-import type { BuiltInColorSchemeDefinition, RawYamlColorScheme, RequiredSchemeTokenInput, TreeseedColorSchemeId, TreeseedSchemeTokens } from ".././types.ts";
+import { completeTokens } from "../color-schemes/shared.ts";
+import type { BuiltInColorSchemeDefinition, RawYamlColorScheme, RequiredSchemeTokenInput, ColorSchemeId, SchemeTokens } from "../types.ts";
 import { REQUIRED_TOKEN_KEYS, builtInSchemeCache } from './default-scheme.ts';
 
 export const BUILT_IN_SCHEME_YAML = [
@@ -168,8 +168,8 @@ export function nodeBuiltin<T>(name: string): T {
   return getBuiltinModule(name) as T;
 }
 
-export function normalizeSchemeId(value: unknown, fallback: TreeseedColorSchemeId) {
-  return typeof value === 'string' && /^[a-z][a-z0-9-]*$/u.test(value) ? value as TreeseedColorSchemeId : fallback;
+export function normalizeSchemeId(value: unknown, fallback: ColorSchemeId) {
+  return typeof value === 'string' && /^[a-z][a-z0-9-]*$/u.test(value) ? value as ColorSchemeId : fallback;
 }
 
 export function assertSchemeId(value: unknown, filePath: string): asserts value is string {
@@ -190,16 +190,16 @@ export function assertTokenMap(value: unknown, mode: 'light' | 'dark', filePath:
   return Object.fromEntries(REQUIRED_TOKEN_KEYS.map((key) => [key, record[key]])) as RequiredSchemeTokenInput;
 }
 
-export function defaultSwatches(tokens: TreeseedSchemeTokens) {
+export function defaultSwatches(tokens: SchemeTokens) {
   return [tokens.light.accent, tokens.light.accentStrong, tokens.light.surface, tokens.light.text];
 }
 
 export function builtInColorSchemes() {
-  builtInSchemeCache.definitions ??= BUILT_IN_SCHEME_YAML.map((source, index) => parseTreeseedColorSchemeYaml(source, `built-in:${index}`));
+  builtInSchemeCache.definitions ??= BUILT_IN_SCHEME_YAML.map((source, index) => parseColorSchemeYaml(source, `built-in:${index}`));
   return builtInSchemeCache.definitions;
 }
 
-export function parseTreeseedColorSchemeYaml(source: string, filePath = 'inline YAML'): BuiltInColorSchemeDefinition {
+export function parseColorSchemeYaml(source: string, filePath = 'inline YAML'): BuiltInColorSchemeDefinition {
   const parsed = YAML.parse(source) as RawYamlColorScheme | null;
   if (!parsed || typeof parsed !== 'object') {
     throw new Error(`Color scheme ${filePath} must be a YAML mapping.`);
@@ -213,7 +213,7 @@ export function parseTreeseedColorSchemeYaml(source: string, filePath = 'inline 
     : defaultSwatches(tokens);
 
   return {
-    id: parsed.id as TreeseedColorSchemeId,
+    id: parsed.id as ColorSchemeId,
     name: parsed.name || parsed.id.split('-').map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`).join(' '),
     swatches,
     modeSwatches: {
@@ -234,7 +234,7 @@ export function yamlFilesInDirectory(directory: string) {
     .sort();
 }
 
-export function loadTreeseedColorSchemes(options: { directories?: string[]; cwd?: string } = {}) {
+export function loadColorSchemes(options: { directories?: string[]; cwd?: string } = {}) {
   const requestedDirectories = options.directories ?? [];
   const schemes = new Map<string, BuiltInColorSchemeDefinition>(
     builtInColorSchemes().map((scheme) => [scheme.id, scheme]),
@@ -251,7 +251,7 @@ export function loadTreeseedColorSchemes(options: { directories?: string[]; cwd?
 
   for (const directory of directories) {
     for (const filePath of yamlFilesInDirectory(directory)) {
-      const scheme = parseTreeseedColorSchemeYaml(readFileSync(filePath, 'utf8'), filePath);
+      const scheme = parseColorSchemeYaml(readFileSync(filePath, 'utf8'), filePath);
       if (schemes.has(scheme.id)) {
         throw new Error(`Duplicate TreeSeed color scheme id "${scheme.id}" found in ${filePath}.`);
       }

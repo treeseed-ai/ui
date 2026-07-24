@@ -50,7 +50,7 @@ describe('component inventory boundaries', () => {
 
     expect(utilityUsers).toEqual([
       'src/astro/forms/ContactForm.astro',
-      'src/astro/forms/FooterSubscribeForm.astro',
+      'src/astro/forms/submission/FooterSubscribeForm.astro',
       'src/astro/layouts/AppLayout.astro',
       'src/astro/layouts/AuthoredEntryLayout.astro',
       'src/astro/layouts/BookLayout.astro',
@@ -58,16 +58,16 @@ describe('component inventory boundaries', () => {
       'src/astro/layouts/ContentLayout.astro',
       'src/astro/layouts/NoteLayout.astro',
       'src/astro/layouts/ProfileLayout.astro',
-      'src/astro/site/BookList.astro',
-      'src/astro/site/CTASection.astro',
-      'src/astro/site/ChronicleList.astro',
-      'src/astro/site/Hero.astro',
-      'src/astro/site/PathCard.astro',
-      'src/astro/site/ProfileList.astro',
-      'src/astro/site/RouteNotFound.astro',
-      'src/astro/site/SectionIntro.astro',
-      'src/astro/site/StageBanner.astro',
-      'src/astro/site/TrustCallout.astro',
+      'src/astro/site/content/BookList.astro',
+      'src/astro/site/content/ChronicleList.astro',
+      'src/astro/site/content/ProfileList.astro',
+      'src/astro/site/marketing/CTASection.astro',
+      'src/astro/site/marketing/Hero.astro',
+      'src/astro/site/marketing/StageBanner.astro',
+      'src/astro/site/marketing/TrustCallout.astro',
+      'src/astro/site/navigation/PathCard.astro',
+      'src/astro/site/navigation/RouteNotFound.astro',
+      'src/astro/site/sections/SectionIntro.astro',
     ]);
   });
 });

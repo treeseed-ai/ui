@@ -1,9 +1,9 @@
 ---
 import {
 	normalizeThemePreference,
-	resolveTreeseedThemeConfig,
+	resolveThemeConfig,
 	type ThemePreference,
-	type TreeseedThemeConfig,
+	type ThemeConfig,
 } from '../../theme/index.ts';
 import ThemePreviewSwatch from './ThemePreviewSwatch.astro';
 
@@ -15,7 +15,7 @@ interface Props {
 	schemeFieldName?: string;
 	modeFieldName?: string;
 	compact?: boolean;
-	themeConfig?: TreeseedThemeConfig;
+	themeConfig?: ThemeConfig;
 }
 
 const {
@@ -29,7 +29,7 @@ const {
 	themeConfig,
 } = Astro.props as Props;
 
-const schemes = resolveTreeseedThemeConfig(themeConfig).summaries;
+const schemes = resolveThemeConfig(themeConfig).summaries;
 const preference = normalizeThemePreference({ scheme: selectedScheme, mode: selectedMode });
 const activeScheme = schemes.find((scheme) => scheme.id === preference.scheme) ?? schemes[0];
 const initialSwatches = preference.mode === 'dark'

@@ -1,0 +1,121 @@
+---
+import ShellFrame from './ShellFrame.astro';
+import ShellHeader from '../chrome/ShellHeader.astro';
+import SiteUserControls from '../chrome/SiteUserControls.astro';
+import TeamOperationsPanel from '../team-operations/TeamOperationsPanel.astro';
+import TeamOperationsDrawer from '../team-operations/TeamOperationsDrawer.astro';
+import ControlSurface from './ControlSurface.astro';
+import type { ButtonAction, ShellBrand, ShellNavItem, SiteUserControlItem } from '../../types.ts';
+import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
+import type { ThemePreference, ThemeConfig } from '../../../theme/index.ts';
+
+// FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through SiteUserControls and ShellFrame.
+
+interface Props {
+	title: string;
+	description: string;
+	currentPath: string;
+	appearance: ThemePreference;
+	brand: ShellBrand;
+	navItems: ShellNavItem[];
+	siteItems?: SiteUserControlItem[];
+	quickActions?: ButtonAction[];
+	accountActions?: ButtonAction[];
+	bottomNavItems?: ShellNavItem[];
+	themeConfig?: ThemeConfig;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
+	notifications?: any[];
+	notificationCsrfToken?: string;
+}
+
+const {
+	title,
+	description,
+	currentPath,
+	appearance,
+	brand,
+	navItems,
+	siteItems = [
+		{ label: 'Home', href: '/' },
+		{ label: 'Market', href: '/market/' },
+		{ label: 'Knowledge', href: '/knowledge/' },
+	],
+	quickActions = [],
+	accountActions = [],
+	themeConfig,
+	helpContext,
+	feedbackContext,
+	notifications = [],
+	notificationCsrfToken = '',
+} = Astro.props as Props;
+const feedbackDialogId = 'product-shell-feedback';
+const helpDrawerId = 'product-shell-help';
+const drawerId = 'team-operations-drawer';
+---
+
+<ShellFrame
+	title={title}
+	description={description}
+	appearance={appearance}
+	themeConfig={themeConfig}
+	helpContext={helpContext}
+	feedbackContext={feedbackContext}
+	helpDrawerId={helpDrawerId}
+	feedbackDialogId={feedbackDialogId}
+	bodyClass="ts-product-shell-body"
+>
+	<div class="ts-product-shell" data-scene="app-shell">
+		<div class="ts-product-shell__header">
+			<ShellHeader brand={brand} showMenuButton menuTargetId={drawerId}>
+				<Fragment slot="actions">
+					<SiteUserControls
+						items={siteItems}
+						currentPath={currentPath}
+						appearance={appearance}
+						themeConfig={themeConfig}
+						helpContext={helpContext}
+						feedbackContext={feedbackContext}
+						helpDrawerId={helpDrawerId}
+						feedbackDialogId={feedbackDialogId}
+						notifications={notifications}
+						notificationCsrfToken={notificationCsrfToken}
+						showHomeLink
+					/>
+				</Fragment>
+			</ShellHeader>
+		</div>
+		<div class="ts-product-shell__body">
+			<div class="ts-product-shell__desktop-operations">
+				<TeamOperationsPanel items={navItems} currentPath={currentPath} quickActions={quickActions} accountActions={accountActions}>
+					<Fragment slot="teamSelector"><slot name="railContext" /></Fragment>
+				</TeamOperationsPanel>
+			</div>
+			<ControlSurface title={title} description={description}>
+				<Fragment slot="actions"><slot name="headerAction" /></Fragment>
+				<slot name="projectContext" />
+				<slot />
+			</ControlSurface>
+		</div>
+	</div>
+	<TeamOperationsDrawer id={drawerId}>
+		<TeamOperationsPanel items={navItems} currentPath={currentPath} quickActions={quickActions} accountActions={accountActions}>
+			<Fragment slot="teamSelector"><slot name="railContext" /></Fragment>
+		</TeamOperationsPanel>
+		<SiteUserControls
+			items={siteItems}
+			currentPath={currentPath}
+			appearance={appearance}
+			themeConfig={themeConfig}
+			helpContext={helpContext}
+			feedbackContext={feedbackContext}
+			helpDrawerId={helpDrawerId}
+			feedbackDialogId={feedbackDialogId}
+			notifications={notifications}
+			notificationCsrfToken={notificationCsrfToken}
+			showHomeLink
+		/>
+	</TeamOperationsDrawer>
+	<slot name="sensitiveModal" />
+	<slot name="modal" />
+</ShellFrame>

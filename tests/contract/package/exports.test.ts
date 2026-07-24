@@ -17,6 +17,11 @@ function isPublicComponentEntry(file: string): boolean {
   return !existsSync(`${ownerDirectory}.tsx`) && !existsSync(`${ownerDirectory}.astro`);
 }
 
+function exportedTargetForSource(exports: Record<string, unknown>, sourcePath: string) {
+  const target = `./dist/${relative('src', sourcePath)}`;
+  return Object.values(exports).some((value) => value === target);
+}
+
 describe('package exports', () => {
   it('exports public component and style entrypoints', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
@@ -35,8 +40,10 @@ describe('package exports', () => {
 
     const astroComponents = walkFiles('src/astro').filter((file) => extname(file) === '.astro');
     for (const componentPath of astroComponents) {
-      const exportPath = `./components/astro/${relative('src/astro', componentPath)}`;
-      expect(packageJson.exports[exportPath], exportPath).toBeDefined();
+      expect(
+        exportedTargetForSource(packageJson.exports, componentPath),
+        `${componentPath} should be targeted by a public component export`,
+      ).toBe(true);
     }
 
     const reactComponents = walkFiles('src/react').filter((file) => extname(file) === '.tsx' && isPublicComponentEntry(file));
@@ -57,7 +64,7 @@ describe('package exports', () => {
     expect(Ui.SelectField).toBeDefined();
     expect(Ui.TextField).toBeDefined();
     expect(Ui.normalizeAllocations).toBeDefined();
-    expect(Ui.defineTreeseedTheme).toBeDefined();
+    expect(Ui.defineTheme).toBeDefined();
     expect(Ui.platformOperationHref).toBeDefined();
     expect(Ui.initializeRelatedContentCreators).toBeDefined();
   });
@@ -93,7 +100,7 @@ describe('package exports', () => {
     const theme = await import('@treeseed/ui/theme');
 
     expect(theme.normalizeThemePreference).toBeDefined();
-    expect(theme.defineTreeseedTheme).toBeDefined();
+    expect(theme.defineTheme).toBeDefined();
   });
 
   it('catalogs every standalone public component page', () => {
@@ -122,7 +129,14 @@ describe('package exports', () => {
           : null;
 
       if (!exportPath) continue;
-      expect(packageJson.exports[exportPath], `${entry.uiPath} should be exported as ${exportPath}`).toBeDefined();
+      if (entry.uiPath.startsWith('src/astro/')) {
+        expect(
+          exportedTargetForSource(packageJson.exports, entry.uiPath),
+          `${entry.uiPath} should be targeted by a public component export`,
+        ).toBe(true);
+      } else {
+        expect(packageJson.exports[exportPath], `${entry.uiPath} should be exported as ${exportPath}`).toBeDefined();
+      }
     }
   });
 });

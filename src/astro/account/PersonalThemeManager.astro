@@ -1,19 +1,19 @@
 ---
 import Panel from '../surface/Panel.astro';
-import Field from '../forms/Field.astro';
-import TextInput from '../forms/TextInput.astro';
-import Select from '../forms/Select.astro';
-import Button from '../forms/Button.astro';
-import FormActions from '../forms/FormActions.astro';
+import Field from '../forms/fields/Field.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Select from '../forms/fields/Select.astro';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
 import AccessibleDialog from '../overlays/AccessibleDialog.astro';
 import ThemePreviewSwatch from '../theme/ThemePreviewSwatch.astro';
-import { loadTreeseedColorSchemes, TREESEED_PERSONAL_THEME_DEFAULT_PALETTE } from '../../theme/index.ts';
+import { loadColorSchemes, PERSONAL_THEME_DEFAULT_PALETTE } from '../../theme/index.ts';
 
 interface PersonalThemeItem { id: string; schemeId: string; name: string; baseScheme: string; palette: { light: Record<'canvas' | 'surface' | 'text' | 'accent', string>; dark: Record<'canvas' | 'surface' | 'text' | 'accent', string> }; }
 interface Props { themes: PersonalThemeItem[]; activeScheme: string; csrfToken: string; status?: string | null; error?: string | null; }
 const { themes, activeScheme, csrfToken, status, error } = Astro.props as Props;
-const defaults = TREESEED_PERSONAL_THEME_DEFAULT_PALETTE;
-const schemes = loadTreeseedColorSchemes().map((scheme) => ({ value: scheme.id, label: scheme.name }));
+const defaults = PERSONAL_THEME_DEFAULT_PALETTE;
+const schemes = loadColorSchemes().map((scheme) => ({ value: scheme.id, label: scheme.name }));
 ---
 
 <div class="ts-stack" data-scene="account-appearance">

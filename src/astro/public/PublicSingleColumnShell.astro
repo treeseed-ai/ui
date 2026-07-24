@@ -1,10 +1,10 @@
 ---
-import ShellFrame from '../shell/ShellFrame.astro';
-import ShellHeader from '../shell/ShellHeader.astro';
-import SiteUserControls from '../shell/SiteUserControls.astro';
-import PublicFooter from '../shell/PublicFooter.astro';
+import ShellFrame from '../shell/layout/ShellFrame.astro';
+import ShellHeader from '../shell/chrome/ShellHeader.astro';
+import SiteUserControls from '../shell/chrome/SiteUserControls.astro';
+import PublicFooter from '../shell/chrome/PublicFooter.astro';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
-import type { ThemePreference, TreeseedThemeConfig } from '../../theme/index.ts';
+import type { ThemePreference, ThemeConfig } from '../../theme/index.ts';
 import type { ButtonAction, ShellBrand, SiteUserControlItem } from '../types.ts';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 	actions?: ButtonAction[];
 	showAppearanceControl?: boolean;
 	preferServerAppearance?: boolean;
-	themeConfig?: TreeseedThemeConfig;
+	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
 }

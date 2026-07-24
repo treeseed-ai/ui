@@ -1,7 +1,7 @@
 ---
 import CollectionTemplate from '../templates/CollectionTemplate.astro';
 import Panel from '../surface/Panel.astro';
-import Button from '../forms/Button.astro';
+import Button from '../forms/actions/Button.astro';
 
 interface SessionItem { id: string; provider: string; current: boolean; expiresAt: string; revokedAt?: string | null; authenticatedAt: string; lastSeenAt?: string | null; userAgent?: string | null; ipAddress?: string | null; }
 interface Props { sessions: SessionItem[]; csrfToken: string; status?: string | null; error?: string | null; }
