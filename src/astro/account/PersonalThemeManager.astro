@@ -25,7 +25,7 @@ const schemes = loadColorSchemes().map((scheme) => ({ value: scheme.id, label: s
 	<Panel eyebrow="Personal" title="Your themes" description="Create reusable color systems. Creating or editing a theme never activates it.">
 		<Button type="button" data-dialog-open="create-personal-theme">Create theme</Button>
 		<div class="ts-stack">{themes.length ? themes.map((theme) => (
-			<details>
+			<details data-active-personal-theme-name={activeScheme === theme.schemeId ? theme.name : undefined}>
 				<summary><ThemePreviewSwatch swatches={[theme.palette.light.accent, theme.palette.light.surface, theme.palette.dark.accent, theme.palette.dark.canvas]} label={`${theme.name} preview`} /> <strong>{theme.name}</strong>{activeScheme === theme.schemeId ? ' · active' : ''}</summary>
 				<form method="post" class="ts-form-grid">
 					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="themeId" value={theme.id} /><input type="hidden" name="intent" value="update-theme" />
@@ -40,10 +40,10 @@ const schemes = loadColorSchemes().map((scheme) => ({ value: scheme.id, label: s
 	<AccessibleDialog id="create-personal-theme" title="Create a personal theme" description="Choose a base and eight key colors. TreeSeed derives the complete accessible token set.">
 		<form method="post" class="ts-form-grid">
 			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="intent" value="create-theme" />
-			<Field label="Theme name" name="name"><TextInput id="theme-name" name="name" required /></Field>
-			<Field label="Base theme" name="baseScheme"><Select id="theme-base" name="baseScheme" options={schemes} value="fern" /></Field>
-			{(['light', 'dark'] as const).flatMap((mode) => (['canvas', 'surface', 'text', 'accent'] as const).map((key) => <Field label={`${mode} ${key}`} name={`${mode}.${key}`}><input id={`create-${mode}-${key}`} class="ts-control" type="color" name={`${mode}.${key}`} value={defaults[mode][key]} /></Field>))}
-			<FormActions><Button type="submit">Create theme</Button><Button type="button" variant="secondary" data-dialog-close>Cancel</Button></FormActions>
+			<Field label="Theme name" id="theme-name"><TextInput id="theme-name" name="name" required /></Field>
+			<Field label="Base theme" id="theme-base"><Select id="theme-base" name="baseScheme" options={schemes} value="fern" /></Field>
+			{(['light', 'dark'] as const).flatMap((mode) => (['canvas', 'surface', 'text', 'accent'] as const).map((key) => <Field label={`${mode} ${key}`} id={`create-${mode}-${key}`}><input id={`create-${mode}-${key}`} class="ts-control" type="color" name={`${mode}.${key}`} value={defaults[mode][key]} /></Field>))}
+			<FormActions><Button type="submit" data-testid="create-personal-theme-submit">Create theme</Button><Button type="button" variant="secondary" data-dialog-close>Cancel</Button></FormActions>
 		</form>
 	</AccessibleDialog>
 </div>

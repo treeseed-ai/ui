@@ -91,7 +91,7 @@ export function resolveThemeConfig(input?: ThemeConfig): ResolvedThemeConfig {
     .filter((schemeId) => !baseSummaries.some((summary) => summary.id === schemeId))
     .map((schemeId) => ({
       id: schemeId as ColorSchemeId,
-      name: schemeId
+      name: input?.schemeNames?.[schemeId] ?? schemeId
         .split('-')
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' '),

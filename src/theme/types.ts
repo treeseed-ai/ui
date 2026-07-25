@@ -72,6 +72,7 @@ export interface SchemeTokens {
 export interface ThemeConfig {
   defaultScheme?: ColorSchemeId;
   defaultMode?: ThemeMode;
+  schemeNames?: Partial<Record<ColorSchemeId, string>>;
   schemes?: Partial<Record<ColorSchemeId, Partial<{
     light: Partial<SemanticColorTokens>;
     dark: Partial<SemanticColorTokens>;

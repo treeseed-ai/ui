@@ -19,7 +19,7 @@ const viewModel = { title: 'Sessions', description: 'Review devices signed in to
 				{session.current ? (
 					<form method="post" action="/auth/logout"><input type="hidden" name="csrfToken" value={csrfToken} /><Button type="submit" variant="danger">Sign out this device</Button></form>
 				) : !session.revokedAt ? (
-					<form method="post"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="sessionId" value={session.id} /><Button type="submit" name="intent" value="revoke" variant="danger">Revoke session</Button></form>
+					<form method="post"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="sessionId" value={session.id} /><Button type="submit" name="intent" value="revoke" variant="danger" data-session-user-agent={session.userAgent?.toLowerCase().replace(/[^a-z0-9]+/gu, '-')}>Revoke session</Button></form>
 				) : null}
 			</Panel>
 		))}</div> : <p>No sessions are available.</p>}
