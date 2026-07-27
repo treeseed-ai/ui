@@ -82,7 +82,11 @@ test.describe('market visual parity previews', () => {
     await expect(page.locator('.auth-card')).toBeVisible();
     await expect(page.locator('.auth-card__brand')).toBeVisible();
     await expect(page.locator('.auth-card__main')).toBeVisible();
-    await expect(page.locator('.auth-alert[data-tone="danger"]')).toHaveCSS('display', /block|flex/);
+    await expect(page.locator('[data-ts-initial-toast][data-tone="error"]')).toHaveAttribute('data-message', 'Invalid passphrase.');
+    await expect(page.locator('[data-ts-initial-toast][data-tone="success"]')).toHaveAttribute(
+      'data-message',
+      'Check your inbox for a sign-in link.',
+    );
 
     await page.goto('/displays/plain-table');
     await expect(page.locator('.ts-record-card').first()).toBeVisible();

@@ -230,17 +230,6 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.auth-alert {
-	background: var(--ts-tone-soft);
-	border: 1px solid var(--ts-tone-border);
-	border-radius: var(--ts-radius-md);
-	color: var(--ts-tone-text);
-	font-size: 0.9rem;
-	font-weight: 650;
-	line-height: 1.45;
-	padding: var(--ts-space-3);
-}
-
 .auth-card__footer {
 	border-top: 1px solid var(--ts-color-border);
 	color: var(--ts-color-text-muted);

@@ -70,7 +70,7 @@ const authLinks = [
 	<script is:inline data-astro-rerun slot="bodyEnd">
 		(() => {
 			const storagePrefix = 'treeseed:auth-form:';
-			const hasError = Boolean(document.querySelector('.auth-alert[data-tone="danger"]'));
+			const hasError = Boolean(document.querySelector('[data-ts-initial-toast][data-tone="error"]'));
 
 			function storageKey(form) {
 				const action = form.getAttribute('action') || location.pathname;
