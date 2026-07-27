@@ -25,8 +25,8 @@ interface Props {
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
-	notifications?: any[];
-	notificationCsrfToken?: string;
+	contentOwnsPageHeader?: boolean;
+	timeZone?: string;
 }
 
 const {
@@ -46,12 +46,13 @@ const {
 	themeConfig,
 	helpContext,
 	feedbackContext,
-	notifications = [],
-	notificationCsrfToken = '',
+	contentOwnsPageHeader = false,
+	timeZone = 'UTC',
 } = Astro.props as Props;
 const feedbackDialogId = 'product-shell-feedback';
 const helpDrawerId = 'product-shell-help';
 const drawerId = 'team-operations-drawer';
+const sidebarId = 'team-operations-sidebar';
 ---
 
 <ShellFrame
@@ -64,8 +65,33 @@ const drawerId = 'team-operations-drawer';
 	helpDrawerId={helpDrawerId}
 	feedbackDialogId={feedbackDialogId}
 	bodyClass="ts-product-shell-body"
+	timeZone={timeZone}
 >
-	<div class="ts-product-shell" data-scene="app-shell">
+	<script is:inline slot="head">
+		(() => {
+			const storageKey = 'treeseed.app-sidebar-collapsed';
+			const readState = () => {
+				try {
+					return localStorage.getItem(storageKey) === 'true' ? 'collapsed' : 'expanded';
+				} catch {
+					return 'expanded';
+				}
+			};
+			const prepare = (root) => {
+				root.dataset.tsAppSidebar = readState();
+				root.dataset.tsAppSidebarReady = 'true';
+			};
+
+			prepare(document.documentElement);
+			if (!window.__tsAppSidebarBeforeSwapBound) {
+				window.__tsAppSidebarBeforeSwapBound = true;
+				document.addEventListener('astro:before-swap', (event) => {
+					prepare(event.newDocument.documentElement);
+				});
+			}
+		})();
+	</script>
+	<div class="ts-product-shell" data-scene="app-shell" data-page-header-owner={contentOwnsPageHeader ? 'content' : 'shell'}>
 		<div class="ts-product-shell__header">
 			<ShellHeader brand={brand} showMenuButton menuTargetId={drawerId}>
 				<Fragment slot="actions">
@@ -78,8 +104,6 @@ const drawerId = 'team-operations-drawer';
 						feedbackContext={feedbackContext}
 						helpDrawerId={helpDrawerId}
 						feedbackDialogId={feedbackDialogId}
-						notifications={notifications}
-						notificationCsrfToken={notificationCsrfToken}
 						showHomeLink
 					/>
 				</Fragment>
@@ -87,12 +111,14 @@ const drawerId = 'team-operations-drawer';
 		</div>
 		<div class="ts-product-shell__body">
 			<div class="ts-product-shell__desktop-operations">
-				<TeamOperationsPanel items={navItems} currentPath={currentPath} quickActions={quickActions} accountActions={accountActions}>
+				<TeamOperationsPanel id={sidebarId} items={navItems} currentPath={currentPath} quickActions={quickActions} accountActions={accountActions} collapsible>
 					<Fragment slot="teamSelector"><slot name="railContext" /></Fragment>
 				</TeamOperationsPanel>
 			</div>
-			<ControlSurface title={title} description={description}>
-				<Fragment slot="actions"><slot name="headerAction" /></Fragment>
+			<ControlSurface title={contentOwnsPageHeader ? undefined : title} description={contentOwnsPageHeader ? undefined : description}>
+				{Astro.slots.has('headerAction') ? (
+					<Fragment slot="actions"><slot name="headerAction" /></Fragment>
+				) : null}
 				<slot name="projectContext" />
 				<slot />
 			</ControlSurface>
@@ -111,11 +137,54 @@ const drawerId = 'team-operations-drawer';
 			feedbackContext={feedbackContext}
 			helpDrawerId={helpDrawerId}
 			feedbackDialogId={feedbackDialogId}
-			notifications={notifications}
-			notificationCsrfToken={notificationCsrfToken}
 			showHomeLink
 		/>
 	</TeamOperationsDrawer>
 	<slot name="sensitiveModal" />
 	<slot name="modal" />
+	<script is:inline data-astro-rerun>
+		(() => {
+			const storageKey = 'treeseed.app-sidebar-collapsed';
+			const root = document.documentElement;
+
+			const apply = (collapsed) => {
+				root.dataset.tsAppSidebar = collapsed ? 'collapsed' : 'expanded';
+				document.querySelectorAll('[data-ts-app-sidebar-toggle]').forEach((toggle) => {
+					if (!(toggle instanceof HTMLButtonElement)) return;
+					const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+					toggle.setAttribute('aria-expanded', String(!collapsed));
+					toggle.setAttribute('aria-label', label);
+					toggle.title = label;
+					const visibleLabel = toggle.querySelector('[data-ts-sidebar-toggle-label]');
+					if (visibleLabel) visibleLabel.textContent = label;
+				});
+			};
+
+			const read = () => {
+				try {
+					return localStorage.getItem(storageKey) === 'true';
+				} catch {
+					return false;
+				}
+			};
+
+			apply(read());
+			if (!window.__tsAppSidebarToggleBound) {
+				window.__tsAppSidebarToggleBound = true;
+				document.addEventListener('click', (event) => {
+					const target = event.target instanceof Element
+						? event.target.closest('[data-ts-app-sidebar-toggle]')
+						: null;
+					if (!(target instanceof HTMLButtonElement)) return;
+					const collapsed = root.dataset.tsAppSidebar !== 'collapsed';
+					apply(collapsed);
+					try {
+						localStorage.setItem(storageKey, String(collapsed));
+					} catch {
+						// Storage is optional; the in-page state remains usable.
+					}
+				});
+			}
+		})();
+	</script>
 </ShellFrame>

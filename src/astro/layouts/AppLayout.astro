@@ -4,8 +4,11 @@ import '../../styles/operations.css';
 import ProductShell from '../shell/layout/ProductShell.astro';
 import DeleteConfirmationModal from '../app/controls/data/DeleteConfirmationModal.astro';
 import SensitiveDataUnlock from '../app/sensitive/SensitiveDataUnlock.astro';
+import ShellIcon from '../shell/navigation/ShellIcon.astro';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
+import type { ButtonAction, ShellNavItem } from '../types.ts';
+import { SITE_SLOGAN } from '../../site-brand.ts';
 
 
 interface TeamEntry {
@@ -23,11 +26,12 @@ interface Props {
 	activeTeam?: TeamEntry | null;
 	showSensitiveUnlock?: boolean;
 	appearance?: ThemePreference;
-	navItems?: Array<{ label: string; href: string }>;
-	quickActions?: Array<{ label: string; href: string; variant?: 'primary' | 'secondary' | 'ghost' | 'danger'; reload?: boolean }>;
+	navItems?: ShellNavItem[];
+	quickActions?: ButtonAction[];
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
 	appearanceEndpoint?: string;
+	contentOwnsPageHeader?: boolean;
 }
 
 const {
@@ -43,23 +47,26 @@ const {
 	helpContext,
 	feedbackContext,
 	appearanceEndpoint = '/v1/auth/web/appearance',
+	contentOwnsPageHeader = false,
 } = Astro.props as Props;
 
 const railItems = providedNavItems ?? [
-	{ label: 'Start', href: '/app/' },
-	{ label: 'Services', href: '/app/services' },
-	{ label: 'Projects', href: '/app/projects' },
-	{ label: 'Capacity', href: '/app/capacity/providers' },
-	{ label: 'Work', href: '/app/work' },
-	{ label: 'Knowledge', href: '/app/knowledge/artifacts' },
+	{ label: 'Start', href: '/app/', icon: 'start' as const },
+	{ label: 'Services', href: '/app/services', icon: 'services' as const },
+	{ label: 'Projects', href: '/app/projects', icon: 'projects' as const },
+	{ label: 'Capacity', href: '/app/capacity/providers', icon: 'capacity' as const },
+	{ label: 'Work', href: '/app/work', icon: 'work' as const },
+	{ label: 'Knowledge', href: '/app/knowledge/artifacts', icon: 'knowledge' as const },
 ];
 
 const quickActions = providedQuickActions ?? [
 	activeTeam
-		? { label: 'New project', href: '/app/projects/new', variant: 'primary' as const }
-		: { label: 'New team', href: '/app/teams/new', variant: 'primary' as const },
-	{ label: 'Account', href: '/app/account', variant: 'secondary' as const },
-	{ label: 'Sign out', href: '/v1/auth/logout?returnTo=/', variant: 'secondary' as const, reload: true },
+		? { label: 'New project', href: '/app/projects/new', variant: 'primary' as const, icon: 'create' as const }
+		: { label: 'New team', href: '/app/teams/new', variant: 'primary' as const, icon: 'create' as const },
+];
+const accountActions: ButtonAction[] = [
+	{ label: 'Account', href: '/app/account', variant: 'secondary', icon: 'account' },
+	{ label: 'Sign out', href: '/v1/auth/logout?returnTo=/', variant: 'secondary', reload: true, icon: 'sign-out', iconOnly: true },
 ];
 const teamOptions = teams.map((team) => ({
 	id: team.id,
@@ -84,19 +91,21 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 	description={description}
 	currentPath={currentPath}
 	appearance={appearance}
+	contentOwnsPageHeader={contentOwnsPageHeader}
 	brand={{
 		name: 'TreeSeed Platform',
-		tag: 'Simple controls',
+		tag: SITE_SLOGAN,
 		href: '/app/',
 		logoSrc: '/logo.svg',
 		logoAlt: '',
 	}}
 	navItems={railItems}
 	quickActions={quickActions}
+	accountActions={accountActions}
 	helpContext={helpContext}
 	feedbackContext={feedbackContext}
 >
-	<div slot="railContext" class="ts-team-switcher">
+	<div slot="railContext" class="ts-team-switcher" data-appearance-endpoint={appearanceEndpoint}>
 		<div class="ts-section__eyebrow">Team</div>
 		{teams.length > 0 ? (
 			<form class="ts-team-selector" aria-label="Active team" data-team-switcher>
@@ -107,10 +116,15 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 						))}
 					</select>
 				</label>
-				<a class="ts-icon-button" href="/app/teams" title="Manage teams" aria-label="Manage teams">Manage</a>
+				<a class="ts-icon-button ts-team-manage-button" href="/app/teams" title="Manage teams" aria-label="Manage teams">
+					<ShellIcon name="teams" />
+				</a>
 			</form>
 		) : (
-			<a class="ts-create-team-button" href="/app/teams/new">Create team</a>
+			<a class="ts-create-team-button" href="/app/teams/new" title="Create team" aria-label="Create team">
+				<ShellIcon name="create" />
+				<span class="ts-team-operations__label">Create team</span>
+			</a>
 		)}
 	</div>
 	{showSensitiveUnlock ? <SensitiveDataUnlock part="button" slot="headerAction" /> : null}
@@ -131,23 +145,29 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 	});
 </script>
 
-<script is:inline data-astro-rerun define:vars={{ appearanceEndpoint }}>
-	(() => {
-		const bindingKey = '__treeseedAuthenticatedAppearanceSyncBound';
-		if (window[bindingKey]) return;
-		window[bindingKey] = true;
+<script>
+	import { sendFormRequest } from '../../forms-client.ts';
 
-	window.addEventListener('treeseed:theme-change', (event) => {
-			const detail = event.detail || {};
+	const bindingKey = '__treeseedAuthenticatedAppearanceSyncBound';
+	const syncWindow = window as unknown as Record<string, unknown>;
+	if (!syncWindow[bindingKey]) {
+		syncWindow[bindingKey] = true;
+		window.addEventListener('treeseed:theme-change', (event) => {
+			const detail = (event as CustomEvent).detail || {};
 			if (detail.persist !== true || !detail.scheme || !detail.mode) return;
-	fetch(appearanceEndpoint, {
-				method: 'PATCH',
-				headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-csrf': document.cookie.split('; ').find((entry) => entry.startsWith('ts_csrf='))?.split('=').slice(1).join('=') || '' },
-				body: JSON.stringify({ colorScheme: detail.scheme, themeMode: detail.mode }),
-				keepalive: true,
+			const endpoint = document.querySelector<HTMLElement>('[data-appearance-endpoint]')?.dataset.appearanceEndpoint;
+			if (!endpoint) return;
+			void sendFormRequest({
+				url: endpoint,
+				init: {
+					method: 'PATCH',
+					headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-csrf': document.cookie.split('; ').find((entry) => entry.startsWith('ts_csrf='))?.split('=').slice(1).join('=') || '' },
+					body: JSON.stringify({ colorScheme: detail.scheme, themeMode: detail.mode }),
+					keepalive: true,
+				},
 			}).catch(() => {
-				// Local cookies already carry the immediate preference; the next change can retry persistence.
+				// Local cookies retain the immediate preference; the next change can retry persistence.
 			});
 		});
-	})();
+	}
 </script>

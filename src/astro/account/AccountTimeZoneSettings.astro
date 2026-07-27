@@ -1,0 +1,45 @@
+---
+import Panel from '../surface/Panel.astro';
+import Field from '../forms/fields/Field.astro';
+import Select from '../forms/fields/Select.astro';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import { supportedTimeZones, timeZoneLabel } from '../../timestamps.ts';
+
+interface Props {
+	timeZone: string;
+	csrfToken: string;
+}
+
+const { timeZone, csrfToken } = Astro.props as Props;
+const options = supportedTimeZones().map((value) => ({ value, label: timeZoneLabel(value) }));
+---
+
+<Panel eyebrow="Regional settings" title="Time zone" description="Dates and times across the application use this time zone.">
+	<form method="post" class="account-form" data-scene="account-time-zone" data-time-zone={timeZone} data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-time-zone']">
+		<input type="hidden" name="csrfToken" value={csrfToken} />
+		<input type="hidden" name="intent" value="time-zone" />
+		<Field label="Display time zone" name="timeZone" help="Timestamps retain their original instant and are converted only for display.">
+			<Select id="timeZone" name="timeZone" value={timeZone} options={options} required autocomplete="off" />
+		</Field>
+		<FormActions class="account-form-actions"><Button type="submit">Save time zone</Button></FormActions>
+	</form>
+</Panel>
+
+<script>
+	import { formatTimestampElements } from '../../timestamps.ts';
+	const bindingKey = '__treeseedAccountTimeZoneBound';
+	const target = window as unknown as Record<string, unknown>;
+	if (!target[bindingKey]) {
+		target[bindingKey] = true;
+		const syncTimeZone = () => {
+			const select = document.querySelector<HTMLSelectElement>('[data-scene="account-time-zone"] select[name="timeZone"]');
+			if (select?.value) {
+				document.documentElement.dataset.tsTimeZone = select.value;
+				formatTimestampElements(document);
+			}
+		};
+		document.addEventListener('treeseed:content-updated', syncTimeZone);
+		document.addEventListener('astro:page-load', syncTimeZone);
+	}
+</script>

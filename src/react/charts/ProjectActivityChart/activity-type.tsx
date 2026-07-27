@@ -89,17 +89,10 @@ export const displayModeOptions: Array<{ label: string; value: DisplayMode }> = 
 ];
 
 export function formatTime(timestamp: number, bucketSizeMs = 60_000) {
-  if (bucketSizeMs >= 86_400_000) {
-    return new Intl.DateTimeFormat(undefined, {
-      month: "short",
-      day: "numeric"
-    }).format(timestamp);
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(timestamp);
+  return formatTimestamp(timestamp, {
+    timeZone: typeof document === "undefined" ? "UTC" : documentTimeZone(),
+    style: bucketSizeMs >= 86_400_000 ? "date" : "time",
+  });
 }
 
 export function formatCount(value: number) {
@@ -250,3 +243,4 @@ export function useProjectActivityEvents({
     }
   };
 }
+import { documentTimeZone, formatTimestamp } from "../../../timestamps";

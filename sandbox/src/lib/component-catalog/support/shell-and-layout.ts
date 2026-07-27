@@ -58,6 +58,9 @@ export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
       { name: 'icon', type: "'book' | 'manager'", defaultValue: 'book', description: 'Icon glyph.' },
       { name: 'label', type: 'string', defaultValue: 'Book home', description: 'Accessible label.' },
     ], undefined, '@treeseed/ui/components/astro/shell/ShellIconLink.astro'),
+  display('shell-icon', 'ShellIcon', 'Shells', 'astro', 'Shared line-icon vocabulary for authenticated navigation and actions.', 'inline', { icons: 8 }, [
+      { name: 'name', type: 'ShellIconName', defaultValue: 'start', description: 'Semantic shell icon name.' },
+    ], undefined, '@treeseed/ui/components/astro/shell/navigation/ShellIcon.astro'),
   display('top-bar', 'TopBar', 'Shells', 'astro', 'Brand and utility action bar.', 'large', { brand: 'TreeSeed', actions: 1 }, [
       { name: 'brand', type: 'Brand', defaultValue: 'TreeSeed', description: 'Top bar brand.' },
       { name: 'actions', type: 'ButtonAction[]', defaultValue: 1, description: 'Utility actions.' },

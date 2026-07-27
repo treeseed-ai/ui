@@ -13,6 +13,10 @@ export const helpAndFeedbackComponents: ComponentCatalogEntry[] = [
   display('feedback-redaction-boundary', 'FeedbackRedactionBoundary', 'Feedback', 'astro', 'Marks sensitive DOM regions for feedback screenshot masking.', 'inline', { reason: 'secret' }, [
       { name: 'reason', type: 'string', defaultValue: 'secret', description: 'Redaction reason marker.' },
     ], undefined, '@treeseed/ui/components/astro/feedback/FeedbackRedactionBoundary.astro'),
+  display('toast-region', 'ToastRegion', 'Feedback', 'astro', 'Global queued notification region for enhanced form outcomes and operation progress.', 'small', { placement: 'bottom-right', maximumVisible: 4 }, [
+      { name: 'placement', type: "'bottom-right'", defaultValue: 'bottom-right', description: 'Responsive fixed placement above mobile navigation.' },
+      { name: 'maximumVisible', type: 'number', defaultValue: 4, description: 'Maximum visible notifications before queueing.' },
+    ], undefined, '@treeseed/ui/components/astro/feedback/ToastRegion.astro'),
   display('help-button', 'HelpButton', 'Help', 'astro', 'Shell help trigger bound to the shared contextual drawer.', 'inline', { targetId: 'catalog-help' }, [
       { name: 'targetId', type: 'string', defaultValue: 'catalog-help', description: 'Drawer id to open.' },
       { name: 'label', type: 'string', defaultValue: 'Help', description: 'Visible button text.' },

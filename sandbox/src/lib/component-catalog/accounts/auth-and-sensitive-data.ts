@@ -23,6 +23,9 @@ export const authAndSensitiveDataComponents: ComponentCatalogEntry[] = [
   display('account-identity-settings', 'AccountIdentitySettings', 'Account', 'astro', 'Account identity and profile settings panel.', 'large', { source: 'Account' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Account identity settings props.' },
     ], undefined, '@treeseed/ui/components/astro/account/AccountIdentitySettings.astro'),
+  display('account-time-zone-settings', 'AccountTimeZoneSettings', 'Account', 'astro', 'Account time-zone selection used by application timestamp displays.', 'large', { source: 'Account' }, [
+      { name: 'timeZone', type: 'string', defaultValue: 'UTC', description: 'Selected IANA time-zone identifier.' },
+    ], undefined, '@treeseed/ui/components/astro/account/AccountTimeZoneSettings.astro'),
   display('notification-preference-panel', 'NotificationPreferencePanel', 'Account', 'astro', 'Account notification preference controls and state.', 'large', { source: 'Account' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Notification preference props.' },
     ], undefined, '@treeseed/ui/components/astro/account/NotificationPreferencePanel.astro'),
@@ -38,9 +41,6 @@ export const authAndSensitiveDataComponents: ComponentCatalogEntry[] = [
   display('username-claim-form', 'UsernameClaimForm', 'Auth', 'astro', 'Username claim form and availability feedback surface.', 'medium', { source: 'Auth' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Username claim configuration props.' },
     ], undefined, '@treeseed/ui/components/astro/auth/UsernameClaimForm.astro'),
-  display('notification-bell', 'NotificationBell', 'Notifications', 'astro', 'Notification status and unread-count trigger.', 'inline', { source: 'Notifications' }, [
-      { name: 'props', type: 'object', defaultValue: {}, description: 'Notification count and destination props.' },
-    ], undefined, '@treeseed/ui/components/astro/notifications/NotificationBell.astro'),
   display('accessible-dialog', 'AccessibleDialog', 'Overlays', 'astro', 'Accessible modal dialog shell with labelled content and actions.', 'medium', { source: 'Overlays' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Dialog identity, label, state, and action props.' },
     ], undefined, '@treeseed/ui/components/astro/overlays/AccessibleDialog.astro'),

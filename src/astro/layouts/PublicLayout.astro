@@ -2,8 +2,8 @@
 import '../../styles/app-controls.css';
 import '../../styles/operations.css';
 import PublicShell from '../shell/layout/PublicShell.astro';
-import ShellIconLink from '../shell/navigation/ShellIconLink.astro';
 import type { ThemePreference } from '../../theme/types.ts';
+import { SITE_SLOGAN } from '../../site-brand.ts';
 
 
 interface NavItem {
@@ -52,7 +52,7 @@ const actions = providedActions ?? (isSignedIn
 	appearance={appearance}
 	brand={{
 		name: 'TreeSeed',
-		tag: 'Governable AI Infrastructure for Organizational Continuity',
+		tag: SITE_SLOGAN,
 		href: '/',
 		logoSrc: '/logo.svg',
 		logoAlt: '',
@@ -62,8 +62,5 @@ const actions = providedActions ?? (isSignedIn
 	showAppearanceControl
 	preferServerAppearance={isSignedIn}
 >
-	<Fragment slot="actions">
-		<ShellIconLink href="/app/" label="Manager" icon="manager" />
-	</Fragment>
 	<slot />
 </PublicShell>

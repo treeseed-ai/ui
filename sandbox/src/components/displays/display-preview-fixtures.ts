@@ -1,10 +1,54 @@
-export const navItems = [
-  { label: 'Overview', href: '/displays/product-shell' },
-  { label: 'Projects', href: '/displays/product-shell/projects' },
-  { label: 'Knowledge', href: '/displays/product-shell/knowledge' },
-  { label: 'Settings', href: '/displays/product-shell/settings' },
+import { SITE_SLOGAN } from '../../../../src/site-brand.ts';
+
+export const accountIdentity = {
+  id: 'user-preview',
+  username: 'growing-knowledge',
+  firstName: 'Avery',
+  lastName: 'Rowan',
+  image: 'https://images.example.test/avery.png',
+  hasCredential: true,
+  emails: [
+    { id: 'email-primary', email: 'avery@example.test', status: 'verified', isPrimary: true },
+    { id: 'email-secondary', email: 'avery.projects@example.test', status: 'pending', isPrimary: false },
+  ],
+  providers: [{ id: 'provider-github', provider: 'github', email: 'avery@example.test', canUnlink: true }],
+};
+export const notificationPreferences = {
+  emailCadence: 'daily' as const,
+  timeZone: 'America/New_York',
+  globalContentTypes: ['questions', 'decisions'],
+  projectOverrides: [{ projectId: 'project-hub', contentTypes: ['decisions'] }],
+};
+export const notificationCapabilities = [
+  { id: 'questions', label: 'Questions', description: 'New questions and requested answers.' },
+  { id: 'decisions', label: 'Decisions', description: 'Decision status and approval changes.' },
+  { id: 'knowledge', label: 'Knowledge', description: 'Published knowledge and review requests.' },
 ];
-export const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+export const accountProjects = [
+  { id: 'project-hub', name: 'Knowledge Hub', slug: 'knowledge-hub' },
+  { id: 'project-market', name: 'Market', slug: 'market' },
+];
+export const personalThemes = [{
+  id: 'theme-preview',
+  schemeId: 'personal-preview',
+  name: 'Forest notebook',
+  baseScheme: 'fern',
+  palette: {
+    light: { canvas: '#f7faf7', surface: '#ffffff', text: '#17241d', accent: '#276749' },
+    dark: { canvas: '#101713', surface: '#18221c', text: '#edf7f0', accent: '#65c18c' },
+  },
+}];
+export const accountSessions = [
+  { id: 'session-current', provider: 'credential', current: true, expiresAt: '2026-08-26', authenticatedAt: '2026-07-26', userAgent: 'Firefox on Linux', ipAddress: '127.0.0.1' },
+  { id: 'session-mobile', provider: 'credential', current: false, expiresAt: '2026-08-20', authenticatedAt: '2026-07-20', userAgent: 'Safari on iPhone', ipAddress: '192.0.2.25' },
+];
+export const navItems = [
+  { label: 'Overview', href: '/displays/product-shell', icon: 'start' as const },
+  { label: 'Projects', href: '/displays/product-shell/projects', icon: 'projects' as const },
+  { label: 'Knowledge', href: '/displays/product-shell/knowledge', icon: 'knowledge' as const },
+  { label: 'Settings', href: '/displays/product-shell/settings', icon: 'team-settings' as const },
+];
+export const brand = { name: 'TreeSeed', tag: SITE_SLOGAN, href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
 export const appearance = { scheme: 'fern', mode: 'system' } as const;
 export const siteItems = [
   { label: 'Home', href: '/' },
@@ -12,10 +56,10 @@ export const siteItems = [
   { label: 'Market', href: '/market/' },
 ];
 export const teamOperationItems = [
-  { label: 'Dashboard', href: '/app/' },
-  { label: 'Projects', href: '/app/projects' },
-  { label: 'Knowledge', href: '/app/knowledge' },
-  { label: 'Market', href: '/market/' },
+  { label: 'Dashboard', href: '/app/', icon: 'start' as const },
+  { label: 'Projects', href: '/app/projects', icon: 'projects' as const },
+  { label: 'Knowledge', href: '/app/knowledge', icon: 'knowledge' as const },
+  { label: 'Market', href: '/market/', icon: 'services' as const },
 ];
 export const surfaceTabItems = [
   { id: 'overview', label: 'Overview', href: '/displays/surface-tabs', count: 2, panelId: 'surface-tabs-overview' },

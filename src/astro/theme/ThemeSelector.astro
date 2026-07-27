@@ -172,11 +172,11 @@ const modes = [
 		}
 
 		function bind(selector) {
+			if (selector.dataset.tsThemeSelectorBound === 'true') return;
 			const schemeSelect = selector.querySelector('[data-ts-theme-scheme-select]');
 			const modeSelect = selector.querySelector('[data-ts-theme-mode-select]');
-			const schemeField = selector.querySelector('[data-ts-theme-scheme-field]');
-			const modeField = selector.querySelector('[data-ts-theme-mode-field]');
 			if (!(schemeSelect instanceof HTMLSelectElement) || !(modeSelect instanceof HTMLSelectElement)) return;
+			selector.dataset.tsThemeSelectorBound = 'true';
 
 			const activePreference = currentPreference();
 			if (activePreference.scheme) schemeSelect.value = activePreference.scheme;
@@ -185,9 +185,17 @@ const modes = [
 			function sync(persist = true) {
 				const scheme = schemeSelect.value;
 				const mode = modeSelect.value;
-				if (schemeField instanceof HTMLInputElement) schemeField.value = scheme;
-				if (modeField instanceof HTMLInputElement) modeField.value = mode;
-				updateSwatch(selector, scheme, mode);
+				document.querySelectorAll('[data-ts-theme-selector]').forEach((peer) => {
+					const peerScheme = peer.querySelector('[data-ts-theme-scheme-select]');
+					const peerMode = peer.querySelector('[data-ts-theme-mode-select]');
+					const peerSchemeField = peer.querySelector('[data-ts-theme-scheme-field]');
+					const peerModeField = peer.querySelector('[data-ts-theme-mode-field]');
+					if (peerScheme instanceof HTMLSelectElement) peerScheme.value = scheme;
+					if (peerMode instanceof HTMLSelectElement) peerMode.value = mode;
+					if (peerSchemeField instanceof HTMLInputElement) peerSchemeField.value = scheme;
+					if (peerModeField instanceof HTMLInputElement) peerModeField.value = mode;
+					updateSwatch(peer, scheme, mode);
+				});
 				applyTheme(scheme, mode, persist);
 			}
 
@@ -197,9 +205,12 @@ const modes = [
 		}
 
 		document.querySelectorAll('[data-ts-theme-selector]').forEach(bind);
-		media?.addEventListener?.('change', () => {
-			const mode = document.documentElement.dataset.tsModeSource === 'system' ? 'system' : document.documentElement.dataset.tsMode;
-			applyTheme(document.documentElement.dataset.tsScheme || 'fern', mode || 'system', false);
-		});
+		if (!window.__tsThemeSelectorMediaBound) {
+			window.__tsThemeSelectorMediaBound = true;
+			media?.addEventListener?.('change', () => {
+				const mode = document.documentElement.dataset.tsModeSource === 'system' ? 'system' : document.documentElement.dataset.tsMode;
+				applyTheme(document.documentElement.dataset.tsScheme || 'fern', mode || 'system', false);
+			});
+		}
 	})();
 </script>

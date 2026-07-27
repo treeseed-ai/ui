@@ -29,7 +29,7 @@ const screenshotEnabled = context.screenshotPolicy !== 'disabled';
 			</div>
 			<button class="ts-feedback-dialog__close" type="button" aria-label="Close feedback" data-ts-feedback-close>Close</button>
 		</header>
-		<form class="ts-feedback-form" data-ts-feedback-form>
+		<form class="ts-feedback-form" method="post" action={context.submissionEndpoint ?? '/api/feedback/submit'} data-ts-feedback-form data-ts-submit="enhanced" data-ts-form-adapter="feedback" data-ts-reset-on-success="true" data-ts-success-message="Feedback sent. Thank you.">
 			<script is:inline type="application/json" data-ts-feedback-context set:html={JSON.stringify(context)} />
 			<label class="ts-field">
 				<span class="ts-field__label">Type</span>

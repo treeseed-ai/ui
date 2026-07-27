@@ -39,6 +39,10 @@ export const contentAndDataComponents: ComponentCatalogEntry[] = [
       { name: 'tone', type: 'Tone', defaultValue: 'success', description: 'Semantic color tone.' },
       { name: 'label', type: 'string', defaultValue: 'Healthy', description: 'Status text.' },
     ]),
+  display('timestamp', 'Timestamp', 'Data', 'astro', 'Semantic date and time rendered in the account display time zone.', 'inline', { value: '2026-07-26T18:30:00.000Z' }, [
+      { name: 'value', type: 'string | Date', defaultValue: '2026-07-26T18:30:00.000Z', description: 'Timestamp instant to format.' },
+      { name: 'timeZone', type: 'string', defaultValue: 'UTC', description: 'IANA time-zone identifier.' },
+    ], undefined, '@treeseed/ui/components/astro/data/Timestamp.astro'),
   display('content-status-legend', 'ContentStatusLegend', 'Content', 'astro', 'Reusable ContentStatusLegend component copied into the TreeSeed UI library.', 'medium', { source: 'Content' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/content/ContentStatusLegend.astro'),

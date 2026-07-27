@@ -51,13 +51,25 @@ export interface GuidedThemePaletteMode {
 }
 
 export const PERSONAL_THEME_DEFAULT_PALETTE = {
-	light: { canvas: '#f4f7f2', surface: '#ffffff', text: '#17211b', accent: '#2f6f4e' },
-	dark: { canvas: '#101612', surface: '#18201a', text: '#e8f0e8', accent: '#8fcca7' },
+	light: { canvas: '#f3f7ef', surface: '#ffffff', text: '#1f2a20', accent: '#4f7d4e' },
+	dark: { canvas: '#11170f', surface: '#172016', text: '#e8f0e3', accent: '#8bbb75' },
 } as const;
 
 export interface GuidedThemePalette {
 	light: GuidedThemePaletteMode;
 	dark: GuidedThemePaletteMode;
+}
+
+export function guidedThemePaletteForScheme(baseScheme: ColorSchemeId = DEFAULT_SCHEME): GuidedThemePalette {
+	const resolved = resolveThemeConfig({ defaultScheme: baseScheme });
+	const scheme = resolved.schemes[baseScheme] ?? resolved.schemes[DEFAULT_SCHEME];
+	const select = (mode: 'light' | 'dark'): GuidedThemePaletteMode => ({
+		canvas: scheme[mode].canvas,
+		surface: scheme[mode].surface,
+		text: scheme[mode].text,
+		accent: scheme[mode].accent,
+	});
+	return { light: select('light'), dark: select('dark') };
 }
 
 export function hexRgb(value: string) {

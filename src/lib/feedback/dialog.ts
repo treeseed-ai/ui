@@ -1,4 +1,5 @@
 import type { FeedbackContext, FeedbackSubmission, FeedbackSubmissionType } from '../foundation/contracts.ts';
+import { registerFormAdapter, setFieldError } from '../../forms-client.ts';
 
 const initialized = new WeakSet<Document>();
 const screenshotByForm = new WeakMap<HTMLFormElement, FeedbackSubmission['screenshot']>();
@@ -103,16 +104,19 @@ function removeScreenshot(form: HTMLFormElement, options: { announce?: boolean }
 	if (options.announce !== false) setStatus(form, 'Screenshot removed.', 'neutral');
 }
 
-async function submitFeedback(form: HTMLFormElement) {
+function feedbackPayload(form: HTMLFormElement) {
 	const context = contextFor(form);
-	const endpoint = context.submissionEndpoint ?? '/api/feedback/submit';
 	const data = new FormData(form);
 	const message = String(data.get('message') ?? '').trim();
 	if (!message) {
-		setStatus(form, 'Add a few details before sending.', 'danger');
-		return;
+		const control = form.elements.namedItem('message');
+		if (control instanceof HTMLTextAreaElement) {
+			setFieldError(control, 'Add a few details before sending.');
+			control.focus();
+		}
+		throw new Error('Please correct the highlighted fields.');
 	}
-	const payload: FeedbackSubmission = {
+	return {
 		type: String(data.get('type') ?? 'bug') as FeedbackSubmissionType,
 		message,
 		contactEmail: String(data.get('contactEmail') ?? '').trim() || undefined,
@@ -122,26 +126,39 @@ async function submitFeedback(form: HTMLFormElement) {
 		},
 		client: clientContext(),
 		screenshot: screenshotByForm.get(form),
-	};
-	setStatus(form, 'Sending feedback...', 'neutral');
-	const response = await fetch(endpoint, {
-		method: 'POST',
-		headers: { accept: 'application/json', 'content-type': 'application/json' },
-		body: JSON.stringify(payload),
-	});
-	const envelope = await response.json().catch(() => null);
-	if (!response.ok || envelope?.ok === false) {
-		setStatus(form, envelope?.error ?? 'Feedback could not be sent.', 'danger');
-		return;
-	}
-	setStatus(form, 'Feedback sent. Thank you.', 'success');
-	form.reset();
-	removeScreenshot(form, { announce: false });
-	setTimeout(() => {
-		const dialog = form.closest<HTMLElement>('[data-ts-feedback-dialog]');
-		if (dialog) closeDialog(dialog);
-	}, 750);
+	} satisfies FeedbackSubmission;
 }
+
+registerFormAdapter('feedback', {
+	buildRequest(context) {
+		return {
+			url: context.form.action,
+			init: {
+				method: 'POST',
+				headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },
+				body: JSON.stringify(feedbackPayload(context.form)),
+				credentials: 'same-origin',
+			},
+		};
+	},
+	async parseResponse(response) {
+		const envelope = await response.json().catch(() => null);
+		const ok = response.ok && envelope?.ok !== false;
+		return {
+			ok,
+			code: String(envelope?.code ?? (ok ? 'feedback_sent' : `http_${response.status}`)),
+			message: String(envelope?.message ?? envelope?.error ?? (ok ? 'Feedback sent. Thank you.' : 'Feedback could not be sent.')),
+			payload: envelope?.payload,
+		};
+	},
+	afterSuccess(_result, context) {
+		removeScreenshot(context.form, { announce: false });
+		window.setTimeout(() => {
+			const dialog = context.form.closest<HTMLElement>('[data-ts-feedback-dialog]');
+			if (dialog) closeDialog(dialog);
+		}, 750);
+	},
+});
 
 export function initializeFeedbackDialogs(root: Document = document) {
 	if (initialized.has(root)) return;
@@ -176,13 +193,6 @@ export function initializeFeedbackDialogs(root: Document = document) {
 			const form = remove.closest<HTMLFormElement>('form');
 			if (form) removeScreenshot(form);
 		}
-	});
-
-	root.addEventListener('submit', (event) => {
-		const form = event.target;
-		if (!(form instanceof HTMLFormElement) || !form.matches('[data-ts-feedback-form]')) return;
-		event.preventDefault();
-		void submitFeedback(form).catch((error) => setStatus(form, error instanceof Error ? error.message : 'Feedback could not be sent.', 'danger'));
 	});
 
 	root.addEventListener('keydown', (event) => {

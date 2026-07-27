@@ -4,6 +4,23 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 export type ButtonSize = 'sm' | 'md';
 
+export type ShellIconName =
+	| 'account'
+	| 'action'
+	| 'capacity'
+	| 'collapse'
+	| 'create'
+	| 'expand'
+	| 'knowledge'
+	| 'link'
+	| 'projects'
+	| 'services'
+	| 'sign-out'
+	| 'start'
+	| 'teams'
+	| 'team-settings'
+	| 'work';
+
 export type ButtonAction = {
 	label: string;
 	href?: string;
@@ -15,6 +32,8 @@ export type ButtonAction = {
 	action?: string;
 	method?: 'post';
 	hiddenFields?: Record<string, string>;
+	icon?: ShellIconName;
+	iconOnly?: boolean;
 };
 
 export type ShellBrand = {
@@ -30,6 +49,7 @@ export type ShellNavItem = {
 	label: string;
 	href: string;
 	ariaLabel?: string;
+	icon?: ShellIconName;
 };
 
 export type TeamOperationItem = ShellNavItem & {

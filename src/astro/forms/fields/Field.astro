@@ -23,11 +23,11 @@ const {
 
 const fieldId = id ?? name;
 const helpId = fieldId && help ? `${fieldId}-help` : undefined;
-const errorId = fieldId && error ? `${fieldId}-error` : undefined;
+const errorId = fieldId ? `${fieldId}-error` : undefined;
 const slotProps = { helpId, errorId, describedBy: [helpId, errorId].filter(Boolean).join(' ') || undefined };
 ---
 
-<div class:list={['ts-field', full && 'ts-field--full', className]}>
+<div class:list={['ts-field', full && 'ts-field--full', className]} data-ts-field>
 	<label class="ts-field__label" for={fieldId}>
 		<span>{label}</span>
 		{required ? <span class="ts-field__required" aria-hidden="true">*</span> : null}
@@ -36,5 +36,5 @@ const slotProps = { helpId, errorId, describedBy: [helpId, errorId].filter(Boole
 		<slot {...slotProps} />
 	</div>
 	{help ? <p class="ts-field__help" id={helpId}>{help}</p> : null}
-	{error ? <p class="ts-field__error" id={errorId}>{error}</p> : null}
+	{errorId ? <p class="ts-field__error" id={errorId} data-ts-field-error hidden={!error}>{error}</p> : null}
 </div>

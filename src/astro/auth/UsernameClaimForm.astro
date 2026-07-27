@@ -6,7 +6,7 @@ import FormActions from '../forms/actions/FormActions.astro';
 interface Props { csrfToken: string; value?: string; endpoint?: string; }
 const { csrfToken, value = '', endpoint = '/v1/auth/availability/username' } = Astro.props as Props;
 ---
-<form method="post" class="auth-form" data-username-claim data-scene="username-claim">
+<form method="post" class="auth-form" data-username-claim data-scene="username-claim" data-ts-submit="enhanced">
 	<input type="hidden" name="csrfToken" value={csrfToken} />
 	<Field label="Username" name="username" help="Your username is public and cannot be changed after you continue." required>
 		<TextInput name="username" value={value} autocomplete="username" required maxlength={39} data-claim-input />

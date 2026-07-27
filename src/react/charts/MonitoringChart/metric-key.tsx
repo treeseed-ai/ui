@@ -123,11 +123,10 @@ export async function fetchMonitoringSnapshot(snapshotEndpoint: string, previous
 }
 
 export function formatTime(timestamp: number) {
-  return new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }).format(timestamp);
+  return formatTimestamp(timestamp, {
+    timeZone: typeof document === "undefined" ? "UTC" : documentTimeZone(),
+    style: "time",
+  });
 }
 
 export function formatMetricValue(metric: MetricKey, value: number) {
@@ -252,3 +251,4 @@ export function useHasMounted() {
 
   return hasMounted;
 }
+import { documentTimeZone, formatTimestamp } from "../../../timestamps";

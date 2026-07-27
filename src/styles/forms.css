@@ -8,6 +8,16 @@
 	grid-column: 1 / -1;
 }
 
+.ts-password-setup {
+	display: grid;
+	gap: var(--ts-space-3);
+	min-width: 0;
+}
+
+.ts-password-setup > * {
+	min-width: 0;
+}
+
 .ts-field__label,
 .ts-radio-group__legend {
 	color: var(--ts-color-text);
@@ -48,6 +58,7 @@
 	background: var(--ts-control-background, var(--ts-color-surface));
 	border: 1px solid var(--ts-color-border);
 	border-radius: var(--ts-radius-md);
+	box-sizing: border-box;
 	color: var(--ts-color-text);
 	font: inherit;
 	font-size: 0.95rem;
@@ -224,18 +235,18 @@ select.ts-control option {
 	transition:
 		background-color 140ms ease,
 		width 140ms ease;
-	width: calc((var(--ts-password-strength, 0) / 4) * 100%);
+	width: calc((var(--ts-password-strength, 0) / 6) * 100%);
 }
 
-.ts-password-meter[data-strength='2'] .ts-password-meter__bar {
+.ts-password-meter:is([data-strength='2'], [data-strength='3']) .ts-password-meter__bar {
 	background: var(--ts-color-warning);
 }
 
-.ts-password-meter[data-strength='3'] .ts-password-meter__bar {
+.ts-password-meter:is([data-strength='4'], [data-strength='5']) .ts-password-meter__bar {
 	background: var(--ts-color-info);
 }
 
-.ts-password-meter[data-strength='4'] .ts-password-meter__bar {
+.ts-password-meter[data-strength='6'] .ts-password-meter__bar {
 	background: var(--ts-color-success);
 }
 

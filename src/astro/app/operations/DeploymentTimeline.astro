@@ -1,5 +1,6 @@
 ---
 import StatusPill from '../../data/StatusPill.astro';
+import Timestamp from '../../data/Timestamp.astro';
 
 interface TimelineItem {
 	id: string;
@@ -39,6 +40,7 @@ const {
 						<StatusPill tone={item.tone} label={item.status} />
 					</header>
 					<p>{item.description}</p>
+					{item.createdAt ? <p class="ts-deploy-timeline__meta"><Timestamp value={item.createdAt} /></p> : null}
 					{item.meta ? <p class="ts-deploy-timeline__meta">{item.meta}</p> : null}
 				</div>
 			</li>

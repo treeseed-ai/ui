@@ -1,9 +1,11 @@
 ---
 import ActionBar from '../layout/ActionBar.astro';
 import PageHeader from '../layout/PageHeader.astro';
+import SurfaceTabs from '../shell/navigation/SurfaceTabs.astro';
 import type { ResolvedAction } from '../../lib/foundation/contracts.ts';
 
 interface SectionLink {
+	id?: string;
 	label: string;
 	href: string;
 	current?: boolean;
@@ -24,6 +26,12 @@ const {
 	sections = [],
 	class: className,
 } = Astro.props as Props;
+const tabItems = sections.map((section) => ({
+	id: section.id ?? section.href,
+	label: section.label,
+	href: section.href,
+}));
+const currentSection = sections.find((section) => section.current) ?? sections[0];
 ---
 
 <section class:list={['ts-template ts-template--settings', className]}>
@@ -31,18 +39,16 @@ const {
 		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
 	</PageHeader>
 	<div class="ts-template__main">
-		{sections.length > 0 ? (
-			<nav class="ts-template__aside" aria-label="Settings sections">
-				<ul class="ts-settings-nav">
-					{sections.map((section) => (
-						<li><a href={section.href} aria-current={section.current ? 'page' : undefined}>{section.label}</a></li>
-					))}
-				</ul>
-			</nav>
+		{sections.length > 0 && currentSection ? (
+			<SurfaceTabs
+				items={tabItems}
+				current={currentSection.id ?? currentSection.href}
+				label="Settings sections"
+				wrap
+			/>
 		) : null}
 		<div class="ts-template__body">
 			<slot />
 		</div>
 	</div>
 </section>
-

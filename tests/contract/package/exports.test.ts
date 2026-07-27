@@ -25,14 +25,20 @@ function exportedTargetForSource(exports: Record<string, unknown>, sourcePath: s
 describe('package exports', () => {
   it('exports public component and style entrypoints', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+    expect(packageJson.exports['./site-brand']).toBeDefined();
     expect(packageJson.exports['./theme']).toBeDefined();
     expect(packageJson.exports['./styles/theme.css']).toBeDefined();
     expect(packageJson.exports['./styles/auth.css']).toBeDefined();
+    expect(packageJson.exports['./styles/account/forms.css']).toBeDefined();
     expect(packageJson.exports['./styles/app-controls.css']).toBeDefined();
     expect(packageJson.exports['./styles/operations.css']).toBeDefined();
     expect(packageJson.exports['./styles/market.css']).toBeDefined();
     expect(packageJson.exports['./styles/commerce.css']).toBeDefined();
     expect(packageJson.exports['./styles/site.css']).toBeDefined();
+    expect(packageJson.exports['./components/astro/shell/navigation/ShellIcon.astro']).toBe(
+      './dist/astro/shell/navigation/ShellIcon.astro',
+    );
+    expect(packageJson.exports['./components/astro/shell/ShellIcon.astro']).toBeUndefined();
     expect(packageJson.exports['./theme/schemes/*.yaml']).toBeDefined();
     expect(packageJson.exports['./lib/app/deployment-action-status']).toBeDefined();
     expect(packageJson.exports['./lib/app/platform-operation-status']).toBeDefined();

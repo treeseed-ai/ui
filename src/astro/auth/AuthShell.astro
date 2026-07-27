@@ -5,6 +5,7 @@ import SiteUserControls from '../shell/chrome/SiteUserControls.astro';
 import DevWatchReload from '../core/DevWatchReload.astro';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
+import { SITE_SLOGAN } from '../../site-brand.ts';
 
 // FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through SiteUserControls and ShellFrame.
 
@@ -48,7 +49,7 @@ const authLinks = [
 				<span class="auth-shell-bar__mark">T</span>
 				<span>
 					<strong>TreeSeed</strong>
-					<small>Simple controls</small>
+					<small>{SITE_SLOGAN}</small>
 				</span>
 			</a>
 			<SiteUserControls

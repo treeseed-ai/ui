@@ -4,6 +4,7 @@ import PageHeader from '../layout/PageHeader.astro';
 import EmptyState from '../surface/EmptyState.astro';
 import ResourceCard from '../surface/ResourceCard.astro';
 import StatusPill from '../data/StatusPill.astro';
+import Timestamp from '../data/Timestamp.astro';
 import type { DashboardSection, DashboardViewModel, ResolvedAction } from '../../lib/foundation/contracts.ts';
 import type { Tone } from '../types.ts';
 
@@ -125,7 +126,11 @@ const sections = [
 						<a href={item.href}>
 							<strong>{item.title}</strong>
 							{item.description ? <span>{item.description}</span> : null}
-							{item.timestamp || item.meta ? <small>{[item.timestamp, item.meta].filter(Boolean).join(' · ')}</small> : null}
+							{item.timestamp || item.meta ? <small>
+								{item.timestamp ? <Timestamp value={item.timestamp} /> : null}
+								{item.timestamp && item.meta ? ' · ' : null}
+								{item.meta}
+							</small> : null}
 						</a>
 					</li>
 				))}

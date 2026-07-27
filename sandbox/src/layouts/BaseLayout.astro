@@ -3,6 +3,7 @@ import '../../../src/styles/tokens.css';
 import '../../../src/styles/theme.css';
 import '../../../src/styles/ui.css';
 import '../../../src/styles/forms.css';
+import '../../../src/styles/account/forms.css';
 import '../../../src/styles/charts.css';
 import '../../../src/styles/pie-allocation.css';
 import '../../../src/styles/auth.css';
@@ -14,6 +15,7 @@ import '../../../src/styles/sandbox.css';
 import ThemeScript from '../../../src/astro/theme/ThemeScript.astro';
 import ThemeMenu from '../../../src/astro/theme/ThemeMenu.astro';
 import { sandboxThemeConfig } from '../lib/theme.ts';
+import { SITE_SLOGAN } from '../../../src/site-brand.ts';
 
 interface Props {
 	title: string;
@@ -38,7 +40,10 @@ const themeConfig = sandboxThemeConfig;
 			<nav class="sandbox-topbar__nav" aria-label="Sandbox">
 				<a class="sandbox-brand" href="/">
 					<img src="/logo.svg" alt="" width="32" height="32" loading="eager" />
-					<span>TreeSeed UI</span>
+					<span class="sandbox-brand__copy">
+						<strong>TreeSeed UI</strong>
+						<small>{SITE_SLOGAN}</small>
+					</span>
 				</a>
 				<a class="sandbox-topbar__link" href="/">Components</a>
 			</nav>

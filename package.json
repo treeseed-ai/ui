@@ -87,6 +87,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./site-brand": {
+      "types": "./dist/site-brand.d.ts",
+      "default": "./dist/site-brand.js"
+    },
+    "./timestamps": {
+      "types": "./dist/timestamps.d.ts",
+      "default": "./dist/timestamps.js"
+    },
     "./components/astro/app/controls/content/*": "./dist/astro/app/controls/content/*",
     "./components/astro/app/controls/data/*": "./dist/astro/app/controls/data/*",
     "./components/astro/app/controls/navigation/*": "./dist/astro/app/controls/navigation/*",
@@ -100,7 +108,17 @@
     "./components/astro/forms/actions/*": "./dist/astro/forms/actions/*",
     "./components/astro/forms/composition/*": "./dist/astro/forms/composition/*",
     "./components/astro/forms/fields/*": "./dist/astro/forms/fields/*",
+    "./components/astro/forms/fields/PasswordSetupFields.astro": "./dist/astro/forms/fields/PasswordSetupFields.astro",
     "./components/astro/forms/submission/*": "./dist/astro/forms/submission/*",
+    "./components/astro/feedback/ToastRegion.astro": "./dist/astro/feedback/ToastRegion.astro",
+    "./forms": {
+      "types": "./dist/forms.d.ts",
+      "default": "./dist/forms.js"
+    },
+    "./forms/client": {
+      "types": "./dist/forms-client.d.ts",
+      "default": "./dist/forms-client.js"
+    },
     "./components/astro/shell/chrome/*": "./dist/astro/shell/chrome/*",
     "./components/astro/shell/layout/*": "./dist/astro/shell/layout/*",
     "./components/astro/shell/navigation/*": "./dist/astro/shell/navigation/*",
@@ -138,12 +156,12 @@
     "./components/astro/auth/RegistrationForm.astro": "./dist/astro/auth/RegistrationForm.astro",
     "./components/astro/auth/UsernameClaimForm.astro": "./dist/astro/auth/UsernameClaimForm.astro",
     "./components/astro/account/AccountIdentitySettings.astro": "./dist/astro/account/AccountIdentitySettings.astro",
+    "./components/astro/account/AccountTimeZoneSettings.astro": "./dist/astro/account/AccountTimeZoneSettings.astro",
     "./components/astro/account/SessionManager.astro": "./dist/astro/account/SessionManager.astro",
     "./components/astro/account/NotificationPreferencePanel.astro": "./dist/astro/account/NotificationPreferencePanel.astro",
     "./components/astro/account/AccountDeletionPanel.astro": "./dist/astro/account/AccountDeletionPanel.astro",
     "./components/astro/account/PersonalThemeManager.astro": "./dist/astro/account/PersonalThemeManager.astro",
     "./components/astro/overlays/AccessibleDialog.astro": "./dist/astro/overlays/AccessibleDialog.astro",
-    "./components/astro/notifications/NotificationBell.astro": "./dist/astro/notifications/NotificationBell.astro",
     "./components/astro/content/ContentStatusLegend.astro": "./dist/astro/content/ContentStatusLegend.astro",
     "./components/astro/content/StatusBadge.astro": "./dist/astro/content/StatusBadge.astro",
     "./components/astro/core/DevWatchReload.astro": "./dist/astro/core/DevWatchReload.astro",
@@ -155,6 +173,7 @@
     "./components/astro/data/MetricCard.astro": "./dist/astro/data/MetricCard.astro",
     "./components/astro/data/MetricGrid.astro": "./dist/astro/data/MetricGrid.astro",
     "./components/astro/data/StatusPill.astro": "./dist/astro/data/StatusPill.astro",
+    "./components/astro/data/Timestamp.astro": "./dist/astro/data/Timestamp.astro",
     "./components/astro/docs/BookFontControls.astro": "./dist/astro/docs/BookFontControls.astro",
     "./components/astro/docs/DesktopSidebarToggle.astro": "./dist/astro/docs/DesktopSidebarToggle.astro",
     "./components/astro/docs/DownloadBook.astro": "./dist/astro/docs/DownloadBook.astro",
@@ -214,6 +233,7 @@
     "./components/astro/shell/RailNav.astro": "./dist/astro/shell/navigation/RailNav.astro",
     "./components/astro/shell/ShellFrame.astro": "./dist/astro/shell/layout/ShellFrame.astro",
     "./components/astro/shell/ShellIconLink.astro": "./dist/astro/shell/navigation/ShellIconLink.astro",
+    "./components/astro/shell/navigation/ShellIcon.astro": "./dist/astro/shell/navigation/ShellIcon.astro",
     "./components/astro/shell/ShellHeader.astro": "./dist/astro/shell/chrome/ShellHeader.astro",
     "./components/astro/shell/SiteUserControls.astro": "./dist/astro/shell/chrome/SiteUserControls.astro",
     "./components/astro/shell/SurfaceTabs.astro": "./dist/astro/shell/navigation/SurfaceTabs.astro",
@@ -317,9 +337,11 @@
     },
     "./styles/app-controls.css": "./dist/styles/app-controls.css",
     "./styles/app-shell.css": "./dist/styles/app-shell.css",
+    "./styles/account/forms.css": "./dist/styles/account/forms.css",
     "./styles/auth.css": "./dist/styles/auth.css",
     "./styles/charts.css": "./dist/styles/charts.css",
     "./styles/forms.css": "./dist/styles/forms.css",
+    "./styles/toast.css": "./dist/styles/toast.css",
     "./styles/market.css": "./dist/styles/market.css",
     "./styles/operations.css": "./dist/styles/operations.css",
     "./styles/pie-allocation.css": "./dist/styles/pie-allocation.css",

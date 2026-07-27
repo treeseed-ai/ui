@@ -1,4 +1,6 @@
 ---
+import Timestamp from '../../data/Timestamp.astro';
+
 interface EventItem {
 	label?: string;
 	action?: string;
@@ -26,7 +28,7 @@ const { title = 'Status timeline', events = [], emptyText = 'No timeline events 
 					<span>
 						<strong>{event.label ?? event.action ?? event.status ?? 'Event'}</strong>
 						{event.message ? ` · ${event.message}` : ''}
-						{event.createdAt ? <small class="ts-commerce-muted"> · {event.createdAt}</small> : null}
+						{event.createdAt ? <small class="ts-commerce-muted"> · <Timestamp value={event.createdAt} /></small> : null}
 					</span>
 				</li>
 			))}

@@ -127,9 +127,11 @@ export function initializeMarkdownFields() {
 		.forEach((root) => initializeMarkdownField(root));
 }
 
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initializeMarkdownFields, { once: true });
-} else {
-	initializeMarkdownFields();
+if (typeof document !== 'undefined') {
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initializeMarkdownFields, { once: true });
+	} else {
+		initializeMarkdownFields();
+	}
+	document.addEventListener('astro:page-load', initializeMarkdownFields);
 }
-document.addEventListener('astro:page-load', initializeMarkdownFields);

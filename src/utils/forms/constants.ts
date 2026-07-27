@@ -9,6 +9,4 @@ export const CONTACT_TYPE_LABELS: Record<ContactType, string> = {
   security: 'Security',
 };
 
-export const FORM_SUCCESS_PARAM = 'formStatus';
-export const FORM_CODE_PARAM = 'formCode';
 export const SUBSCRIBE_ANCHOR_ID = 'subscribe';

@@ -2,26 +2,32 @@
 import CollectionTemplate from '../templates/CollectionTemplate.astro';
 import Panel from '../surface/Panel.astro';
 import Button from '../forms/actions/Button.astro';
+import Timestamp from '../data/Timestamp.astro';
 
 interface SessionItem { id: string; provider: string; current: boolean; expiresAt: string; revokedAt?: string | null; authenticatedAt: string; lastSeenAt?: string | null; userAgent?: string | null; ipAddress?: string | null; }
-interface Props { sessions: SessionItem[]; csrfToken: string; status?: string | null; error?: string | null; }
-const { sessions, csrfToken, status, error } = Astro.props as Props;
+interface Props { sessions: SessionItem[]; csrfToken: string; timeZone?: string; }
+const { sessions, csrfToken, timeZone = 'UTC' } = Astro.props as Props;
 const viewModel = { title: 'Sessions', description: 'Review devices signed in to your account.', columns: [], rows: [], emptyTitle: 'No sessions', emptyDescription: 'No sessions are available.' };
 ---
 
-<div data-scene="account-sessions">
-	{status ? <p class="ts-alert" data-tone="success" role="status">{status}</p> : null}
-	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+<div class="account-stack" data-scene="account-sessions">
 	<CollectionTemplate viewModel={viewModel} renderDefault={false}>
-		{sessions.length ? <div class="ts-stack">{sessions.map((session) => (
-			<Panel title={session.current ? 'Current session' : (session.userAgent ?? session.provider)} description={`${session.ipAddress ?? 'Unknown IP'} · last seen ${session.lastSeenAt ?? session.authenticatedAt}`}>
-				<p>{session.revokedAt ? `Revoked ${session.revokedAt}` : `Expires ${session.expiresAt}`}</p>
+		{sessions.length ? <div class="account-stack">{sessions.map((session) => (
+			<div data-session-entry={session.userAgent?.toLowerCase().replace(/[^a-z0-9]+/gu, '-') ?? session.id}>
+			<Panel title={session.current ? 'Current session' : (session.userAgent ?? session.provider)} description={session.current ? (session.userAgent ?? session.provider) : undefined}>
+				<dl class="account-session-details">
+					<div><dt>IP address</dt><dd data-session-ip>{session.ipAddress ?? 'Not recorded'}</dd></div>
+					<div><dt>Signed in</dt><dd><Timestamp value={session.authenticatedAt} timeZone={timeZone} class="account-session-signed-in" /></dd></div>
+					<div><dt>Last active</dt><dd><Timestamp value={session.lastSeenAt ?? session.authenticatedAt} timeZone={timeZone} /></dd></div>
+					<div><dt>{session.revokedAt ? 'Revoked' : 'Expires'}</dt><dd><Timestamp value={session.revokedAt ?? session.expiresAt} timeZone={timeZone} /></dd></div>
+				</dl>
 				{session.current ? (
-					<form method="post" action="/auth/logout"><input type="hidden" name="csrfToken" value={csrfToken} /><Button type="submit" variant="danger">Sign out this device</Button></form>
+					<form method="post" action="/auth/logout" data-ts-submit="enhanced"><input type="hidden" name="csrfToken" value={csrfToken} /><Button type="submit" variant="danger">Sign out this device</Button></form>
 				) : !session.revokedAt ? (
-					<form method="post"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="sessionId" value={session.id} /><Button type="submit" name="intent" value="revoke" variant="danger" data-session-user-agent={session.userAgent?.toLowerCase().replace(/[^a-z0-9]+/gu, '-')}>Revoke session</Button></form>
+					<form method="post" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-sessions']"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="sessionId" value={session.id} /><Button type="submit" name="intent" value="revoke" variant="danger" data-session-user-agent={session.userAgent?.toLowerCase().replace(/[^a-z0-9]+/gu, '-')}>Revoke session</Button></form>
 				) : null}
 			</Panel>
+			</div>
 		))}</div> : <p>No sessions are available.</p>}
 	</CollectionTemplate>
 </div>

@@ -32,16 +32,17 @@ import PublicStack from '../../../../src/astro/public/PublicStack.astro';
 import RouteNotFound from '../../../../src/astro/site/navigation/RouteNotFound.astro';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 import { sandboxThemeConfig } from '../../lib/theme.ts';
+import { SITE_SLOGAN } from '../../../../src/site-brand.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
 const appearance = { scheme: 'fern', mode: 'system' } as const;
 const navItems = [
-  { label: 'Overview', href: '/displays/product-shell' },
-  { label: 'Projects', href: '/displays/product-shell/projects' },
-  { label: 'Knowledge', href: '/displays/product-shell/knowledge' },
-  { label: 'Settings', href: '/displays/product-shell/settings' },
+  { label: 'Overview', href: '/displays/product-shell', icon: 'start' as const },
+  { label: 'Projects', href: '/displays/product-shell/projects', icon: 'projects' as const },
+  { label: 'Knowledge', href: '/displays/product-shell/knowledge', icon: 'knowledge' as const },
+  { label: 'Settings', href: '/displays/product-shell/settings', icon: 'team-settings' as const },
 ];
-const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
+const brand = { name: 'TreeSeed', tag: SITE_SLOGAN, href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
 const feedbackContext = {
   url: 'https://ui.treeseed.test/displays/product-shell',
   canonicalPath: '/displays/product-shell',
@@ -102,10 +103,10 @@ const siteItems = [
   { label: 'Market', href: '/market/' },
 ];
 const teamOperationItems = [
-  { label: 'Dashboard', href: '/app/' },
-  { label: 'Projects', href: '/app/projects' },
-  { label: 'Knowledge', href: '/app/knowledge' },
-  { label: 'Market', href: '/market/' },
+  { label: 'Dashboard', href: '/app/', icon: 'start' as const },
+  { label: 'Projects', href: '/app/projects', icon: 'projects' as const },
+  { label: 'Knowledge', href: '/app/knowledge', icon: 'knowledge' as const },
+  { label: 'Market', href: '/market/', icon: 'services' as const },
 ];
 const surfaceTabs = [
   { id: 'overview', label: 'Overview', href: '/displays/shell-frame', count: 3 },
@@ -115,7 +116,7 @@ const surfaceTabs = [
 ---
 
 {entry.id === 'product-shell' ? (
-  <ProductShell title="ProductShell" description={entry.description} currentPath="/displays/product-shell" appearance={appearance} brand={brand} navItems={navItems} quickActions={[{ label: 'All components', href: '/', variant: 'secondary' }]} themeConfig={themeConfig} feedbackContext={feedbackContext}>
+  <ProductShell title="ProductShell" description={entry.description} currentPath="/displays/product-shell" appearance={appearance} brand={brand} navItems={navItems} quickActions={[{ label: 'All components', href: '/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary', icon: 'account' }, { label: 'Sign out', action: '/auth/sign-out', method: 'post', hiddenFields: { csrfToken: 'preview' }, variant: 'secondary', icon: 'sign-out', iconOnly: true }]} themeConfig={themeConfig} feedbackContext={feedbackContext}>
     <Fragment slot="railContext"><Badge tone="info">Full-page display</Badge></Fragment>
     <Panel title="ProductShell preview" description="This page is rendered by the full ProductShell component.">
       <p>ProductShell owns the document, rail, top bar, header, main area, quick actions, and bottom navigation.</p>
@@ -159,7 +160,7 @@ const surfaceTabs = [
 ) : null}
 
 {entry.id === 'app-layout' ? (
-  <AppLayout title="AppLayout" description={entry.description} currentPath="/displays/app-layout" teams={teams} activeTeam={teams[0]} showSensitiveUnlock appearance={appearance}>
+  <AppLayout title="AppLayout" description={entry.description} currentPath="/app/" teams={teams} activeTeam={teams[0]} showSensitiveUnlock appearance={appearance} contentOwnsPageHeader>
     <PageHeader title="AppLayout" description="Application layout with team switcher, app nav, modals, and unlock controls." />
     <Panel title="Active project"><KeyValueList items={[{ key: 'Team', value: 'Continuity Studio' }, { key: 'Route', value: '/app/projects' }]} /></Panel>
   </AppLayout>

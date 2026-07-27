@@ -2,6 +2,7 @@ import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statS
 import { dirname, extname, resolve } from 'node:path';
 
 const copies = [
+  ['src/site-brand.ts', 'dist/site-brand.ts', true],
   ['src/astro', 'dist/astro', false],
   ['src/lib', 'dist/lib', false],
   ['src/styles', 'dist/styles', true],

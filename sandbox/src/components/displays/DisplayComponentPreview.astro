@@ -6,11 +6,13 @@ import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
 import MetricCard from '../../../../src/astro/data/MetricCard.astro';
 import MetricGrid from '../../../../src/astro/data/MetricGrid.astro';
 import StatusPill from '../../../../src/astro/data/StatusPill.astro';
+import Timestamp from '../../../../src/astro/data/Timestamp.astro';
 import DistributionSummary from '../../../../src/astro/distribution/DistributionSummary.astro';
 import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
 import FeedbackButton from '../../../../src/astro/feedback/FeedbackButton.astro';
 import FeedbackDialog from '../../../../src/astro/feedback/FeedbackDialog.astro';
 import FeedbackRedactionBoundary from '../../../../src/astro/feedback/FeedbackRedactionBoundary.astro';
+import ToastRegion from '../../../../src/astro/feedback/ToastRegion.astro';
 import ContextualHelpPanel from '../../../../src/astro/help/ContextualHelpPanel.astro';
 import HelpActionList from '../../../../src/astro/help/HelpActionList.astro';
 import HelpButton from '../../../../src/astro/help/HelpButton.astro';
@@ -30,6 +32,7 @@ import ProjectHeader from '../../../../src/astro/shell/chrome/ProjectHeader.astr
 import PublicFooter from '../../../../src/astro/shell/chrome/PublicFooter.astro';
 import RailNav from '../../../../src/astro/shell/navigation/RailNav.astro';
 import ShellIconLink from '../../../../src/astro/shell/navigation/ShellIconLink.astro';
+import ShellIcon from '../../../../src/astro/shell/navigation/ShellIcon.astro';
 import TopBar from '../../../../src/astro/shell/navigation/TopBar.astro';
 import Card from '../../../../src/astro/surface/Card.astro';
 import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
@@ -66,6 +69,12 @@ import RepositoryContextPanel from '../../../../src/astro/app/operations/Reposit
 import SeedOperationsPanel from '../../../../src/astro/app/operations/SeedOperationsPanel.astro';
 import WorkerQueuePanel from '../../../../src/astro/app/operations/WorkerQueuePanel.astro';
 import SensitiveDataUnlock from '../../../../src/astro/app/sensitive/SensitiveDataUnlock.astro';
+import AccountDeletionPanel from '../../../../src/astro/account/AccountDeletionPanel.astro';
+import AccountIdentitySettings from '../../../../src/astro/account/AccountIdentitySettings.astro';
+import AccountTimeZoneSettings from '../../../../src/astro/account/AccountTimeZoneSettings.astro';
+import NotificationPreferencePanel from '../../../../src/astro/account/NotificationPreferencePanel.astro';
+import PersonalThemeManager from '../../../../src/astro/account/PersonalThemeManager.astro';
+import SessionManager from '../../../../src/astro/account/SessionManager.astro';
 import AuthCard from '../../../../src/astro/auth/AuthCard.astro';
 import AuthDivider from '../../../../src/astro/auth/AuthDivider.astro';
 import ProviderButtonList from '../../../../src/astro/auth/ProviderButtonList.astro';
@@ -121,7 +130,7 @@ import ProjectActivityChartHarness from './ProjectActivityChartHarness.tsx';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
-import { navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, hostRequirement, resourceRequirement, secretRequirement, templates, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, timelineItems, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
+import { accountIdentity, accountProjects, accountSessions, notificationCapabilities, notificationPreferences, personalThemes, navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, hostRequirement, resourceRequirement, secretRequirement, templates, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, timelineItems, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
 ---
 
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
@@ -147,6 +156,7 @@ import { navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabI
 {entry.id === 'feedback-button' ? <div class="primitive-inline"><FeedbackButton targetId="catalog-feedback" /><FeedbackDialog id="catalog-feedback" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-dialog' ? <div><FeedbackButton targetId="catalog-feedback-dialog" /><FeedbackDialog id="catalog-feedback-dialog" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-redaction-boundary' ? <p>Public value <FeedbackRedactionBoundary reason="secret">secret-token-preview</FeedbackRedactionBoundary></p> : null}
+{entry.id === 'toast-region' ? <div><p>Notifications from enhanced forms appear in this global region.</p><ToastRegion /></div> : null}
 {entry.id === 'help-button' ? <div class="primitive-inline"><HelpButton targetId="catalog-help" /><HelpDrawer id="catalog-help" context={helpContext} feedbackTargetId="catalog-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-feedback" context={feedbackContext} /></div> : null}
 {entry.id === 'help-drawer' ? <div class="primitive-inline"><HelpButton targetId="catalog-help-drawer" /><HelpDrawer id="catalog-help-drawer" context={helpContext} feedbackTargetId="catalog-help-drawer-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-drawer-feedback" context={feedbackContext} /></div> : null}
 {entry.id === 'help-popover' ? <HelpPopover context={helpContext} /> : null}
@@ -157,11 +167,12 @@ import { navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabI
 {entry.id === 'panel' ? <Panel title="Panel preview" description="Header, actions, and body."><p>Panel body content sized like an application section.</p></Panel> : null}
 {entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
 {entry.id === 'status-pill' ? <div class="primitive-inline"><StatusPill tone="success">Healthy</StatusPill><StatusPill tone="warning">Delayed</StatusPill><StatusPill tone="danger">Blocked</StatusPill></div> : null}
+{entry.id === 'timestamp' ? <Timestamp value="2026-07-26T18:30:00.000Z" timeZone="America/New_York" /> : null}
 {entry.id === 'theme-preview-swatch' ? <ThemePreviewSwatch swatches={['#245b47', '#d8efe2', '#f2b84b', '#273142']} label="Theme preview swatch" /> : null}
 {entry.id === 'theme-script' ? <div><ThemeScript defaultScheme="fern" defaultMode="system" includeCss={false} /><p class="ts-subtle">ThemeScript is mounted for this preview with generated CSS disabled.</p><KeyValueList items={[{ key: 'Scheme', value: 'fern' }, { key: 'Mode', value: 'system' }]} /></div> : null}
 {entry.id === 'shell-header' ? <ShellHeader brand={brand} showMenuButton><Fragment slot="actions"><ShellIconLink href="/" label="Book home" icon="book" /></Fragment></ShellHeader> : null}
 {entry.id === 'site-user-controls' ? <SiteUserControls items={siteItems} currentPath="/knowledge/" appearance={appearance} helpContext={helpContext} feedbackContext={feedbackContext} showHomeLink showManagerLink /> : null}
-{entry.id === 'team-operations-panel' ? <TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }, { label: 'Browse market', href: '/market/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }, { label: 'Sign out', href: '/auth/sign-out', variant: 'ghost' }]}><Fragment slot="teamSelector"><Badge tone="info">Continuity Studio</Badge></Fragment></TeamOperationsPanel> : null}
+{entry.id === 'team-operations-panel' ? <TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }, { label: 'Browse market', href: '/market/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary', icon: 'account' }, { label: 'Sign out', action: '/auth/sign-out', method: 'post', hiddenFields: { csrfToken: 'preview' }, variant: 'ghost', icon: 'sign-out', iconOnly: true }]}><Fragment slot="teamSelector"><Badge tone="info">Continuity Studio</Badge></Fragment></TeamOperationsPanel> : null}
 {entry.id === 'team-operations-drawer' ? <div><button class="ts-button" type="button" data-ts-team-drawer-open="catalog-team-drawer">Open drawer</button><TeamOperationsDrawer id="catalog-team-drawer"><TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }]} /><SiteUserControls items={siteItems} currentPath="/market/" appearance={appearance} showAppearanceControl={false} /></TeamOperationsDrawer></div> : null}
 {entry.id === 'control-surface' ? <ControlSurface title="Control surface" description="Header, actions, tabs, and body stay stable across app pages."><Fragment slot="actions"><a class="ts-button" href="/displays/control-surface">Action</a></Fragment><Fragment slot="tabs"><SurfaceTabs items={surfaceTabItems} current="overview" label="Control surface tabs" /></Fragment><Panel title="Surface body"><p>Application page content is rendered here.</p></Panel></ControlSurface> : null}
 {entry.id === 'surface-tabs' ? <div class="ts-public-stack"><SurfaceTabs items={surfaceTabItems} current="overview" label="Link tabs" /><div><SurfaceTabs items={surfaceTabItems} current="overview" label="Panel tabs" mode="panels" persist="none" /><section id="surface-tabs-overview"><Panel title="Overview panel"><p>Panel mode supports arrow-key navigation.</p></Panel></section><section id="surface-tabs-activity" hidden><Panel title="Activity panel"><p>Activity content.</p></Panel></section><section id="surface-tabs-settings" hidden><Panel title="Settings panel"><p>Settings content.</p></Panel></section></div></div> : null}
@@ -175,6 +186,7 @@ import { navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabI
 {entry.id === 'public-knowledge-section' ? <PublicKnowledgeSection title="Knowledge hub" description="Public knowledge and book pages use shared single-column sections." actions={[{ label: 'Open book', href: '/books/operations/', variant: 'secondary' }]}><Panel title="Book page"><p>Readable public knowledge content without app operations chrome.</p></Panel></PublicKnowledgeSection> : null}
 {entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
 {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
+{entry.id === 'shell-icon' ? <div class="primitive-inline"><ShellIcon name="start" /><ShellIcon name="teams" /><ShellIcon name="projects" /><ShellIcon name="capacity" /><ShellIcon name="work" /><ShellIcon name="knowledge" /><ShellIcon name="account" /><ShellIcon name="sign-out" /></div> : null}
 {entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
 {entry.id === 'collection-template' ? <CollectionTemplate viewModel={collectionViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'dashboard-template' ? <DashboardTemplate viewModel={dashboardViewModel} actions={resolvedActions} /> : null}
@@ -204,6 +216,12 @@ import { navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabI
 {entry.id === 'seed-operations-panel' ? <SeedOperationsPanel seeds={seeds} /> : null}
 {entry.id === 'worker-queue-panel' ? <WorkerQueuePanel workers={workers} /> : null}
 {entry.id === 'sensitive-data-unlock' ? <div><SensitiveDataUnlock part="button" /><SensitiveDataUnlock part="modal" /></div> : null}
+{entry.id === 'account-deletion-panel' ? <AccountDeletionPanel blockers={[]} csrfToken="preview-csrf" hasCredential /> : null}
+{entry.id === 'account-identity-settings' ? <AccountIdentitySettings identity={accountIdentity} availableProviders={[{ id: 'google', label: 'Google' }]} csrfToken="preview-csrf" /> : null}
+{entry.id === 'account-time-zone-settings' ? <AccountTimeZoneSettings timeZone="America/New_York" csrfToken="preview-csrf" /> : null}
+{entry.id === 'notification-preference-panel' ? <NotificationPreferencePanel preferences={notificationPreferences} capabilities={notificationCapabilities} projects={accountProjects} csrfToken="preview-csrf" /> : null}
+{entry.id === 'personal-theme-manager' ? <PersonalThemeManager themes={personalThemes} activeScheme="fern" csrfToken="preview-csrf" /> : null}
+{entry.id === 'session-manager' ? <SessionManager sessions={accountSessions} csrfToken="preview-csrf" /> : null}
 {entry.id === 'auth-card' ? <AuthCard title="Sign in" description="Access your TreeSeed workspace." error="Invalid passphrase." notice="Check your inbox for a sign-in link." appearance={{ scheme: 'fern', mode: 'system' }}><ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" /><AuthDivider label="or continue with email" /></AuthCard> : null}
 {entry.id === 'auth-divider' ? <AuthDivider label="or continue with email" /> : null}
 {entry.id === 'provider-button-list' ? <ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" /> : null}

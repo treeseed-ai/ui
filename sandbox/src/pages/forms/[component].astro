@@ -5,6 +5,7 @@ import Field from '../../../../src/astro/forms/fields/Field.astro';
 import FormActions from '../../../../src/astro/forms/actions/FormActions.astro';
 import MarkdownField from '../../../../src/astro/forms/fields/MarkdownField.astro';
 import PasswordMeter from '../../../../src/astro/forms/fields/PasswordMeter.astro';
+import PasswordSetupFields from '../../../../src/astro/forms/fields/PasswordSetupFields.astro';
 import RadioGroup from '../../../../src/astro/forms/fields/RadioGroup.astro';
 import Select from '../../../../src/astro/forms/fields/Select.astro';
 import TextInput from '../../../../src/astro/forms/fields/TextInput.astro';
@@ -60,7 +61,7 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
     ) : null}
 
     {entry.runtime === 'astro' ? (
-      <form class="catalog-form-harness" data-catalog-form data-redact-password={entry.id === 'password-meter' ? 'true' : undefined}>
+      <form class="catalog-form-harness" data-catalog-form data-redact-password={['password-meter', 'password-setup-fields'].includes(entry.id) ? 'true' : undefined}>
         <section class:list={['catalog-preview', `catalog-preview--${entry.intendedSize}`]} aria-label={`${entry.name} preview`}>
           <span class="catalog-preview__label">Component frame</span>
           <div class="catalog-preview__stage">
@@ -107,6 +108,17 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
                 </Field>
                 <PasswordMeter inputId="password-preview" />
                 <FormActions><Button type="submit">Submit password</Button></FormActions>
+              </>
+            ) : null}
+            {entry.id === 'password-setup-fields' ? (
+              <>
+                <PasswordSetupFields
+                  passwordId="password-setup-preview"
+                  passwordLabel="New password"
+                  confirmId="password-setup-confirmation-preview"
+                  confirmLabel="Confirm new password"
+                />
+                <FormActions><Button type="submit">Submit password setup</Button></FormActions>
               </>
             ) : null}
             {entry.id === 'radio-group' ? (

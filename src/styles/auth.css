@@ -19,6 +19,15 @@
 	padding: var(--ts-space-3);
 }
 
+.auth-shell-bar > .ts-site-user-controls {
+	justify-content: flex-end;
+	margin-inline-start: auto;
+}
+
+.auth-shell-bar .ts-site-user-controls__nav {
+	justify-content: flex-end;
+}
+
 .auth-shell-bar__brand {
 	align-items: center;
 	color: var(--ts-color-text);
@@ -294,141 +303,6 @@
 .ts-control[data-username-state='error'] {
 	border-color: var(--ts-color-danger-text);
 	box-shadow: 0 0 0 1px var(--ts-color-danger-text);
-}
-
-.account-stack,
-.account-form,
-.account-list,
-.account-badges,
-.account-tabs-shell,
-.account-tab-panels {
-	display: grid;
-	gap: var(--ts-space-3);
-}
-
-.account-tabs-shell {
-	gap: var(--ts-space-4);
-}
-
-.account-tabs {
-	align-items: stretch;
-	background: var(--ts-color-surface);
-	border: 1px solid var(--ts-color-border);
-	box-sizing: border-box;
-	border-radius: var(--ts-radius-lg);
-	box-shadow: var(--ts-color-shadow);
-	display: grid;
-	gap: var(--ts-space-2);
-	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-	margin-bottom: 0;
-	padding: var(--ts-space-2);
-}
-
-.account-tabs .ts-tab {
-	background: transparent;
-	border-color: transparent;
-	height: 2.5rem;
-	min-height: 2.5rem;
-	width: 100%;
-}
-
-.account-tabs .ts-tab[aria-selected='true'] {
-	background: var(--ts-color-accent-soft);
-	border-color: var(--ts-color-accent);
-	color: var(--ts-color-text);
-	height: 2.5rem;
-	min-height: 2.5rem;
-}
-
-.account-tab-panel[hidden] {
-	display: none;
-}
-
-.account-two-column {
-	display: grid;
-	gap: var(--ts-space-3);
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
-}
-
-.account-list-item {
-	border-top: 1px solid var(--ts-color-border-muted);
-	display: grid;
-	gap: var(--ts-space-1);
-	padding-top: var(--ts-space-3);
-}
-
-.account-list-item:first-child {
-	border-top: 0;
-	padding-top: 0;
-}
-
-.account-list-item strong {
-	color: var(--ts-color-text);
-}
-
-.account-list-item span {
-	color: var(--ts-color-text-muted);
-}
-
-.account-list-heading,
-.account-list-actions {
-	align-items: center;
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--ts-space-2);
-	justify-content: space-between;
-}
-
-.account-list-actions {
-	justify-content: start;
-}
-
-.account-email-row {
-	align-items: start;
-	column-gap: var(--ts-space-3);
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	row-gap: var(--ts-space-2);
-}
-
-.account-email-row .account-list-heading {
-	align-self: start;
-	justify-content: start;
-	min-width: 0;
-}
-
-.account-email-row .account-list-heading strong {
-	overflow-wrap: anywhere;
-}
-
-.account-email-row .account-list-actions {
-	align-self: start;
-	justify-content: end;
-	justify-self: end;
-}
-
-.account-email-row .account-email-action {
-	border-radius: var(--ts-radius-sm);
-	font-size: 0.75rem;
-	line-height: 1;
-	min-height: 1.55rem;
-	padding: 0.22rem 0.5rem;
-}
-
-.account-email-add-form {
-	border-top: 1px solid var(--ts-color-border-muted);
-	margin-top: var(--ts-space-1);
-	padding-top: var(--ts-space-3);
-}
-
-.account-badges {
-	align-items: start;
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.account-danger-panel {
-	border-color: var(--ts-color-danger-border);
 }
 
 .auth-shell__appearance .ts-shell-context-action {

@@ -90,6 +90,27 @@ import { MarkdownEditor } from '@treeseed/ui/react';
 
 Use React widgets for interactive controls that need client-side state. Keep route data loading, auth policy, and workflow orchestration in admin, market, API, SDK, or CLI code.
 
+## Enhanced Form Submissions
+
+`@treeseed/ui` owns the first-party browser submission lifecycle. Mounting a UI shell mounts `ToastRegion` and the delegated controller once. Network forms opt in with `data-ts-submit="enhanced"` and continue to use an ordinary action, method, and server handler when JavaScript is unavailable.
+
+```astro
+<form
+  method="post"
+  action="/account"
+  data-ts-submit="enhanced"
+  data-ts-refresh-target="[data-account-panel]"
+>
+  <!-- normal accessible controls -->
+</form>
+```
+
+Handlers return `FormSubmissionResponse` through `formSubmissionResponse` from `@treeseed/ui/forms`. Enhanced requests receive structured JSON; ordinary posts receive a sanitized same-origin `303` carrying a one-use fallback toast. Inline successes stay on the current URL. Lifecycle transitions such as login, logout, account deletion, and completed onboarding navigate only when the response declares a safe same-origin `redirect`.
+
+Use `@treeseed/ui/forms/client` for thin JSON or long-running-operation adapters. Adapters may shape payloads or poll an accepted operation, but the shared controller retains validation, CSRF transport, duplicate prevention, pending controls, field errors, target refresh, and toast ownership. Do not add component-local mutation `fetch()` calls, browser alerts, forced reloads, or query-string status banners.
+
+Field errors are adjacent English validation messages. Success notifications expire after five seconds and errors after ten seconds; both pause on hover, focus, and hidden documents. Progress notifications remain until an adapter updates or dismisses them.
+
 ## Theme And Tokens
 
 The package owns reusable tokens, theme CSS, app shell styles, form styles, operation styles, market/card styles, and Stripe-free commerce/governance components. Tenant-specific brand colors, public marketing art direction, copy, data loading, and workflow orchestration belong in the host app or Admin/API packages.

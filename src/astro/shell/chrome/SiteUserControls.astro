@@ -6,7 +6,6 @@ import ShellIconLink from '../navigation/ShellIconLink.astro';
 import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import type { ThemePreference, ThemeConfig } from '../../../theme/index.ts';
 import type { SiteUserControlItem } from '../../types.ts';
-import NotificationBell from '../../notifications/NotificationBell.astro';
 
 interface Props {
 	items?: SiteUserControlItem[];
@@ -21,8 +20,6 @@ interface Props {
 	showHomeLink?: boolean;
 	showManagerLink?: boolean;
 	class?: string;
-	notifications?: any[];
-	notificationCsrfToken?: string;
 }
 
 const {
@@ -38,8 +35,6 @@ const {
 	showHomeLink = false,
 	showManagerLink = false,
 	class: className,
-	notifications = [],
-	notificationCsrfToken = '',
 } = Astro.props as Props;
 
 function isCurrentPath(href: string) {
@@ -57,7 +52,6 @@ function isCurrentPath(href: string) {
 		</nav>
 	) : null}
 	<div class="ts-site-user-controls__utilities">
-		<NotificationBell notifications={notifications} csrfToken={notificationCsrfToken} />
 		{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} /> : null}
 		{helpContext ? <HelpButton targetId={helpDrawerId} title={helpContext.summary ?? 'Open contextual help'} /> : null}
 		{feedbackContext ? <FeedbackButton targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}

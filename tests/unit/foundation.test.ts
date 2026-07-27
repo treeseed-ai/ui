@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { componentCatalog } from '../../sandbox/src/lib/component-catalog';
 import { actionToButton, type ResolvedAction } from '../../src/lib/foundation/contracts';
 import { searchContextualHelp } from '../../src/lib/help/search';
+import { SITE_SLOGAN } from '../../src/site-brand';
 
 const foundationFiles = [
 	'src/lib/foundation/contracts.ts',
@@ -38,6 +39,45 @@ const foundationFiles = [
 ];
 
 describe('UI foundation', () => {
+	it('keeps full-width controls inside their form layout cells', () => {
+		const formsCss = readFileSync('src/styles/forms.css', 'utf8');
+		expect(formsCss).toMatch(/\.ts-control\s*\{[^}]*box-sizing: border-box;[^}]*width: 100%;/su);
+	});
+
+	it('exports one slogan for first-party TreeSeed brand displays', () => {
+		const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+		const brandedSources = [
+			'src/astro/auth/AuthCard.astro',
+			'src/astro/auth/AuthShell.astro',
+			'src/astro/layouts/AppLayout.astro',
+			'src/astro/layouts/MainLayout.astro',
+			'src/astro/layouts/PublicLayout.astro',
+		];
+
+		expect(SITE_SLOGAN).toBe('Grow what you know');
+		expect(readFileSync('src/index.ts', 'utf8')).toContain("export * from './site-brand.ts'");
+		expect(packageJson.exports['./site-brand']).toEqual({
+			types: './dist/site-brand.d.ts',
+			default: './dist/site-brand.js',
+		});
+		expect(readFileSync('scripts/support/copy-assets.ts', 'utf8')).toContain(
+			"['src/site-brand.ts', 'dist/site-brand.ts', true]",
+		);
+		for (const path of brandedSources) {
+			expect(readFileSync(path, 'utf8'), path).toContain('SITE_SLOGAN');
+		}
+	});
+
+	it('keeps browser runtime initializers inert during server rendering', () => {
+		for (const path of [
+			'src/lib/app/markdown-field.ts',
+			'src/lib/app/related-content-creator.ts',
+			'src/astro/forms/composition/markdown-field.ts',
+		]) {
+			expect(readFileSync(path, 'utf8'), path).toContain("if (typeof document !== 'undefined')");
+		}
+	});
+
 	it('exports ProductShell as the canonical authenticated shell', () => {
 		const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
 
@@ -47,10 +87,108 @@ describe('UI foundation', () => {
 		expect(existsSync('src/astro/shell/AppShell.astro')).toBe(false);
 	});
 
+	it('keeps header icons unique and notifications account-scoped', () => {
+		const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+		const controls = readFileSync('src/astro/shell/chrome/SiteUserControls.astro', 'utf8');
+		const publicShell = readFileSync('src/astro/public/PublicSingleColumnShell.astro', 'utf8');
+		const productShell = readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8');
+		const publicLayouts = [
+			readFileSync('src/astro/layouts/MainLayout.astro', 'utf8'),
+			readFileSync('src/astro/layouts/PublicLayout.astro', 'utf8'),
+		];
+		const catalogIds = new Set(componentCatalog.map((entry) => entry.id));
+
+		expect(publicShell.match(/\bshowManagerLink\b/gu)).toHaveLength(1);
+		expect(controls.match(/icon="manager"/gu)).toHaveLength(1);
+		for (const layout of publicLayouts) expect(layout).not.toContain('ShellIconLink');
+		for (const shell of [controls, productShell]) {
+			expect(shell).not.toContain('NotificationBell');
+			expect(shell).not.toContain('notificationCsrfToken');
+			expect(shell).not.toMatch(/\bnotifications\s*[?:=]/u);
+		}
+		expect(packageJson.exports['./components/astro/notifications/NotificationBell.astro']).toBeUndefined();
+		expect(catalogIds.has('notification-bell')).toBe(false);
+		expect(catalogIds.has('notification-preference-panel')).toBe(true);
+		expect(existsSync('src/astro/account/NotificationPreferencePanel.astro')).toBe(true);
+		const appShellCss = readFileSync('src/styles/app-shell.css', 'utf8');
+		expect(appShellCss).toContain('.ts-shell-header .ts-site-user-controls__utilities > :not(.ts-theme-menu)');
+		expect(appShellCss).toContain('.ts-team-drawer .ts-theme-menu');
+	});
+
+	it('right-aligns auth and app shell header controls', () => {
+		const authCss = readFileSync('src/styles/auth.css', 'utf8');
+		const appShellCss = readFileSync('src/styles/app-shell.css', 'utf8');
+
+		expect(authCss).toMatch(/\.auth-shell-bar > \.ts-site-user-controls\s*\{[^}]*justify-content: flex-end;[^}]*margin-inline-start: auto;/su);
+		expect(authCss).toMatch(/\.auth-shell-bar \.ts-site-user-controls__nav\s*\{[^}]*justify-content: flex-end;/su);
+		expect(appShellCss).toMatch(/\.ts-shell-header__actions\s*\{[^}]*flex: 1 1 auto;[^}]*justify-content: flex-end;[^}]*margin-inline-start: auto;/su);
+		expect(appShellCss).toMatch(/\.ts-shell-header \.ts-site-user-controls__nav\s*\{[^}]*justify-content: flex-end;/su);
+	});
+
+	it('keeps the app rail pinned, icon-enabled, collapsible, and mobile-safe', () => {
+		const productShell = readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8');
+		const operations = readFileSync('src/astro/shell/team-operations/TeamOperationsPanel.astro', 'utf8');
+		const appShellCss = readFileSync('src/styles/app-shell.css', 'utf8');
+		const appLayout = readFileSync('src/astro/layouts/AppLayout.astro', 'utf8');
+
+		expect(productShell).toContain("const storageKey = 'treeseed.app-sidebar-collapsed'");
+		expect(productShell).toContain('localStorage.getItem(storageKey)');
+		expect(productShell).toContain("'astro:before-swap'");
+		expect(productShell).toContain('event.newDocument.documentElement');
+		expect(productShell).toContain('tsAppSidebarReady');
+		expect(productShell).toContain('data-ts-app-sidebar-toggle');
+		expect(operations).toContain('ts-team-operations__primary');
+		expect(operations).toContain('ts-team-operations__footer');
+		expect(operations).toContain('<ShellIcon');
+		expect(appShellCss).toMatch(/\.ts-product-shell-body\s*\{[^}]*margin: 0;/su);
+		expect(appShellCss).toMatch(/\.ts-team-operations\s*\{[^}]*box-sizing: border-box;[^}]*overflow: hidden;/su);
+		expect(appShellCss).toMatch(/\.ts-team-operations__primary\s*\{[^}]*overflow-y: auto;/su);
+		expect(appShellCss).toMatch(/\.ts-team-operations__footer\s*\{[^}]*margin-top: auto;/su);
+		expect(appShellCss).toMatch(/html\[data-ts-app-sidebar-ready='true'\] \.ts-product-shell__body\s*\{[^}]*transition: grid-template-columns 160ms ease;/su);
+		expect(appShellCss).toContain(".ts-product-shell__desktop-operations .ts-team-operations__label");
+		for (const icon of ['start', 'services', 'projects', 'capacity', 'work', 'knowledge', 'account', 'sign-out']) {
+			expect(appLayout).toContain(`icon: '${icon}'`);
+		}
+	});
+
+	it('places settings section tabs above the active content', () => {
+		const template = readFileSync('src/astro/templates/SettingsTemplate.astro', 'utf8');
+		const uiCss = readFileSync('src/styles/ui.css', 'utf8');
+
+		expect(template).toContain("import SurfaceTabs from '../shell/navigation/SurfaceTabs.astro'");
+		expect(template).toContain('label="Settings sections"');
+		expect(template).not.toContain('ts-template__aside');
+		expect(template).not.toContain('ts-settings-nav');
+		expect(uiCss).not.toContain('.ts-template--settings .ts-template__main');
+		expect(uiCss).not.toContain('.ts-settings-nav');
+	});
+
+	it('keeps registration validation focused on completing registration', () => {
+		const registration = readFileSync('src/astro/auth/RegistrationForm.astro', 'utf8');
+		const passwordSetup = readFileSync('src/astro/forms/fields/PasswordSetupFields.astro', 'utf8');
+		const passwordMeter = readFileSync('src/astro/forms/fields/PasswordMeter.astro', 'utf8');
+
+		expect(registration).not.toContain('Enter a username to check availability.');
+		expect(registration).not.toContain('Enter an email to check availability.');
+		expect(registration).not.toMatch(/Checking \$\{kind\} availability|is available\./u);
+		expect(registration).toContain('This ${kind} isn’t available for registration.');
+		expect(registration).toContain('<PasswordSetupFields passwordId="registerPassword"');
+		expect(registration).toContain('aria-live="polite"');
+		expect(registration).toContain('payload.available === true');
+		expect(registration).toContain('submit.disabled = !states.username || !states.email');
+		expect(passwordSetup).toContain('Passwords do not match.');
+		expect(passwordSetup).toContain('Passwords match.');
+		expect(passwordSetup).toContain('<PasswordMeter');
+		for (const rule of ['lowercase', 'uppercase', 'number', 'symbol', 'spaces']) {
+			expect(passwordMeter).toContain(`data-ts-password-rule="${rule}"`);
+		}
+		expect(passwordMeter).toContain('score === 6');
+	});
+
 	it('registers foundation components in the sandbox catalog', () => {
 		const ids = new Set(componentCatalog.map((entry) => entry.id));
 
-		for (const id of ['product-shell', 'action-bar', 'resource-card', 'readiness-summary', 'distribution-summary', 'overlay-status', 'allocation-panel', 'allocation-tree', 'allocation-state-legend', 'work-queue-summary', 'activity-timeline', 'permission-boundary', 'collection-template', 'dashboard-template', 'detail-template', 'reader-template', 'settings-template', 'workspace-template', 'feedback-button', 'feedback-dialog', 'feedback-redaction-boundary', 'help-button', 'help-drawer', 'help-popover', 'contextual-help-panel', 'help-topic-link', 'help-action-list']) {
+		for (const id of ['product-shell', 'shell-icon', 'action-bar', 'resource-card', 'readiness-summary', 'distribution-summary', 'overlay-status', 'allocation-panel', 'allocation-tree', 'allocation-state-legend', 'work-queue-summary', 'activity-timeline', 'permission-boundary', 'collection-template', 'dashboard-template', 'detail-template', 'reader-template', 'settings-template', 'workspace-template', 'feedback-button', 'feedback-dialog', 'feedback-redaction-boundary', 'toast-region', 'help-button', 'help-drawer', 'help-popover', 'contextual-help-panel', 'help-topic-link', 'help-action-list']) {
 			expect(ids.has(id), `${id} should be cataloged`).toBe(true);
 		}
 	});

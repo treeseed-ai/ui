@@ -1,0 +1,407 @@
+.account-stack,
+.account-form,
+.account-panel-stack,
+.account-list {
+	display: grid;
+	min-width: 0;
+	--ts-account-form-column-gap: clamp(var(--ts-space-4), 2vw, 1.5rem);
+}
+
+.account-stack {
+	gap: var(--ts-space-4);
+}
+
+.account-form,
+.account-panel-stack,
+.account-list {
+	gap: var(--ts-space-3);
+}
+
+.account-form,
+.account-list {
+	padding-block: var(--ts-space-1);
+	padding-inline: var(--ts-space-2);
+}
+
+.account-stack > *,
+.account-form > *,
+.account-panel-stack > *,
+.account-list > * {
+	min-width: 0;
+}
+
+.account-field-row {
+	align-items: start;
+	display: grid;
+	column-gap: var(--ts-account-form-column-gap);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	min-width: 0;
+	row-gap: var(--ts-space-3);
+}
+
+.account-field-row > * {
+	min-width: 0;
+}
+
+.account-form-actions {
+	grid-column: 1 / -1;
+	padding-top: var(--ts-space-1);
+}
+
+.account-password-setup {
+	column-gap: var(--ts-account-form-column-gap);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	row-gap: var(--ts-space-3);
+}
+
+.account-password-setup > .ts-password-meter {
+	grid-column: 1 / -1;
+}
+
+.account-panel-stack > .ts-button {
+	justify-self: start;
+}
+
+.account-list-item {
+	border-top: 1px solid var(--ts-color-border-muted);
+	display: grid;
+	gap: var(--ts-space-1);
+	padding-top: var(--ts-space-3);
+}
+
+.account-list-item:first-child {
+	border-top: 0;
+	padding-top: 0;
+}
+
+.account-list-item strong,
+.account-list-heading strong {
+	color: var(--ts-color-text);
+}
+
+.account-list-item span,
+.account-list-heading span {
+	color: var(--ts-color-text-muted);
+}
+
+.account-session-details {
+	display: grid;
+	gap: var(--ts-space-2) var(--ts-account-form-column-gap);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin: 0 0 var(--ts-space-3);
+}
+
+.account-session-details > div {
+	min-width: 0;
+}
+
+.account-session-details dt {
+	color: var(--ts-color-text-muted);
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.account-session-details dd {
+	margin: var(--ts-space-1) 0 0;
+	overflow-wrap: anywhere;
+}
+
+.account-list-heading,
+.account-list-actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--ts-space-2);
+}
+
+.account-list-heading {
+	justify-content: space-between;
+}
+
+.account-list-actions {
+	justify-content: flex-start;
+}
+
+.account-email-row,
+.account-provider-row {
+	align-items: start;
+	border-top: 1px solid var(--ts-color-border-muted);
+	column-gap: var(--ts-account-form-column-gap);
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	padding-top: var(--ts-space-3);
+	row-gap: var(--ts-space-2);
+}
+
+.account-email-row:first-child,
+.account-provider-row:first-child {
+	border-top: 0;
+	padding-top: 0;
+}
+
+.account-email-row .account-list-heading,
+.account-provider-row .account-list-heading {
+	align-self: start;
+	justify-content: flex-start;
+	min-width: 0;
+}
+
+.account-email-row .account-list-heading strong,
+.account-provider-row .account-list-heading strong {
+	overflow-wrap: anywhere;
+}
+
+.account-email-row .account-list-actions {
+	justify-content: flex-end;
+	justify-self: end;
+}
+
+.account-email-action {
+	border-radius: var(--ts-radius-sm);
+	font-size: 0.75rem;
+	line-height: 1;
+	min-height: 1.75rem;
+	padding: 0.3rem 0.55rem;
+}
+
+.account-email-add-form {
+	align-items: end;
+	border-top: 1px solid var(--ts-color-border-muted);
+	column-gap: var(--ts-account-form-column-gap);
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	margin-top: var(--ts-space-1);
+	padding-top: var(--ts-space-3);
+	row-gap: var(--ts-space-3);
+}
+
+.account-disclosure {
+	border: 1px solid var(--ts-color-border);
+	border-radius: var(--ts-radius-sm);
+	min-width: 0;
+	padding: var(--ts-space-3);
+}
+
+.account-disclosure > summary {
+	align-items: center;
+	cursor: pointer;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--ts-space-2);
+}
+
+.account-disclosure[open] > summary {
+	margin-bottom: var(--ts-space-3);
+}
+
+.account-notification-project[open] {
+	border-color: var(--ts-color-accent);
+}
+
+.account-notification-project[open] > .account-notification-choice-list {
+	border-top: 1px solid var(--ts-color-border-muted);
+	padding-top: var(--ts-space-3);
+}
+
+.account-notification-cadence {
+	display: grid;
+	gap: var(--ts-space-2);
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.account-notification-choice-list {
+	display: grid;
+	gap: var(--ts-space-2);
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.account-notification-choice {
+	align-items: start;
+	cursor: pointer;
+	display: grid;
+	gap: var(--ts-space-2);
+	grid-template-columns: auto minmax(0, 1fr);
+	line-height: 1.4;
+	min-width: 0;
+}
+
+.account-notification-choice input {
+	margin: 0.2em 0 0;
+}
+
+.account-notification-choice__content {
+	display: grid;
+	gap: var(--ts-space-1);
+	min-width: 0;
+}
+
+.account-notification-choice__content small {
+	color: var(--ts-color-text-muted);
+}
+
+.account-theme-table-wrap {
+	border: 1px solid var(--ts-color-border);
+	overflow-x: auto;
+}
+
+.account-theme-table {
+	border-collapse: collapse;
+	min-width: 20rem;
+	width: 100%;
+}
+
+.account-theme-table th,
+.account-theme-table td {
+	border-bottom: 1px solid var(--ts-color-border-muted);
+	padding: var(--ts-space-3);
+	text-align: left;
+	vertical-align: middle;
+}
+
+.account-theme-table thead th {
+	background: var(--ts-color-surface-muted);
+	color: var(--ts-color-text-muted);
+	font-size: 0.75rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.account-theme-table tbody tr:last-child > * {
+	border-bottom: 0;
+}
+
+.account-theme-table tbody tr:has(.account-theme-status[data-active='true']) {
+	background: var(--ts-color-accent-soft);
+}
+
+.account-theme-status {
+	color: var(--ts-color-text-muted);
+	font-size: 0.8125rem;
+	font-weight: 650;
+}
+
+.account-theme-status[data-active='true'] {
+	color: var(--ts-color-accent-strong);
+}
+
+.ts-dialog {
+	background: transparent;
+	border: 0;
+	color: var(--ts-color-text);
+	max-height: calc(100vh - 2rem);
+	max-width: min(54rem, calc(100vw - 2rem));
+	padding: 0;
+	width: 100%;
+}
+
+.ts-dialog::backdrop {
+	background: color-mix(in srgb, var(--ts-color-text) 38%, transparent);
+}
+
+.ts-dialog__surface {
+	background: var(--ts-color-surface);
+	border: 1px solid var(--ts-color-border-strong);
+	border-radius: var(--ts-radius-sm);
+	box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--ts-color-text) 24%, transparent);
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	max-height: calc(100vh - 2rem);
+	overflow: hidden;
+}
+
+.ts-dialog__header {
+	align-items: start;
+	border-bottom: 1px solid var(--ts-color-border);
+	display: flex;
+	gap: var(--ts-space-3);
+	justify-content: space-between;
+	padding: var(--ts-space-4);
+}
+
+.ts-dialog__header h2,
+.ts-dialog__header p {
+	margin: 0;
+}
+
+.ts-dialog__header p {
+	color: var(--ts-color-text-muted);
+	margin-top: var(--ts-space-1);
+}
+
+.ts-dialog__body {
+	overflow: auto;
+	padding: var(--ts-space-4);
+}
+
+.ts-dialog .account-color-grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-palette-group {
+	border: 1px solid var(--ts-color-border-muted);
+	border-radius: var(--ts-radius-sm);
+	margin: 0;
+	min-inline-size: 0;
+	padding: var(--ts-space-3);
+}
+
+.account-palette-group legend {
+	color: var(--ts-color-text);
+	font-size: 0.875rem;
+	font-weight: 700;
+	padding-inline: var(--ts-space-1);
+	text-transform: capitalize;
+}
+
+.account-color-grid {
+	align-items: start;
+	column-gap: var(--ts-account-form-column-gap);
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	min-width: 0;
+	row-gap: var(--ts-space-3);
+}
+
+.account-color-grid input[type='color'] {
+	cursor: pointer;
+	padding: 0.25rem;
+}
+
+@media (max-width: 64rem) {
+	.account-color-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 42rem) {
+	.account-session-details,
+	.account-field-row,
+	.account-password-setup,
+	.account-color-grid,
+	.account-email-row,
+	.account-provider-row,
+	.account-email-add-form {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.account-notification-cadence {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ts-dialog .account-color-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.account-email-row .account-list-actions {
+		justify-content: flex-start;
+		justify-self: stretch;
+	}
+
+	.account-form-actions {
+		justify-content: stretch;
+	}
+
+	.account-form-actions > * {
+		flex: 1 1 auto;
+	}
+}

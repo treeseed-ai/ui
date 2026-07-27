@@ -97,6 +97,8 @@ function assertTarballContents(packResult) {
     'README.md',
     'dist/index.js',
     'dist/index.d.ts',
+    'dist/site-brand.js',
+    'dist/site-brand.d.ts',
     'dist/react.js',
     'dist/react.d.ts',
     'dist/theme/index.js',
@@ -164,6 +166,8 @@ async function smokeInstall(tarballPath) {
     import { resolve } from 'node:path';
     import { defineTheme, getBuiltInColorSchemes } from '@treeseed/ui/theme';
     import { normalizeAllocations } from '@treeseed/ui/lib/pie-allocation';
+    import { SITE_SLOGAN } from '@treeseed/ui/site-brand';
+    await import('@treeseed/ui');
 
     const packageRoot = resolve('node_modules', '${packageName}');
     await access(resolve(packageRoot, 'dist/styles/theme.css'));
@@ -180,6 +184,9 @@ async function smokeInstall(tarballPath) {
     const normalized = normalizeAllocations([{ id: 'a', name: 'A', percentage: 100 }], 0, 0);
     if (normalized[0]?.percentage !== 100) {
       throw new Error('Installed package pie allocation export failed.');
+    }
+    if (SITE_SLOGAN !== 'Grow what you know') {
+      throw new Error('Installed package site-brand export failed.');
     }
     await readFile(resolve(packageRoot, 'dist/styles/ui.css'), 'utf8');
   `;

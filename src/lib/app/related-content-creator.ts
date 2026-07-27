@@ -1,29 +1,39 @@
 import { initializeMarkdownFields } from './markdown-field.ts';
-
-type RelatedCreatorConfig = {
-	projectId?: string;
-	parentCollection?: string;
-	parentSlug?: string;
-};
-
-function readConfig(root: HTMLElement): RelatedCreatorConfig {
-	const dataElement = root.querySelector<HTMLScriptElement>('#related-content-data')
-		?? document.getElementById('related-content-data');
-	if (!dataElement?.textContent) return {};
-	try {
-		return JSON.parse(dataElement.textContent) as RelatedCreatorConfig;
-	} catch {
-		return {};
-	}
-}
+import { dismissToast, registerFormAdapter, showToast } from '../../forms-client.ts';
+import { waitForPlatformOperation } from './platform-operation-status.ts';
 
 function clamp(value: number, min: number, max: number) {
 	return Math.max(min, Math.min(max, value));
 }
 
-function formValue(formData: FormData, key: string) {
-	return String(formData.get(key) ?? '').trim();
-}
+registerFormAdapter('related-operation', {
+	buildRequest(context) {
+		return {
+			url: context.form.action,
+			init: {
+				method: 'POST',
+				headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },
+				body: JSON.stringify(Object.fromEntries(context.formData.entries())),
+				credentials: 'same-origin',
+			},
+		};
+	},
+	async parseResponse(response) {
+		const payload = await response.json().catch(() => null);
+		if (!response.ok || payload?.ok === false) {
+			return { ok: false, code: String(payload?.code ?? `http_${response.status}`), message: String(payload?.error ?? 'Related content could not be created.') };
+		}
+		const toastId = showToast({ id: 'related-content-operation', tone: 'progress', message: 'Creating linked content…', duration: null });
+		try {
+			const redirect = await waitForPlatformOperation(payload, { fallbackHref: `${window.location.pathname}?related=${Date.now()}` });
+			showToast({ id: toastId, tone: 'success', message: 'Related content created.' });
+			return { ok: true, code: 'related_content_created', message: 'Related content created.', redirect };
+		} catch (error) {
+			dismissToast(toastId);
+			return { ok: false, code: 'related_content_failed', message: error instanceof Error ? error.message : 'Related content could not be created.' };
+		}
+	},
+});
 
 function initializeDrag(windowElement: HTMLElement, handle: HTMLElement) {
 	let dragging = false;
@@ -66,7 +76,6 @@ function initializeRelatedContentCreator(root: HTMLElement) {
 	if (root.dataset.relatedCreatorReady === 'true') return;
 	root.dataset.relatedCreatorReady = 'true';
 
-	const config = readConfig(root);
 	const float = root.querySelector<HTMLElement>('[data-related-float]') ?? document.querySelector<HTMLElement>('[data-related-float]');
 	const windowElement = root.querySelector<HTMLElement>('[data-related-window]') ?? document.querySelector<HTMLElement>('[data-related-window]');
 	const title = root.querySelector<HTMLElement>('[data-related-title]') ?? document.querySelector<HTMLElement>('[data-related-title]');
@@ -78,11 +87,6 @@ function initializeRelatedContentCreator(root: HTMLElement) {
 
 	function activeForm() {
 		return document.querySelector<HTMLFormElement>('.ts-related-form:not([hidden])');
-	}
-
-	function setStatus(message: string, form = activeForm()) {
-		const status = form?.querySelector<HTMLElement>('[data-related-status]');
-		if (status) status.textContent = message;
 	}
 
 	function closeWindow() {
@@ -133,34 +137,6 @@ function initializeRelatedContentCreator(root: HTMLElement) {
 		}
 	});
 
-	document.querySelectorAll<HTMLFormElement>('.ts-related-form').forEach((form) => {
-		form.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const formData = new FormData(form);
-			const targetCollection = formValue(formData, 'targetCollection') || form.dataset.relatedForm || '';
-			const projectId = config.projectId || formValue(formData, 'projectId');
-			if (!projectId || !targetCollection) {
-				setStatus('Project or target content type is missing.', form);
-				return;
-			}
-			setStatus('Creating linked content...', form);
-			const body = Object.fromEntries(formData.entries());
-			body.parentCollection = body.parentCollection || config.parentCollection || '';
-			body.parentSlug = body.parentSlug || config.parentSlug || '';
-			body.targetCollection = targetCollection;
-			try {
-				await submitPlatformOperationForm({
-					url: `/v1/projects/${encodeURIComponent(projectId)}/local-content/${encodeURIComponent(targetCollection)}/related`,
-					body,
-					statusElement: form.querySelector<HTMLElement>('[data-related-status]'),
-					fallbackHref: `${window.location.pathname}?related=${Date.now()}`,
-					initialMessage: 'Queuing linked content...',
-				});
-			} catch (error) {
-				setStatus(error instanceof Error ? error.message : 'Related content could not be created.', form);
-			}
-		});
-	});
 }
 
 export function initializeRelatedContentCreators() {
@@ -169,10 +145,11 @@ export function initializeRelatedContentCreators() {
 		.forEach((root) => initializeRelatedContentCreator(root));
 }
 
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initializeRelatedContentCreators, { once: true });
-} else {
-	initializeRelatedContentCreators();
+if (typeof document !== 'undefined') {
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initializeRelatedContentCreators, { once: true });
+	} else {
+		initializeRelatedContentCreators();
+	}
+	document.addEventListener('astro:page-load', initializeRelatedContentCreators);
 }
-document.addEventListener('astro:page-load', initializeRelatedContentCreators);
-import { submitPlatformOperationForm } from './platform-operation-status.ts';

@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -6,6 +6,7 @@ import {
   buildThemeCss,
   compileGuidedThemePalette,
   defineTheme,
+  guidedThemePaletteForScheme,
   loadColorSchemes,
   parseColorSchemeYaml,
   resolveThemeConfig,
@@ -99,6 +100,23 @@ describe('YAML themes', () => {
     expect(tokens.light.canvas).toBe('#ffffff');
     expect(tokens.dark.accent).toBe('#69d69a');
     expect(tokens.light.danger).toBeTruthy();
+  });
+
+  it('derives custom-theme builder colors from the selected base scheme', () => {
+    const fern = guidedThemePaletteForScheme('fern');
+    const cedar = guidedThemePaletteForScheme('cedar');
+    expect(fern.light.accent).toBe('#4f7d4e');
+    expect(cedar.light.accent).toBe('#b86b3c');
+    expect(cedar.dark.canvas).toBe('#181310');
+    expect(cedar).not.toEqual(fern);
+  });
+
+  it('binds each rendered selector once and synchronizes responsive peers', () => {
+    const selector = readFileSync('src/astro/theme/ThemeSelector.astro', 'utf8');
+    expect(selector).toContain("selector.dataset.tsThemeSelectorBound === 'true'");
+    expect(selector).toContain("selector.dataset.tsThemeSelectorBound = 'true'");
+    expect(selector).toContain("document.querySelectorAll('[data-ts-theme-selector]').forEach((peer)");
+    expect(selector).toContain('window.__tsThemeSelectorMediaBound');
   });
 
   it('rejects guided palettes that fail text contrast', () => {

@@ -15,11 +15,16 @@ export default defineConfig({
     lib: {
       entry: {
         index: 'src/index.ts',
+        'site-brand': 'src/site-brand.ts',
+        timestamps: 'src/timestamps.ts',
+        forms: 'src/forms.ts',
+        'forms-client': 'src/forms-client.ts',
         react: 'src/react.ts',
         'theme/index': 'src/theme/index.ts',
         'lib/foundation/contracts': 'src/lib/foundation/contracts.ts',
         'lib/charts/index': 'src/lib/charts/index.ts',
         'lib/pie-allocation/math': 'src/lib/pie-allocation/math.ts',
+        'lib/forms/submission/index': 'src/lib/forms/submission/index.ts',
         'react/pie-allocation/DynamicPieAllocationInput': 'src/react/pie-allocation/DynamicPieAllocationInput.tsx',
         'react/charts/MonitoringChart': 'src/react/charts/MonitoringChart.tsx',
         'react/charts/ProjectActivityChart': 'src/react/charts/ProjectActivityChart.tsx',

@@ -2,6 +2,7 @@
 import Panel from '../surface/Panel.astro';
 import Field from '../forms/fields/Field.astro';
 import TextInput from '../forms/fields/TextInput.astro';
+import PasswordSetupFields from '../forms/fields/PasswordSetupFields.astro';
 import Button from '../forms/actions/Button.astro';
 import FormActions from '../forms/actions/FormActions.astro';
 interface AccountIdentity {
@@ -22,10 +23,8 @@ interface Props {
 	callbackBaseUrl?: string;
 	passwordGrantId?: string | null;
 	csrfToken: string;
-	status?: string | null;
-	error?: string | null;
 }
-const { identity, availableProviders = [], callbackBaseUrl = '', passwordGrantId = null, csrfToken, status, error } = Astro.props as Props;
+const { identity, availableProviders = [], callbackBaseUrl = '', passwordGrantId = null, csrfToken } = Astro.props as Props;
 const linkedProviderIds = new Set(identity.providers.map((provider) => provider.provider));
 const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'reauthenticate', action?: string) => {
 	const query = new URLSearchParams({ purpose, returnTo: '/app/account' });
@@ -35,37 +34,50 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 };
 ---
 
-<div class="ts-stack" data-scene="account-identity">
-	{status ? <p class="ts-alert" data-tone="success" role="status">{status}</p> : null}
-	{error ? <p class="ts-alert" data-tone="danger" role="alert">{error}</p> : null}
+<div class="account-stack" data-scene="account-identity">
 	<Panel eyebrow="Identity" title="Public profile" description="Your permanent handle and public identity.">
-		<form method="post" class="ts-form-grid">
+		<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 			<input type="hidden" name="csrfToken" value={csrfToken} />
 			<input type="hidden" name="intent" value="profile" />
-			<Field label="Username" help="Your username is public and cannot be changed.">
-				<TextInput name="username" value={identity.username} disabled />
-			</Field>
-			<Field label="First name" name="firstName"><TextInput id="firstName" name="firstName" value={identity.firstName ?? ''} autocomplete="given-name" /></Field>
-			<Field label="Last name" name="lastName"><TextInput id="lastName" name="lastName" value={identity.lastName ?? ''} autocomplete="family-name" /></Field>
-			<Field label="Profile image URL" name="image" help="Use an HTTPS image URL."><TextInput id="image" name="image" type="url" value={identity.image ?? ''} /></Field>
-			<FormActions><Button type="submit">Save identity</Button></FormActions>
+			<div class="account-field-row" data-account-field-group="name">
+				<Field label="First name" name="firstName"><TextInput id="firstName" name="firstName" value={identity.firstName ?? ''} autocomplete="given-name" /></Field>
+				<Field label="Last name" name="lastName"><TextInput id="lastName" name="lastName" value={identity.lastName ?? ''} autocomplete="family-name" /></Field>
+			</div>
+			<div class="account-field-row" data-account-field-group="public-profile">
+				<Field label="Username" help="Your username is public and cannot be changed.">
+					<TextInput name="username" value={identity.username} disabled />
+				</Field>
+				<Field label="Profile image URL" name="image" help="Use an HTTPS image URL."><TextInput id="image" name="image" type="url" value={identity.image ?? ''} /></Field>
+			</div>
+			<FormActions class="account-form-actions"><Button type="submit">Save identity</Button></FormActions>
 		</form>
 	</Panel>
 
 	<Panel eyebrow="Email" title="Email addresses" description="Keep at least one verified address.">
-		<div class="ts-stack">
+		<div class="account-list">
 			{identity.emails.map((email) => (
-				<form method="post" class="ts-inline-form">
+				<form
+					method="post"
+					class="account-email-row"
+					data-account-email={email.email}
+					data-account-email-status={email.status}
+					data-ts-submit="enhanced"
+					data-ts-refresh-target="[data-scene='account-identity']"
+				>
 					<input type="hidden" name="csrfToken" value={csrfToken} />
 					<input type="hidden" name="emailId" value={email.id} />
-					<strong>{email.email}</strong>
-					<span>{email.status}{email.isPrimary ? ' · primary' : ''}</span>
-					{email.status !== 'verified' ? <Button type="submit" name="intent" value="resend-email" variant="secondary" size="sm">Resend verification</Button> : null}
-					{email.status === 'verified' && !email.isPrimary ? <Button type="submit" name="intent" value="primary-email" variant="secondary" size="sm">Make primary</Button> : null}
-					{!email.isPrimary ? <Button type="submit" name="intent" value="delete-email" variant="danger" size="sm">Remove</Button> : null}
+					<div class="account-list-heading">
+						<strong>{email.email}</strong>
+						<span>{email.status}{email.isPrimary ? ' · primary' : ''}</span>
+					</div>
+					<div class="account-list-actions">
+						{email.status !== 'verified' ? <Button class="account-email-action" type="submit" name="intent" value="resend-email" variant="secondary" size="sm">Resend verification</Button> : null}
+						{email.status === 'verified' && !email.isPrimary ? <Button class="account-email-action" type="submit" name="intent" value="primary-email" variant="secondary" size="sm">Make primary</Button> : null}
+						{!email.isPrimary ? <Button class="account-email-action" type="submit" name="intent" value="delete-email" variant="danger" size="sm">Remove</Button> : null}
+					</div>
 				</form>
 			))}
-			<form method="post" class="ts-inline-form">
+			<form method="post" class="account-email-add-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 				<input type="hidden" name="csrfToken" value={csrfToken} />
 				<input type="hidden" name="intent" value="add-email" />
 				<Field label="Add email" name="email"><TextInput id="email" name="email" type="email" autocomplete="email" required /></Field>
@@ -75,24 +87,30 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 	</Panel>
 
 	<Panel eyebrow="Security" title={identity.hasCredential ? 'Change password' : 'Set a password'}>
-		<form method="post" class="ts-form-grid">
+			<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 			<input type="hidden" name="csrfToken" value={csrfToken} />
 			<input type="hidden" name="intent" value="password" />
 			{passwordGrantId ? <input type="hidden" name="reauthenticationGrantId" value={passwordGrantId} /> : null}
 			{identity.hasCredential ? <Field label="Current password" name="currentPassword"><TextInput id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required /></Field> : null}
-			<Field label="New password" name="password" help="Use at least 12 characters."><TextInput id="password" name="password" type="password" autocomplete="new-password" minlength={12} required /></Field>
-			<FormActions><Button type="submit" disabled={!identity.hasCredential && !passwordGrantId}>{identity.hasCredential ? 'Change password' : 'Set password'}</Button></FormActions>
+			<PasswordSetupFields
+				passwordId="accountPassword"
+				passwordLabel="New password"
+				confirmId="accountPasswordConfirmation"
+				confirmLabel="Confirm new password"
+				class="account-password-setup"
+			/>
+			<FormActions class="account-form-actions"><Button type="submit" disabled={!identity.hasCredential && !passwordGrantId}>{identity.hasCredential ? 'Change password' : 'Set password'}</Button></FormActions>
 		</form>
 	</Panel>
 
 	<Panel eyebrow="Sign-in" title="Connected identities">
-		<div class="ts-stack">
+		<div class="account-list">
 			{identity.providers.length ? identity.providers.map((provider) => (
-				<form method="post" class="ts-inline-form">
+				<form method="post" class="account-list-item account-provider-row" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 					<input type="hidden" name="csrfToken" value={csrfToken} />
 					<input type="hidden" name="intent" value="unlink-provider" />
 					<input type="hidden" name="identityId" value={provider.id} />
-					<strong>{provider.provider}</strong><span>{provider.email ?? ''}</span>
+					<div class="account-list-heading"><strong>{provider.provider}</strong><span>{provider.email ?? ''}</span></div>
 					<Button type="submit" variant="danger" size="sm" disabled={!provider.canUnlink}>Unlink</Button>
 				</form>
 			)) : <p>No external providers are connected.</p>}
@@ -100,7 +118,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 				<a class="ts-button ts-button--secondary ts-button--sm" href={providerStartUrl(provider, 'link')}>Connect {provider.label}</a>
 			))}
 			{!identity.hasCredential && identity.providers.length ? (
-				<div class="ts-stack">
+				<div class="account-stack">
 					<p>Reauthenticate with a connected provider before setting a password.</p>
 					{availableProviders.filter((provider) => linkedProviderIds.has(provider.id)).map((provider) => (
 						<a class="ts-button ts-button--secondary ts-button--sm" href={providerStartUrl(provider, 'reauthenticate', 'password_change')}>Verify with {provider.label}</a>

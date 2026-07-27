@@ -77,6 +77,11 @@
 	white-space: nowrap;
 }
 
+.ts-team-selector .ts-team-manage-button {
+	padding: 0;
+	width: 1.9rem;
+}
+
 .ts-icon-button {
 	display: inline-flex;
 	align-items: center;
@@ -206,8 +211,10 @@
 }
 
 .ts-create-team-button {
-	display: grid;
-	place-items: center;
+	align-items: center;
+	display: flex;
+	gap: 0.42rem;
+	justify-content: center;
 	min-height: 2.5rem;
 	margin-top: 0.55rem;
 	padding: 0 0.75rem;

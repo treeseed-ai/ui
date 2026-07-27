@@ -14,6 +14,7 @@ type JobEnvelope = {
 	job?: PlatformOperation;
 	operation?: PlatformOperation;
 };
+import { sendFormRequest } from '../../forms-client.ts';
 
 const TERMINAL_STATUSES = new Set(['succeeded', 'failed', 'cancelled']);
 
@@ -47,6 +48,38 @@ export function platformOperationHref(operation: PlatformOperation | null, fallb
 	) ?? fallback;
 }
 
+export async function waitForPlatformOperation(
+	payload: any,
+	options: { fallbackHref: string; statusElement?: HTMLElement | null; timeoutMs?: number } ,
+) {
+	const queued = operationFromEnvelope(payload);
+	if (!queued?.id) return payload?.payload?.href ?? options.fallbackHref;
+	const status = options.statusElement;
+	if (status) status.textContent = 'Queued. Waiting for the Treeseed operations runner...';
+	const started = Date.now();
+	const timeoutMs = options.timeoutMs ?? 120_000;
+	let operation = queued;
+	let events: any[] = [];
+	while (!TERMINAL_STATUSES.has(operation.status) && Date.now() - started <= timeoutMs) {
+		await delay(1000);
+		const [operationResponse, eventsResponse] = await Promise.all([
+			fetch(operation.pollUrl ?? `/v1/platform/operations/${encodeURIComponent(operation.id)}`),
+			fetch(operation.streamUrl ?? `/v1/platform/operations/${encodeURIComponent(operation.id)}/events`),
+		]);
+		const operationPayload = await operationResponse.json().catch(() => null);
+		const eventsPayload = await eventsResponse.json().catch(() => null);
+		if (!operationResponse.ok || operationPayload?.ok === false) {
+			throw new Error(operationPayload?.error ?? 'Operation status could not be loaded.');
+		}
+		operation = operationFromEnvelope(operationPayload) ?? operation;
+		events = Array.isArray(eventsPayload?.events) ? eventsPayload.events : events;
+		if (status) status.textContent = operationMessage(operation, events);
+	}
+	if (!TERMINAL_STATUSES.has(operation.status)) throw new Error('Operation is still running. Check the operation status and try refreshing.');
+	if (operation.status !== 'succeeded') throw new Error(operation.error?.message || `Operation ${operation.status}.`);
+	return platformOperationHref(operation, options.fallbackHref);
+}
+
 function operationMessage(operation: PlatformOperation, events: any[]) {
 	const output = operation.output ?? {};
 	const branch = operation.branch ?? output.operationBranch ?? output.branch;
@@ -75,47 +108,20 @@ export async function submitPlatformOperationForm(options: {
 }) {
 	const status = options.statusElement;
 	if (status) status.textContent = options.initialMessage ?? 'Queuing operation...';
-	const response = await fetch(options.url, {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify(options.body),
+	const response = await sendFormRequest({
+		url: options.url,
+		init: {
+			method: 'POST',
+			headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },
+			body: JSON.stringify(options.body),
+			credentials: 'same-origin',
+		},
 	});
 	const payload = await response.json().catch(() => null);
 	if (!response.ok || payload?.ok === false) {
 		throw new Error(payload?.error ?? 'Operation could not be queued.');
 	}
-	const queued = operationFromEnvelope(payload);
-	if (!queued?.id) {
-		const href = payload?.payload?.href ?? options.fallbackHref;
-		window.location.href = href;
-		return;
-	}
-	if (status) status.textContent = 'Queued. Waiting for the Treeseed operations runner...';
-	const started = Date.now();
-	const timeoutMs = options.timeoutMs ?? 120_000;
-	let operation = queued;
-	let events: any[] = [];
-	while (!TERMINAL_STATUSES.has(operation.status) && Date.now() - started <= timeoutMs) {
-		await delay(1000);
-		const [operationResponse, eventsResponse] = await Promise.all([
-			fetch(operation.pollUrl ?? `/v1/platform/operations/${encodeURIComponent(operation.id)}`),
-			fetch(operation.streamUrl ?? `/v1/platform/operations/${encodeURIComponent(operation.id)}/events`),
-		]);
-		const operationPayload = await operationResponse.json().catch(() => null);
-		const eventsPayload = await eventsResponse.json().catch(() => null);
-		if (!operationResponse.ok || operationPayload?.ok === false) {
-			throw new Error(operationPayload?.error ?? 'Operation status could not be loaded.');
-		}
-		operation = operationFromEnvelope(operationPayload) ?? operation;
-		events = Array.isArray(eventsPayload?.events) ? eventsPayload.events : events;
-		if (status) status.textContent = operationMessage(operation, events);
-	}
-	if (!TERMINAL_STATUSES.has(operation.status)) {
-		throw new Error('Operation is still running. Check the operation status and try refreshing.');
-	}
-	if (operation.status !== 'succeeded') {
-		throw new Error(operation.error?.message || `Operation ${operation.status}.`);
-	}
+	const href = await waitForPlatformOperation(payload, { fallbackHref: options.fallbackHref, statusElement: status, timeoutMs: options.timeoutMs });
 	if (status) status.textContent = 'Completed. Refreshing...';
-	window.location.href = platformOperationHref(operation, options.fallbackHref);
+	window.location.href = href;
 }

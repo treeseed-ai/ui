@@ -17,12 +17,19 @@ type DeploymentEnvelope = {
 	stateUrl?: string;
 	error?: string | { message?: string; code?: string };
 };
+import { sendFormRequest } from '../../forms-client.ts';
 
 const TERMINAL_OPERATION_STATUSES = new Set(['succeeded', 'completed', 'failed', 'cancelled', 'timed_out']);
 const ACTIVE_DEPLOYMENT_STATUSES = new Set(['queued', 'claimed', 'dispatching', 'running', 'monitoring']);
 
 function delay(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function announceContentUpdate(kind: 'deployment' | 'launch-recovery', payload?: unknown) {
+	document.dispatchEvent(new CustomEvent('treeseed:content-updated', {
+		detail: { kind, payload },
+	}));
 }
 
 function operationFrom(payload: DeploymentEnvelope | null): DeploymentOperation | null {
@@ -89,10 +96,14 @@ export async function submitDeploymentActionForm(options: {
 	};
 	if (confirmProduction) body.confirmProduction = true;
 	if (status) status.textContent = 'Queuing deployment operation...';
-	const response = await fetch(form.action, {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify(body),
+	const response = await sendFormRequest({
+		url: form.action,
+		init: {
+			method: 'POST',
+			headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },
+			body: JSON.stringify(body),
+			credentials: 'same-origin',
+		},
 	});
 	const payload = await readJson(response) as DeploymentEnvelope | null;
 	if (!response.ok || payload?.ok === false) {
@@ -103,7 +114,7 @@ export async function submitDeploymentActionForm(options: {
 	const eventsUrl = payload?.eventsUrl ?? null;
 	const stateUrl = payload?.stateUrl ?? form.dataset.stateUrl ?? null;
 	if (!operation || !pollUrl) {
-		window.location.href = options.fallbackHref ?? `${window.location.pathname}?deployment=${Date.now()}`;
+		announceContentUpdate('deployment', payload);
 		return;
 	}
 	const started = Date.now();
@@ -121,11 +132,15 @@ export async function submitDeploymentActionForm(options: {
 		if (nextEvents.length > 0) events = nextEvents;
 		if (status) status.textContent = operationMessage(operation, events, 'Deployment operation is running...');
 	}
+	if (!TERMINAL_OPERATION_STATUSES.has(operation.status)) throw new Error('Deployment operation is still running.');
+	if (!['succeeded', 'completed'].includes(operation.status)) {
+		throw new Error(operation.error?.message ?? `Deployment operation ${operation.status}.`);
+	}
 	if (stateUrl) {
 		await fetch(stateUrl).catch(() => null);
 	}
-	if (status) status.textContent = operationMessage(operation, events, 'Deployment operation finished. Refreshing...');
-	window.location.href = options.fallbackHref ?? `${window.location.pathname}?deployment=${Date.now()}`;
+	if (status) status.textContent = operationMessage(operation, events, 'Deployment operation finished.');
+	announceContentUpdate('deployment', operation);
 }
 
 export async function submitLaunchRecoveryForm(options: {
@@ -142,10 +157,14 @@ export async function submitLaunchRecoveryForm(options: {
 		source: 'market_ui',
 	};
 	if (sensitivePassphrase) body.sensitivePassphrase = sensitivePassphrase;
-	const response = await fetch(options.form.action, {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify(body),
+	const response = await sendFormRequest({
+		url: options.form.action,
+		init: {
+			method: 'POST',
+			headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },
+			body: JSON.stringify(body),
+			credentials: 'same-origin',
+		},
 	});
 	const payload = await readJson(response) as DeploymentEnvelope | null;
 	if (!response.ok || payload?.ok === false) {
@@ -154,7 +173,7 @@ export async function submitLaunchRecoveryForm(options: {
 	let job = jobFrom(payload);
 	const pollUrl = job?.id ? `/v1/jobs/${encodeURIComponent(job.id)}` : null;
 	if (!job || !pollUrl) {
-		window.location.href = options.fallbackHref ?? `${window.location.pathname}?launch=${Date.now()}`;
+		announceContentUpdate('launch-recovery', payload);
 		return;
 	}
 	const started = Date.now();
@@ -165,8 +184,12 @@ export async function submitLaunchRecoveryForm(options: {
 		job = jobFrom(jobPayload as DeploymentEnvelope | null) ?? job;
 		if (status) status.textContent = `Launch job ${String(job.status).replaceAll('_', ' ')}...`;
 	}
+	if (!TERMINAL_OPERATION_STATUSES.has(job.status)) throw new Error('Launch recovery is still running.');
+	if (!['succeeded', 'completed'].includes(job.status)) {
+		throw new Error(job.error?.message ?? `Launch recovery ${job.status}.`);
+	}
 	if (status) status.textContent = 'Launch state refreshed.';
-	window.location.href = options.fallbackHref ?? `${window.location.pathname}?launch=${Date.now()}`;
+	announceContentUpdate('launch-recovery', job);
 }
 
 export function watchDeploymentState(options: {
@@ -191,7 +214,7 @@ export function watchDeploymentState(options: {
 		const current = active[0] ?? null;
 		if (!current || !ACTIVE_DEPLOYMENT_STATUSES.has(String(current.status))) {
 			stopped = true;
-			window.location.href = `${window.location.pathname}?deployment=${Date.now()}`;
+			announceContentUpdate('deployment', payload);
 			return;
 		}
 		if (status) status.textContent = current.summary ?? `Deployment operation ${String(current.status).replaceAll('_', ' ')}...`;

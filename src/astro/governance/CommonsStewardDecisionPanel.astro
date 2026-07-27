@@ -7,7 +7,7 @@ interface Props {
 const { proposalId, action = `/v1/commons/proposals/${proposalId}/steward-decision` } = Astro.props as Props;
 ---
 
-<form class="ts-governance-panel" method="POST" action={action}>
+<form class="ts-governance-panel" method="POST" action={action} data-ts-submit="enhanced" data-ts-form-adapter="json" data-ts-success-message="Steward decision recorded.">
 	<p class="ts-governance-eyebrow">Steward decision</p>
 	<h2>Bounded authority</h2>
 	<label>

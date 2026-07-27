@@ -1,5 +1,6 @@
 ---
 import Button from '../../forms/actions/Button.astro';
+import ShellIcon from '../navigation/ShellIcon.astro';
 import type { ButtonAction, ShellNavItem } from '../../types.ts';
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 	accountActions?: ButtonAction[];
 	label?: string;
 	class?: string;
+	id?: string;
+	collapsible?: boolean;
 }
 
 const {
@@ -18,6 +21,8 @@ const {
 	accountActions = [],
 	label = 'Team operations',
 	class: className,
+	id,
+	collapsible = false,
 } = Astro.props as Props;
 
 function normalizePath(path: string) {
@@ -34,37 +39,100 @@ function isCurrentPath(href: string) {
 }
 ---
 
-<aside class:list={['ts-team-operations', className]} aria-label={label}>
-	<div class="ts-team-operations__selector">
-		<slot name="teamSelector" />
+<aside id={id} class:list={['ts-team-operations', className]} aria-label={label}>
+	<div class="ts-team-operations__primary">
+		<div class="ts-team-operations__selector">
+			<slot name="teamSelector" />
+		</div>
+		<nav class="ts-team-operations__nav" aria-label={label}>
+			{items.map((item) => (
+				<a
+					class="ts-team-operations__link"
+					href={item.href}
+					aria-label={item.ariaLabel ?? item.label}
+					aria-current={isCurrentPath(item.href) ? 'page' : undefined}
+					title={item.label}
+				>
+					<ShellIcon name={item.icon ?? 'link'} />
+					<span class="ts-team-operations__label">{item.label}</span>
+				</a>
+			))}
+		</nav>
 	</div>
-	<nav class="ts-team-operations__nav" aria-label={label}>
-		{items.map((item) => (
-			<a class="ts-team-operations__link" href={item.href} aria-label={item.ariaLabel} aria-current={isCurrentPath(item.href) ? 'page' : undefined}>
-				<span>{item.label}</span>
-			</a>
-		))}
-	</nav>
-	{quickActions.length > 0 ? (
-		<div class="ts-team-operations__actions">
-			<p class="ts-team-operations__eyebrow">Team actions</p>
-			{quickActions.map((action) => (
-				<Button href={action.href} type={action.type} variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} reload={action.reload} size="sm">
-					{action.label}
-				</Button>
-			))}
-		</div>
-	) : null}
-	{accountActions.length > 0 ? (
-		<div class="ts-team-operations__account">
-			{accountActions.map((action) => (
-				action.method === 'post' && action.action ? (
-					<form method="post" action={action.action}>
-						{Object.entries(action.hiddenFields ?? {}).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
-						<Button type="submit" variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} size="sm">{action.label}</Button>
-					</form>
-				) : <Button href={action.href} type={action.type} variant={action.variant ?? 'secondary'} ariaLabel={action.ariaLabel} disabled={action.disabled} reload={action.reload} size="sm">{action.label}</Button>
-			))}
-		</div>
-	) : null}
+	<div class="ts-team-operations__footer">
+		{quickActions.length > 0 ? (
+			<div class="ts-team-operations__actions">
+				<p class="ts-team-operations__eyebrow">Team actions</p>
+				{quickActions.map((action) => (
+					<Button
+						href={action.href}
+						type={action.type}
+						variant={action.variant ?? 'secondary'}
+						ariaLabel={action.ariaLabel ?? action.label}
+						title={action.label}
+						disabled={action.disabled}
+						reload={action.reload}
+						size="sm"
+						class:list={['ts-team-operations__action', action.iconOnly && 'ts-team-operations__action--icon-only']}
+					>
+						<ShellIcon name={action.icon ?? 'action'} />
+						<span class="ts-team-operations__label">{action.label}</span>
+					</Button>
+				))}
+			</div>
+		) : null}
+		{accountActions.length > 0 ? (
+			<div class="ts-team-operations__account">
+				{accountActions.map((action) => (
+					action.method === 'post' && action.action ? (
+						<form method="post" action={action.action} data-ts-submit="enhanced">
+							{Object.entries(action.hiddenFields ?? {}).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
+							<Button
+								type="submit"
+								variant={action.variant ?? 'secondary'}
+								ariaLabel={action.ariaLabel ?? action.label}
+								title={action.label}
+								disabled={action.disabled}
+								size="sm"
+								class:list={['ts-team-operations__action', action.iconOnly && 'ts-team-operations__action--icon-only']}
+							>
+								<ShellIcon name={action.icon ?? 'action'} />
+								<span class="ts-team-operations__label">{action.label}</span>
+							</Button>
+						</form>
+					) : (
+						<Button
+							href={action.href}
+							type={action.type}
+							variant={action.variant ?? 'secondary'}
+							ariaLabel={action.ariaLabel ?? action.label}
+							title={action.label}
+							disabled={action.disabled}
+							reload={action.reload}
+							size="sm"
+							class:list={['ts-team-operations__action', action.iconOnly && 'ts-team-operations__action--icon-only']}
+						>
+							<ShellIcon name={action.icon ?? 'action'} />
+							<span class="ts-team-operations__label">{action.label}</span>
+						</Button>
+					)
+				))}
+			</div>
+		) : null}
+		{collapsible ? (
+			<button
+				class="ts-team-operations__toggle"
+				type="button"
+				aria-controls={id}
+				aria-expanded="true"
+				aria-label="Collapse sidebar"
+				title="Collapse sidebar"
+				data-ts-app-sidebar-toggle
+			>
+				<span data-ts-sidebar-icon="collapse"><ShellIcon name="collapse" /></span>
+				<span data-ts-sidebar-icon="expand"><ShellIcon name="expand" /></span>
+				<span class="ts-team-operations__label" data-ts-sidebar-toggle-label>Collapse sidebar</span>
+			</button>
+		) : null}
+	</div>
 </aside>

@@ -49,7 +49,7 @@ export const publicAndTemplatesComponents: ComponentCatalogEntry[] = [
       { name: 'title', type: 'string', defaultValue: 'Knowledge page', description: 'Reader title.' },
       { name: 'navItems', type: 'NavItem[]', defaultValue: 3, description: 'Reader navigation.' },
     ], undefined, '@treeseed/ui/components/astro/templates/ReaderTemplate.astro'),
-  display('settings-template', 'SettingsTemplate', 'Templates', 'astro', 'Settings page template with section navigation.', 'full-page', { sections: 3 }, [
+  display('settings-template', 'SettingsTemplate', 'Templates', 'astro', 'Settings page template with routed tabs above the active section content.', 'full-page', { sections: 3 }, [
       { name: 'title', type: 'string', defaultValue: 'Settings', description: 'Settings title.' },
       { name: 'sections', type: 'SectionLink[]', defaultValue: 3, description: 'Settings sections.' },
     ], undefined, '@treeseed/ui/components/astro/templates/SettingsTemplate.astro'),

@@ -65,6 +65,16 @@ export const formsComponents: ComponentCatalogEntry[] = [
       { name: 'minLength', type: 'number', defaultValue: 12, description: 'Length rule threshold.' },
       { name: 'label', type: 'string', defaultValue: 'Password strength', description: 'Meter label.' },
     ], { password: 'redacted in submissions', strength: 0, submitted: null }),
+  form('password-setup-fields', 'PasswordSetupFields', 'Validation', 'astro', 'Shared new-password, confirmation, strength, and matching interaction.', 'medium', {
+      passwordId: 'password-setup-preview',
+      passwordLabel: 'New password',
+      confirmLabel: 'Confirm new password',
+      minLength: 12,
+    }, [
+      { name: 'passwordLabel', type: 'string', defaultValue: 'Password', description: 'New-password field label.' },
+      { name: 'confirmLabel', type: 'string', defaultValue: 'Confirm password', description: 'Confirmation field label.' },
+      { name: 'minLength', type: 'number', defaultValue: 12, description: 'Minimum accepted password length.' },
+    ], { password: 'redacted in submissions', confirmation: 'redacted in submissions', strength: 0, submitted: null }, '@treeseed/ui/components/astro/forms/fields/PasswordSetupFields.astro'),
   form('radio-group', 'RadioGroup', 'Choices', 'astro', 'Radio group with labels and option help.', 'medium', {
       name: 'strategy',
       legend: 'Release strategy',

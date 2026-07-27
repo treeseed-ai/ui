@@ -48,7 +48,6 @@ const {
 } = Astro.props as Props;
 
 const contentLabels = WORK_CONTENT_LABELS;
-const json = JSON.stringify({ projectId, parentCollection, parentSlug }).replace(/</gu, '\\u003c');
 const statusOptions = [
 	{ label: 'Planned', value: 'planned' },
 	{ label: 'Live', value: 'live' },
@@ -103,7 +102,15 @@ function help(name: string) {
 						const label = contentLabels[action.collection]?.singular ?? 'record';
 						const type = typeField[action.collection];
 						return (
-							<form class="ts-form-stack ts-related-form" data-related-form={action.collection} hidden>
+							<form
+								class="ts-form-stack ts-related-form"
+								method="post"
+								action={`/v1/projects/${encodeURIComponent(projectId)}/local-content/${encodeURIComponent(action.collection)}/related`}
+								data-related-form={action.collection}
+								data-ts-submit="enhanced"
+								data-ts-form-adapter="related-operation"
+								hidden
+							>
 								<input type="hidden" name="targetCollection" value={action.collection} />
 								<input type="hidden" name="parentCollection" value={parentCollection} />
 								<input type="hidden" name="parentSlug" value={parentSlug} />
@@ -153,7 +160,6 @@ function help(name: string) {
 								<FormActions align="start">
 									<Button type="submit">Create related {label}</Button>
 									<Button type="button" variant="secondary" class="ts-related-cancel">Cancel</Button>
-									<span class="ts-subtle" data-related-status role="status"></span>
 								</FormActions>
 							</form>
 						);
@@ -161,7 +167,6 @@ function help(name: string) {
 				</div>
 			</div>
 		</div>
-		<script is:inline type="application/json" id="related-content-data" set:html={json}></script>
 	</section>
 ) : null}
 
