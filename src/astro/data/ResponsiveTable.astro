@@ -1,0 +1,20 @@
+---
+interface Props {
+	caption?: string;
+	class?: string;
+	density?: 'default' | 'comfortable';
+}
+
+const {
+	caption,
+	class: className,
+	density = 'default',
+} = Astro.props as Props;
+---
+
+<div class:list={['ts-data-table-wrap', className]} data-density={density}>
+	<table class="ts-data-table">
+		{caption ? <caption>{caption}</caption> : null}
+		<slot />
+	</table>
+</div>

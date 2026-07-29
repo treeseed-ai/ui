@@ -1,0 +1,25 @@
+---
+import Button from '../../forms/actions/Button.astro';
+
+interface Props {
+	current: number;
+	total: number;
+	previousHref: string;
+	nextHref: string;
+	label?: string;
+}
+
+const {
+	current,
+	total,
+	previousHref,
+	nextHref,
+	label = 'Pages',
+} = Astro.props as Props;
+---
+
+<nav class="ts-pagination" aria-label={label}>
+	<Button href={previousHref} variant="secondary" size="sm" disabled={current <= 1}>Previous</Button>
+	<span>Page {current} of {total}</span>
+	<Button href={nextHref} variant="secondary" size="sm" disabled={current >= total}>Next</Button>
+</nav>

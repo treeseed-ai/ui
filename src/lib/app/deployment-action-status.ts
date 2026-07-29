@@ -17,7 +17,7 @@ type DeploymentEnvelope = {
 	stateUrl?: string;
 	error?: string | { message?: string; code?: string };
 };
-import { sendFormRequest } from '../../forms-client.ts';
+import { formActionUrl, sendFormRequest } from '../../forms-client.ts';
 
 const TERMINAL_OPERATION_STATUSES = new Set(['succeeded', 'completed', 'failed', 'cancelled', 'timed_out']);
 const ACTIVE_DEPLOYMENT_STATUSES = new Set(['queued', 'claimed', 'dispatching', 'running', 'monitoring']);
@@ -97,7 +97,7 @@ export async function submitDeploymentActionForm(options: {
 	if (confirmProduction) body.confirmProduction = true;
 	if (status) status.textContent = 'Queuing deployment operation...';
 	const response = await sendFormRequest({
-		url: form.action,
+		url: formActionUrl(form),
 		init: {
 			method: 'POST',
 			headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },
@@ -158,7 +158,7 @@ export async function submitLaunchRecoveryForm(options: {
 	};
 	if (sensitivePassphrase) body.sensitivePassphrase = sensitivePassphrase;
 	const response = await sendFormRequest({
-		url: options.form.action,
+		url: formActionUrl(options.form),
 		init: {
 			method: 'POST',
 			headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },

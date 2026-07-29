@@ -339,6 +339,15 @@
 	}
 
 	.auth-card__brand {
+		border-bottom: 1px solid var(--ts-color-border);
+		border-right: 0;
+		display: grid;
+		justify-items: stretch;
+		padding: 0 0 var(--ts-space-3);
+		text-align: left;
+	}
+
+	.auth-card__brand > .auth-brand {
 		display: none;
 	}
 
@@ -362,8 +371,9 @@
 	}
 
 	.auth-card__links {
+		border-top: 0;
 		justify-content: flex-start;
-		padding-top: var(--ts-space-3);
+		padding-top: 0;
 		width: 100%;
 	}
 }

@@ -1,0 +1,102 @@
+---
+import Badge from '../data/Badge.astro';
+import Timestamp from '../data/Timestamp.astro';
+import type { Tone } from '../types.ts';
+
+export interface ActivityFeedItem {
+	title: string;
+	description?: string;
+	actorLabel: string;
+	actorKind?: string;
+	actorHref?: string;
+	actorImageSrc?: string | null;
+	timestamp?: string;
+	details?: string[];
+	tone?: Tone;
+}
+
+interface Props {
+	items: ActivityFeedItem[];
+	emptyLabel?: string;
+	class?: string;
+}
+
+const {
+	items,
+	emptyLabel = 'No recent activity.',
+	class: className,
+} = Astro.props as Props;
+
+function initials(label: string) {
+	const words = label.trim().split(/\s+/u).filter(Boolean);
+	if (words.length === 0) return 'TS';
+	return words.slice(0, 2).map((word) => word[0]?.toUpperCase()).join('');
+}
+---
+
+{items.length > 0 ? (
+	<ol class:list={['ts-activity-feed', className]}>
+		{items.map((item) => (
+			<li class="ts-activity-feed__item" data-tone={item.tone ?? 'default'}>
+				{item.actorHref ? (
+					<a
+						class="ts-activity-feed__marker ts-activity-feed__actor-link"
+						href={item.actorHref}
+						aria-label={`View ${item.actorLabel}'s profile`}
+					>
+						{item.actorImageSrc
+							? <img src={item.actorImageSrc} alt="" loading="lazy" decoding="async" />
+							: initials(item.actorLabel)}
+					</a>
+				) : (
+					<span class="ts-activity-feed__marker" aria-hidden="true">
+						{item.actorImageSrc
+							? <img src={item.actorImageSrc} alt="" loading="lazy" decoding="async" />
+							: initials(item.actorLabel)}
+					</span>
+				)}
+				<article class="ts-activity-feed__entry">
+					<header class="ts-activity-feed__header">
+						<div>
+							<h3>{item.title}</h3>
+							<p class="ts-activity-feed__actor">
+								<span>{item.actorLabel}</span>
+								{item.actorKind ? <small>{item.actorKind}</small> : null}
+							</p>
+						</div>
+						{item.timestamp ? <Timestamp value={item.timestamp} /> : null}
+					</header>
+					{item.description ? <p class="ts-activity-feed__description">{item.description}</p> : null}
+					{item.details?.length ? (
+						<ul class="ts-activity-feed__details" aria-label="Change details">
+							{item.details.map((detail) => <li><Badge size="sm">{detail}</Badge></li>)}
+						</ul>
+					) : null}
+				</article>
+			</li>
+		))}
+	</ol>
+) : <p class:list={['ts-activity-feed__empty', className]}>{emptyLabel}</p>}
+
+<style>
+	.ts-activity-feed__marker {
+		overflow: hidden;
+	}
+
+	.ts-activity-feed__marker img {
+		display: block;
+		height: 100%;
+		object-fit: cover;
+		width: 100%;
+	}
+
+	.ts-activity-feed__actor-link {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.ts-activity-feed__actor-link:focus-visible {
+		outline: 3px solid color-mix(in srgb, var(--ts-color-focus) 32%, transparent);
+		outline-offset: 3px;
+	}
+</style>

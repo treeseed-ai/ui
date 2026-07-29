@@ -1,5 +1,6 @@
 import {
 	initializeFormSubmissions as initializeSubmissions,
+	formActionUrl as resolveFormActionUrl,
 	registerFormAdapter as registerAdapter,
 	sendFormRequest as sendRequest,
 	submitForm as submit,
@@ -32,6 +33,10 @@ export function submitForm(form: HTMLFormElement, submitter: HTMLElement | null 
 
 export function sendFormRequest(request: import('./forms.js').FormRequest) {
 	return sendRequest(request);
+}
+
+export function formActionUrl(form: HTMLFormElement) {
+	return resolveFormActionUrl(form);
 }
 
 export function initializeToasts() {

@@ -22,10 +22,12 @@ interface Props {
 	actions?: ButtonAction[];
 	showAppearanceControl?: boolean;
 	preferServerAppearance?: boolean;
+	timeZone?: string;
 	contentWidth?: 'shell' | 'content';
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
+	showFooter?: boolean;
 }
 
 const {
@@ -39,9 +41,11 @@ const {
 	actions = [],
 	showAppearanceControl = true,
 	preferServerAppearance = false,
+	timeZone = 'UTC',
 	themeConfig,
 	helpContext,
 	feedbackContext,
+	showFooter = true,
 } = Astro.props as Props;
 const flattenedNav = navGroups.length > 0 ? navGroups.flatMap((group) => group.items) : navItems;
 ---
@@ -56,9 +60,11 @@ const flattenedNav = navGroups.length > 0 ? navGroups.flatMap((group) => group.i
 	actions={actions}
 	showAppearanceControl={showAppearanceControl}
 	preferServerAppearance={preferServerAppearance}
+	timeZone={timeZone}
 	themeConfig={themeConfig}
 	helpContext={helpContext}
 	feedbackContext={feedbackContext}
+	showFooter={showFooter}
 >
 	<Fragment slot="actions"><slot name="actions" /></Fragment>
 	<slot />

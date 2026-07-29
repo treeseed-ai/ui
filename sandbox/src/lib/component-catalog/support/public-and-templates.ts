@@ -2,6 +2,11 @@ import type { ComponentCatalogEntry } from './component-kind.ts';
 import { display } from './component-kind.ts';
 
 export const publicAndTemplatesComponents: ComponentCatalogEntry[] = [
+  display('identity-summary', 'IdentitySummary', 'Patterns', 'astro', 'Compact person or team identity with an optional profile link, metadata, image, and status badge.', 'small', { name: 'Ada Field', meta: '@ada' }, [
+      { name: 'name', type: 'string', defaultValue: 'Ada Field', description: 'Displayed identity name.' },
+      { name: 'meta', type: 'string', defaultValue: '@ada', description: 'Optional secondary identity text.' },
+      { name: 'href', type: 'string', defaultValue: undefined, description: 'Optional profile destination.' },
+    ], undefined, '@treeseed/ui/components/astro/patterns/IdentitySummary.astro'),
   display('permission-boundary', 'PermissionBoundary', 'Patterns', 'astro', 'Permission state boundary for allowed and denied content.', 'medium', { state: 'allowed' }, [
       { name: 'state', type: 'ResolvedActionState', defaultValue: 'allowed', description: 'Resolved permission state.' },
       { name: 'remediation', type: 'string', defaultValue: undefined, description: 'Optional remediation text.' },
@@ -10,6 +15,13 @@ export const publicAndTemplatesComponents: ComponentCatalogEntry[] = [
       { name: 'items', type: 'NavItem[]', defaultValue: 3, description: 'Navigation items.' },
       { name: 'currentPath', type: 'string', defaultValue: '/displays/bottom-nav', description: 'Current path marker.' },
     ], undefined, '@treeseed/ui/components/astro/shell/BottomNav.astro', 'deprecated', 'ShellHeader + TeamOperationsDrawer'),
+  display('stack', 'Stack', 'Layout', 'astro', 'Canonical vertical layout primitive with tokenized spacing.', 'medium', { gap: '3' }, [
+      { name: 'gap', type: "'1' | '2' | '3' | '4'", defaultValue: '3', description: 'Tokenized space between children.' },
+    ], undefined, '@treeseed/ui/components/astro/layout/Stack.astro'),
+  display('activity-feed', 'ActivityFeed', 'Activity', 'astro', 'Compact actor-linked activity entries with timestamps and readable change details.', 'large', { items: 2 }, [
+      { name: 'items', type: 'ActivityFeedItem[]', defaultValue: 2, description: 'Human-readable activity records.' },
+      { name: 'emptyLabel', type: 'string', defaultValue: 'No recent activity.', description: 'Empty state label.' },
+    ], undefined, '@treeseed/ui/components/astro/activity/ActivityFeed.astro'),
   display('public-single-column-shell', 'PublicSingleColumnShell', 'Public', 'astro', 'Public single-column shell for marketing, profile, and knowledge pages.', 'full-page', { sections: 3, actions: 1 }, [
       { name: 'brand', type: 'ShellBrand', defaultValue: 'TreeSeed', description: 'Public brand identity.' },
       { name: 'navItems', type: 'SiteUserControlItem[]', defaultValue: 3, description: 'Public site links.' },
@@ -33,6 +45,23 @@ export const publicAndTemplatesComponents: ComponentCatalogEntry[] = [
       { name: 'title', type: 'string', defaultValue: 'Knowledge section', description: 'Knowledge section heading.' },
       { name: 'actions', type: 'PublicSectionAction[]', defaultValue: 1, description: 'Knowledge section actions.' },
     ], undefined, '@treeseed/ui/components/astro/public/PublicKnowledgeSection.astro'),
+  display('knowledge-profile-layout', 'KnowledgeProfileLayout', 'Public profiles', 'astro', 'Responsive public knowledge profile with an identity rail and publication ledger.', 'large', { kind: 'team' }, [
+      { name: 'identity', type: 'slot', defaultValue: 'KnowledgeProfileIdentity', description: 'Profile identity rail.' },
+      { name: 'stats', type: 'slot', defaultValue: 'KnowledgeProfileStats', description: 'Public knowledge totals.' },
+    ], undefined, '@treeseed/ui/components/astro/public/profile/KnowledgeProfileLayout.astro'),
+  display('knowledge-profile-identity', 'KnowledgeProfileIdentity', 'Public profiles', 'astro', 'Identity, expertise, and public biography for a person or team.', 'medium', { kind: 'person', name: 'Ada Field' }, [
+      { name: 'kind', type: "'person' | 'team'", defaultValue: 'person', description: 'Profile principal type.' },
+      { name: 'name', type: 'string', defaultValue: 'Ada Field', description: 'Public display name.' },
+    ], undefined, '@treeseed/ui/components/astro/public/profile/KnowledgeProfileIdentity.astro'),
+  display('knowledge-profile-stats', 'KnowledgeProfileStats', 'Public profiles', 'astro', 'Compact public knowledge totals for a profile rail.', 'medium', { items: 4 }, [
+      { name: 'items', type: 'KnowledgeStat[]', defaultValue: 4, description: 'Public profile totals.' },
+    ], undefined, '@treeseed/ui/components/astro/public/profile/KnowledgeProfileStats.astro'),
+  display('knowledge-profile-collection', 'KnowledgeProfileCollection', 'Public profiles', 'astro', 'Reusable knowledge packs, templates, projects, or contributions.', 'large', { items: 2 }, [
+      { name: 'items', type: 'CollectionItem[]', defaultValue: 2, description: 'Explicitly public knowledge records.' },
+    ], undefined, '@treeseed/ui/components/astro/public/profile/KnowledgeProfileCollection.astro'),
+  display('knowledge-activity-trail', 'KnowledgeActivityTrail', 'Public profiles', 'astro', 'Time-zone-aware publication rhythm and public activity trail.', 'large', { items: 2 }, [
+      { name: 'items', type: 'ActivityItem[]', defaultValue: 2, description: 'Explicit public publication events.' },
+    ], undefined, '@treeseed/ui/components/astro/public/profile/KnowledgeActivityTrail.astro'),
   display('collection-template', 'CollectionTemplate', 'Templates', 'astro', 'Collection page template for resource lists.', 'full-page', { rows: 3, actions: 1 }, [
       { name: 'viewModel', type: 'CollectionViewModel', defaultValue: { rows: 3 }, description: 'Collection view model.' },
       { name: 'actions', type: 'ResolvedAction[]', defaultValue: 1, description: 'Resolved actions.' },

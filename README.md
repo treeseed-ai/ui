@@ -9,6 +9,7 @@ Use this package when you need Treeseed visual primitives. Use `@treeseed/admin`
 - Treeseed shell primitives for authenticated app, operational market, auth, and public single-column layouts
 - shared public stacked-section components for marketing, profiles, books, and Knowledge Hub pages
 - `SurfaceTabs` for routed and in-page control-surface subpages
+- `DisclosureList`, `ResponsiveTable`, `Pagination`, and `InlineConfirmation` for consistent administration displays
 - auth cards and account surfaces
 - form controls and data-entry panels
 - operation status panels and deployment timelines
@@ -75,6 +76,7 @@ Current shell work should compose these exported primitives:
 - `AuthShell` for authentication flows.
 - `PublicSingleColumnShell`, `PublicStack`, `PublicSection`, `PublicHeroSection`, `PublicProfileHeader`, and `PublicKnowledgeSection` for public marketing, profile, book, and Knowledge Hub pages.
 - `SurfaceTabs` for link tabs and accessible in-page tab panels inside a `ControlSurface` tab slot.
+- `DisclosureList`, `DataTable`/`ResponsiveTable`, `KeyValueList`, `Badge`, `Pagination`, and `InlineConfirmation` for reusable settings and administration content. Product packages supply domain data and authorization but do not recreate these visuals.
 
 `ProductShell`, `PublicShell`, `RailNav`, and `BottomNav` remain exported as compatibility/deprecated surfaces for one migration cycle. New host pages should use Admin/Core/Market layout wrappers that compose the current shell primitives.
 

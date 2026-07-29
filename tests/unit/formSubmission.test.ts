@@ -157,6 +157,22 @@ describe('enhanced form controller', () => {
 		expect((init.headers as Headers).has('content-type')).toBe(false);
 	});
 
+	it('uses the declared endpoint when a named control shadows the native form action property', async () => {
+		const form = mountForm();
+		form.insertAdjacentHTML('beforeend', '<input type="hidden" name="action" value="leave">');
+		(form.elements.namedItem('email') as HTMLInputElement).value = 'person@example.test';
+		const fetchMock = vi.fn(() => Promise.resolve(
+			new Response(JSON.stringify({ ok: true, code: 'left', message: 'You left the team.' }), {
+				headers: { 'content-type': 'application/json' },
+			}),
+		));
+		vi.stubGlobal('fetch', fetchMock);
+
+		await submitForm(form);
+
+		expect(fetchMock).toHaveBeenCalledWith('/account', expect.any(Object));
+	});
+
 	it('delegates enhanced submissions once at the document boundary', () => {
 		const form = mountForm();
 		const preventDefault = vi.spyOn(Event.prototype, 'preventDefault');

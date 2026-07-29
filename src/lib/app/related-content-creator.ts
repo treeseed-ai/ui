@@ -1,5 +1,5 @@
 import { initializeMarkdownFields } from './markdown-field.ts';
-import { dismissToast, registerFormAdapter, showToast } from '../../forms-client.ts';
+import { dismissToast, formActionUrl, registerFormAdapter, showToast } from '../../forms-client.ts';
 import { waitForPlatformOperation } from './platform-operation-status.ts';
 
 function clamp(value: number, min: number, max: number) {
@@ -9,7 +9,7 @@ function clamp(value: number, min: number, max: number) {
 registerFormAdapter('related-operation', {
 	buildRequest(context) {
 		return {
-			url: context.form.action,
+			url: formActionUrl(context.form),
 			init: {
 				method: 'POST',
 				headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },

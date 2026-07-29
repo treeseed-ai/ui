@@ -2,6 +2,7 @@
 import Panel from '../surface/Panel.astro';
 import Field from '../forms/fields/Field.astro';
 import TextInput from '../forms/fields/TextInput.astro';
+import Textarea from '../forms/fields/Textarea.astro';
 import PasswordSetupFields from '../forms/fields/PasswordSetupFields.astro';
 import Button from '../forms/actions/Button.astro';
 import FormActions from '../forms/actions/FormActions.astro';
@@ -11,6 +12,11 @@ interface AccountIdentity {
 	firstName?: string | null;
 	lastName?: string | null;
 	image?: string | null;
+	headline?: string | null;
+	profileSummary?: string | null;
+	location?: string | null;
+	website?: string | null;
+	expertise?: string[];
 	hasCredential: boolean;
 	emails: Array<{ id: string; email: string; status: string; isPrimary: boolean }>;
 	providers: Array<{ id: string; provider: string; email?: string | null; canUnlink: boolean }>;
@@ -49,6 +55,25 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 				</Field>
 				<Field label="Profile image URL" name="image" help="Use an HTTPS image URL."><TextInput id="image" name="image" type="url" value={identity.image ?? ''} /></Field>
 			</div>
+			<div class="account-field-row" data-account-field-group="profile-context">
+				<Field label="Knowledge headline" name="headline" help="A concise description of the knowledge you create.">
+					<TextInput id="headline" name="headline" value={identity.headline ?? ''} maxlength={120} placeholder="Researcher, builder, and systems thinker" />
+				</Field>
+				<Field label="Location" name="location">
+					<TextInput id="location" name="location" value={identity.location ?? ''} maxlength={100} autocomplete="address-level2" />
+				</Field>
+			</div>
+			<div class="account-field-row" data-account-field-group="profile-links">
+				<Field label="Website" name="website" help="Use a secure HTTPS address.">
+					<TextInput id="website" name="website" type="url" value={identity.website ?? ''} placeholder="https://example.com" />
+				</Field>
+				<Field label="Areas of knowledge" name="expertise" help="Separate up to eight topics with commas.">
+					<TextInput id="expertise" name="expertise" value={(identity.expertise ?? []).join(', ')} placeholder="Knowledge systems, research, governance" />
+				</Field>
+			</div>
+			<Field label="Profile summary" name="profileSummary" help="Describe what you study, build, teach, or hope to share.">
+				<Textarea id="profileSummary" name="profileSummary" value={identity.profileSummary ?? ''} maxlength={600} rows={5} />
+			</Field>
 			<FormActions class="account-form-actions"><Button type="submit">Save identity</Button></FormActions>
 		</form>
 	</Panel>

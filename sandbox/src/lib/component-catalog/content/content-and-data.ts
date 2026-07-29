@@ -9,6 +9,11 @@ export const contentAndDataComponents: ComponentCatalogEntry[] = [
       { name: 'tone', type: 'Tone', defaultValue: 'default', description: 'Semantic color tone.' },
       { name: 'size', type: "'sm' | 'md'", defaultValue: 'md', description: 'Badge size.' },
     ]),
+  display('countdown', 'Countdown', 'Data', 'astro', 'Accessible live countdown paired with a time-zone-aware deadline.', 'small', { target: '2026-08-26T18:30:00.000Z' }, [
+      { name: 'target', type: 'string | number | Date', defaultValue: '2026-08-26T18:30:00.000Z', description: 'Countdown deadline instant.' },
+      { name: 'startedAt', type: 'string | number | Date', defaultValue: undefined, description: 'Optional window start for progress.' },
+      { name: 'timeZone', type: 'string', defaultValue: 'UTC', description: 'IANA display time zone.' },
+    ], undefined, '@treeseed/ui/components/astro/data/Countdown.astro'),
   display('readiness-summary', 'ReadinessSummary', 'Service', 'astro', 'Service readiness list with setup and advanced diagnostics states.', 'large', { items: 3 }, [
       { name: 'viewModel', type: 'ReadinessSummaryViewModel', defaultValue: { items: 3 }, description: 'Policy-safe readiness summary.' },
       { name: 'showAdvanced', type: 'boolean', defaultValue: false, description: 'Shows advanced diagnostics when enabled.' },
@@ -23,12 +28,21 @@ export const contentAndDataComponents: ComponentCatalogEntry[] = [
       { name: 'columns', type: 'DataTableColumn[]', defaultValue: 3, description: 'Column definitions.' },
       { name: 'rows', type: 'Record<string, unknown>[]', defaultValue: 3, description: 'Table rows.' },
     ]),
+  display('responsive-table', 'ResponsiveTable', 'Data', 'astro', 'Canonical responsive table shell for rich custom cell content.', 'large', { columns: 2, rows: 2 }, [
+      { name: 'caption', type: 'string', defaultValue: 'Team members', description: 'Accessible table caption.' },
+    ]),
+  display('disclosure-list', 'DisclosureList', 'Data', 'astro', 'Expandable summary with readable responsibility details.', 'medium', { title: 'Project lead', items: 2 }, [
+      { name: 'title', type: 'string', defaultValue: 'Project lead', description: 'Disclosure heading.' },
+      { name: 'items', type: 'DisclosureItem[]', defaultValue: 2, description: 'Readable detail rows.' },
+      { name: 'open', type: 'boolean', defaultValue: false, description: 'Initial expanded state.' },
+    ]),
   display('key-value-list', 'KeyValueList', 'Data', 'astro', 'Definition-list metadata display.', 'medium', { items: 3 }, [
       { name: 'items', type: 'KeyValueItem[]', defaultValue: 3, description: 'Metadata rows.' },
     ]),
   display('metric-card', 'MetricCard', 'Data', 'astro', 'Single operational metric card.', 'small', { label: 'Deployments', value: 18, tone: 'success' }, [
       { name: 'label', type: 'string', defaultValue: 'Deployments', description: 'Metric label.' },
       { name: 'value', type: 'string | number', defaultValue: 18, description: 'Displayed value.' },
+      { name: 'href', type: 'string', defaultValue: undefined, description: 'Optional destination for an interactive metric.' },
       { name: 'tone', type: 'Tone', defaultValue: 'success', description: 'Semantic color tone.' },
     ]),
   display('metric-grid', 'MetricGrid', 'Data', 'astro', 'Responsive metric-card grid.', 'large', { metrics: 3, min: '12rem' }, [

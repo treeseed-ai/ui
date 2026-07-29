@@ -42,6 +42,10 @@ export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
       { name: 'items', type: 'SurfaceTabItem[]', defaultValue: 3, description: 'Tabs to render.' },
       { name: 'mode', type: "'links' | 'panels'", defaultValue: 'links', description: 'Navigation or panel behavior.' },
     ], undefined, '@treeseed/ui/components/astro/shell/SurfaceTabs.astro'),
+  display('pagination', 'Pagination', 'Shells', 'astro', 'Canonical previous and next page navigation.', 'inline', { current: 2, total: 5 }, [
+      { name: 'current', type: 'number', defaultValue: 2, description: 'Current page number.' },
+      { name: 'total', type: 'number', defaultValue: 5, description: 'Total page count.' },
+    ], undefined, '@treeseed/ui/components/astro/shell/navigation/Pagination.astro'),
   display('project-header', 'ProjectHeader', 'Shells', 'astro', 'Project context header with badges, actions, and tabs.', 'large', { badges: 2, tabs: 2, actions: 1 }, [
       { name: 'title', type: 'string', defaultValue: 'ProjectHeader', description: 'Project title.' },
       { name: 'tabs', type: 'TabItem[]', defaultValue: 2, description: 'Project tabs.' },

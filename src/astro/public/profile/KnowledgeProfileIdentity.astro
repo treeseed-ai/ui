@@ -1,0 +1,59 @@
+---
+import Timestamp from '../../data/Timestamp.astro';
+
+interface Props {
+	kind: 'person' | 'team';
+	name: string;
+	handle: string;
+	imageSrc?: string | null;
+	headline?: string | null;
+	summary?: string | null;
+	location?: string | null;
+	website?: string | null;
+	expertise?: string[];
+	establishedAt?: string | null;
+	timeZone?: string;
+}
+
+const {
+	kind,
+	name,
+	handle,
+	imageSrc,
+	headline,
+	summary,
+	location,
+	website,
+	expertise = [],
+	establishedAt,
+	timeZone,
+} = Astro.props as Props;
+const initial = name.trim().slice(0, 1).toUpperCase();
+const websiteLabel = website ? website.replace(/^https?:\/\//u, '').replace(/\/$/u, '') : null;
+---
+
+<header class="ts-knowledge-identity" data-scene="knowledge.identity">
+	<div class="ts-knowledge-identity__avatar" data-kind={kind} data-has-image={imageSrc ? 'true' : 'false'}>
+		{imageSrc ? <img src={imageSrc} alt="" loading="eager" decoding="async" /> : <span aria-hidden="true">{initial}</span>}
+	</div>
+	<p class="ts-knowledge-identity__eyebrow">{kind === 'team' ? 'Knowledge organization' : 'Knowledge profile'}</p>
+	<h1>{name}</h1>
+	<p class="ts-knowledge-identity__handle">@{handle}</p>
+	{headline ? <p class="ts-knowledge-identity__headline">{headline}</p> : null}
+	{summary ? <p class="ts-knowledge-identity__summary">{summary}</p> : null}
+	{expertise.length ? (
+		<ul class="ts-knowledge-identity__expertise" aria-label="Areas of knowledge">
+			{expertise.map((item) => <li>{item}</li>)}
+		</ul>
+	) : null}
+	<dl class="ts-knowledge-identity__details">
+		{location ? <div><dt>Based in</dt><dd>{location}</dd></div> : null}
+		{website ? <div><dt>Elsewhere</dt><dd><a href={website} rel="me noopener">{websiteLabel}</a></dd></div> : null}
+		{establishedAt ? (
+			<div>
+				<dt>{kind === 'team' ? 'Created' : 'Joined'}</dt>
+				<dd><Timestamp value={establishedAt} style="date" timeZone={timeZone} /></dd>
+			</div>
+		) : null}
+	</dl>
+</header>

@@ -35,7 +35,7 @@ const sections = [
 ].filter(Boolean) as DashboardSection[];
 ---
 
-<section class:list={['ts-template ts-template--dashboard', className]} aria-label={viewModel.title}>
+<section class:list={['ts-template ts-template--dashboard', className]} aria-label={viewModel.title} data-scene="dashboard-template">
 	<PageHeader title={viewModel.title} description={viewModel.description}>
 		<Fragment slot="actions"><ActionBar actions={actions} /></Fragment>
 	</PageHeader>

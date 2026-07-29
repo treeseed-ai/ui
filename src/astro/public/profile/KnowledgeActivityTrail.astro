@@ -1,0 +1,72 @@
+---
+import Timestamp from '../../data/Timestamp.astro';
+
+interface ActivityItem {
+	id: string;
+	type?: string;
+	title: string;
+	action: string;
+	summary?: string | null;
+	href?: string | null;
+	occurredAt: string;
+}
+
+interface Props {
+	items: ActivityItem[];
+	timeZone?: string;
+	description?: string | null;
+}
+
+const { items, timeZone, description = null } = Astro.props as Props;
+const now = Date.now();
+const week = 7 * 24 * 60 * 60 * 1000;
+const rhythm = Array.from({ length: 20 }, (_, index) => {
+	const end = now - (19 - index) * week;
+	const start = end - week;
+	const count = items.filter((item) => {
+		const timestamp = Date.parse(item.occurredAt);
+		return Number.isFinite(timestamp) && timestamp > start && timestamp <= end;
+	}).length;
+	return { count, level: Math.min(4, count), label: `${count} public knowledge ${count === 1 ? 'event' : 'events'}` };
+});
+---
+
+<section class="ts-knowledge-activity" data-scene="knowledge.activity">
+	<header class="ts-knowledge-section-heading">
+		<div>
+			<p>Public activity</p>
+			<h2>Knowledge trail</h2>
+			{description ? <p class="ts-knowledge-section-heading__description">{description}</p> : null}
+		</div>
+		<span aria-hidden="true">↗</span>
+	</header>
+	<div class="ts-knowledge-rhythm">
+		<div>
+			<strong>Publication rhythm</strong>
+			<span>Recent 20 weeks</span>
+		</div>
+		<ol aria-label="Public knowledge activity over the last 20 weeks">
+			{rhythm.map((cell) => <li data-level={cell.level} title={cell.label} aria-label={cell.label}></li>)}
+		</ol>
+	</div>
+	{items.length ? (
+		<ol class="ts-knowledge-trail">
+			{items.map((item) => (
+				<li>
+					<div class="ts-knowledge-trail__node" data-kind={item.type ?? 'knowledge'} aria-hidden="true"></div>
+					<div class="ts-knowledge-trail__entry">
+						<p>{item.action}</p>
+						<h3>{item.href ? <a href={item.href}>{item.title}</a> : item.title}</h3>
+						{item.summary ? <p class="ts-knowledge-trail__summary">{item.summary}</p> : null}
+						<Timestamp value={item.occurredAt} style="date-time" timeZone={timeZone} />
+					</div>
+				</li>
+			))}
+		</ol>
+	) : (
+		<div class="ts-knowledge-empty">
+			<span aria-hidden="true">·</span>
+			<div><h3>No public activity yet</h3><p>Only explicitly public and attributed activity appears here.</p></div>
+		</div>
+	)}
+</section>

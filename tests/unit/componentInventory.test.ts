@@ -34,6 +34,57 @@ describe('component inventory boundaries', () => {
     expect(componentNames).toContain('AppLayout');
     expect(componentNames).toContain('PublicLayout');
     expect(componentNames).toContain('ProductCard');
+    expect(componentNames).toContain('KnowledgeProfileLayout');
+    expect(componentNames).toContain('KnowledgeActivityTrail');
+  });
+
+  it('owns one reusable privacy-conscious knowledge profile composition', () => {
+    const components = [
+      'KnowledgeProfileLayout.astro',
+      'KnowledgeProfileIdentity.astro',
+      'KnowledgeProfileStats.astro',
+      'KnowledgeProfileCollection.astro',
+      'KnowledgeActivityTrail.astro',
+    ].map((name) => readFileSync(`src/astro/public/profile/${name}`, 'utf8'));
+    const combined = components.join('\n');
+    const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+    const catalog = readFileSync('sandbox/src/lib/component-catalog/support/public-and-templates.ts', 'utf8');
+
+    expect(combined).toContain('data-scene="knowledge.profile"');
+    expect(combined).toContain('data-scene="knowledge.activity"');
+    expect(combined).toContain("import Timestamp from '../../data/Timestamp.astro'");
+    expect(combined).toContain('Only explicitly public and attributed activity appears here.');
+    expect(components[0]).toContain("Astro.slots.has('navigation')");
+    expect(components[0]).toContain('ts-knowledge-profile-frame__navigation');
+    const profileCss = readFileSync('src/styles/knowledge-profile.css', 'utf8');
+    expect(profileCss).toMatch(/\.ts-knowledge-profile__rail\s*\{[\s\S]*?position:\s*sticky/u);
+    expect(profileCss).toMatch(/\.ts-knowledge-identity\s*\{[\s\S]*?position:\s*static/u);
+    const profileBlock = profileCss.match(/\.ts-knowledge-profile\s*\{(?<body>[^}]*)\}/u)?.groups?.body ?? '';
+    const imageAvatarBlock = profileCss.match(/\.ts-knowledge-identity__avatar\[data-has-image='true'\]\s*\{(?<body>[^}]*)\}/u)?.groups?.body ?? '';
+    expect(profileBlock).not.toContain('background');
+    expect(profileCss).not.toContain('background-size');
+    expect(imageAvatarBlock).toContain('background: transparent');
+    expect(imageAvatarBlock).not.toContain('box-shadow');
+    expect(components[1]).toContain("data-has-image={imageSrc ? 'true' : 'false'}");
+    expect(profileCss).toMatch(/\.ts-knowledge-identity__avatar\[data-kind='team'\] img\s*\{[^}]*object-fit:\s*contain/su);
+    expect(profileCss).toMatch(/@media \(max-width:\s*620px\)[\s\S]*?\.ts-knowledge-profile__rail\s*\{[^}]*align-items:\s*stretch/su);
+    for (const name of ['KnowledgeProfileLayout', 'KnowledgeProfileIdentity', 'KnowledgeProfileStats', 'KnowledgeProfileCollection', 'KnowledgeActivityTrail']) {
+      expect(packageJson.exports).toHaveProperty(`./components/astro/public/profile/${name}.astro`);
+      expect(catalog).toContain(`'${name}'`);
+    }
+  });
+
+  it('owns one timezone-aware accessible countdown display', () => {
+    const countdown = readFileSync('src/astro/data/Countdown.astro', 'utf8');
+    const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+
+    expect(countdown).toContain("import Timestamp from './Timestamp.astro'");
+    expect(countdown).toContain('timeZone={timeZone}');
+    expect(countdown).toContain('role="progressbar"');
+    expect(countdown).toContain("document.addEventListener('treeseed:content-updated'");
+    expect(packageJson.exports['./components/astro/data/Countdown.astro']).toBe(
+      './dist/astro/data/Countdown.astro',
+    );
   });
 
   it('keeps utility-class use in exported public Astro components explicit', () => {

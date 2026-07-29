@@ -48,6 +48,15 @@ export const formsComponents: ComponentCatalogEntry[] = [
     }, [
       { name: 'align', type: "'start' | 'end' | 'between'", defaultValue: 'between', description: 'Horizontal action alignment.' },
     ]),
+  display('inline-search', 'InlineSearch', 'Search', 'astro', 'Labelled GET search input with an adjacent submit action.', 'medium', {
+      action: '/displays/inline-search',
+      label: 'Search members',
+      value: '',
+    }, [
+      { name: 'action', type: 'string', defaultValue: '/displays/inline-search', description: 'GET search destination.' },
+      { name: 'label', type: 'string', defaultValue: 'Search', description: 'Accessible search field label.' },
+      { name: 'buttonLabel', type: 'string', defaultValue: 'Search', description: 'Submit action label.' },
+    ], undefined, '@treeseed/ui/components/astro/forms/search/InlineSearch.astro'),
   form('markdown-field', 'MarkdownField', 'Editors', 'astro', 'CodeMirror-enhanced Markdown field with preview mode.', 'large', {
       label: 'Decision body',
       name: 'decision_body',

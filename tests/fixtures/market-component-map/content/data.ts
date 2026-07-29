@@ -34,7 +34,7 @@ export const DATA_COMPONENTS = [
     sandboxRoute: "/displays/key-value-list",
   },
 {
-    uiPath: "src/astro/data/MetricCard.astro",
+    uiPath: "src/astro/data/metrics/MetricCard.astro",
     sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/components/ui/data/MetricCard.astro",
     category: "Data",
     parityMode: "rendered-visual",
@@ -42,7 +42,7 @@ export const DATA_COMPONENTS = [
     sandboxRoute: "/displays/metric-card",
   },
 {
-    uiPath: "src/astro/data/MetricGrid.astro",
+    uiPath: "src/astro/data/metrics/MetricGrid.astro",
     sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/components/ui/data/MetricGrid.astro",
     category: "Data",
     parityMode: "rendered-visual",

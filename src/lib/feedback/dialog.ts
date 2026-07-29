@@ -1,5 +1,5 @@
 import type { FeedbackContext, FeedbackSubmission, FeedbackSubmissionType } from '../foundation/contracts.ts';
-import { registerFormAdapter, setFieldError } from '../../forms-client.ts';
+import { formActionUrl, registerFormAdapter, setFieldError } from '../../forms-client.ts';
 
 const initialized = new WeakSet<Document>();
 const screenshotByForm = new WeakMap<HTMLFormElement, FeedbackSubmission['screenshot']>();
@@ -132,7 +132,7 @@ function feedbackPayload(form: HTMLFormElement) {
 registerFormAdapter('feedback', {
 	buildRequest(context) {
 		return {
-			url: context.form.action,
+			url: formActionUrl(context.form),
 			init: {
 				method: 'POST',
 				headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-form': 'enhanced' },

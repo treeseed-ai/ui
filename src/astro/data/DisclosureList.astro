@@ -1,0 +1,46 @@
+---
+interface DisclosureItem {
+	label: string;
+	description?: string;
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	items?: DisclosureItem[];
+	open?: boolean;
+	emptyLabel?: string;
+	class?: string;
+}
+
+const {
+	title,
+	description,
+	items = [],
+	open = false,
+	emptyLabel = 'No responsibilities are assigned.',
+	class: className,
+} = Astro.props as Props;
+---
+
+<details class:list={['ts-disclosure-list', className]} open={open}>
+	<summary>
+		<span class="ts-disclosure-list__heading">
+			<strong>{title}</strong>
+			{description ? <small>{description}</small> : null}
+		</span>
+		<span class="ts-disclosure-list__count">
+			{items.length} {items.length === 1 ? 'responsibility' : 'responsibilities'}
+		</span>
+	</summary>
+	{items.length > 0 ? (
+		<ul>
+			{items.map((item) => (
+				<li>
+					<strong>{item.label}</strong>
+					{item.description ? <span>{item.description}</span> : null}
+				</li>
+			))}
+		</ul>
+	) : <p>{emptyLabel}</p>}
+</details>

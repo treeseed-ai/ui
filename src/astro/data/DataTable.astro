@@ -1,4 +1,6 @@
 ---
+import ResponsiveTable from './ResponsiveTable.astro';
+
 interface DataTableColumn {
 	key: string;
 	label: string;
@@ -26,9 +28,7 @@ function cellValue(row: Record<string, unknown>, key: string) {
 }
 ---
 
-<div class:list={['ts-data-table-wrap', className]}>
-	<table class="ts-data-table">
-		{caption ? <caption>{caption}</caption> : null}
+<ResponsiveTable caption={caption} class={className}>
 		<thead>
 			<tr>
 				{columns.map((column) => <th scope="col">{column.label}</th>)}
@@ -47,5 +47,4 @@ function cellValue(row: Record<string, unknown>, key: string) {
 				</tr>
 			)}
 		</tbody>
-	</table>
-</div>
+</ResponsiveTable>

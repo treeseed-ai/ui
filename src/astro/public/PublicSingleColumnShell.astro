@@ -17,9 +17,11 @@ interface Props {
 	actions?: ButtonAction[];
 	showAppearanceControl?: boolean;
 	preferServerAppearance?: boolean;
+	timeZone?: string;
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
+	showFooter?: boolean;
 }
 
 const {
@@ -32,9 +34,11 @@ const {
 	actions = [],
 	showAppearanceControl = true,
 	preferServerAppearance = false,
+	timeZone = 'UTC',
 	themeConfig,
 	helpContext,
 	feedbackContext,
+	showFooter = true,
 } = Astro.props as Props;
 const feedbackDialogId = 'public-shell-feedback';
 const helpDrawerId = 'public-shell-help';
@@ -50,6 +54,7 @@ const helpDrawerId = 'public-shell-help';
 	helpDrawerId={helpDrawerId}
 	feedbackDialogId={feedbackDialogId}
 	preferServerAppearance={preferServerAppearance}
+	timeZone={timeZone}
 	bodyClass="ts-public-single-body"
 >
 	<div class="ts-public-single-shell">
@@ -77,6 +82,6 @@ const helpDrawerId = 'public-shell-help';
 		<main class="ts-public-single-main" id="main-content">
 			<slot />
 		</main>
-		{Astro.slots.has('footer') ? <slot name="footer" /> : <PublicFooter />}
+		{showFooter ? (Astro.slots.has('footer') ? <slot name="footer" /> : <PublicFooter />) : null}
 	</div>
 </ShellFrame>

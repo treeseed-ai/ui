@@ -1,0 +1,26 @@
+---
+interface Stat {
+	label: string;
+	value: string | number;
+	description?: string;
+}
+
+interface Props {
+	items: Stat[];
+}
+
+const { items } = Astro.props as Props;
+---
+
+<section class="ts-knowledge-stats" aria-labelledby="knowledge-profile-stats">
+	<h2 id="knowledge-profile-stats">Public knowledge</h2>
+	<dl>
+		{items.map((item) => (
+			<div>
+				<dt>{item.label}</dt>
+				<dd>{item.value}</dd>
+				{item.description ? <p>{item.description}</p> : null}
+			</div>
+		))}
+	</dl>
+</section>

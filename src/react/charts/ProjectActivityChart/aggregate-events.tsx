@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import "../../../styles/charts.css";
 import { ActivityType, BucketSizeMs, BucketedActivity, DisplayMode, ProjectActivityEvent, activityTypes, floorToBucket } from './activity-type.tsx';
 
+function emptyCounts(): Record<ActivityType, number> {
+  return Object.fromEntries(activityTypes.map((type) => [type, 0])) as Record<ActivityType, number>;
+}
+
 export function aggregateEvents(
   events: ProjectActivityEvent[],
   bucketSizeMs: BucketSizeMs,
@@ -15,29 +19,21 @@ export function aggregateEvents(
     number,
     {
       createdCounts: Record<ActivityType, number>;
+      updatedCounts: Record<ActivityType, number>;
       deletedCounts: Record<ActivityType, number>;
       created: number;
+      updated: number;
       deleted: number;
     }
   >();
 
   for (let index = 0; index < bucketCount; index += 1) {
     buckets.set(firstBucketStart + index * bucketSizeMs, {
-      createdCounts: {
-        questions: 0,
-        objectives: 0,
-        notes: 0,
-        proposals: 0,
-        decisions: 0
-      },
-      deletedCounts: {
-        questions: 0,
-        objectives: 0,
-        notes: 0,
-        proposals: 0,
-        decisions: 0
-      },
+      createdCounts: emptyCounts(),
+      updatedCounts: emptyCounts(),
+      deletedCounts: emptyCounts(),
       created: 0,
+      updated: 0,
       deleted: 0
     });
   }
@@ -51,27 +47,20 @@ export function aggregateEvents(
     const bucket =
       buckets.get(bucketStart) ??
       {
-        createdCounts: {
-          questions: 0,
-          objectives: 0,
-          notes: 0,
-          proposals: 0,
-          decisions: 0
-        },
-        deletedCounts: {
-          questions: 0,
-          objectives: 0,
-          notes: 0,
-          proposals: 0,
-          decisions: 0
-        },
+        createdCounts: emptyCounts(),
+        updatedCounts: emptyCounts(),
+        deletedCounts: emptyCounts(),
         created: 0,
+        updated: 0,
         deleted: 0
       };
 
     if (event.action === "created") {
       bucket.createdCounts[event.type] += 1;
       bucket.created += 1;
+    } else if (event.action === "updated") {
+      bucket.updatedCounts[event.type] += 1;
+      bucket.updated += 1;
     } else {
       bucket.deletedCounts[event.type] += 1;
       bucket.deleted += 1;
@@ -87,47 +76,34 @@ export function aggregateEvents(
       rows: BucketedActivity[];
     }>(
       (accumulator, [bucketStart, bucket]) => {
-        const netByType = activityTypes.reduce<Record<ActivityType, number>>(
+        const activityByType = activityTypes.reduce<Record<ActivityType, number>>(
           (result, type) => ({
             ...result,
-            [type]: bucket.createdCounts[type] - bucket.deletedCounts[type]
+            [type]: bucket.createdCounts[type] + bucket.updatedCounts[type] + bucket.deletedCounts[type]
           }),
-          {
-            questions: 0,
-            objectives: 0,
-            notes: 0,
-            proposals: 0,
-            decisions: 0
-          }
+          emptyCounts()
         );
 
         const nextRunningTotals = activityTypes.reduce<Record<ActivityType, number>>(
           (result, type) => ({
             ...result,
-            [type]: Math.max(0, accumulator.runningTotals[type] + netByType[type])
+            [type]: accumulator.runningTotals[type] + activityByType[type]
           }),
-          {
-            questions: 0,
-            objectives: 0,
-            notes: 0,
-            proposals: 0,
-            decisions: 0
-          }
+          emptyCounts()
         );
 
-        const source = displayMode === "cumulative" ? nextRunningTotals : netByType;
+        const source = displayMode === "cumulative" ? nextRunningTotals : activityByType;
         const values = activityTypes.reduce<Record<ActivityType, number>>(
           (result, type) => ({
             ...result,
             [type]: source[type]
           }),
-          {
-            questions: 0,
-            objectives: 0,
-            notes: 0,
-            proposals: 0,
-            decisions: 0
-          }
+          emptyCounts()
+        );
+        const activity = bucket.created + bucket.updated + bucket.deleted;
+        const cumulativeActivity = activityTypes.reduce(
+          (sum, type) => sum + nextRunningTotals[type],
+          0
         );
 
         accumulator.rows.push({
@@ -135,22 +111,16 @@ export function aggregateEvents(
           bucketEnd: bucketStart + bucketSizeMs,
           ...values,
           created: bucket.created,
+          updated: bucket.updated,
           deleted: bucket.deleted,
-          total:
-            displayMode === "cumulative"
-              ? activityTypes.reduce(
-                  (sum, type) => sum + nextRunningTotals[type],
-                  0
-                )
-              : bucket.created - bucket.deleted,
+          activity,
+          total: displayMode === "cumulative" ? cumulativeActivity : activity,
           net: bucket.created - bucket.deleted,
-          cumulativeTotal: activityTypes.reduce(
-            (sum, type) => sum + nextRunningTotals[type],
-            0
-          ),
+          cumulativeTotal: cumulativeActivity,
           createdByType: bucket.createdCounts,
+          updatedByType: bucket.updatedCounts,
           deletedByType: bucket.deletedCounts,
-          netByType
+          activityByType
         });
 
         return {
@@ -159,13 +129,7 @@ export function aggregateEvents(
         };
       },
       {
-        runningTotals: {
-          questions: 0,
-          objectives: 0,
-          notes: 0,
-          proposals: 0,
-          decisions: 0
-        },
+        runningTotals: emptyCounts(),
         rows: []
       }
     ).rows;

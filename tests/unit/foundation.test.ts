@@ -13,6 +13,8 @@ const foundationFiles = [
 	'src/astro/templates/ReaderTemplate.astro',
 	'src/astro/templates/SettingsTemplate.astro',
 	'src/astro/layout/ActionBar.astro',
+	'src/astro/layout/Stack.astro',
+	'src/astro/activity/ActivityFeed.astro',
 	'src/astro/surface/ResourceCard.astro',
 	'src/astro/patterns/PermissionBoundary.astro',
 	'src/astro/feedback/FeedbackButton.astro',
@@ -121,6 +123,8 @@ describe('UI foundation', () => {
 
 		expect(authCss).toMatch(/\.auth-shell-bar > \.ts-site-user-controls\s*\{[^}]*justify-content: flex-end;[^}]*margin-inline-start: auto;/su);
 		expect(authCss).toMatch(/\.auth-shell-bar \.ts-site-user-controls__nav\s*\{[^}]*justify-content: flex-end;/su);
+		expect(authCss).toMatch(/\.auth-card__brand\s*\{[^}]*border-bottom:[^}]*display: grid;/su);
+		expect(authCss).toMatch(/\.auth-card__brand > \.auth-brand\s*\{[^}]*display: none;/su);
 		expect(appShellCss).toMatch(/\.ts-shell-header__actions\s*\{[^}]*flex: 1 1 auto;[^}]*justify-content: flex-end;[^}]*margin-inline-start: auto;/su);
 		expect(appShellCss).toMatch(/\.ts-shell-header \.ts-site-user-controls__nav\s*\{[^}]*justify-content: flex-end;/su);
 	});
@@ -161,6 +165,78 @@ describe('UI foundation', () => {
 		expect(template).not.toContain('ts-settings-nav');
 		expect(uiCss).not.toContain('.ts-template--settings .ts-template__main');
 		expect(uiCss).not.toContain('.ts-settings-nav');
+	});
+
+	it('owns reusable administration navigation and data display primitives', () => {
+		const tabs = readFileSync('src/astro/shell/navigation/SurfaceTabs.astro', 'utf8');
+		const disclosure = readFileSync('src/astro/data/DisclosureList.astro', 'utf8');
+		const dataTable = readFileSync('src/astro/data/DataTable.astro', 'utf8');
+		const table = readFileSync('src/astro/data/ResponsiveTable.astro', 'utf8');
+		const identity = readFileSync('src/astro/patterns/IdentitySummary.astro', 'utf8');
+		const pagination = readFileSync('src/astro/shell/navigation/Pagination.astro', 'utf8');
+		const confirmation = readFileSync('src/astro/surface/InlineConfirmation.astro', 'utf8');
+		const uiCss = readFileSync('src/styles/ui.css', 'utf8');
+
+		expect(tabs).toContain('ts-surface-tabs');
+		expect(disclosure).toContain('ts-disclosure-list');
+		expect(dataTable).toContain("import ResponsiveTable from './ResponsiveTable.astro'");
+		expect(dataTable).not.toContain('ts-data-table-wrap');
+		expect(table).toContain('ts-data-table');
+		expect(table).toContain('data-density={density}');
+		expect(identity).toContain('ts-identity-summary__avatar');
+		expect(identity).toContain('<slot name="badge" />');
+		expect(pagination).toContain('ts-pagination');
+		expect(confirmation).toContain('ts-inline-confirmation');
+		for (const selector of ['.ts-disclosure-list', '.ts-data-table', '.ts-identity-summary', '.ts-table-actions', '.ts-pagination', '.ts-inline-confirmation']) {
+			expect(uiCss).toContain(selector);
+		}
+	});
+
+	it('owns the reusable activity feed and spacing stack used by operational pages', () => {
+		const activity = readFileSync('src/astro/activity/ActivityFeed.astro', 'utf8');
+		const stack = readFileSync('src/astro/layout/Stack.astro', 'utf8');
+		const uiCss = readFileSync('src/styles/ui.css', 'utf8');
+		const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { exports: Record<string, unknown> };
+
+		expect(activity).toContain('ts-activity-feed__entry');
+		expect(activity).toContain('<Timestamp');
+		expect(activity).toContain('actorHref?: string');
+		expect(activity).toContain('actorImageSrc?: string | null');
+		expect(activity).toContain('ts-activity-feed__actor-link');
+		expect(activity).toContain('<img');
+		expect(activity).not.toContain('actorId');
+		expect(stack).toContain('data-gap={gap}');
+		expect(uiCss).toContain('.ts-activity-feed__marker');
+		expect(uiCss).toContain('.ts-stack');
+		expect(packageJson.exports['./components/astro/activity/ActivityFeed.astro']).toBe('./dist/astro/activity/ActivityFeed.astro');
+		expect(packageJson.exports['./components/astro/layout/Stack.astro']).toBe('./dist/astro/layout/Stack.astro');
+	});
+
+	it('owns compact search and help-dialog interaction primitives', () => {
+		const search = readFileSync('src/astro/forms/search/InlineSearch.astro', 'utf8');
+		const dialog = readFileSync('src/astro/overlays/AccessibleDialog.astro', 'utf8');
+		const icon = readFileSync('src/astro/shell/navigation/ShellIcon.astro', 'utf8');
+		const formsCss = readFileSync('src/styles/forms.css', 'utf8');
+
+		expect(search).toContain('ts-inline-search__controls');
+		expect(search).toContain("type=\"search\"");
+		expect(dialog).toContain('dialog.showModal()');
+		expect(dialog).toContain('opener.focus()');
+		expect(icon).toContain('help: [');
+		expect(formsCss).toMatch(/\.ts-inline-search__controls\s*\{[^}]*grid-template-columns: minmax\(0, 1fr\) auto;/su);
+	});
+
+	it('supports pronounced cards and equal button sizing across links and forms', () => {
+		const card = readFileSync('src/astro/surface/Card.astro', 'utf8');
+		const styles = readFileSync('src/styles/ui.css', 'utf8');
+		const tokens = readFileSync('src/styles/tokens.css', 'utf8');
+		expect(card).toContain("emphasis?: 'default' | 'strong'");
+		expect(card).toContain('data-emphasis={emphasis}');
+		expect(styles).toContain(".ts-card[data-emphasis='strong']");
+		expect(styles).toContain('background: var(--ts-color-card-surface)');
+		expect(tokens).toContain('--ts-color-card-surface: color-mix(in srgb, var(--ts-color-accent-soft) 65%, var(--ts-color-surface))');
+		expect(styles).toMatch(/\.ts-resource-grid\[data-spacing='roomy'\]\s*\{[^}]*gap:\s*var\(--ts-space-4\);/u);
+		expect(styles).toMatch(/\.ts-button\s*\{[\s\S]*?box-sizing:\s*border-box;/u);
 	});
 
 	it('keeps registration validation focused on completing registration', () => {

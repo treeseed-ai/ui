@@ -2,11 +2,13 @@
 import ActionList from '../../../../src/astro/data/ActionList.astro';
 import Badge from '../../../../src/astro/data/Badge.astro';
 import DataTable from '../../../../src/astro/data/DataTable.astro';
+import DisclosureList from '../../../../src/astro/data/DisclosureList.astro';
 import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
-import MetricCard from '../../../../src/astro/data/MetricCard.astro';
-import MetricGrid from '../../../../src/astro/data/MetricGrid.astro';
+import MetricCard from '../../../../src/astro/data/metrics/MetricCard.astro';
+import MetricGrid from '../../../../src/astro/data/metrics/MetricGrid.astro';
 import StatusPill from '../../../../src/astro/data/StatusPill.astro';
 import Timestamp from '../../../../src/astro/data/Timestamp.astro';
+import ResponsiveTable from '../../../../src/astro/data/ResponsiveTable.astro';
 import DistributionSummary from '../../../../src/astro/distribution/DistributionSummary.astro';
 import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
 import FeedbackButton from '../../../../src/astro/feedback/FeedbackButton.astro';
@@ -38,6 +40,7 @@ import Card from '../../../../src/astro/surface/Card.astro';
 import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
 import Panel from '../../../../src/astro/surface/Panel.astro';
 import ResourceCard from '../../../../src/astro/surface/ResourceCard.astro';
+import InlineConfirmation from '../../../../src/astro/surface/InlineConfirmation.astro';
 import PermissionBoundary from '../../../../src/astro/patterns/PermissionBoundary.astro';
 import CollectionTemplate from '../../../../src/astro/templates/CollectionTemplate.astro';
 import DashboardTemplate from '../../../../src/astro/templates/DashboardTemplate.astro';
@@ -93,6 +96,7 @@ import PageTitle from '../../../../src/astro/docs/PageTitle.astro';
 import DocsSidebar from '../../../../src/astro/docs/Sidebar.astro';
 import ThemeSelect from '../../../../src/astro/docs/ThemeSelect.astro';
 import ContactForm from '../../../../src/astro/forms/ContactForm.astro';
+import InlineSearch from '../../../../src/astro/forms/search/InlineSearch.astro';
 import FooterSubscribeForm from '../../../../src/astro/forms/submission/FooterSubscribeForm.astro';
 import CommonsDecisionTimeline from '../../../../src/astro/governance/CommonsDecisionTimeline.astro';
 import CommonsDelegationPanel from '../../../../src/astro/governance/CommonsDelegationPanel.astro';
@@ -107,6 +111,7 @@ import ControlSurface from '../../../../src/astro/shell/layout/ControlSurface.as
 import ShellHeader from '../../../../src/astro/shell/chrome/ShellHeader.astro';
 import SiteUserControls from '../../../../src/astro/shell/chrome/SiteUserControls.astro';
 import SurfaceTabs from '../../../../src/astro/shell/navigation/SurfaceTabs.astro';
+import Pagination from '../../../../src/astro/shell/navigation/Pagination.astro';
 import TeamOperationsDrawer from '../../../../src/astro/shell/team-operations/TeamOperationsDrawer.astro';
 import TeamOperationsPanel from '../../../../src/astro/shell/team-operations/TeamOperationsPanel.astro';
 import PublicHeroSection from '../../../../src/astro/public/PublicHeroSection.astro';
@@ -114,6 +119,11 @@ import PublicKnowledgeSection from '../../../../src/astro/public/PublicKnowledge
 import PublicProfileHeader from '../../../../src/astro/public/PublicProfileHeader.astro';
 import PublicSection from '../../../../src/astro/public/PublicSection.astro';
 import PublicStack from '../../../../src/astro/public/PublicStack.astro';
+import KnowledgeActivityTrail from '../../../../src/astro/public/profile/KnowledgeActivityTrail.astro';
+import KnowledgeProfileCollection from '../../../../src/astro/public/profile/KnowledgeProfileCollection.astro';
+import KnowledgeProfileIdentity from '../../../../src/astro/public/profile/KnowledgeProfileIdentity.astro';
+import KnowledgeProfileLayout from '../../../../src/astro/public/profile/KnowledgeProfileLayout.astro';
+import KnowledgeProfileStats from '../../../../src/astro/public/profile/KnowledgeProfileStats.astro';
 import BookList from '../../../../src/astro/site/content/BookList.astro';
 import CTASection from '../../../../src/astro/site/marketing/CTASection.astro';
 import ChronicleList from '../../../../src/astro/site/content/ChronicleList.astro';
@@ -146,9 +156,12 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'work-queue-summary' ? <WorkQueueSummary viewModel={workQueueViewModel} /> : null}
 {entry.id === 'activity-timeline' ? <ActivityTimeline viewModel={activityTimelineViewModel} /> : null}
 {entry.id === 'data-table' ? <DataTable caption="DataTable preview" columns={tableColumns.slice(0, 3)} rows={[{ name: 'Monitoring Console', type: 'Template', status: 'Published' }, { name: 'Capacity Diagnostics', type: 'Panel', status: 'Draft' }, { name: 'Knowledge Pack', type: 'Artifact', status: 'Ready' }]} /> : null}
+{entry.id === 'responsive-table' ? <ResponsiveTable caption="Team members"><thead><tr><th>Member</th><th>Role</th></tr></thead><tbody><tr><td data-label="Member">Ada Lovelace</td><td data-label="Role">Owner</td></tr><tr><td data-label="Member">Grace Hopper</td><td data-label="Role">Reviewer</td></tr></tbody></ResponsiveTable> : null}
+{entry.id === 'disclosure-list' ? <DisclosureList title="Project lead" description="Leads projects and non-owner membership." items={[{ label: 'Create projects', description: 'Create and configure team projects.' }, { label: 'Manage workstreams', description: 'Organize and advance project work.' }]} open /> : null}
 {entry.id === 'empty-state' ? <EmptyState eyebrow="Empty state" title="No pending approvals" description="Reusable quiet state." actions={[{ label: 'Create approval', href: '/displays/empty-state', variant: 'secondary' }]} /> : null}
+{entry.id === 'inline-confirmation' ? <InlineConfirmation label="Remove member" tone="danger"><p>This member will immediately lose access.</p><button class="ts-button" type="button">Confirm removal</button></InlineConfirmation> : null}
 {entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
-{entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" /> : null}
+{entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" href="/displays/metric-card" /> : null}
 {entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
 {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
@@ -176,6 +189,7 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'team-operations-drawer' ? <div><button class="ts-button" type="button" data-ts-team-drawer-open="catalog-team-drawer">Open drawer</button><TeamOperationsDrawer id="catalog-team-drawer"><TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }]} /><SiteUserControls items={siteItems} currentPath="/market/" appearance={appearance} showAppearanceControl={false} /></TeamOperationsDrawer></div> : null}
 {entry.id === 'control-surface' ? <ControlSurface title="Control surface" description="Header, actions, tabs, and body stay stable across app pages."><Fragment slot="actions"><a class="ts-button" href="/displays/control-surface">Action</a></Fragment><Fragment slot="tabs"><SurfaceTabs items={surfaceTabItems} current="overview" label="Control surface tabs" /></Fragment><Panel title="Surface body"><p>Application page content is rendered here.</p></Panel></ControlSurface> : null}
 {entry.id === 'surface-tabs' ? <div class="ts-public-stack"><SurfaceTabs items={surfaceTabItems} current="overview" label="Link tabs" /><div><SurfaceTabs items={surfaceTabItems} current="overview" label="Panel tabs" mode="panels" persist="none" /><section id="surface-tabs-overview"><Panel title="Overview panel"><p>Panel mode supports arrow-key navigation.</p></Panel></section><section id="surface-tabs-activity" hidden><Panel title="Activity panel"><p>Activity content.</p></Panel></section><section id="surface-tabs-settings" hidden><Panel title="Settings panel"><p>Settings content.</p></Panel></section></div></div> : null}
+{entry.id === 'pagination' ? <Pagination current={2} total={5} previousHref="/displays/pagination?page=1" nextHref="/displays/pagination?page=3" /> : null}
 {entry.id === 'bottom-nav' ? <BottomNav items={navItems.slice(0, 3)} currentPath="/displays/bottom-nav" /> : null}
 {entry.id === 'project-header' ? <ProjectHeader title="ProjectHeader" description="Project context header with tabs." badges={['Preview', 'Healthy']} currentPath="/displays/project-header" tabs={[{ label: 'Overview', href: '/displays/project-header' }, { label: 'Agents', href: '/displays/project-header/agents' }]} actions={[{ label: 'Settings', href: '/displays/project-header' }]} /> : null}
 {entry.id === 'public-footer' ? <PublicFooter brandName="TreeSeed UI" summary="Packaged components for TreeSeed applications." groups={[{ label: 'Sandbox', items: [{ label: 'Components', href: '/' }] }, { label: 'Package', items: [{ label: '@treeseed/ui', href: '/' }] }]} /> : null}
@@ -184,6 +198,11 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'public-hero-section' ? <PublicHeroSection eyebrow="TreeSeed" title="Public hero section" description="Accent section for public landing pages." actions={[{ label: 'Start', href: '/auth/register', variant: 'primary' }, { label: 'Read', href: '/knowledge/', variant: 'secondary' }]}><p>Hero body content remains stacked, readable, and inspectable.</p></PublicHeroSection> : null}
 {entry.id === 'public-profile-header' ? <PublicProfileHeader eyebrow="Public project" name="Market Console" handle="/p/market-console" meta="Public project profile" description="Public profile shell for shareable users, teams, and projects." /> : null}
 {entry.id === 'public-knowledge-section' ? <PublicKnowledgeSection title="Knowledge hub" description="Public knowledge and book pages use shared single-column sections." actions={[{ label: 'Open book', href: '/books/operations/', variant: 'secondary' }]}><Panel title="Book page"><p>Readable public knowledge content without app operations chrome.</p></Panel></PublicKnowledgeSection> : null}
+{entry.id === 'knowledge-profile-layout' ? <KnowledgeProfileLayout><KnowledgeProfileIdentity slot="identity" kind="team" name="Continuity Studio" handle="continuity" headline="Making resilient systems reusable" expertise={['Operations', 'Governance']} /><KnowledgeProfileStats slot="stats" items={[{ label: 'Templates', value: 12 }, { label: 'Knowledge packs', value: 4 }]} /><KnowledgeProfileCollection title="Published knowledge" items={[{ id: 'template-1', kind: 'template', title: 'Incident learning loop', summary: 'A reusable facilitation workflow.', updatedAt: '2026-07-26T18:30:00.000Z' }]} /><KnowledgeActivityTrail items={[{ id: 'event-1', type: 'template', action: 'Published template', title: 'Incident learning loop', occurredAt: '2026-07-26T18:30:00.000Z' }]} /></KnowledgeProfileLayout> : null}
+{entry.id === 'knowledge-profile-identity' ? <KnowledgeProfileIdentity kind="person" name="Ada Field" handle="ada" headline="Building knowledge people can carry forward" expertise={['Research', 'Systems']} establishedAt="2026-01-15T12:00:00.000Z" /> : null}
+{entry.id === 'knowledge-profile-stats' ? <KnowledgeProfileStats items={[{ label: 'Contributions', value: 28 }, { label: 'Templates', value: 7 }, { label: 'Knowledge packs', value: 3 }, { label: 'Areas of knowledge', value: 4 }]} /> : null}
+{entry.id === 'knowledge-profile-collection' ? <KnowledgeProfileCollection title="Public contributions" items={[{ id: 'pack-1', kind: 'knowledge_pack', title: 'Decision quality field guide', summary: 'A portable set of practices for better group decisions.', version: '1.2.0', updatedAt: '2026-07-26T18:30:00.000Z' }]} /> : null}
+{entry.id === 'knowledge-activity-trail' ? <KnowledgeActivityTrail items={[{ id: 'event-1', type: 'knowledge_pack', action: 'Published knowledge pack', title: 'Decision quality field guide', occurredAt: '2026-07-26T18:30:00.000Z' }]} /> : null}
 {entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
 {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
 {entry.id === 'shell-icon' ? <div class="primitive-inline"><ShellIcon name="start" /><ShellIcon name="teams" /><ShellIcon name="projects" /><ShellIcon name="capacity" /><ShellIcon name="work" /><ShellIcon name="knowledge" /><ShellIcon name="account" /><ShellIcon name="sign-out" /></div> : null}
@@ -240,6 +259,7 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'sidebar' ? <DocsSidebar items={sidebarItems} /> : null}
 {entry.id === 'theme-select' ? <ThemeSelect /> : null}
 {entry.id === 'contact-form' ? <ContactForm status="idle" formsApiBaseUrl="/api/forms" /> : null}
+{entry.id === 'inline-search' ? <InlineSearch action="/displays/inline-search" label="Search members" value="" /> : null}
 {entry.id === 'footer-subscribe-form' ? <FooterSubscribeForm currentPath="/displays/footer-subscribe-form" formsApiBaseUrl="/api/forms" /> : null}
 {entry.id === 'product-card' ? <div class="catalog-grid-preview"><ProductCard slug="monitoring-console" title="Monitoring Console" summary="A launch-ready operations console template." category="Workflow Import" featured publisherName="TreeSeed" templateVersion="1.4.0" priceModel="included" badges={['Workers', 'Governance']} /><ProductCard slug="knowledge-pack" title="Knowledge Pack" summary="Reusable public documentation package." category="Knowledge Import" publisherName="TreeSeed" badges={['Docs']} /></div> : null}
 {entry.id === 'commons-proposal-card' ? <CommonsProposalCard proposal={entry.defaultProps.proposal as any} href={entry.defaultProps.href as string} /> : null}

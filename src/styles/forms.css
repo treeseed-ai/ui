@@ -205,6 +205,30 @@ select.ts-control option {
 	justify-content: space-between;
 }
 
+.ts-inline-search {
+	display: grid;
+	gap: var(--ts-space-2);
+	max-width: 42rem;
+}
+
+.ts-inline-search > label {
+	color: var(--ts-color-text);
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.ts-inline-search__controls {
+	align-items: stretch;
+	display: grid;
+	gap: var(--ts-space-2);
+	grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.ts-inline-search__controls > .ts-button {
+	height: 100%;
+}
+
 .ts-password-meter {
 	display: grid;
 	gap: var(--ts-space-2);

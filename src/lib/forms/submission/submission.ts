@@ -26,13 +26,17 @@ function formDataWithSubmitter(form: HTMLFormElement, submitter: HTMLElement | n
 	return formData;
 }
 
+export function formActionUrl(form: HTMLFormElement) {
+	return form.getAttribute('action') || window.location.href;
+}
+
 function defaultRequest(context: FormSubmissionContext): FormRequest {
 	const method = (context.form.method || 'POST').toUpperCase();
 	const headers = new Headers({ accept: 'application/json', 'x-treeseed-form': 'enhanced' });
 	const token = csrfToken(context.formData);
 	if (token) headers.set('x-treeseed-csrf', token);
 	return {
-		url: context.form.action || window.location.href,
+		url: formActionUrl(context.form),
 		init: {
 			method,
 			headers,
@@ -56,7 +60,7 @@ function jsonRequest(context: FormSubmissionContext): FormRequest {
 		body[name] = previous === undefined ? value : Array.isArray(previous) ? [...previous, value] : [previous, value];
 	}
 	return {
-		url: context.form.action || window.location.href,
+		url: formActionUrl(context.form),
 		init: {
 			method: (context.form.dataset.tsMethod || context.form.method || 'POST').toUpperCase(),
 			headers,

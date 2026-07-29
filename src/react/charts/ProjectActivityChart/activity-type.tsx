@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "../../../styles/charts.css";
 
 
-export type ActivityType = "questions" | "objectives" | "notes" | "proposals" | "decisions";
+export type ActivityType = "questions" | "objectives" | "notes" | "proposals" | "decisions" | "agents";
 
 export type BucketSizeMs = 60_000 | 3_600_000 | 86_400_000 | 604_800_000;
 
@@ -16,7 +16,7 @@ export type ProjectActivityEvent = {
   id: string;
   timestamp: number;
   type: ActivityType;
-  action: "created" | "deleted";
+  action: "created" | "updated" | "deleted";
 };
 
 export type BucketedActivity = {
@@ -27,21 +27,32 @@ export type BucketedActivity = {
   notes: number;
   proposals: number;
   decisions: number;
+  agents: number;
   created: number;
+  updated: number;
   deleted: number;
+  activity: number;
   total: number;
   net: number;
   cumulativeTotal: number;
   createdByType: Record<ActivityType, number>;
+  updatedByType: Record<ActivityType, number>;
   deletedByType: Record<ActivityType, number>;
-  netByType: Record<ActivityType, number>;
+  activityByType: Record<ActivityType, number>;
 };
 
 export type ProjectActivityChartProps = {
   title?: string;
+  description?: string;
+  eyebrow?: string;
   pollIntervalMs?: PollIntervalMs;
   maxEvents?: number;
   eventsEndpoint?: string;
+  initialEvents?: ProjectActivityEvent[];
+  initialBucketSizeMs?: BucketSizeMs;
+  initialDisplayMode?: DisplayMode;
+  showPollingControl?: boolean;
+  showDiagnostics?: boolean;
 };
 
 export const activityTypes: ActivityType[] = [
@@ -49,7 +60,8 @@ export const activityTypes: ActivityType[] = [
   "objectives",
   "notes",
   "proposals",
-  "decisions"
+  "decisions",
+  "agents"
 ];
 
 export const activityLabels: Record<ActivityType, string> = {
@@ -57,7 +69,8 @@ export const activityLabels: Record<ActivityType, string> = {
   objectives: "Objectives",
   notes: "Notes",
   proposals: "Proposals",
-  decisions: "Decisions"
+  decisions: "Decisions",
+  agents: "Agents"
 };
 
 export const activityColors: Record<ActivityType, string> = {
@@ -65,7 +78,8 @@ export const activityColors: Record<ActivityType, string> = {
   objectives: "var(--ts-chart-objectives)",
   notes: "var(--ts-chart-notes)",
   proposals: "var(--ts-chart-proposals)",
-  decisions: "var(--ts-chart-decisions)"
+  decisions: "var(--ts-chart-decisions)",
+  agents: "var(--ts-color-success)"
 };
 
 export const bucketOptions: Array<{ label: string; value: BucketSizeMs }> = [
@@ -128,7 +142,7 @@ export async function fetchProjectActivityEvents(
       typeof event.id !== "string" ||
       typeof event.timestamp !== "number" ||
       !activityTypes.includes(event.type) ||
-      (event.action !== "created" && event.action !== "deleted")
+      (event.action !== "created" && event.action !== "updated" && event.action !== "deleted")
     ) {
       throw new Error("Project activity events response was invalid");
     }
@@ -166,13 +180,17 @@ export function StatItem({
 export function useProjectActivityEvents({
   maxEvents,
   pollIntervalMs,
-  eventsEndpoint
+  eventsEndpoint,
+  initialEvents = []
 }: {
   maxEvents: number;
   pollIntervalMs: PollIntervalMs;
   eventsEndpoint: string;
+  initialEvents?: ProjectActivityEvent[];
 }) {
-  const [events, setEvents] = useState<ProjectActivityEvent[]>([]);
+  const [events, setEvents] = useState<ProjectActivityEvent[]>(
+    () => initialEvents.slice(-maxEvents)
+  );
   const [status, setStatus] = useState<PollStatus>("idle");
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
   const [pollCount, setPollCount] = useState(0);
@@ -200,7 +218,13 @@ export function useProjectActivityEvents({
           return;
         }
 
-        setEvents((current) => [...current, ...nextEvents].slice(-maxEvents));
+        setEvents((current) => {
+          const byId = new Map(current.map((event) => [event.id, event]));
+          for (const event of nextEvents) byId.set(event.id, event);
+          return [...byId.values()]
+            .sort((left, right) => left.timestamp - right.timestamp)
+            .slice(-maxEvents);
+        });
         setLastUpdatedAt(Date.now());
         setPollCount((current) => current + 1);
         setError(null);

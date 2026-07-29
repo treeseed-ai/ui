@@ -1,4 +1,4 @@
-:root {
+.lab {
   color-scheme: light;
   --bg: var(--ts-color-canvas);
   --surface: var(--ts-color-surface);
@@ -29,14 +29,9 @@
     sans-serif;
 }
 
+@scope (.lab) {
 * {
   box-sizing: border-box;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  margin: 0;
 }
 
 button,
@@ -519,4 +514,5 @@ h2 {
     height: 360px;
     min-height: 360px;
   }
+}
 }

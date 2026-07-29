@@ -133,6 +133,12 @@
 	opacity: 0.58;
 }
 
+.ts-icon-button--square {
+	aspect-ratio: 1;
+	padding: 0.42rem;
+	width: 2.35rem;
+}
+
 .ts-link-button {
 	display: inline-flex;
 	align-items: center;
@@ -534,6 +540,115 @@
 	grid-column: 1 / -1;
 }
 
+.ts-lifecycle-grid {
+	align-items: start;
+	display: grid;
+	gap: 1.25rem;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ts-lifecycle-grid > * {
+	min-width: 0;
+}
+
+.ts-lifecycle-summary {
+	display: grid;
+	gap: 1rem;
+}
+
+.ts-lifecycle-summary__status {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.65rem;
+}
+
+.ts-lifecycle-summary__status p,
+.ts-danger-zone__intro,
+.ts-countdown p {
+	color: var(--ts-color-text-muted);
+	margin: 0;
+}
+
+.ts-countdown {
+	background: color-mix(in srgb, var(--ts-color-surface-muted) 76%, transparent);
+	border: 1px solid var(--ts-color-border);
+	border-radius: var(--ts-radius-sm);
+	display: grid;
+	gap: 0.7rem;
+	padding: 1rem;
+}
+
+.ts-countdown__heading {
+	align-items: baseline;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+}
+
+.ts-countdown__heading span {
+	color: var(--ts-color-text-muted);
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ts-countdown__heading strong {
+	color: var(--ts-color-text);
+	font-size: clamp(1.35rem, 3vw, 2rem);
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+
+.ts-countdown__track {
+	background: var(--ts-color-border);
+	height: 0.35rem;
+	overflow: hidden;
+}
+
+.ts-countdown__track span {
+	background: var(--ts-color-warning, var(--ts-color-accent));
+	display: block;
+	height: 100%;
+	transition: width 180ms ease;
+	width: 100%;
+}
+
+.ts-countdown[data-complete='true'] .ts-countdown__track span {
+	background: var(--ts-color-danger);
+}
+
+.ts-danger-zone {
+	border-top: 3px solid var(--ts-color-danger);
+	display: grid;
+	gap: 1.1rem;
+}
+
+.ts-danger-zone__confirmation {
+	background: var(--ts-color-danger-soft);
+	border: 1px solid var(--ts-color-danger-border);
+	border-radius: var(--ts-radius-sm);
+	color: var(--ts-color-danger-text);
+	padding: 0.85rem 1rem;
+}
+
+.ts-danger-zone__confirmation code {
+	background: color-mix(in srgb, var(--ts-color-surface) 70%, transparent);
+	border: 1px solid var(--ts-color-danger-border);
+	border-radius: var(--ts-radius-sm);
+	font-family: var(--ts-font-mono);
+	font-weight: 700;
+	padding: 0.1rem 0.35rem;
+}
+
+.ts-team-form {
+	display: grid;
+	gap: 1rem;
+	max-width: 48rem;
+	width: 100%;
+}
+
 .ts-inline-host-card {
 	display: grid;
 	align-content: start;
@@ -901,8 +1016,19 @@
 
 	.ts-context-panel__forms,
 	.ts-form-grid,
+	.ts-lifecycle-grid,
 	.ts-host-actions {
 		grid-template-columns: 1fr;
+	}
+
+	.ts-team-form {
+		max-width: none;
+	}
+
+	.ts-countdown__heading {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 0.4rem;
 	}
 
 	.ts-rail {

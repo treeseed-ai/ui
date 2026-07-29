@@ -6,22 +6,30 @@ import { aggregateEvents, useHasMounted } from './aggregate-events.tsx';
 
 export function ProjectActivityChart({
   title = "Project Activity",
+  description = "Published project content created and updated over time.",
+  eyebrow = "Content activity",
   pollIntervalMs: initialPollIntervalMs = 2_000,
   maxEvents = 720,
-  eventsEndpoint = defaultEventsEndpoint
+  eventsEndpoint = defaultEventsEndpoint,
+  initialEvents = [],
+  initialBucketSizeMs = 60_000,
+  initialDisplayMode = "cumulative",
+  showPollingControl = true,
+  showDiagnostics = false
 }: ProjectActivityChartProps) {
   const hasMounted = useHasMounted();
-  const [bucketSizeMs, setBucketSizeMs] = useState<BucketSizeMs>(60_000);
+  const [bucketSizeMs, setBucketSizeMs] = useState<BucketSizeMs>(initialBucketSizeMs);
   const [pollIntervalMs, setPollIntervalMs] =
     useState<PollIntervalMs>(initialPollIntervalMs);
   const [displayMode, setDisplayMode] =
-    useState<DisplayMode>("cumulative");
+    useState<DisplayMode>(initialDisplayMode);
   const [visibleTypes, setVisibleTypes] =
     useState<ActivityType[]>(activityTypes);
   const { events, pollingState } = useProjectActivityEvents({
     maxEvents,
     pollIntervalMs,
-    eventsEndpoint
+    eventsEndpoint,
+    initialEvents
   });
   const buckets = useMemo(
     () => aggregateEvents(events, bucketSizeMs, displayMode),
@@ -30,9 +38,9 @@ export function ProjectActivityChart({
   const latestBucket = buckets.at(-1) ?? null;
   const visibleTypeSet = new Set(visibleTypes);
   const yAxisLabel =
-    displayMode === "cumulative" ? "current count" : "period net";
+    displayMode === "cumulative" ? "cumulative activity" : "activity per period";
   const chartModeLabel =
-    displayMode === "cumulative" ? "Current count" : "Period net";
+    displayMode === "cumulative" ? "Cumulative activity" : "Period activity";
   const xAxisDomain: [number, number] =
     buckets.length > 0
       ? [buckets[0].bucketStart, buckets[buckets.length - 1].bucketEnd]
@@ -79,11 +87,12 @@ export function ProjectActivityChart({
       <section className="chart-surface" aria-label={`${title} stacked chart`} data-testid="project-activity-chart">
         <div className="chart-header">
           <div>
-            <p className="eyebrow">Bucketed real-time activity</p>
+            <p className="eyebrow">{eyebrow}</p>
             <h2>{title}</h2>
+            <p>{description}</p>
           </div>
           <div className="chart-stats" aria-label="Project activity statistics">
-            <StatItem label="Status" value={pollingState.status} tone="ok" />
+            <StatItem label="Status" value={pollIntervalMs === null ? "Historical" : pollingState.status} tone="ok" />
             <StatItem label="Events" value={`${events.length}`} />
             <StatItem label="Buckets" value={`${buckets.length}`} />
             <StatItem
@@ -91,13 +100,12 @@ export function ProjectActivityChart({
               value={latestBucket ? `${latestBucket.created}` : "--"}
             />
             <StatItem
-              label="Deleted"
-              value={latestBucket ? `${latestBucket.deleted}` : "--"}
+              label="Updated"
+              value={latestBucket ? `${latestBucket.updated}` : "--"}
             />
             <StatItem
-              label="Net"
-              tone={latestBucket && latestBucket.net < 0 ? "warn" : "neutral"}
-              value={latestBucket ? `${latestBucket.net}` : "--"}
+              label="Activity"
+              value={latestBucket ? `${latestBucket.activity}` : "--"}
             />
           </div>
         </div>
@@ -120,22 +128,24 @@ export function ProjectActivityChart({
             </div>
           </div>
 
-          <div className="control-group">
-            <span className="control-label">Poll interval</span>
-            <div className="button-group" role="group" aria-label="Poll interval">
-              {pollIntervalOptions.map((option) => (
-                <button
-                  aria-pressed={pollIntervalMs === option.value}
-                  className={pollIntervalMs === option.value ? "active" : ""}
-                  key={option.label}
-                  onClick={() => setPollIntervalMs(option.value)}
-                  type="button"
-                >
-                  {option.label}
-                </button>
-              ))}
+          {showPollingControl ? (
+            <div className="control-group">
+              <span className="control-label">Poll interval</span>
+              <div className="button-group" role="group" aria-label="Poll interval">
+                {pollIntervalOptions.map((option) => (
+                  <button
+                    aria-pressed={pollIntervalMs === option.value}
+                    className={pollIntervalMs === option.value ? "active" : ""}
+                    key={option.label}
+                    onClick={() => setPollIntervalMs(option.value)}
+                    type="button"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="control-group">
             <span className="control-label">Mode</span>
@@ -157,7 +167,7 @@ export function ProjectActivityChart({
 
         <div className="chart-region">
           {buckets.length === 0 ? (
-            <div className="chart-empty-state">Waiting for project activity</div>
+            <div className="chart-empty-state">No published content activity yet</div>
           ) : null}
           {hasMounted ? (
             <ResponsiveContainer height="100%" width="100%">
@@ -199,9 +209,9 @@ export function ProjectActivityChart({
                       <div className="chart-tooltip">
                         <strong>{formatTime(Number(label), bucketSizeMs)}</strong>
                         <div>Created: {bucket.created}</div>
-                        <div>Deleted: {bucket.deleted}</div>
-                        <div>Net: {bucket.net}</div>
-                        <div>Current total: {bucket.cumulativeTotal}</div>
+                        <div>Updated: {bucket.updated}</div>
+                        <div>Activity: {bucket.activity}</div>
+                        <div>Cumulative activity: {bucket.cumulativeTotal}</div>
                         <hr />
 	                        {payload.map((entry) => (
 	                          <div key={String(entry.dataKey)}>
@@ -241,6 +251,8 @@ export function ProjectActivityChart({
                 <input
                   checked={visibleTypeSet.has(type)}
                   onChange={() => toggleType(type)}
+                  style={{ caretColor: "transparent" }}
+                  suppressHydrationWarning
                   type="checkbox"
                 />
                 <span
@@ -254,16 +266,20 @@ export function ProjectActivityChart({
         </div>
       </section>
 
-      <div className="debug-grid" aria-label="Project activity debug output">
-        <DebugPanel title="Latest Events" value={events.slice(-12)} />
-        <DebugPanel title="Bucketed Activity" value={buckets} />
-        <DebugPanel title="Polling State" value={pollingState} />
-        <DebugPanel title="Chart Configuration" value={chartConfiguration} />
-      </div>
+      {showDiagnostics ? (
+        <div className="debug-grid" aria-label="Project activity debug output">
+          <DebugPanel title="Latest Events" value={events.slice(-12)} />
+          <DebugPanel title="Bucketed Activity" value={buckets} />
+          <DebugPanel title="Polling State" value={pollingState} />
+          <DebugPanel title="Chart Configuration" value={chartConfiguration} />
+        </div>
+      ) : null}
     </div>
   );
 }
 
-export default function ProjectActivityChartLab() {
-  return <ProjectActivityChart />;
+export function ProjectActivityChartLab() {
+  return <ProjectActivityChart showDiagnostics />;
 }
+
+export default ProjectActivityChart;

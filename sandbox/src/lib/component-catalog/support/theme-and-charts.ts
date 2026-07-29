@@ -14,6 +14,10 @@ export const themeAndChartsComponents: ComponentCatalogEntry[] = [
       { name: 'title', type: 'string', defaultValue: 'No pending approvals', description: 'Primary empty-state text.' },
       { name: 'actions', type: 'ButtonAction[]', defaultValue: 1, description: 'Optional action buttons.' },
     ], undefined, '@treeseed/ui/components/astro/surface/EmptyState.astro'),
+  display('inline-confirmation', 'InlineConfirmation', 'Surface', 'astro', 'Expandable confirmation surface for consequential inline actions.', 'medium', { label: 'Remove member', tone: 'danger' }, [
+      { name: 'label', type: 'string', defaultValue: 'Remove member', description: 'Confirmation disclosure label.' },
+      { name: 'tone', type: "'default' | 'danger'", defaultValue: 'danger', description: 'Semantic confirmation tone.' },
+    ], undefined, '@treeseed/ui/components/astro/surface/InlineConfirmation.astro'),
   display('monitoring-chart', 'MonitoringChart', 'Charts', 'react', 'Realtime monitoring line chart with synthetic polling.', 'large', { title: 'Cluster Health', pollIntervalMs: 2000, maxPoints: 180 }, [
       { name: 'pollIntervalMs', type: '1000 | 2000 | 5000 | 10000 | null', defaultValue: 2000, description: 'Polling cadence.' },
       { name: 'maxPoints', type: 'number', defaultValue: 180, description: 'Series buffer size.' },
