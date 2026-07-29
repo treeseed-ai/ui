@@ -31,7 +31,7 @@ test('unified component index groups forms and displays', async ({ page }) => {
   await expect(page.getByRole('link', { name: /DataTable/ })).toHaveAttribute('href', '/displays/data-table');
   await expect(page.getByRole('link', { name: /ProductShell/ })).toHaveAttribute('href', '/displays/product-shell');
   await expect(page.getByRole('heading', { name: 'Shells' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Public' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Public', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Deprecated compatibility' })).toBeVisible();
   await expect(page.getByRole('link', { name: /ShellFrame/ })).toHaveAttribute('href', '/displays/shell-frame');
   await expect(page.getByRole('link', { name: /SurfaceTabs/ })).toHaveAttribute('href', '/displays/surface-tabs');
