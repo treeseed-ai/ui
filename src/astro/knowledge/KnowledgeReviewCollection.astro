@@ -14,6 +14,9 @@ const reviewCriteria = {
 	audience: [['community', 'Community'], ['developer', 'Developer'], ['operator', 'Operator'], ['ai-agent', 'AI agent']],
 	graph: [['parent-child', 'Parent and child'], ['related-ids', 'Related IDs'], ['navigation', 'Navigation'], ['retrieval', 'Machine retrieval']],
 } as const;
+type ReviewKind = keyof typeof reviewCriteria;
+const editorialReviewKinds = (requiresGraphReview: boolean): readonly ReviewKind[] =>
+	requiresGraphReview ? ['technical', 'audience', 'graph'] : ['technical', 'audience'];
 ---
 
 {reviews.length ? <div class="ts-knowledge-reviews">
@@ -41,7 +44,7 @@ const reviewCriteria = {
 		</form> : null}
 		{review.status === 'open' && review.requiresEditorialReview && review.workspaceAvailable && review.changedPaths?.length && review.canDecide ? <div class="ts-form-stack" data-scene="knowledge.review.editorial">
 			<p class="ts-subtle">Context <code>{review.contextDigest?.slice(0, 12)}</code>. Technical and audience review are required{review.requiresGraphReview ? '; this structural change also requires graph review' : ''}.</p>
-			{(['technical', 'audience', ...(review.requiresGraphReview ? ['graph'] : [])] as const).map((kind) => {
+			{editorialReviewKinds(review.requiresGraphReview).map((kind) => {
 				const prior = review[`${kind}Review`];
 				return <form class="ts-form-stack" method="post" action={action} data-ts-submit="enhanced" data-ts-refresh-target="[data-knowledge-review-list]">
 					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="editorial-review" />

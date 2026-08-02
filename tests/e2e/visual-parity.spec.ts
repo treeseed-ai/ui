@@ -53,7 +53,7 @@ test.describe('market visual parity previews', () => {
       { route: '/displays/shell-frame', selectors: ['.ts-shell-header', '.ts-control-surface', '.ts-surface-tabs'] },
       { route: '/displays/public-single-column-shell', selectors: ['.ts-public-single-shell', '.ts-public-section', '.ts-public-profile-header'] },
       { route: '/displays/plain-table', selectors: ['.ts-plain-table', '.ts-record-card', '.ts-record-card__chips'] },
-      { route: '/displays/page-frame', selectors: ['.page', '.header', '.sidebar-pane'] },
+      { route: '/displays/page-frame', selectors: ['.page', '.header', 'ts-docs-mobile-menu button'] },
       { route: '/displays/hero', selectors: ['section.relative.overflow-hidden', 'section.relative.overflow-hidden h2', '.ts-button'] },
       { route: '/displays/product-card', selectors: ['.market-product-card', '.market-product-card__footer'] },
     ];
@@ -65,6 +65,12 @@ test.describe('market visual parity previews', () => {
       for (const selector of selectors) {
         await expect(page.locator(selector).first()).toBeVisible();
         await expectWithinViewport(page, selector);
+      }
+      if (route === '/displays/page-frame') {
+        await expect(page.locator('.sidebar-pane')).toBeHidden();
+        await page.locator('ts-docs-mobile-menu button').click();
+        await expect(page.locator('.sidebar-pane')).toBeVisible();
+        await expectWithinViewport(page, '.sidebar-pane');
       }
     }
   });
