@@ -1,5 +1,6 @@
 ---
 import Button from '../forms/actions/Button.astro';
+import HelpTrigger from '../help/HelpTrigger.astro';
 import type { ButtonAction, Tone } from '../types.ts';
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 	tone?: Tone;
 	actions?: ButtonAction[];
 	class?: string;
+	knowledgePageId?: string;
+	helpLabel?: string;
 }
 
 const {
@@ -18,19 +21,22 @@ const {
 	tone = 'default',
 	actions = [],
 	class: className,
+	knowledgePageId,
+	helpLabel,
 } = Astro.props as Props;
 ---
 
 <section class:list={['ts-panel', className]} data-tone={tone}>
-	{eyebrow || title || description || actions.length > 0 || Astro.slots.has('actions') ? (
+	{eyebrow || title || description || knowledgePageId || actions.length > 0 || Astro.slots.has('actions') ? (
 		<header class="ts-panel__header">
 			<div class="ts-panel__heading">
 				{eyebrow ? <p class="ts-panel__eyebrow">{eyebrow}</p> : null}
 				{title ? <h2 class="ts-panel__title">{title}</h2> : null}
 				{description ? <p class="ts-panel__description">{description}</p> : null}
 			</div>
-			{actions.length > 0 || Astro.slots.has('actions') ? (
+			{knowledgePageId || actions.length > 0 || Astro.slots.has('actions') ? (
 				<div class="ts-panel__actions">
+					{knowledgePageId ? <HelpTrigger knowledgePageId={knowledgePageId} label={helpLabel ?? `Help with ${title ?? 'this section'}`} /> : null}
 					{actions.map((action) => (
 						<Button
 							href={action.href}

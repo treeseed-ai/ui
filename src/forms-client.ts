@@ -2,6 +2,7 @@ import {
 	initializeFormSubmissions as initializeSubmissions,
 	formActionUrl as resolveFormActionUrl,
 	registerFormAdapter as registerAdapter,
+	refreshContentTargets as refreshTargets,
 	sendFormRequest as sendRequest,
 	submitForm as submit,
 } from './lib/forms/submission/submission.js';
@@ -37,6 +38,10 @@ export function sendFormRequest(request: import('./forms.js').FormRequest) {
 
 export function formActionUrl(form: HTMLFormElement) {
 	return resolveFormActionUrl(form);
+}
+
+export function refreshContentTargets(selectors: string[]) {
+	return refreshTargets(selectors);
 }
 
 export function initializeToasts() {

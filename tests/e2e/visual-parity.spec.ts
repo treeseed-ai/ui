@@ -27,8 +27,6 @@ test.describe('market visual parity previews', () => {
     for (const route of [
       '/displays/auth-card',
       '/displays/plain-table',
-      '/displays/deployment-timeline',
-      '/displays/sensitive-data-unlock',
       '/displays/product-card',
       '/displays/header',
       '/displays/hero',
@@ -55,10 +53,6 @@ test.describe('market visual parity previews', () => {
       { route: '/displays/shell-frame', selectors: ['.ts-shell-header', '.ts-control-surface', '.ts-surface-tabs'] },
       { route: '/displays/public-single-column-shell', selectors: ['.ts-public-single-shell', '.ts-public-section', '.ts-public-profile-header'] },
       { route: '/displays/plain-table', selectors: ['.ts-plain-table', '.ts-record-card', '.ts-record-card__chips'] },
-      {
-        route: '/displays/deployment-timeline',
-        selectors: ['.ts-deploy-timeline', '.ts-deploy-timeline__item', '.ts-deploy-timeline__marker'],
-      },
       { route: '/displays/page-frame', selectors: ['.page', '.header', '.sidebar-pane'] },
       { route: '/displays/hero', selectors: ['section.relative.overflow-hidden', 'section.relative.overflow-hidden h2', '.ts-button'] },
       { route: '/displays/product-card', selectors: ['.market-product-card', '.market-product-card__footer'] },
@@ -92,14 +86,6 @@ test.describe('market visual parity previews', () => {
     await expect(page.locator('.ts-record-card').first()).toBeVisible();
     await expect(page.locator('.ts-record-card__chips span').first()).toBeVisible();
     await expect(page.locator('.ts-record-card').first()).toHaveCSS('border-radius', /.+/);
-
-    await page.goto('/displays/template-host-requirement-picker');
-    await expect(page.locator('[data-requirement-kind="host"]')).toBeVisible();
-    await expect(page.locator('.ts-requirement-preview')).toBeVisible();
-
-    await page.goto('/displays/deployment-timeline');
-    await expect(page.locator('.ts-deploy-timeline__marker').first()).toBeVisible();
-    await expect(page.locator('.ts-deploy-timeline__item').first()).toHaveAttribute('data-tone', /info|success|warning/);
 
     await page.goto('/displays/operational-timeline');
     await expect(page.locator('.ts-operational-timeline__phase').first()).toBeVisible();

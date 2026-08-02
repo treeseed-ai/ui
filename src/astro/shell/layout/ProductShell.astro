@@ -9,7 +9,7 @@ import type { ButtonAction, ShellBrand, ShellNavItem, SiteUserControlItem } from
 import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import type { ThemePreference, ThemeConfig } from '../../../theme/index.ts';
 
-// FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through SiteUserControls and ShellFrame.
+// Feedback and contextual help are composed once through SiteUserControls and ShellFrame.
 
 interface Props {
 	title: string;
@@ -39,7 +39,6 @@ const {
 	siteItems = [
 		{ label: 'Home', href: '/' },
 		{ label: 'Market', href: '/market/' },
-		{ label: 'Knowledge', href: '/knowledge/' },
 	],
 	quickActions = [],
 	accountActions = [],
@@ -50,9 +49,10 @@ const {
 	timeZone = 'UTC',
 } = Astro.props as Props;
 const feedbackDialogId = 'product-shell-feedback';
-const helpDrawerId = 'product-shell-help';
+const helpDrawerId = 'shell-help';
 const drawerId = 'team-operations-drawer';
 const sidebarId = 'team-operations-sidebar';
+const renderHeaderAction = !contentOwnsPageHeader && Astro.slots.has('headerAction');
 ---
 
 <ShellFrame
@@ -104,7 +104,6 @@ const sidebarId = 'team-operations-sidebar';
 						feedbackContext={feedbackContext}
 						helpDrawerId={helpDrawerId}
 						feedbackDialogId={feedbackDialogId}
-						showHomeLink
 					/>
 				</Fragment>
 			</ShellHeader>
@@ -115,8 +114,12 @@ const sidebarId = 'team-operations-sidebar';
 					<Fragment slot="teamSelector"><slot name="railContext" /></Fragment>
 				</TeamOperationsPanel>
 			</div>
-			<ControlSurface title={contentOwnsPageHeader ? undefined : title} description={contentOwnsPageHeader ? undefined : description}>
-				{Astro.slots.has('headerAction') ? (
+			<ControlSurface
+				title={contentOwnsPageHeader ? undefined : title}
+				description={contentOwnsPageHeader ? undefined : description}
+				renderActions={renderHeaderAction}
+			>
+				{renderHeaderAction ? (
 					<Fragment slot="actions"><slot name="headerAction" /></Fragment>
 				) : null}
 				<slot name="projectContext" />
@@ -137,7 +140,6 @@ const sidebarId = 'team-operations-sidebar';
 			feedbackContext={feedbackContext}
 			helpDrawerId={helpDrawerId}
 			feedbackDialogId={feedbackDialogId}
-			showHomeLink
 		/>
 	</TeamOperationsDrawer>
 	<slot name="sensitiveModal" />

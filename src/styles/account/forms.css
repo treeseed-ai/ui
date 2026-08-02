@@ -284,55 +284,6 @@
 	color: var(--ts-color-accent-strong);
 }
 
-.ts-dialog {
-	background: transparent;
-	border: 0;
-	color: var(--ts-color-text);
-	max-height: calc(100vh - 2rem);
-	max-width: min(54rem, calc(100vw - 2rem));
-	padding: 0;
-	width: 100%;
-}
-
-.ts-dialog::backdrop {
-	background: color-mix(in srgb, var(--ts-color-text) 38%, transparent);
-}
-
-.ts-dialog__surface {
-	background: var(--ts-color-surface);
-	border: 1px solid var(--ts-color-border-strong);
-	border-radius: var(--ts-radius-sm);
-	box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--ts-color-text) 24%, transparent);
-	display: grid;
-	grid-template-rows: auto minmax(0, 1fr);
-	max-height: calc(100vh - 2rem);
-	overflow: hidden;
-}
-
-.ts-dialog__header {
-	align-items: start;
-	border-bottom: 1px solid var(--ts-color-border);
-	display: flex;
-	gap: var(--ts-space-3);
-	justify-content: space-between;
-	padding: var(--ts-space-4);
-}
-
-.ts-dialog__header h2,
-.ts-dialog__header p {
-	margin: 0;
-}
-
-.ts-dialog__header p {
-	color: var(--ts-color-text-muted);
-	margin-top: var(--ts-space-1);
-}
-
-.ts-dialog__body {
-	overflow: auto;
-	padding: var(--ts-space-4);
-}
-
 .ts-dialog .account-color-grid {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }

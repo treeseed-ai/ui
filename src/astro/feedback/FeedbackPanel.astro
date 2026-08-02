@@ -1,0 +1,68 @@
+---
+import NonModalSideSheet from '../overlays/NonModalSideSheet.astro';
+import ImageLightbox from '../overlays/ImageLightbox.astro';
+import FeedbackContextSummary from './FeedbackContextSummary.astro';
+import type { FeedbackContext } from '../../lib/foundation/contracts.ts';
+
+interface Props { id: string; context: FeedbackContext; }
+const { id, context } = Astro.props as Props;
+const screenshotEnabled = context.screenshotPolicy !== 'disabled';
+const screenshotDialogId = `${id}-screenshot-preview`;
+---
+
+<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-feedback-panel" scene="feedback.panel">
+	<Fragment slot="header">
+		<div>
+			<p class="ts-section__eyebrow">Product feedback</p>
+			<h2 id={`${id}-title`}>Tell us what could be better</h2>
+			<p id={`${id}-description`}>Your page and account context are attached so administrators can investigate.</p>
+		</div>
+		<button class="ts-icon-button" type="button" aria-label="Close feedback" data-ts-feedback-close>×</button>
+	</Fragment>
+	<form class="ts-feedback-form" method="post" action={context.submissionEndpoint ?? '/v1/feedback'} data-ts-feedback-form data-ts-submit="enhanced" data-ts-form-adapter="feedback" data-ts-reset-on-success="true">
+		<script is:inline type="application/json" data-ts-feedback-context set:html={JSON.stringify(context)} />
+		<label class="ts-field">
+			<span class="ts-field__label">Feedback type</span>
+			<select class="ts-control" name="type" required aria-describedby={`${id}-type-error`}>
+				<option value="bug">Bug</option><option value="feature_suggestion">Feature suggestion</option><option value="question">Question</option><option value="content_issue">Content issue</option><option value="ux_issue">UX issue</option>
+			</select>
+			<span class="ts-field__error" id={`${id}-type-error`} data-ts-field-error="type"></span>
+		</label>
+		<label class="ts-field">
+			<span class="ts-field__label">Details</span>
+			<textarea class="ts-control" name="message" rows="7" maxlength="4000" required placeholder="What did you expect, what happened, and how did it affect your work?" aria-describedby={`${id}-message-help ${id}-message-error`}></textarea>
+			<span class="ts-field__help" id={`${id}-message-help`}>Do not include passwords, access tokens, or other secrets.</span>
+			<span class="ts-field__error" id={`${id}-message-error`} data-ts-field-error="message"></span>
+		</label>
+		<FeedbackContextSummary context={context} />
+		<label class="ts-choice ts-feedback-contact">
+			<input type="checkbox" name="allowContact" value="true" />
+			<span><strong>Allow administrators to contact me</strong><small>Uses your verified primary account email. The address is never accepted from this form.</small></span>
+		</label>
+		{screenshotEnabled ? (
+			<section class="ts-feedback-capture" data-ts-feedback-screenshot>
+				<div><strong>Optional redacted screenshot</strong><p>Review the complete page as you see it, including open help and dialogs. The feedback panel is excluded; form values and marked private regions are masked.</p></div>
+				<div class="ts-feedback-capture__actions">
+					<button class="ts-button" data-variant="secondary" data-size="sm" type="button" data-ts-feedback-capture>Capture screenshot</button>
+					<button class="ts-button" data-variant="ghost" data-size="sm" type="button" data-ts-feedback-remove hidden>Remove</button>
+				</div>
+				<button class="ts-feedback-capture__preview-button" type="button" data-dialog-open={screenshotDialogId} data-ts-feedback-preview-open hidden aria-label="Expand complete screenshot preview">
+					<img class="ts-feedback-capture__preview" alt="Redacted full-page feedback screenshot preview" data-ts-feedback-preview />
+					<span>Expand screenshot</span>
+				</button>
+				<ImageLightbox id={screenshotDialogId} title="Complete screenshot preview" description="Review the complete full-page capture. Sensitive form values and marked private content are masked." alt="Expanded redacted full-page feedback screenshot" />
+			</section>
+		) : null}
+		<p class="ts-feedback-panel__status" role="status" data-ts-feedback-status></p>
+		<div class="ts-form-actions">
+			<button class="ts-button" data-variant="secondary" type="button" data-ts-feedback-close>Cancel</button>
+			<button class="ts-button" data-variant="primary" type="submit">Send feedback</button>
+		</div>
+	</form>
+</NonModalSideSheet>
+
+<script>
+	import { initializeFeedbackPanels } from '../../lib/feedback/panel.ts';
+	import '../../lib/feedback/export.ts';
+	initializeFeedbackPanels();
+</script>

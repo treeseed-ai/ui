@@ -20,7 +20,14 @@ function csrfToken(formData: FormData) {
 		.join('=') || '';
 }
 
+function ensureRequestIds(form: HTMLFormElement) {
+	for (const input of form.querySelectorAll<HTMLInputElement>('input[data-ts-request-id]')) {
+		if (!input.value) input.value = crypto.randomUUID();
+	}
+}
+
 function formDataWithSubmitter(form: HTMLFormElement, submitter: HTMLElement | null) {
+	ensureRequestIds(form);
 	const formData = new FormData(form);
 	if (submitter instanceof HTMLButtonElement && submitter.name) formData.set(submitter.name, submitter.value);
 	return formData;
@@ -118,9 +125,23 @@ function safeRedirect(candidate: string) {
 	return target.origin === window.location.origin ? target.href : null;
 }
 
-async function replaceTargets(form: HTMLFormElement, result: FormSubmissionResponse) {
-	const declared = (form.dataset.tsRefreshTarget ?? '').split(',').map((value) => value.trim()).filter(Boolean);
-	const selectors = [...new Set([...(result.refreshTargets ?? []), ...declared])];
+function followRedirect(target: string) {
+	const link = document.createElement('a');
+	link.href = target;
+	link.setAttribute('data-astro-reload', '');
+	link.hidden = true;
+	document.body.append(link);
+	link.click();
+	link.remove();
+}
+
+function preserveRefreshState(current: Element, replacement: Element) {
+	if (current.getAttribute('role') === 'tabpanel' && replacement.getAttribute('role') === 'tabpanel') {
+		(replacement as HTMLElement).hidden = (current as HTMLElement).hidden;
+	}
+}
+
+async function replaceContentTargets(selectors: string[], activeId?: string, activeName?: string) {
 	if (!selectors.length) return;
 	const response = await fetch(window.location.href, {
 		headers: { accept: 'text/html', 'x-treeseed-fragment': 'refresh' },
@@ -128,16 +149,12 @@ async function replaceTargets(form: HTMLFormElement, result: FormSubmissionRespo
 	});
 	if (!response.ok) return;
 	const next = new DOMParser().parseFromString(await response.text(), 'text/html');
-	const active = document.activeElement instanceof HTMLElement && form.contains(document.activeElement)
-		? document.activeElement
-		: null;
-	const activeId = active?.id;
-	const activeName = active?.getAttribute('name');
 	let focusTarget: HTMLElement | null = null;
 	for (const selector of selectors) {
 		const current = document.querySelector(selector);
 		const replacement = next.querySelector(selector);
 		if (current && replacement) {
+			preserveRefreshState(current, replacement);
 			current.replaceWith(replacement);
 			focusTarget ??= activeId
 				? replacement.querySelector<HTMLElement>(`#${CSS.escape(activeId)}`)
@@ -148,6 +165,19 @@ async function replaceTargets(form: HTMLFormElement, result: FormSubmissionRespo
 	}
 	document.dispatchEvent(new CustomEvent('treeseed:content-updated', { detail: { selectors } }));
 	focusTarget?.focus();
+}
+
+export function refreshContentTargets(selectors: string[]) {
+	return replaceContentTargets([...new Set(selectors.map((value) => value.trim()).filter(Boolean))]);
+}
+
+async function replaceTargets(form: HTMLFormElement, result: FormSubmissionResponse) {
+	const declared = (form.dataset.tsRefreshTarget ?? '').split(',').map((value) => value.trim()).filter(Boolean);
+	const selectors = [...new Set([...(result.refreshTargets ?? []), ...declared])];
+	const active = document.activeElement instanceof HTMLElement && form.contains(document.activeElement)
+		? document.activeElement
+		: null;
+	await replaceContentTargets(selectors, active?.id, active?.getAttribute('name') ?? undefined);
 }
 
 export function registerFormAdapter(name: string, adapter: FormSubmissionAdapter) {
@@ -185,13 +215,13 @@ export async function submitForm(form: HTMLFormElement, submitter: HTMLElement |
 		if (result.redirect) {
 			const redirect = safeRedirect(result.redirect);
 			if (!redirect) throw new Error('The server returned an unsafe redirect.');
-			window.location.assign(redirect);
+			followRedirect(redirect);
 			return result;
 		}
 		if (result.reset ?? form.dataset.tsResetOnSuccess === 'true') form.reset();
+		showToast({ tone: 'success', message: result.message });
 		await replaceTargets(form, result);
 		await adapter?.afterSuccess?.(result, context);
-		showToast({ tone: 'success', message: result.message });
 		form.dispatchEvent(new CustomEvent('treeseed:form-success', { bubbles: true, detail: result }));
 		return result;
 	} catch (error) {
@@ -205,9 +235,22 @@ export async function submitForm(form: HTMLFormElement, submitter: HTMLElement |
 	}
 }
 
+function enableEnhancedValidation(root: ParentNode) {
+	for (const form of root.querySelectorAll<HTMLFormElement>('form[data-ts-submit="enhanced"]')) {
+		form.noValidate = true;
+		ensureRequestIds(form);
+	}
+}
+
 export function initializeFormSubmissions(root: Document = document) {
 	if (initialized.has(root)) return;
 	initialized.add(root);
+	enableEnhancedValidation(root);
+	root.addEventListener('click', (event) => {
+		const target = event.target instanceof Element ? event.target : null;
+		const submitter = target?.closest<HTMLButtonElement | HTMLInputElement>('button[type="submit"], input[type="submit"]');
+		if (submitter?.form?.dataset.tsSubmit === 'enhanced') submitter.form.noValidate = true;
+	}, { capture: true });
 	root.addEventListener('submit', (event) => {
 		const form = event.target;
 		if (!(form instanceof HTMLFormElement) || form.dataset.tsSubmit !== 'enhanced') return;
@@ -216,4 +259,6 @@ export function initializeFormSubmissions(root: Document = document) {
 	}, { capture: true });
 	root.addEventListener('input', clearChangedField);
 	root.addEventListener('change', clearChangedField);
+	root.addEventListener('astro:page-load', () => enableEnhancedValidation(root));
+	root.addEventListener('treeseed:content-updated', () => enableEnhancedValidation(root));
 }

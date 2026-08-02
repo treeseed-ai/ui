@@ -6,9 +6,9 @@ import '../../../styles/forms.css';
 import '../../../styles/app-shell.css';
 import { ClientRouter } from 'astro:transitions';
 import ThemeScript from '../../theme/ThemeScript.astro';
-import FeedbackDialog from '../../feedback/FeedbackDialog.astro';
+import FeedbackPanel from '../../feedback/FeedbackPanel.astro';
 import ToastRegion from '../../feedback/ToastRegion.astro';
-import HelpDrawer from '../../help/HelpDrawer.astro';
+import HelpDialog from '../../help/HelpDialog.astro';
 import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import type { ThemePreference, ThemeConfig } from '../../../theme/index.ts';
 
@@ -61,9 +61,11 @@ const {
 	</head>
 	<body class={bodyClass}>
 		<a class="ts-skip-link" href="#main-content">Skip to content</a>
-		<slot />
-		{helpContext ? <HelpDrawer id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
-		{feedbackContext ? <FeedbackDialog id={feedbackDialogId} context={feedbackContext} /> : null}
+		<div class="ts-shell-workspace" data-ts-shell-workspace>
+			<div class="ts-shell-workspace__content"><slot /></div>
+			{feedbackContext ? <FeedbackPanel id={feedbackDialogId} context={feedbackContext} /> : null}
+		</div>
+		{helpContext ? <HelpDialog id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
 		<ToastRegion />
 		<slot name="bodyEnd" />
 		<script>

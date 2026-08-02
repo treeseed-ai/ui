@@ -1,17 +1,8 @@
-export const LINKS = {
-  home: '/',
-};
+export const LINKS = { home: '/books/' };
 
 export function getBookForPath(pathname: string) {
-  return pathname.includes('/books/') ? { title: 'TreeSeed Knowledge', downloadHref: '/books/treeseed-knowledge.md' } : null;
-}
-
-export function getDocsDownloadForPath(pathname: string) {
-  const book = getBookForPath(pathname);
-  if (!book) return null;
-  return {
-    downloadHref: book.downloadHref,
-    downloadFileName: book.downloadHref.split('/').pop() ?? 'treeseed-book.md',
-    downloadTitle: `Download ${book.title}`,
-  };
+	const normalized = pathname.replace(/\/+$/u, '');
+	return /^\/t\/[^/]+\/books\/[^/]+(?:\/.*)?$/u.test(normalized)
+		? { canonicalLibraryPath: LINKS.home }
+		: null;
 }

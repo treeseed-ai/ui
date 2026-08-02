@@ -139,6 +139,28 @@ describe('enhanced form controller', () => {
 		expect(document.querySelector('[data-ts-toast-region]')).toHaveTextContent('Saved.');
 	});
 
+	it('creates one request identifier per rendered form and preserves it across retries', async () => {
+		const form = mountForm('data-ts-form-adapter="json"');
+		form.insertAdjacentHTML('beforeend', '<input type="hidden" name="requestId" value="" data-ts-request-id>');
+		(form.elements.namedItem('email') as HTMLInputElement).value = 'person@example.test';
+		const fetchMock = vi.fn()
+			.mockResolvedValueOnce(new Response(JSON.stringify({ ok: false, code: 'retry', message: 'Try again.' }), {
+				status: 503, headers: { 'content-type': 'application/json' },
+			}))
+			.mockResolvedValueOnce(new Response(JSON.stringify({ ok: true, code: 'saved', message: 'Saved.' }), {
+				headers: { 'content-type': 'application/json' },
+			}));
+		vi.stubGlobal('fetch', fetchMock);
+
+		await submitForm(form);
+		await submitForm(form);
+
+		const first = JSON.parse(String(fetchMock.mock.calls[0]![1]!.body));
+		const second = JSON.parse(String(fetchMock.mock.calls[1]![1]!.body));
+		expect(first.requestId).toMatch(/^[0-9a-f-]{36}$/u);
+		expect(second.requestId).toBe(first.requestId);
+	});
+
 	it('preserves multipart FormData while attaching CSRF to the request', async () => {
 		const form = mountForm();
 		const email = form.elements.namedItem('email') as HTMLInputElement;
@@ -173,8 +195,68 @@ describe('enhanced form controller', () => {
 		expect(fetchMock).toHaveBeenCalledWith('/account', expect.any(Object));
 	});
 
+	it('bypasses the client router for explicit server redirects', async () => {
+		const form = mountForm();
+		(form.elements.namedItem('email') as HTMLInputElement).value = 'person@example.test';
+		vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+			ok: true,
+			code: 'continuing',
+			message: 'Continuing.',
+			redirect: '/account/complete',
+		}), { headers: { 'content-type': 'application/json' } }))));
+		const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+
+		await submitForm(form);
+
+		expect(click).toHaveBeenCalledOnce();
+		const link = click.mock.instances[0] as HTMLAnchorElement;
+		expect(link.href).toBe('http://localhost:3000/account/complete');
+		expect(link).toHaveAttribute('data-astro-reload');
+	});
+
+	it('preserves the active state of a refreshed tab panel', async () => {
+		const form = mountForm('data-ts-refresh-target="#credentials-panel"');
+		form.insertAdjacentHTML('afterend', '<section id="credentials-panel" role="tabpanel"><p>Old credentials</p></section>');
+		(form.elements.namedItem('email') as HTMLInputElement).value = 'person@example.test';
+		const fetchMock = vi.fn()
+			.mockResolvedValueOnce(new Response(JSON.stringify({ ok: true, code: 'saved', message: 'Saved.' }), {
+				headers: { 'content-type': 'application/json' },
+			}))
+			.mockResolvedValueOnce(new Response(
+				'<html><body><section id="credentials-panel" role="tabpanel" hidden><p>Updated credentials</p></section></body></html>',
+				{ headers: { 'content-type': 'text/html' } },
+			));
+		vi.stubGlobal('fetch', fetchMock);
+
+		await submitForm(form);
+
+		const panel = document.querySelector<HTMLElement>('#credentials-panel');
+		expect(panel).toHaveTextContent('Updated credentials');
+		expect(panel?.hidden).toBe(false);
+	});
+
+	it('announces success before a slow server-rendered target refresh completes', async () => {
+		const form = mountForm('data-ts-refresh-target="#credentials-panel"');
+		(form.elements.namedItem('email') as HTMLInputElement).value = 'person@example.test';
+		let finishRefresh!: (response: Response) => void;
+		const refresh = new Promise<Response>((resolve) => { finishRefresh = resolve; });
+		vi.stubGlobal('fetch', vi.fn()
+			.mockResolvedValueOnce(new Response(JSON.stringify({ ok: true, code: 'saved', message: 'Saved now.' }), {
+				headers: { 'content-type': 'application/json' },
+			}))
+			.mockReturnValueOnce(refresh));
+
+		const submission = submitForm(form);
+		await vi.waitFor(() => expect(document.querySelector('[data-ts-toast-region]')).toHaveTextContent('Saved now.'));
+		finishRefresh(new Response('<html><body></body></html>', { headers: { 'content-type': 'text/html' } }));
+		await submission;
+	});
+
 	it('delegates enhanced submissions once at the document boundary', () => {
 		const form = mountForm();
+		const button = form.querySelector('button') as HTMLButtonElement;
+		button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		expect(form.noValidate).toBe(true);
 		const preventDefault = vi.spyOn(Event.prototype, 'preventDefault');
 		form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true }));
 		expect(preventDefault).toHaveBeenCalled();

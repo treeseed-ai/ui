@@ -11,6 +11,15 @@ export const publicAndTemplatesComponents: ComponentCatalogEntry[] = [
       { name: 'state', type: 'ResolvedActionState', defaultValue: 'allowed', description: 'Resolved permission state.' },
       { name: 'remediation', type: 'string', defaultValue: undefined, description: 'Optional remediation text.' },
     ], undefined, '@treeseed/ui/components/astro/patterns/PermissionBoundary.astro'),
+  display('data-boundary', 'DataBoundary', 'Patterns', 'astro', 'Readable custody or data-flow boundary with explicit non-retention guarantees.', 'large', { stages: 3 }, [
+      { name: 'stages', type: 'BoundaryStage[]', defaultValue: 3, description: 'Ordered processing boundaries.' },
+      { name: 'protectedItems', type: 'string[]', defaultValue: 4, description: 'Values explicitly excluded from retention.' },
+    ], undefined, '@treeseed/ui/components/astro/patterns/DataBoundary.astro'),
+  display('setup-progress', 'SetupProgress', 'Patterns', 'astro', 'Sequential setup status and guidance for multi-step configuration ceremonies.', 'medium', { steps: 4 }, [
+      { name: 'steps', type: 'SetupStep[]', defaultValue: 4, description: 'Ordered steps and their completion state.' },
+      { name: 'title', type: 'string', defaultValue: 'Setup progress', description: 'Visible setup heading.' },
+      { name: 'description', type: 'string', defaultValue: undefined, description: 'Optional setup context.' },
+    ], undefined, '@treeseed/ui/components/astro/patterns/SetupProgress.astro'),
   display('bottom-nav', 'BottomNav', 'Deprecated compatibility', 'astro', 'Deprecated mobile bottom navigation kept for one migration cycle; use ShellHeader and TeamOperationsDrawer instead.', 'medium', { items: 3, currentPath: '/displays/bottom-nav' }, [
       { name: 'items', type: 'NavItem[]', defaultValue: 3, description: 'Navigation items.' },
       { name: 'currentPath', type: 'string', defaultValue: '/displays/bottom-nav', description: 'Current path marker.' },
@@ -74,10 +83,6 @@ export const publicAndTemplatesComponents: ComponentCatalogEntry[] = [
       { name: 'title', type: 'string', defaultValue: 'Question detail', description: 'Detail title.' },
       { name: 'metadata', type: 'MetadataItem[]', defaultValue: 3, description: 'Aside metadata.' },
     ], undefined, '@treeseed/ui/components/astro/templates/DetailTemplate.astro'),
-  display('reader-template', 'ReaderTemplate', 'Templates', 'astro', 'Reader page template for long-form knowledge.', 'full-page', { navItems: 3 }, [
-      { name: 'title', type: 'string', defaultValue: 'Knowledge page', description: 'Reader title.' },
-      { name: 'navItems', type: 'NavItem[]', defaultValue: 3, description: 'Reader navigation.' },
-    ], undefined, '@treeseed/ui/components/astro/templates/ReaderTemplate.astro'),
   display('settings-template', 'SettingsTemplate', 'Templates', 'astro', 'Settings page template with routed tabs above the active section content.', 'full-page', { sections: 3 }, [
       { name: 'title', type: 'string', defaultValue: 'Settings', description: 'Settings title.' },
       { name: 'sections', type: 'SectionLink[]', defaultValue: 3, description: 'Settings sections.' },

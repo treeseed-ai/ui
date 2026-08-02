@@ -10,14 +10,6 @@ export const OPERATIONS_COMPONENTS = [
     sandboxRoute: "/displays/capacity-diagnostics-panel",
   },
 {
-    uiPath: "src/astro/app/operations/DeploymentTimeline.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/DeploymentTimeline.astro",
-    category: "Operations",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/deployment-timeline",
-  },
-{
     uiPath: "src/astro/app/operations/GovernanceDecisionPanel.astro",
     sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/operations/GovernanceDecisionPanel.astro",
     category: "Operations",

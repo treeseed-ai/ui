@@ -1,0 +1,26 @@
+---
+import Badge from '../data/Badge.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Timestamp from '../data/Timestamp.astro';
+
+const { status, timeZone = 'UTC' } = Astro.props as { status?: any; timeZone?: string };
+const manifest = status?.manifest;
+---
+
+<section class="ts-knowledge-publication" data-scene="knowledge.publication.status" aria-labelledby="knowledge-publication-title">
+	<header class="ts-section-heading">
+		<div><h3 id="knowledge-publication-title">Published knowledge</h3><p>The reader and pack builder use this immutable source closure.</p></div>
+		<Badge tone={manifest ? 'success' : 'warning'}>{manifest ? 'Current' : 'Not published'}</Badge>
+	</header>
+	{manifest ? <>
+		<dl class="ts-summary-grid">
+			<div><dt>Revision</dt><dd><code>{manifest.revision}</code></dd></div>
+			<div><dt>Published</dt><dd><Timestamp value={manifest.generatedAt} timeZone={timeZone} /></dd></div>
+			<div><dt>Projects</dt><dd>{manifest.projects?.length ?? 0}</dd></div>
+			<div><dt>Knowledge records</dt><dd>{manifest.entryCount ?? 0}</dd></div>
+		</dl>
+		<details><summary>Exact project source closure</summary><ul class="ts-compact-list">
+			{manifest.projects?.map((project: any) => <li><strong>{project.projectId}</strong><code>{project.commitSha}</code><span>Graph {project.graphRevision}</span></li>)}
+		</ul></details>
+	</> : <EmptyState title="No atomic publication" description="Approve and publish a knowledge review before readers or pack builds can use this team library." />}
+</section>

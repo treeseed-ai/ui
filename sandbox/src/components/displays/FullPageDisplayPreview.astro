@@ -18,7 +18,6 @@ import ProviderButtonList from '../../../../src/astro/auth/ProviderButtonList.as
 import AppLayout from '../../../../src/astro/layouts/AppLayout.astro';
 import PublicLayout from '../../../../src/astro/layouts/PublicLayout.astro';
 import AuthoredEntryLayout from '../../../../src/astro/layouts/AuthoredEntryLayout.astro';
-import BookLayout from '../../../../src/astro/layouts/BookLayout.astro';
 import BridgeLayout from '../../../../src/astro/layouts/BridgeLayout.astro';
 import ContentLayout from '../../../../src/astro/layouts/ContentLayout.astro';
 import MainLayout from '../../../../src/astro/layouts/MainLayout.astro';
@@ -49,7 +48,7 @@ const feedbackContext = {
   title: entry.name,
   shell: entry.id === 'auth-shell' ? 'auth' as const : entry.id === 'public-shell' ? 'public' as const : 'product' as const,
   context: entry.id === 'public-shell' ? 'public' as const : 'project' as const,
-  submissionEndpoint: '/api/feedback/submit',
+  submissionEndpoint: '/v1/feedback',
   allowAnonymous: entry.id !== 'product-shell',
   screenshotPolicy: 'optional' as const,
   attachmentStoragePolicy: entry.id === 'public-shell' ? 'public' as const : 'private' as const,
@@ -70,14 +69,6 @@ const entryData = {
   motivation: 'Consistent shared layouts keep public, docs, and application experiences aligned.',
   tags: ['components', 'preview'],
   canonicalRoute: entry.route,
-};
-const bookEntry = {
-  ...entryData,
-  sectionLabel: 'Book',
-  landingPath: '/books/operations/',
-  downloadHref: '/books/operations.md',
-  basePath: '/books/operations/',
-  downloadFileName: 'operations.md',
 };
 const note = {
   title: 'NoteLayout',
@@ -160,7 +151,7 @@ const surfaceTabs = [
 ) : null}
 
 {entry.id === 'app-layout' ? (
-  <AppLayout title="AppLayout" description={entry.description} currentPath="/app/" teams={teams} activeTeam={teams[0]} showSensitiveUnlock appearance={appearance} contentOwnsPageHeader>
+  <AppLayout title="AppLayout" description={entry.description} currentPath="/app/" teams={teams} activeTeam={teams[0]} appearance={appearance} contentOwnsPageHeader>
     <PageHeader title="AppLayout" description="Application layout with team switcher, app nav, modals, and unlock controls." />
     <Panel title="Active project"><KeyValueList items={[{ key: 'Team', value: 'Continuity Studio' }, { key: 'Route', value: '/app/projects' }]} /></Panel>
   </AppLayout>
@@ -198,12 +189,6 @@ const surfaceTabs = [
   <AuthoredEntryLayout entry={entryData} currentPath="/displays/authored-entry-layout" contributor={{ data: { name: 'Market Steward' } }} contentTypeLabel="Decision" contentId="decision-42" collectionLabel="Decisions" metaLabel="Type" metaValue="Approval" relatedQuestions={[relatedEntry]}>
     <p>This authored entry preview renders metadata, tags, contributor context, and related records.</p>
   </AuthoredEntryLayout>
-) : null}
-
-{entry.id === 'book-layout' ? (
-  <BookLayout entry={bookEntry} currentPath="/displays/book-layout">
-    <p>BookLayout renders long-form knowledge pages with download and landing links.</p>
-  </BookLayout>
 ) : null}
 
 {entry.id === 'bridge-layout' ? (

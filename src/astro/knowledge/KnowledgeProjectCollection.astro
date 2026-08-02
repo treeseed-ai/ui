@@ -1,0 +1,46 @@
+---
+import Badge from '../data/Badge.astro';
+import Button from '../forms/actions/Button.astro';
+import EmptyState from '../surface/EmptyState.astro';
+
+interface ProjectItem {
+	id: string;
+	slug?: string;
+	name: string;
+	description?: string | null;
+	repositoryReady?: boolean;
+	bookCount?: number;
+	draftCount?: number;
+}
+
+interface Props { projects: ProjectItem[]; currentProjectId?: string; }
+const { projects, currentProjectId } = Astro.props as Props;
+---
+
+{projects.length ? (
+	<div class="ts-knowledge-projects" role="list">
+		{projects.map((project) => (
+			<article class="ts-knowledge-project" role="listitem" data-project-name={project.name} data-current={project.id === currentProjectId ? 'true' : undefined}>
+				<div class="ts-knowledge-project__identity">
+					<div>
+						<h3>{project.name}</h3>
+						<p>{project.description || 'Repository-native books and knowledge pages.'}</p>
+					</div>
+					<Badge tone={project.repositoryReady === false ? 'warning' : 'success'} size="sm">
+						{project.repositoryReady === false ? 'Repository setup required' : 'TreeDX ready'}
+					</Badge>
+				</div>
+				<dl class="ts-knowledge-project__stats">
+					<div><dt>Books</dt><dd>{project.bookCount ?? 0}</dd></div>
+					<div><dt>Drafts</dt><dd>{project.draftCount ?? 0}</dd></div>
+				</dl>
+				<div class="ts-action-bar">
+					<Button href={`/app/projects/${encodeURIComponent(project.id)}/books`} variant="secondary" size="sm">Manage books</Button>
+					{project.repositoryReady !== false ? <Button href={`/app/knowledge?project=${encodeURIComponent(project.id)}`} size="sm">Author knowledge</Button> : null}
+				</div>
+			</article>
+		))}
+	</div>
+) : (
+	<EmptyState title="No knowledge projects" description="Create or import a project before authoring repository-native books." actions={[{ label: 'Open projects', href: '/app/projects' }]} />
+)}

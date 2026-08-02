@@ -11,6 +11,7 @@ export type ShellIconName =
 	| 'collapse'
 	| 'create'
 	| 'expand'
+	| 'feedback'
 	| 'help'
 	| 'knowledge'
 	| 'link'

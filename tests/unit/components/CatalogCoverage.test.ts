@@ -45,7 +45,7 @@ describe('component catalog coverage', () => {
   });
 
   it('catalogs every standalone source component with classification and package metadata', () => {
-    const nonStandaloneComponents = new Set(['ThemeScript']);
+    const nonStandaloneComponents = new Set(['KnowledgeOutlineBranch', 'MobileSidebarToggle', 'ThemeScript']);
     const catalogByName = new Map(componentCatalog.map((entry) => [entry.name, entry]));
     const sourceComponents = [
       ...walkFiles('src/astro').filter((file) => extname(file) === '.astro'),

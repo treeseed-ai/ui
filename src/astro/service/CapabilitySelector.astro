@@ -1,0 +1,50 @@
+---
+interface Capability {
+	type: string;
+	label: string;
+	description: string;
+	status?: 'available' | 'planned';
+	checked?: boolean;
+	credentialProfileId?: string | null;
+	credentialProfiles?: Array<{ id: string; label: string }>;
+}
+
+interface Props {
+	capabilities: Capability[];
+	name?: string;
+	readonly?: boolean;
+}
+
+const { capabilities, name = 'capabilities', readonly = false } = Astro.props as Props;
+---
+
+<fieldset class="ts-capability-selector">
+	<legend>Service capabilities</legend>
+	<div class="ts-capability-selector__items">
+		{capabilities.map((capability) => (
+			<div class="ts-capability-option" data-status={capability.status ?? 'available'}>
+				<input
+					id={`${name}-${capability.type}`}
+					type="checkbox"
+					name={name}
+					value={capability.type}
+					checked={capability.checked}
+					disabled={readonly || capability.status === 'planned'}
+				/>
+				<label for={`${name}-${capability.type}`}>
+					<strong>{capability.label}</strong>
+					<small>{capability.description}</small>
+				</label>
+				{capability.credentialProfiles?.length ? (
+					<select class="ts-control ts-control--select" name={`capabilityProfile.${capability.type}`}
+						aria-label={`${capability.label} credential authority`} disabled={readonly || capability.status === 'planned'}>
+						{capability.credentialProfiles.map((profile) => (
+							<option value={profile.id} selected={profile.id === capability.credentialProfileId}>{profile.label}</option>
+						))}
+					</select>
+				) : null}
+				{capability.status === 'planned' ? <em>Planned</em> : null}
+			</div>
+		))}
+	</div>
+</fieldset>

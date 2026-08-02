@@ -2,9 +2,6 @@ import type { ComponentCatalogEntry } from '../support/component-kind.ts';
 import { display } from '../support/component-kind.ts';
 
 export const authAndSensitiveDataComponents: ComponentCatalogEntry[] = [
-  display('sensitive-data-unlock', 'SensitiveDataUnlock', 'Sensitive Data', 'astro', 'Reusable SensitiveDataUnlock component copied into the TreeSeed UI library.', 'medium', { source: 'Sensitive Data' }, [
-      { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
-    ], undefined, '@treeseed/ui/components/astro/app/sensitive/SensitiveDataUnlock.astro'),
   display('auth-card', 'AuthCard', 'Auth', 'astro', 'Reusable AuthCard component copied into the TreeSeed UI library.', 'medium', { source: 'Auth' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/auth/AuthCard.astro'),

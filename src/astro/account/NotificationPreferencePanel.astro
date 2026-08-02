@@ -13,7 +13,7 @@ const overrides = new Map<string, string[]>(preferences.projectOverrides.map((en
 
 <form method="post" class="account-stack" data-scene="account-notifications" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-notifications']">
 	<input type="hidden" name="csrfToken" value={csrfToken} />
-	<Panel eyebrow="Delivery" title="Email cadence" description="In-app notifications remain immediate.">
+	<Panel eyebrow="Delivery" title="Email cadence" description="In-app notifications remain immediate." knowledgePageId="account.notifications">
 		<div class="account-notification-cadence" role="radiogroup" aria-label="Email cadence">
 			{['immediate', 'daily', 'weekly'].map((cadence) => (
 				<label class="account-notification-choice">
@@ -23,7 +23,7 @@ const overrides = new Map<string, string[]>(preferences.projectOverrides.map((en
 			))}
 		</div>
 	</Panel>
-	<Panel eyebrow="All projects" title="Content types" description="These choices apply to every project you can access unless a project override replaces them.">
+	<Panel eyebrow="All projects" title="Content types" description="These choices apply to every project you can access unless a project override replaces them." knowledgePageId="account.notifications">
 		<div class="account-notification-choice-list" role="group" aria-label="All-project content types" data-notification-content-choices data-orientation="vertical">
 			{capabilities.map((capability) => (
 				<label class="account-notification-choice">
@@ -36,7 +36,7 @@ const overrides = new Map<string, string[]>(preferences.projectOverrides.map((en
 			))}
 		</div>
 	</Panel>
-	<Panel eyebrow="Optional" title="Project overrides" description="Select a project to replace the all-project choices for that project.">
+	<Panel eyebrow="Optional" title="Project overrides" description="Select a project to replace the all-project choices for that project." knowledgePageId="account.project-overrides">
 		<div class="account-list">{projects.map((project) => {
 			const selected = overrides.has(project.id);
 			const types = overrides.get(project.id) ?? [];

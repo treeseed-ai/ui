@@ -21,7 +21,7 @@ const reauthUrl = (provider: { id: string }) => {
 ---
 
 <div class="account-stack" data-scene="account-delete">
-	<Panel eyebrow="Danger" title="Delete account" description="This permanently removes account data and signs out every device." tone="danger">
+	<Panel eyebrow="Danger" title="Delete account" description="This permanently removes account data and signs out every device." tone="danger" knowledgePageId="account.deletion">
 		{blockers.length ? <ul>{blockers.map((blocker) => <li>{blocker.message}</li>)}</ul> : (
 			<form method="post" class="account-form" data-ts-submit="enhanced">
 				<input type="hidden" name="csrfToken" value={csrfToken} />

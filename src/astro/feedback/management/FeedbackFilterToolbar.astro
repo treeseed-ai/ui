@@ -1,0 +1,13 @@
+---
+import Button from '../../forms/actions/Button.astro';
+interface Props { values?: Record<string, string>; teams?: Array<{ id: string; label: string }>; }
+const { values = {}, teams = [] } = Astro.props as Props;
+---
+<form class="ts-feedback-filters" method="get" role="search" aria-label="Filter feedback">
+	<label class="ts-field ts-feedback-filters__search"><span class="ts-field__label">Search feedback</span><input class="ts-control" type="search" name="query" value={values.query} placeholder="ID, message, path, team, or submitter" /></label>
+	<label class="ts-field"><span class="ts-field__label">Status</span><select class="ts-control" name="status"><option value="">All statuses</option>{[['new','New'],['triaged','Triaged'],['in_progress','In progress'],['resolved','Resolved']].map(([value,label]) => <option value={value} selected={values.status === value}>{label}</option>)}</select></label>
+	<label class="ts-field"><span class="ts-field__label">Type</span><select class="ts-control" name="type"><option value="">All types</option>{[['bug','Bug'],['feature_suggestion','Feature suggestion'],['question','Question'],['content_issue','Content issue'],['ux_issue','UX issue']].map(([value,label]) => <option value={value} selected={values.type === value}>{label}</option>)}</select></label>
+	{teams.length ? <label class="ts-field"><span class="ts-field__label">Team</span><select class="ts-control" name="teamId"><option value="">All teams</option>{teams.map((team) => <option value={team.id} selected={values.teamId === team.id}>{team.label}</option>)}</select></label> : null}
+	<label class="ts-field"><span class="ts-field__label">Screenshot</span><select class="ts-control" name="hasScreenshot"><option value="">Any</option><option value="true" selected={values.hasScreenshot === 'true'}>Attached</option><option value="false" selected={values.hasScreenshot === 'false'}>None</option></select></label>
+	<div class="ts-feedback-filters__actions"><Button type="submit" variant="secondary">Apply filters</Button><Button href="/app/feedback" variant="ghost">Reset</Button></div>
+</form>

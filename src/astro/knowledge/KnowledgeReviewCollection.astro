@@ -1,0 +1,68 @@
+---
+import Timestamp from '../data/Timestamp.astro';
+import Button from '../forms/actions/Button.astro';
+import Field from '../forms/fields/Field.astro';
+import Textarea from '../forms/fields/Textarea.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Select from '../forms/fields/Select.astro';
+import EmptyState from '../surface/EmptyState.astro';
+
+interface Props { reviews: any[]; action: string; csrfToken: string; timeZone: string; }
+const { reviews, action, csrfToken, timeZone } = Astro.props as Props;
+const reviewCriteria = {
+	technical: [['truth-provenance', 'Truth and provenance'], ['guarantee-status', 'Guarantee status'], ['command-configuration', 'Commands and configuration'], ['safety-recovery', 'Safety and recovery']],
+	audience: [['community', 'Community'], ['developer', 'Developer'], ['operator', 'Operator'], ['ai-agent', 'AI agent']],
+	graph: [['parent-child', 'Parent and child'], ['related-ids', 'Related IDs'], ['navigation', 'Navigation'], ['retrieval', 'Machine retrieval']],
+} as const;
+---
+
+{reviews.length ? <div class="ts-knowledge-reviews">
+	{reviews.map((review) => <article class="ts-knowledge-review" data-review-status={review.status} data-review-commit={review.commitSha}
+		data-review-paths={(review.changedPaths ?? []).join('|')} data-review-decision={review.canDecide ? 'allowed' : 'forbidden'}>
+		<div><span class="ts-section__eyebrow">{review.status}</span><h3>{review.branchName}</h3><p>Commit <code>{review.commitSha?.slice(0, 12)}</code> · submitted <Timestamp value={review.createdAt} timeZone={timeZone} /></p></div>
+		{!review.workspaceAvailable || !review.changedPaths?.length ? <p class="ts-callout" data-tone="warning">This historical review is preserved as immutable evidence. Open and publication actions apply only to the latest submitted revision.</p> : null}
+		{review.presence?.length ? <p class="ts-subtle">Recently viewing: {review.presence.map((item: any) => item.userId).join(', ')}</p> : null}
+		{review.workspaceAvailable && review.changedPaths?.length ? <div class="ts-action-bar"><Button href={`/app/knowledge?workspace=${encodeURIComponent(review.workspaceId)}&sourcePath=${encodeURIComponent(review.changedPaths[0])}`} variant="secondary" size="sm">View draft</Button></div> : null}
+		{review.comments?.length ? <div class="ts-form-stack" aria-label="Review comments">{review.comments.map((comment: any) => <article class="ts-callout" data-tone={comment.status === 'open' ? 'warning' : 'neutral'}>
+			<p><strong>{comment.path}</strong>{comment.lineStart ? ` · line ${comment.lineStart}${comment.lineEnd && comment.lineEnd !== comment.lineStart ? `–${comment.lineEnd}` : ''}` : ''}</p>
+			<p>{comment.body}</p><p class="ts-subtle">{comment.status} · <Timestamp value={comment.createdAt} timeZone={timeZone} /></p>
+			{comment.status === 'open' ? <form method="post" action={action} data-ts-submit="enhanced">
+				<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="resolve-review-comment" />
+				<input type="hidden" name="commentId" value={comment.id} /><input type="hidden" name="version" value={comment.version} />
+				<Button type="submit" size="sm" variant="secondary">Resolve comment</Button>
+			</form> : null}
+		</article>)}</div> : null}
+		{review.status === 'open' && review.workspaceAvailable && review.changedPaths?.length ? <form class="ts-form-stack" method="post" action={action} data-ts-submit="enhanced">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="review-comment" /><input type="hidden" name="reviewId" value={review.id} />
+			<div class="ts-form-grid"><Field label="Changed file" name="path" required><Select name="path" required options={(review.changedPaths ?? []).map((path: string) => ({ label: path, value: path }))} /></Field>
+			<Field label="Line" name="lineStart"><TextInput name="lineStart" type="number" min="1" /></Field></div>
+			<Field label="Review comment" name="body" required><Textarea name="body" rows={3} required placeholder="Describe the requested change or review observation." /></Field>
+			<Button type="submit" variant="secondary" size="sm">Add review comment</Button>
+		</form> : null}
+		{review.status === 'open' && review.requiresEditorialReview && review.workspaceAvailable && review.changedPaths?.length && review.canDecide ? <div class="ts-form-stack" data-scene="knowledge.review.editorial">
+			<p class="ts-subtle">Context <code>{review.contextDigest?.slice(0, 12)}</code>. Technical and audience review are required{review.requiresGraphReview ? '; this structural change also requires graph review' : ''}.</p>
+			{(['technical', 'audience', ...(review.requiresGraphReview ? ['graph'] : [])] as const).map((kind) => {
+				const prior = review[`${kind}Review`];
+				return <form class="ts-form-stack" method="post" action={action} data-ts-submit="enhanced" data-ts-refresh-target="[data-knowledge-review-list]">
+					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="editorial-review" />
+					<input type="hidden" name="reviewId" value={review.id} /><input type="hidden" name="reviewKind" value={kind} />
+					<h4>{kind[0].toUpperCase() + kind.slice(1)} review {prior ? `· ${prior.disposition}` : ''}</h4>
+					<div class="ts-form-grid">{reviewCriteria[kind].map(([id, label]) => <Field label={label} name={`criterion-${id}`} required>
+						<Select name={`criterion-${id}`} required options={[{ label: 'Pass', value: 'pass' }, { label: 'Fail', value: 'fail' }, { label: 'Not applicable', value: 'not-applicable' }]} />
+					</Field>)}</div>
+					<Field label={`${kind} review notes`} name="notes"><Textarea name="notes" rows={3} /></Field>
+					<div class="ts-action-bar"><Button type="submit" name="disposition" value="approved">Record approval</Button><Button type="submit" name="disposition" value="changes-requested" variant="secondary">Request revision</Button></div>
+				</form>;
+			})}
+		</div> : null}
+		{review.status === 'open' && review.workspaceAvailable && review.changedPaths?.length && review.canDecide ? <form class="ts-form-stack" method="post" action={action} data-ts-submit="enhanced" data-ts-refresh-target="[data-knowledge-review-list]" data-scene="knowledge.review.decision">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="review-decision" /><input type="hidden" name="reviewId" value={review.id} /><input type="hidden" name="version" value={review.workspaceVersion} />
+			<Field label="Review notes" name="notes"><Textarea name="notes" rows={3} placeholder="Explain approval context or required changes." /></Field>
+			{review.requiresEditorialReview && !review.editorialGateSatisfied ? <p class="ts-callout" data-tone="info">Human approval remains unavailable until every required independent editorial review approves this revision and context.</p> : null}
+			<div class="ts-action-bar">{(!review.requiresEditorialReview || review.editorialGateSatisfied) && (!review.requiresEditorialReview || review.canApproveEditorial) ? <Button type="submit" name="decision" value="approve">Approve exact revision</Button> : null}<Button type="submit" name="decision" value="request-changes" variant="secondary">Request changes</Button></div>
+		</form> : review.status === 'open' && review.workspaceAvailable && review.changedPaths?.length ? <p class="ts-callout" data-tone="info">A different authorized reviewer must decide this submission.</p> : review.canPublish && review.changedPaths?.length ? <form method="post" action={action} data-ts-submit="enhanced" data-scene="knowledge.review.publish">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="publish-review" /><input type="hidden" name="reviewId" value={review.id} />
+			<Button type="submit">Publish approved revision</Button>
+		</form> : null}
+	</article>)}
+</div> : <EmptyState title="No reviews" description="Submitted knowledge drafts will appear here for authorized reviewers." />}

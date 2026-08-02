@@ -2,7 +2,6 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { componentCatalog } from '../../sandbox/src/lib/component-catalog';
 import { actionToButton, type ResolvedAction } from '../../src/lib/foundation/contracts';
-import { searchContextualHelp } from '../../src/lib/help/search';
 import { SITE_SLOGAN } from '../../src/site-brand';
 
 const foundationFiles = [
@@ -10,22 +9,22 @@ const foundationFiles = [
 	'src/astro/templates/CollectionTemplate.astro',
 	'src/astro/templates/DashboardTemplate.astro',
 	'src/astro/templates/DetailTemplate.astro',
-	'src/astro/templates/ReaderTemplate.astro',
 	'src/astro/templates/SettingsTemplate.astro',
 	'src/astro/layout/ActionBar.astro',
 	'src/astro/layout/Stack.astro',
 	'src/astro/activity/ActivityFeed.astro',
 	'src/astro/surface/ResourceCard.astro',
 	'src/astro/patterns/PermissionBoundary.astro',
-	'src/astro/feedback/FeedbackButton.astro',
-	'src/astro/feedback/FeedbackDialog.astro',
+	'src/astro/feedback/FeedbackTrigger.astro',
+	'src/astro/feedback/FeedbackPanel.astro',
+	'src/astro/overlays/NonModalSideSheet.astro',
+	'src/astro/overlays/ImageLightbox.astro',
 	'src/astro/feedback/FeedbackRedactionBoundary.astro',
-	'src/astro/help/HelpButton.astro',
-	'src/astro/help/HelpDrawer.astro',
-	'src/astro/help/HelpPopover.astro',
-	'src/astro/help/ContextualHelpPanel.astro',
-	'src/astro/help/HelpTopicLink.astro',
-	'src/astro/help/HelpActionList.astro',
+	'src/astro/help/HelpTrigger.astro',
+	'src/astro/help/HelpDialog.astro',
+	'src/astro/help/HelpArticle.astro',
+	'src/astro/help/HelpKnowledgeNavigation.astro',
+	'src/astro/help/HelpSearch.astro',
 	'src/astro/service/ReadinessSummary.astro',
 	'src/astro/distribution/DistributionSummary.astro',
 	'src/astro/distribution/OverlayStatus.astro',
@@ -36,8 +35,6 @@ const foundationFiles = [
 	'src/astro/operating/AllocationTree.astro',
 	'src/astro/operating/WorkQueueSummary.astro',
 	'src/astro/templates/WorkspaceTemplate.astro',
-	'src/lib/help/drawer.ts',
-	'src/lib/help/search.ts',
 ];
 
 describe('UI foundation', () => {
@@ -215,13 +212,16 @@ describe('UI foundation', () => {
 	it('owns compact search and help-dialog interaction primitives', () => {
 		const search = readFileSync('src/astro/forms/search/InlineSearch.astro', 'utf8');
 		const dialog = readFileSync('src/astro/overlays/AccessibleDialog.astro', 'utf8');
+		const dialogController = readFileSync('src/lib/overlays/dialog-controller.ts', 'utf8');
 		const icon = readFileSync('src/astro/shell/navigation/ShellIcon.astro', 'utf8');
 		const formsCss = readFileSync('src/styles/forms.css', 'utf8');
 
 		expect(search).toContain('ts-inline-search__controls');
 		expect(search).toContain("type=\"search\"");
-		expect(dialog).toContain('dialog.showModal()');
-		expect(dialog).toContain('opener.focus()');
+		expect(dialog).toContain('initializeDialogController');
+		expect(dialogController).toContain('dialog.showModal()');
+		expect(dialogController).toContain("openerByDialog.get(dialog)?.focus()");
+		expect(dialogController).toContain("event.key !== 'Tab'");
 		expect(icon).toContain('help: [');
 		expect(formsCss).toMatch(/\.ts-inline-search__controls\s*\{[^}]*grid-template-columns: minmax\(0, 1fr\) auto;/su);
 	});
@@ -243,6 +243,7 @@ describe('UI foundation', () => {
 		const registration = readFileSync('src/astro/auth/RegistrationForm.astro', 'utf8');
 		const passwordSetup = readFileSync('src/astro/forms/fields/PasswordSetupFields.astro', 'utf8');
 		const passwordMeter = readFileSync('src/astro/forms/fields/PasswordMeter.astro', 'utf8');
+		const formsCss = readFileSync('src/styles/forms.css', 'utf8');
 
 		expect(registration).not.toContain('Enter a username to check availability.');
 		expect(registration).not.toContain('Enter an email to check availability.');
@@ -255,6 +256,7 @@ describe('UI foundation', () => {
 		expect(passwordSetup).toContain('Passwords do not match.');
 		expect(passwordSetup).toContain('Passwords match.');
 		expect(passwordSetup).toContain('<PasswordMeter');
+		expect(formsCss).toMatch(/\.ts-password-setup\s*\{[^}]*padding-block-end:\s*var\(--ts-space-3\);/su);
 		for (const rule of ['lowercase', 'uppercase', 'number', 'symbol', 'spaces']) {
 			expect(passwordMeter).toContain(`data-ts-password-rule="${rule}"`);
 		}
@@ -264,7 +266,7 @@ describe('UI foundation', () => {
 	it('registers foundation components in the sandbox catalog', () => {
 		const ids = new Set(componentCatalog.map((entry) => entry.id));
 
-		for (const id of ['product-shell', 'shell-icon', 'action-bar', 'resource-card', 'readiness-summary', 'distribution-summary', 'overlay-status', 'allocation-panel', 'allocation-tree', 'allocation-state-legend', 'work-queue-summary', 'activity-timeline', 'permission-boundary', 'collection-template', 'dashboard-template', 'detail-template', 'reader-template', 'settings-template', 'workspace-template', 'feedback-button', 'feedback-dialog', 'feedback-redaction-boundary', 'toast-region', 'help-button', 'help-drawer', 'help-popover', 'contextual-help-panel', 'help-topic-link', 'help-action-list']) {
+		for (const id of ['product-shell', 'shell-icon', 'action-bar', 'resource-card', 'readiness-summary', 'distribution-summary', 'overlay-status', 'allocation-panel', 'allocation-tree', 'allocation-state-legend', 'work-queue-summary', 'activity-timeline', 'permission-boundary', 'collection-template', 'dashboard-template', 'detail-template', 'settings-template', 'workspace-template', 'feedback-trigger', 'feedback-panel', 'feedback-redaction-boundary', 'image-lightbox', 'toast-region', 'help-trigger', 'help-dialog', 'help-article', 'help-knowledge-navigation', 'help-search']) {
 			expect(ids.has(id), `${id} should be cataloged`).toBe(true);
 		}
 	});
@@ -298,34 +300,71 @@ describe('UI foundation', () => {
 	});
 
 	it('keeps screenshot capture lazy and redaction-aware', () => {
-		const dialog = readFileSync('src/lib/feedback/dialog.ts', 'utf8');
+		const panel = readFileSync('src/lib/feedback/panel.ts', 'utf8');
 		const capture = readFileSync('src/lib/feedback/dom-capture.ts', 'utf8');
+		const captureLayout = readFileSync('src/lib/feedback/capture-overlays.ts', 'utf8');
 		const shellSources = [
 			readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8'),
 			readFileSync('src/astro/shell/layout/PublicShell.astro', 'utf8'),
 			readFileSync('src/astro/auth/AuthShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/chrome/SiteUserControls.astro', 'utf8'),
 		].join('\n');
 
-		expect(dialog).toContain("await import('./dom-capture.ts')");
+		expect(panel).toContain("await import('./dom-capture.ts')");
 		expect(shellSources).not.toContain('dom-capture');
 		expect(capture).toContain('data-ts-feedback-redact');
+		expect(capture).toContain("crypto.subtle.digest('SHA-256'");
+		expect(capture).toContain('[contenteditable]');
+		expect(captureLayout).toContain('documentRoot.scrollHeight');
+		expect(capture).toContain('MAX_CAPTURE_DIMENSION / bounds.height');
+		expect(capture).toContain('safeCssText');
+		expect(capture).toContain('await inlineSafeResources(clone)');
+		expect(capture).toContain("credentials: 'same-origin'");
+	});
+
+	it('keeps feedback non-modal, responsive, private, and shell-owned', () => {
+		const panel = readFileSync('src/astro/feedback/FeedbackPanel.astro', 'utf8');
+		const sideSheet = readFileSync('src/astro/overlays/NonModalSideSheet.astro', 'utf8');
+		const controller = readFileSync('src/lib/feedback/panel.ts', 'utf8');
+		const styles = readFileSync('src/styles/ui.css', 'utf8');
+		expect(sideSheet).toContain('aria-modal="false"');
+		expect(sideSheet).toContain('popover="manual"');
+		expect(panel).toContain('FeedbackContextSummary');
+		expect(panel).not.toContain('contactEmail');
+		expect(controller).not.toMatch(/body\.style|ts-modal-open/u);
+		expect(controller).toContain("'x-idempotency-key'");
+		expect(controller).toContain("opener.closest<HTMLDialogElement>('dialog[open]')");
+		expect(controller).toContain('home.parent.insertBefore(panel, home.nextSibling)');
+		expect(controller).toContain("docked ? 'docked' : 'overlay'");
+		expect(controller).toContain("panel.removeAttribute('popover')");
+		expect(styles).toContain(".ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden]))");
+		expect(styles).toContain(".ts-side-sheet[data-ts-feedback-presentation='docked']");
+		expect(styles).toMatch(/@media \(min-width: 64rem\)[\s\S]*\.ts-side-sheet/u);
 	});
 
 	it('keeps contextual help shell-level and search lazy', () => {
-		const helpDrawer = readFileSync('src/lib/help/drawer.ts', 'utf8');
-		const feedbackDialog = readFileSync('src/lib/feedback/dialog.ts', 'utf8');
+		const helpDialog = readFileSync('src/lib/help/dialog.ts', 'utf8');
+		const helpStyles = readFileSync('src/styles/ui.css', 'utf8');
+		const feedbackDialog = readFileSync('src/lib/feedback/panel.ts', 'utf8');
 		const shellSources = [
 			readFileSync('src/astro/shell/layout/ProductShell.astro', 'utf8'),
 			readFileSync('src/astro/shell/layout/PublicShell.astro', 'utf8'),
 			readFileSync('src/astro/auth/AuthShell.astro', 'utf8'),
+			readFileSync('src/astro/shell/layout/ShellFrame.astro', 'utf8'),
+			readFileSync('src/astro/shell/chrome/SiteUserControls.astro', 'utf8'),
 		].join('\n');
 
-		expect(shellSources).toContain('HelpButton');
-		expect(shellSources).toContain('HelpDrawer');
+		expect(shellSources).toContain('HelpDialog');
+		expect(shellSources).toContain('HelpTrigger');
 		expect(shellSources).not.toContain('>Help</button>');
-		expect(helpDrawer).toContain("await import('./search.ts')");
-		expect(shellSources).not.toContain('lib/help/search');
+		expect(helpDialog).toContain('data-ts-help-search-input');
+		expect(helpDialog).toContain('fetch(searchUrl');
+		expect(shellSources).not.toContain('fetch(searchUrl');
 		expect(feedbackDialog).toContain('tsFeedbackContextPatch');
+		expect(helpStyles).toMatch(/\.ts-help-dialog__layout\s*\{[^}]*overflow: hidden/s);
+		expect(helpStyles).toMatch(/\.ts-help-dialog__rail\s*\{[^}]*overflow-y: auto/s);
+		expect(helpStyles).toMatch(/\.ts-help-article\s*\{[^}]*overflow-y: auto/s);
+		expect(helpStyles).toMatch(/\.ts-help-article__content\s*\{[^}]*padding:/s);
 	});
 
 	it('keeps overlay editor bootstrap lazy and policy-gated', () => {
@@ -341,16 +380,4 @@ describe('UI foundation', () => {
 		expect(shellSources).not.toContain('overlay-session');
 	});
 
-	it('searches only provided contextual help payloads', () => {
-		const results = searchContextualHelp({
-			topics: [{ id: 'questions', title: 'Question records', summary: 'Capture uncertainty.', source: 'capability' }],
-			actions: [{ id: 'question.export', label: 'Export', reason: 'Exports arrive later.', remediation: 'Use the page table today.' }],
-		}, 'export');
-
-		expect(results).toEqual([expect.objectContaining({
-			topicId: 'question.export',
-			title: 'Export',
-			source: 'action-state',
-		})]);
-	});
 });

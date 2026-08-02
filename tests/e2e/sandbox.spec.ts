@@ -102,6 +102,11 @@ test('form pages submit on-page without navigation', async ({ page }) => {
       await page.locator('[data-ts-password-input]').fill('Catalog-Strong-Password-123!');
       await page.locator('[data-ts-confirm-password-input]').fill('Catalog-Strong-Password-123!');
       await expect(page.getByText('Passwords match.')).toBeVisible();
+      const meterBox = await page.locator('[data-ts-password-meter]').boundingBox();
+      const actionBox = await page.getByRole('button', { name: 'Submit password setup' }).boundingBox();
+      expect(meterBox).not.toBeNull();
+      expect(actionBox).not.toBeNull();
+      expect(actionBox!.y - (meterBox!.y + meterBox!.height)).toBeGreaterThanOrEqual(12);
     }
 
     await page.locator('main').getByRole('button', { name: /^Submit/ }).last().click();
@@ -155,23 +160,43 @@ test('display chart pages poll synthetic realtime endpoints', async ({ page }) =
   }, { timeout: 8_000 }).toBeGreaterThanOrEqual(3);
 });
 
-test('app control preview pages expose interactive states', async ({ page }) => {
-  await page.goto('/displays/content-field-help');
-  await page.getByLabel('Help for Title').click();
-  await expect(page.locator('[data-content-help][open]')).toBeVisible();
-  await expect(page.locator('[data-content-help-panel]')).toContainText('A short, scannable name');
-
-  await page.goto('/displays/template-host-requirement-picker');
-  await expect(page.locator('[data-requirement-kind="host"]')).toBeVisible();
-  await page.locator('select[name="webHost"]').selectOption('railway-web');
-  await expect(page.locator('select[name="webHost"]')).toHaveValue('railway-web');
-
-  await page.goto('/displays/sensitive-data-unlock');
-  await page.getByRole('button', { name: 'Unlock sensitive data' }).click();
-  await expect(page.getByRole('dialog', { name: 'Unlock encrypted team data' })).toBeVisible();
-  await page.locator('input[name="treeseedSensitivePassphrase"]').fill('preview passphrase');
-  await page.locator('[data-sensitive-mode="unlock"] button[type="submit"]').click();
-  await expect(page.locator('[data-sensitive-unlock-label]')).toContainText('Sensitive data unlocked');
+test('contextual help preview opens and restores focus', async ({ page }) => {
+  await page.route('**/v1/knowledge/search**', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ payload: { results: [{ id: 'vault-recovery', title: 'Vault recovery', summary: 'Restore administrator access.' }] } }),
+    });
+  });
+  await page.route('**/v1/knowledge/pages/vault-recovery', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ payload: { page: { id: 'vault-recovery', title: 'Vault recovery', summary: 'Restore administrator access.' } } }),
+    });
+  });
+  await page.goto('/displays/help-dialog');
+  const trigger = page.getByRole('button', { name: 'Open help' });
+  await trigger.click();
+  const dialog = page.locator('[data-ts-help-dialog][open]');
+  await expect(dialog).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'TreeSeed Help' })).toBeVisible();
+  const search = dialog.getByRole('searchbox', { name: 'Search help' });
+  await expect(search).toBeVisible();
+  await expect(search.locator('xpath=ancestor::header')).toHaveClass(/ts-help-dialog__header/);
+  await expect(dialog.locator('.ts-help-dialog__layout')).toHaveCSS('overflow-y', 'hidden');
+  await expect(dialog.locator('.ts-help-article')).toHaveCSS('overflow-y', 'auto');
+  await expect(dialog.locator('.ts-help-dialog__rail')).toHaveCSS('overflow-y', 'auto');
+  const results = dialog.locator('[data-ts-help-search-results]');
+  await search.fill('vault');
+  await expect(results.getByRole('button', { name: /Vault recovery/ })).toBeVisible();
+  await results.getByRole('button', { name: /Vault recovery/ }).click();
+  await expect(results).toBeHidden();
+  await expect(dialog.getByRole('heading', { name: 'Vault recovery' })).toBeVisible();
+  await search.fill('vault');
+  await expect(results.getByRole('button', { name: /Vault recovery/ })).toBeVisible();
+  await dialog.getByRole('heading', { name: 'TreeSeed Help' }).click();
+  await expect(results).toBeHidden();
+  await page.getByRole('button', { name: 'Close help' }).click();
+  await expect(trigger).toBeFocused();
 });
 
 test('new shell registry previews expose responsive shell primitives', async ({ page }) => {

@@ -11,16 +11,15 @@ import Timestamp from '../../../../src/astro/data/Timestamp.astro';
 import ResponsiveTable from '../../../../src/astro/data/ResponsiveTable.astro';
 import DistributionSummary from '../../../../src/astro/distribution/DistributionSummary.astro';
 import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
-import FeedbackButton from '../../../../src/astro/feedback/FeedbackButton.astro';
-import FeedbackDialog from '../../../../src/astro/feedback/FeedbackDialog.astro';
+import FeedbackTrigger from '../../../../src/astro/feedback/FeedbackTrigger.astro';
+import FeedbackPanel from '../../../../src/astro/feedback/FeedbackPanel.astro';
 import FeedbackRedactionBoundary from '../../../../src/astro/feedback/FeedbackRedactionBoundary.astro';
 import ToastRegion from '../../../../src/astro/feedback/ToastRegion.astro';
-import ContextualHelpPanel from '../../../../src/astro/help/ContextualHelpPanel.astro';
-import HelpActionList from '../../../../src/astro/help/HelpActionList.astro';
-import HelpButton from '../../../../src/astro/help/HelpButton.astro';
-import HelpDrawer from '../../../../src/astro/help/HelpDrawer.astro';
-import HelpPopover from '../../../../src/astro/help/HelpPopover.astro';
-import HelpTopicLink from '../../../../src/astro/help/HelpTopicLink.astro';
+import HelpArticle from '../../../../src/astro/help/HelpArticle.astro';
+import HelpDialog from '../../../../src/astro/help/HelpDialog.astro';
+import HelpSearch from '../../../../src/astro/help/HelpSearch.astro';
+import HelpKnowledgeNavigation from '../../../../src/astro/help/HelpKnowledgeNavigation.astro';
+import HelpTrigger from '../../../../src/astro/help/HelpTrigger.astro';
 import ActionBar from '../../../../src/astro/layout/ActionBar.astro';
 import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
 import ActivityTimeline from '../../../../src/astro/operating/ActivityTimeline.astro';
@@ -30,6 +29,19 @@ import AllocationTree from '../../../../src/astro/operating/AllocationTree.astro
 import WorkQueueSummary from '../../../../src/astro/operating/WorkQueueSummary.astro';
 import BottomNav from '../../../../src/astro/shell/navigation/BottomNav.astro';
 import ReadinessSummary from '../../../../src/astro/service/ReadinessSummary.astro';
+import ProviderMark from '../../../../src/astro/service/ProviderMark.astro';
+import ProviderCard from '../../../../src/astro/service/ProviderCard.astro';
+import CapabilitySelector from '../../../../src/astro/service/CapabilitySelector.astro';
+import CredentialField from '../../../../src/astro/service/CredentialField.astro';
+import SecretCustodyBadge from '../../../../src/astro/service/SecretCustodyBadge.astro';
+import PermissionChecklist from '../../../../src/astro/service/PermissionChecklist.astro';
+import OperationAuthorizationDialog from '../../../../src/astro/service/OperationAuthorizationDialog.astro';
+import ExplicitCredentialAuthorityPanel from '../../../../src/astro/service/ExplicitCredentialAuthorityPanel.astro';
+import ProviderAuthorityPanel from '../../../../src/astro/service/ProviderAuthorityPanel.astro';
+import RepositoryConnectionPanel from '../../../../src/astro/project/RepositoryConnectionPanel.astro';
+import WorkflowConfigurationPanel from '../../../../src/astro/workflow/WorkflowConfigurationPanel.astro';
+import WorkflowDefinitionPanel from '../../../../src/astro/workflow/WorkflowDefinitionPanel.astro';
+import WorkflowExecutionPanel from '../../../../src/astro/workflow/WorkflowExecutionPanel.astro';
 import ProjectHeader from '../../../../src/astro/shell/chrome/ProjectHeader.astro';
 import PublicFooter from '../../../../src/astro/shell/chrome/PublicFooter.astro';
 import RailNav from '../../../../src/astro/shell/navigation/RailNav.astro';
@@ -45,33 +57,33 @@ import PermissionBoundary from '../../../../src/astro/patterns/PermissionBoundar
 import CollectionTemplate from '../../../../src/astro/templates/CollectionTemplate.astro';
 import DashboardTemplate from '../../../../src/astro/templates/DashboardTemplate.astro';
 import DetailTemplate from '../../../../src/astro/templates/DetailTemplate.astro';
-import ReaderTemplate from '../../../../src/astro/templates/ReaderTemplate.astro';
 import SettingsTemplate from '../../../../src/astro/templates/SettingsTemplate.astro';
 import WorkspaceTemplate from '../../../../src/astro/templates/WorkspaceTemplate.astro';
 import ThemePreviewSwatch from '../../../../src/astro/theme/ThemePreviewSwatch.astro';
 import ThemeScript from '../../../../src/astro/theme/ThemeScript.astro';
-import ContentFieldHelp from '../../../../src/astro/app/controls/content/ContentFieldHelp.astro';
 import DeleteConfirmationModal from '../../../../src/astro/app/controls/data/DeleteConfirmationModal.astro';
-import HostCredentialPermissionNote from '../../../../src/astro/app/controls/data/HostCredentialPermissionNote.astro';
-import LaunchRequirementSummary from '../../../../src/astro/app/controls/templates/LaunchRequirementSummary.astro';
 import AppMarkdownField from '../../../../src/astro/app/controls/content/MarkdownField.astro';
 import PlainTable from '../../../../src/astro/app/controls/data/PlainTable.astro';
 import ProjectControlNav from '../../../../src/astro/app/controls/navigation/ProjectControlNav.astro';
 import RelatedContentCreator from '../../../../src/astro/app/controls/content/RelatedContentCreator.astro';
-import TemplateHostRequirementPicker from '../../../../src/astro/app/controls/templates/TemplateHostRequirementPicker.astro';
-import TemplateResourceRequirementPicker from '../../../../src/astro/app/controls/templates/TemplateResourceRequirementPicker.astro';
-import TemplateSecretRequirementPanel from '../../../../src/astro/app/controls/templates/TemplateSecretRequirementPanel.astro';
 import WorkContentNav from '../../../../src/astro/app/controls/content/WorkContentNav.astro';
 import CapacityDiagnosticsPanel from '../../../../src/astro/app/operations/CapacityDiagnosticsPanel.astro';
-import DeploymentTimeline from '../../../../src/astro/app/operations/DeploymentTimeline.astro';
 import GovernanceDecisionPanel from '../../../../src/astro/app/operations/GovernanceDecisionPanel.astro';
 import GovernancePolicySummary from '../../../../src/astro/app/operations/GovernancePolicySummary.astro';
 import KnowledgeArtifactCard from '../../../../src/astro/app/operations/KnowledgeArtifactCard.astro';
+import KnowledgeAuthoringForm from '../../../../src/astro/knowledge/KnowledgeAuthoringForm.astro';
+import KnowledgeProjectCollection from '../../../../src/astro/knowledge/KnowledgeProjectCollection.astro';
+import KnowledgeReviewCollection from '../../../../src/astro/knowledge/KnowledgeReviewCollection.astro';
+import KnowledgeOutline from '../../../../src/astro/knowledge/KnowledgeOutline.astro';
+import KnowledgeOutlineBranch from '../../../../src/astro/knowledge/outline/KnowledgeOutlineBranch.astro';
+import KnowledgePackWorkbench from '../../../../src/astro/knowledge/KnowledgePackWorkbench.astro';
+import KnowledgeLifecyclePanel from '../../../../src/astro/knowledge/KnowledgeLifecyclePanel.astro';
+import KnowledgePublicationStatus from '../../../../src/astro/knowledge/KnowledgePublicationStatus.astro';
+import KnowledgeRelationPicker from '../../../../src/react/editors/KnowledgeRelationPicker';
 import OperationalTimeline from '../../../../src/astro/app/operations/OperationalTimeline.astro';
 import RepositoryContextPanel from '../../../../src/astro/app/operations/RepositoryContextPanel.astro';
 import SeedOperationsPanel from '../../../../src/astro/app/operations/SeedOperationsPanel.astro';
 import WorkerQueuePanel from '../../../../src/astro/app/operations/WorkerQueuePanel.astro';
-import SensitiveDataUnlock from '../../../../src/astro/app/sensitive/SensitiveDataUnlock.astro';
 import AccountDeletionPanel from '../../../../src/astro/account/AccountDeletionPanel.astro';
 import AccountIdentitySettings from '../../../../src/astro/account/AccountIdentitySettings.astro';
 import AccountTimeZoneSettings from '../../../../src/astro/account/AccountTimeZoneSettings.astro';
@@ -87,7 +99,7 @@ import DevWatchReload from '../../../../src/astro/core/DevWatchReload.astro';
 import SiteTitle from '../../../../src/astro/core/SiteTitle.astro';
 import BookFontControls from '../../../../src/astro/docs/BookFontControls.astro';
 import DesktopSidebarToggle from '../../../../src/astro/docs/DesktopSidebarToggle.astro';
-import DownloadBook from '../../../../src/astro/docs/DownloadBook.astro';
+import MobileSidebarToggle from '../../../../src/astro/docs/MobileSidebarToggle.astro';
 import DocsFooter from '../../../../src/astro/docs/Footer.astro';
 import DocsHeader from '../../../../src/astro/docs/Header.astro';
 import PageFrame from '../../../../src/astro/docs/PageFrame.astro';
@@ -140,7 +152,7 @@ import ProjectActivityChartHarness from './ProjectActivityChartHarness.tsx';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
-import { accountIdentity, accountProjects, accountSessions, notificationCapabilities, notificationPreferences, personalThemes, navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, hostRequirement, resourceRequirement, secretRequirement, templates, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, timelineItems, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
+import { accountIdentity, accountProjects, accountSessions, notificationCapabilities, notificationPreferences, personalThemes, navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
 ---
 
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
@@ -148,6 +160,19 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
 {entry.id === 'resource-card' ? <ResourceCard title="Question record" description="What should the launch team clarify before agent work starts?" href="/displays/resource-card" status="recorded" meta="Project direction" /> : null}
 {entry.id === 'readiness-summary' ? <ReadinessSummary viewModel={readinessViewModel} /> : null}
+{entry.id === 'repository-connection-panel' ? <RepositoryConnectionPanel topology={{ contentRepository: { local: { path: '.' } } }} candidates={[{ value: 'connection|binding|authority', label: 'GitHub · TreeSeed', status: 'ready' }]} csrfToken="catalog" action="#" /> : null}
+{entry.id === 'provider-authority-panel' ? <ProviderAuthorityPanel kind="repository" teamId="team_demo" connectionId="connection_demo" csrfToken="catalog" status="ready" accountLogin="treeseed-ai" installationId="installation_demo" permissions={['Metadata: read', 'Contents: read and write']} /> : null}
+{entry.id === 'explicit-credential-authority-panel' ? <ExplicitCredentialAuthorityPanel teamId="team_demo" connectionId="connection_demo" profileId="profile_demo" title="Repository token authority" description="Use a repository-scoped operator credential." permissions={['Contents: read and write']} csrfToken="catalog" suggestedEnvironmentReference="TREESEED_GITHUB_TOKEN_OWNER_REPOSITORY" /> : null}
+{entry.id === 'workflow-definition-panel' ? <WorkflowDefinitionPanel action="#" csrfToken="catalog" repositoryBindingId="repository_demo" workflowBindingId="workflow_demo" /> : null}
+{entry.id === 'workflow-configuration-panel' ? <WorkflowConfigurationPanel projectId="project_demo" repositoryBindingId="repository_demo" secretBindingId="secret_demo" variableBindingId="variable_demo" csrfToken="catalog" /> : null}
+{entry.id === 'workflow-execution-panel' ? <WorkflowExecutionPanel projectId="project_demo" csrfToken="catalog" sourceSha={'a'.repeat(40)} canOperate timeZone="UTC" definition={{ id: 'operation_demo', workflowId: '.github/workflows/remote-operation.yml', refPolicy: ['refs/heads/main'], allowedInputs: { target: { required: true, maximumLength: 40 } }, requiredSecrets: [{ name: 'DEPLOY_TOKEN', scope: 'repository', required: true }], requiredVariables: [{ name: 'REGION', scope: 'repository', required: true }], actorPolicy: ['user', 'capacity_provider'], modePolicy: ['operator', 'acting'] }} runs={[{ id: 'run_demo', operationId: 'operation_demo', ref: 'refs/heads/main', sourceSha: 'a'.repeat(40), status: 'completed', createdAt: '2026-08-01T12:00:00.000Z', artifacts: [] }]} /> : null}
+{entry.id === 'provider-mark' ? <div class="primitive-inline"><ProviderMark provider="github" label="GitHub" size="lg" /><ProviderMark provider="cloudflare" label="Cloudflare" size="lg" /><ProviderMark provider="railway" label="Railway" size="lg" /></div> : null}
+{entry.id === 'provider-card' ? <ProviderCard provider="github" label="GitHub" description="Continuity Studio organization" status="Ready" statusTone="success"><SecretCustodyBadge mode="client_encrypted_vault" /></ProviderCard> : null}
+{entry.id === 'capability-selector' ? <CapabilitySelector capabilities={[{ type: 'repository-hosting', label: 'Repository hosting', description: 'Host project source repositories.', checked: true }, { type: 'workflow-execution', label: 'Workflow execution', description: 'Run authorized automation workflows.' }, { type: 'artifact-hosting', label: 'Artifact hosting', description: 'Store immutable build artifacts.', status: 'planned' }]} /> : null}
+{entry.id === 'credential-field' ? <CredentialField name="catalog-installation-token" label="Installation token" description="Used only for read-only connection validation." sensitive required /> : null}
+{entry.id === 'secret-custody-badge' ? <div class="primitive-inline"><SecretCustodyBadge mode="client_encrypted_vault" /><SecretCustodyBadge mode="external_vault_reference" /><SecretCustodyBadge mode="metadata_only_reentry" /></div> : null}
+{entry.id === 'permission-checklist' ? <PermissionChecklist permissions={['Read organization metadata', 'Read repository metadata', 'Read workflow status']} /> : null}
+{entry.id === 'operation-authorization-dialog' ? <form><OperationAuthorizationDialog operation="Validate this GitHub connection without changing provider resources." destination="TreeSeed operations runner" requiredFields={['installationToken']}><CredentialField name="catalog-authorization-token" label="Installation token" description="Decrypted only for this single-use validation lease." sensitive required /></OperationAuthorizationDialog></form> : null}
 {entry.id === 'distribution-summary' ? <DistributionSummary viewModel={distributionViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'overlay-status' ? <OverlayStatus viewModel={overlayStatusViewModel} /> : null}
 {entry.id === 'allocation-panel' ? <AllocationPanel viewModel={allocationViewModel} /> : null}
@@ -166,16 +191,15 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
 {entry.id === 'action-bar' ? <ActionBar actions={resolvedActions} /> : null}
-{entry.id === 'feedback-button' ? <div class="primitive-inline"><FeedbackButton targetId="catalog-feedback" /><FeedbackDialog id="catalog-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'feedback-dialog' ? <div><FeedbackButton targetId="catalog-feedback-dialog" /><FeedbackDialog id="catalog-feedback-dialog" context={feedbackContext} /></div> : null}
+{entry.id === 'feedback-trigger' ? <div class="primitive-inline"><FeedbackTrigger targetId="catalog-feedback" /><FeedbackPanel id="catalog-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'feedback-panel' ? <div><FeedbackTrigger targetId="catalog-feedback-panel" /><FeedbackPanel id="catalog-feedback-panel" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-redaction-boundary' ? <p>Public value <FeedbackRedactionBoundary reason="secret">secret-token-preview</FeedbackRedactionBoundary></p> : null}
 {entry.id === 'toast-region' ? <div><p>Notifications from enhanced forms appear in this global region.</p><ToastRegion /></div> : null}
-{entry.id === 'help-button' ? <div class="primitive-inline"><HelpButton targetId="catalog-help" /><HelpDrawer id="catalog-help" context={helpContext} feedbackTargetId="catalog-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'help-drawer' ? <div class="primitive-inline"><HelpButton targetId="catalog-help-drawer" /><HelpDrawer id="catalog-help-drawer" context={helpContext} feedbackTargetId="catalog-help-drawer-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-drawer-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'help-popover' ? <HelpPopover context={helpContext} /> : null}
-{entry.id === 'contextual-help-panel' ? <div><ContextualHelpPanel context={helpContext} feedbackTargetId="catalog-contextual-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-contextual-help-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'help-topic-link' ? <HelpTopicLink topic={helpContext.relatedDocs[0]} /> : null}
-{entry.id === 'help-action-list' ? <HelpActionList actions={resolvedActions} /> : null}
+{entry.id === 'help-trigger' ? <div class="primitive-inline"><HelpTrigger targetId="catalog-help" knowledgePageId="questions" /><HelpDialog id="catalog-help" context={helpContext} feedbackTargetId="catalog-help-feedback" feedbackContext={feedbackContext} /><FeedbackPanel id="catalog-help-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'help-dialog' ? <div class="primitive-inline"><HelpTrigger targetId="catalog-help-dialog" knowledgePageId="questions" /><HelpDialog id="catalog-help-dialog" context={helpContext} /></div> : null}
+{entry.id === 'help-article' ? <HelpArticle page={helpContext.knowledgePages[0]} /> : null}
+{entry.id === 'help-knowledge-navigation' ? <HelpKnowledgeNavigation pages={helpContext.relatedDocs} currentKnowledgePageId="questions" targetId="catalog-help" /> : null}
+{entry.id === 'help-search' ? <HelpSearch placeholder="Search help" /> : null}
 {entry.id === 'permission-boundary' ? <PermissionBoundary state="disabledWithReason" title="Read-only context" remediation="Create access is unavailable in this preview."><Panel title="Allowed content"><p>This slot renders when permission is allowed or read-only.</p></Panel></PermissionBoundary> : null}
 {entry.id === 'panel' ? <Panel title="Panel preview" description="Header, actions, and body."><p>Panel body content sized like an application section.</p></Panel> : null}
 {entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
@@ -184,7 +208,7 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'theme-preview-swatch' ? <ThemePreviewSwatch swatches={['#245b47', '#d8efe2', '#f2b84b', '#273142']} label="Theme preview swatch" /> : null}
 {entry.id === 'theme-script' ? <div><ThemeScript defaultScheme="fern" defaultMode="system" includeCss={false} /><p class="ts-subtle">ThemeScript is mounted for this preview with generated CSS disabled.</p><KeyValueList items={[{ key: 'Scheme', value: 'fern' }, { key: 'Mode', value: 'system' }]} /></div> : null}
 {entry.id === 'shell-header' ? <ShellHeader brand={brand} showMenuButton><Fragment slot="actions"><ShellIconLink href="/" label="Book home" icon="book" /></Fragment></ShellHeader> : null}
-{entry.id === 'site-user-controls' ? <SiteUserControls items={siteItems} currentPath="/knowledge/" appearance={appearance} helpContext={helpContext} feedbackContext={feedbackContext} showHomeLink showManagerLink /> : null}
+{entry.id === 'site-user-controls' ? <SiteUserControls items={siteItems} currentPath="/books/" appearance={appearance} helpContext={helpContext} feedbackContext={feedbackContext} showManagerLink /> : null}
 {entry.id === 'team-operations-panel' ? <TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }, { label: 'Browse market', href: '/market/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary', icon: 'account' }, { label: 'Sign out', action: '/auth/sign-out', method: 'post', hiddenFields: { csrfToken: 'preview' }, variant: 'ghost', icon: 'sign-out', iconOnly: true }]}><Fragment slot="teamSelector"><Badge tone="info">Continuity Studio</Badge></Fragment></TeamOperationsPanel> : null}
 {entry.id === 'team-operations-drawer' ? <div><button class="ts-button" type="button" data-ts-team-drawer-open="catalog-team-drawer">Open drawer</button><TeamOperationsDrawer id="catalog-team-drawer"><TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }]} /><SiteUserControls items={siteItems} currentPath="/market/" appearance={appearance} showAppearanceControl={false} /></TeamOperationsDrawer></div> : null}
 {entry.id === 'control-surface' ? <ControlSurface title="Control surface" description="Header, actions, tabs, and body stay stable across app pages."><Fragment slot="actions"><a class="ts-button" href="/displays/control-surface">Action</a></Fragment><Fragment slot="tabs"><SurfaceTabs items={surfaceTabItems} current="overview" label="Control surface tabs" /></Fragment><Panel title="Surface body"><p>Application page content is rendered here.</p></Panel></ControlSurface> : null}
@@ -210,23 +234,15 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'collection-template' ? <CollectionTemplate viewModel={collectionViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'dashboard-template' ? <DashboardTemplate viewModel={dashboardViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'detail-template' ? <DetailTemplate title="Question detail" description="Detail template preview." actions={resolvedActions} metadata={[{ key: 'Status', value: 'Open' }, { key: 'Type', value: 'Research' }]}><Panel title="Question body"><p>What should the launch team clarify before agent work starts?</p></Panel></DetailTemplate> : null}
-{entry.id === 'reader-template' ? <ReaderTemplate title="Knowledge page" description="Reader template preview." actions={resolvedActions} navItems={[{ label: 'Overview', href: '/displays/reader-template', current: true }, { label: 'Next', href: '/displays/reader-template/next' }]}><p>Reader content uses runtime data in later phases while keeping the frame reusable.</p></ReaderTemplate> : null}
 {entry.id === 'settings-template' ? <SettingsTemplate title="Settings" description="Settings template preview." actions={resolvedActions} sections={[{ label: 'General', href: '/displays/settings-template', current: true }, { label: 'Danger', href: '/displays/settings-template#danger' }]}><Panel title="General"><p>Settings content is supplied by route view models.</p></Panel></SettingsTemplate> : null}
 {entry.id === 'workspace-template' ? <WorkspaceTemplate viewModel={workspaceViewModel} actions={resolvedActions} /> : null}
-{entry.id === 'content-field-help' ? <div class="primitive-inline"><span>Title</span><ContentFieldHelp label="Title" purpose="A short, scannable name for the record." example="Capacity launch review" /></div> : null}
 {entry.id === 'app-markdown-field' ? <AppMarkdownField label="Project note" name="project_note" value="## Launch note\n\nCapture the next review step." rows={8} help="Application work surfaces use this Markdown field variant." /> : null}
 {entry.id === 'delete-confirmation-modal' ? <><button class="ts-button" type="button" onclick="window.treeseedDeleteConfirmation?.confirm({ requiredText: 'DELETE', itemName: 'Preview project' })">Open delete modal</button><DeleteConfirmationModal /></> : null}
-{entry.id === 'host-credential-permission-note' ? <HostCredentialPermissionNote hostType="web" /> : null}
-{entry.id === 'launch-requirement-summary' ? <LaunchRequirementSummary templates={templates} defaultTemplateId="template:monitoring-console" /> : null}
 {entry.id === 'plain-table' ? <PlainTable columns={tableColumns} rows={tableRows} interactive pageSize={2} /> : null}
 {entry.id === 'project-control-nav' ? <ProjectControlNav projectId="project-42" current="deploy" /> : null}
 {entry.id === 'related-content-creator' ? <RelatedContentCreator projectId="project-42" parentCollection="objectives" parentSlug="market-launch" parentTitle="Market launch readiness" actions={[{ collection: 'questions', label: 'Question' }, { collection: 'decisions', label: 'Decision' }]} /> : null}
-{entry.id === 'template-host-requirement-picker' ? <TemplateHostRequirementPicker requirement={hostRequirement} selectName="webHost" /> : null}
-{entry.id === 'template-resource-requirement-picker' ? <TemplateResourceRequirementPicker requirement={resourceRequirement} /> : null}
-{entry.id === 'template-secret-requirement-panel' ? <TemplateSecretRequirementPanel requirement={secretRequirement} /> : null}
 {entry.id === 'work-content-nav' ? <WorkContentNav current="objectives" /> : null}
 {entry.id === 'capacity-diagnostics-panel' ? <CapacityDiagnosticsPanel capacity={capacity} diagnostics={diagnostics} /> : null}
-{entry.id === 'deployment-timeline' ? <DeploymentTimeline items={timelineItems} /> : null}
 {entry.id === 'governance-decision-panel' ? <GovernanceDecisionPanel approval={approval} /> : null}
 {entry.id === 'governance-policy-summary' ? <GovernancePolicySummary policies={policies} constraints={constraints} /> : null}
 {entry.id === 'knowledge-artifact-card' ? <KnowledgeArtifactCard artifact={artifact} /> : null}
@@ -234,7 +250,6 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'repository-context-panel' ? <RepositoryContextPanel repositories={repositories} /> : null}
 {entry.id === 'seed-operations-panel' ? <SeedOperationsPanel seeds={seeds} /> : null}
 {entry.id === 'worker-queue-panel' ? <WorkerQueuePanel workers={workers} /> : null}
-{entry.id === 'sensitive-data-unlock' ? <div><SensitiveDataUnlock part="button" /><SensitiveDataUnlock part="modal" /></div> : null}
 {entry.id === 'account-deletion-panel' ? <AccountDeletionPanel blockers={[]} csrfToken="preview-csrf" hasCredential /> : null}
 {entry.id === 'account-identity-settings' ? <AccountIdentitySettings identity={accountIdentity} availableProviders={[{ id: 'google', label: 'Google' }]} csrfToken="preview-csrf" /> : null}
 {entry.id === 'account-time-zone-settings' ? <AccountTimeZoneSettings timeZone="America/New_York" csrfToken="preview-csrf" /> : null}
@@ -250,7 +265,7 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'site-title' ? <SiteTitle siteTitleHref="/" /> : null}
 {entry.id === 'book-font-controls' ? <BookFontControls /> : null}
 {entry.id === 'desktop-sidebar-toggle' ? <div class="primitive-inline"><DesktopSidebarToggle side="left" label="book contents" /><DesktopSidebarToggle side="right" label="page contents" /></div> : null}
-{entry.id === 'download-book' ? <DownloadBook href="/books/operations.md" fileName="operations.md" title="Download operations book" /> : null}
+{entry.id === 'mobile-sidebar-toggle' ? <MobileSidebarToggle controls="catalog-book-sidebar" /> : null}
 {entry.id === 'footer' ? <DocsFooter lastUpdated="2026-06-10" editHref="/edit/docs" previous={{ label: 'Overview', href: '/docs/' }} next={{ label: 'Launch', href: '/docs/launch/' }} /> : null}
 {entry.id === 'header' ? <DocsHeader hasSidebar hasToc showSearch contactHref="/contact/" /> : null}
 {entry.id === 'page-frame' ? <PageFrame hasSidebar sidebarLabel="Docs navigation"><DocsHeader slot="header" hasSidebar /><DocsSidebar slot="sidebar" items={sidebarItems} /><PageTitle title="Docs frame" /><p>PageFrame lays out the docs header, sidebar, main content, and footer host.</p></PageFrame> : null}
@@ -271,6 +286,15 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'commons-delegation-panel' ? <CommonsDelegationPanel delegations={entry.defaultProps.delegations as any[]} /> : null}
 {entry.id === 'commons-steward-decision-panel' ? <CommonsStewardDecisionPanel proposalId={entry.defaultProps.proposalId as string} action={entry.defaultProps.action as string} /> : null}
 {entry.id === 'book-list' ? <BookList items={bookItems} /> : null}
+{entry.id === 'knowledge-project-collection' ? <KnowledgeProjectCollection projects={[{ id: 'project-1', name: 'Platform guide', description: 'Repository-native product knowledge.', repositoryReady: true, bookCount: 3, draftCount: 1 }, { id: 'project-2', name: 'Operations handbook', repositoryReady: false }]} /> : null}
+{entry.id === 'knowledge-authoring-form' ? <KnowledgeAuthoringForm action="/v1/knowledge/workspaces/workspace-preview/content" csrfToken="sandbox-csrf" workspaceId="workspace-preview" version={1} values={{ kind: 'page', id: 'knowledge.preview', bookId: 'book.preview', slug: 'getting-started', title: 'Getting started', summary: 'A safe authoring preview.', visibility: 'team', status: 'draft', tags: 'guidance, authoring', bodyMarkdown: '## Start here\n\nWrite and review repository-native knowledge.' }} /> : null}
+{entry.id === 'knowledge-relation-picker' ? <KnowledgeRelationPicker client:load initialIds={['account.identity']} searchEndpoint="/api/catalog/knowledge-search" /> : null}
+{entry.id === 'knowledge-review-collection' ? <KnowledgeReviewCollection action="/v1/knowledge/reviews" csrfToken="sandbox-csrf" timeZone="America/New_York" reviews={[{ id: 'review-1', workspaceId: 'workspace-preview', status: 'open', branchName: 'knowledge/operation-preview', commitSha: '7f2c4d9b18a0', createdAt: '2026-07-31T14:00:00.000Z' }]} /> : null}
+{entry.id === 'knowledge-outline' ? <KnowledgeOutline books={[{ id: 'book-preview', title: 'Platform guide', summary: 'Shared operational knowledge.', status: 'published', pages: [{ id: 'page-start', bookId: 'book-preview', slug: 'start', title: 'Start here', summary: 'Understand the platform knowledge workflow.', status: 'published', visibility: 'team', order: 1, manageHref: '/displays/knowledge-outline' }, { id: 'page-review', bookId: 'book-preview', slug: 'review', title: 'Review changes', summary: 'Inspect and approve a source-backed revision.', status: 'review', visibility: 'team', order: 2 }] }]} /> : null}
+{entry.id === 'knowledge-outline-branch' ? <KnowledgeOutlineBranch pages={[{ id: 'page-start', title: 'Start here', summary: 'Understand the platform knowledge workflow.', status: 'published', visibility: 'team', order: 1, manageHref: '/displays/knowledge-outline-branch' }, { id: 'page-review', parentId: 'page-start', title: 'Review changes', summary: 'Inspect and approve a source-backed revision.', status: 'review', visibility: 'team', order: 2 }]} /> : null}
+{entry.id === 'knowledge-pack-workbench' ? <KnowledgePackWorkbench action="/displays/knowledge-pack-workbench" csrfToken="sandbox-csrf" timeZone="America/New_York" books={[{ id: 'book-preview', title: 'Platform guide', summary: 'Shared operational knowledge.', status: 'published', packPolicy: 'allowed', source: { projectId: 'project-preview' } }]} collections={[{ id: 'collection-preview', name: 'Platform library', summary: 'Saved book selection.', bookIds: ['book-preview'], version: 1, managed: true }]} builds={[]} /> : null}
+{entry.id === 'knowledge-lifecycle-panel' ? <KnowledgeLifecyclePanel action="/displays/knowledge-lifecycle-panel" csrfToken="sandbox-csrf" projectId="project-preview" path="docs/src/content/knowledge/book-preview/start.md" expectedSha="7f2c4d9b18a0" kind="page" status="published" dependencies={{ backlinks: [{ id: 'page-reference', title: 'Related guidance' }] }} /> : null}
+{entry.id === 'knowledge-publication-status' ? <KnowledgePublicationStatus timeZone="America/New_York" status={{ manifest: { revision: '7f2c4d9b18a0', generatedAt: '2026-08-01T12:00:00.000Z', entryCount: 12, projects: [{ projectId: 'project-preview', commitSha: '7f2c4d9b18a0', graphRevision: 'graph-42' }] } }} /> : null}
 {entry.id === 'ctasection' ? <CTASection title="Build a governed launch path" body="Use reusable components to keep market and docs experiences consistent." primaryHref="/displays/ctasection" primaryLabel="Open workflow" secondaryHref="/" secondaryLabel="All components" /> : null}
 {entry.id === 'chronicle-list' ? <ChronicleList items={chronicleItems} /> : null}
 {entry.id === 'hero' ? <Hero><span slot="eyebrow">TreeSeed UI</span><h2 slot="title">Reusable surfaces for launch operations</h2><p slot="body">The hero component presents public site entry points with supporting actions and context.</p><a slot="actions" class="ts-button" href="/displays/hero">Open component</a><Panel slot="aside" title="Launch state"><KeyValueList items={[{ key: 'Status', value: 'Ready' }, { key: 'Updated', value: '2026-06-10' }]} /></Panel></Hero> : null}

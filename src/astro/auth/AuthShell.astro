@@ -7,7 +7,7 @@ import type { FeedbackContext, HelpContext } from '../../lib/foundation/contract
 import type { ThemePreference } from '../../theme/types.ts';
 import { SITE_SLOGAN } from '../../site-brand.ts';
 
-// FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through SiteUserControls and ShellFrame.
+// Feedback and contextual help are composed once through SiteUserControls and ShellFrame.
 
 interface Props {
 	title: string;
@@ -25,11 +25,10 @@ const {
 	feedbackContext,
 } = Astro.props as Props;
 const feedbackDialogId = 'auth-shell-feedback';
-const helpDrawerId = 'auth-shell-help';
+const helpDrawerId = 'shell-help';
 const authLinks = [
 	{ label: 'Home', href: '/' },
 	{ label: 'Market', href: '/market/' },
-	{ label: 'Knowledge', href: '/knowledge/' },
 ];
 ---
 

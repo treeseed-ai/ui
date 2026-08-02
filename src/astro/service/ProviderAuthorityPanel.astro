@@ -1,0 +1,45 @@
+---
+import Badge from '../data/Badge.astro';
+import KeyValueList from '../data/KeyValueList.astro';
+import Button from '../forms/actions/Button.astro';
+import PermissionChecklist from './PermissionChecklist.astro';
+import Panel from '../surface/Panel.astro';
+
+interface Props {
+	kind: 'repository' | 'workflow';
+	teamId: string;
+	connectionId: string;
+	csrfToken: string;
+	status?: string | null;
+	accountLogin?: string | null;
+	installationId?: string | null;
+	permissions: string[];
+}
+
+const { kind, teamId, connectionId, csrfToken, status, accountLogin, installationId, permissions } = Astro.props;
+const title = kind === 'repository' ? 'Repository Connector' : 'Workflow Connector';
+const description = kind === 'repository'
+	? 'Publishes reviewed Git commits with repository-scoped Contents authority.'
+	: 'Dispatches allowlisted Actions and manages separately enabled secrets and variables.';
+const ready = status === 'ready';
+---
+
+<Panel eyebrow="Managed GitHub App" title={title} description={description} knowledgePageId="provider.github">
+	<div class="ts-badge-list">
+		<Badge tone={ready ? 'success' : 'warning'} size="sm">{ready ? 'Authorized' : 'Authorization required'}</Badge>
+		<Badge tone="muted" size="sm">Selected repositories</Badge>
+	</div>
+	{ready ? <KeyValueList items={[
+		{ key: 'GitHub account', value: accountLogin || 'Connected account' },
+		{ key: 'Installation', value: installationId || 'Verified installation' },
+		{ key: 'Credential lifetime', value: 'Minted just in time' },
+	]} /> : null}
+	<PermissionChecklist permissions={permissions} />
+	<form method="post" action={`/v1/provider-connectors/github/${kind}/setup`} data-ts-submit="enhanced"
+		data-ts-form-adapter="github-connector" data-ts-success-message={`${title} authorization opened.`}>
+		<input type="hidden" name="csrfToken" value={csrfToken} />
+		<input type="hidden" name="teamId" value={teamId} />
+		<input type="hidden" name="connectionId" value={connectionId} />
+		<Button type="submit" variant={ready ? 'secondary' : 'primary'}>{ready ? `Reauthorize ${title}` : `Authorize ${title}`}</Button>
+	</form>
+</Panel>

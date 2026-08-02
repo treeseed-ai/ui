@@ -1,99 +1,46 @@
 import type { MarketComponentMapEntry } from '../../marketComponentMap.ts';
 
+const entry = (
+	uiPath: string,
+	sourcePath: string,
+	sandboxRoute?: string,
+): MarketComponentMapEntry => ({
+	uiPath,
+	sourcePath,
+	category: 'App Controls',
+	parityMode: 'rendered-visual',
+	allowedSourceDifferences: ['import-paths', 'package-safe-types', 'structural-props', 'route-base-props', 'generic-component-names'],
+	...(sandboxRoute ? { sandboxRoute } : {}),
+});
+
 export const APP_CONTROLS_COMPONENTS = [
-{
-    uiPath: "src/astro/app/controls/content/ContentFieldHelp.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/ContentFieldHelp.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/content-field-help",
-  },
-{
-    uiPath: "src/astro/app/controls/data/DeleteConfirmationModal.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/DeleteConfirmationModal.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/delete-confirmation-modal",
-  },
-{
-    uiPath: "src/astro/app/controls/data/HostCredentialPermissionNote.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/HostCredentialPermissionNote.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/host-credential-permission-note",
-  },
-{
-    uiPath: "src/astro/app/controls/templates/LaunchRequirementSummary.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/LaunchRequirementSummary.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/launch-requirement-summary",
-  },
-{
-    uiPath: "src/astro/app/controls/content/MarkdownField.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/MarkdownField.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-  },
-{
-    uiPath: "src/astro/app/controls/data/PlainTable.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/PlainTable.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/plain-table",
-  },
-{
-    uiPath: "src/astro/app/controls/navigation/ProjectControlNav.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/ProjectControlNav.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/project-control-nav",
-  },
-{
-    uiPath: "src/astro/app/controls/content/RelatedContentCreator.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/RelatedContentCreator.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/related-content-creator",
-  },
-{
-    uiPath: "src/astro/app/controls/templates/TemplateHostRequirementPicker.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/TemplateHostRequirementPicker.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/template-host-requirement-picker",
-  },
-{
-    uiPath: "src/astro/app/controls/templates/TemplateResourceRequirementPicker.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/TemplateResourceRequirementPicker.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/template-resource-requirement-picker",
-  },
-{
-    uiPath: "src/astro/app/controls/templates/TemplateSecretRequirementPanel.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/TemplateSecretRequirementPanel.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/template-secret-requirement-panel",
-  },
-{
-    uiPath: "src/astro/app/controls/content/WorkContentNav.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/src/components/app/controls/WorkContentNav.astro",
-    category: "App Controls",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/work-content-nav",
-  }
+	entry(
+		'src/astro/app/controls/data/DeleteConfirmationModal.astro',
+		'/home/adrian/Projects/treeseed/market/src/components/app/controls/DeleteConfirmationModal.astro',
+		'/displays/delete-confirmation-modal',
+	),
+	entry(
+		'src/astro/app/controls/content/MarkdownField.astro',
+		'/home/adrian/Projects/treeseed/market/src/components/app/controls/MarkdownField.astro',
+	),
+	entry(
+		'src/astro/app/controls/data/PlainTable.astro',
+		'/home/adrian/Projects/treeseed/market/src/components/app/controls/PlainTable.astro',
+		'/displays/plain-table',
+	),
+	entry(
+		'src/astro/app/controls/navigation/ProjectControlNav.astro',
+		'/home/adrian/Projects/treeseed/market/src/components/app/controls/ProjectControlNav.astro',
+		'/displays/project-control-nav',
+	),
+	entry(
+		'src/astro/app/controls/content/RelatedContentCreator.astro',
+		'/home/adrian/Projects/treeseed/market/src/components/app/controls/RelatedContentCreator.astro',
+		'/displays/related-content-creator',
+	),
+	entry(
+		'src/astro/app/controls/content/WorkContentNav.astro',
+		'/home/adrian/Projects/treeseed/market/src/components/app/controls/WorkContentNav.astro',
+		'/displays/work-content-nav',
+	),
 ] as const satisfies readonly MarketComponentMapEntry[];

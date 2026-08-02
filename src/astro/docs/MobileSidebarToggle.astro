@@ -1,0 +1,106 @@
+---
+interface Props {
+	controls?: string;
+	label?: string;
+}
+
+const { controls = 'starlight__sidebar', label = 'Toggle book contents' } = Astro.props as Props;
+---
+
+<ts-docs-mobile-menu class="print:hidden">
+	<button type="button" aria-expanded="false" aria-label={label} aria-controls={controls}>
+		<svg class="open-menu" viewBox="0 0 24 24" aria-hidden="true">
+			<path d="M4 7h16M4 12h16M4 17h16" />
+		</svg>
+		<svg class="close-menu" viewBox="0 0 24 24" aria-hidden="true">
+			<path d="m6 6 12 12M18 6 6 18" />
+		</svg>
+	</button>
+</ts-docs-mobile-menu>
+
+<script>
+	class DocsMobileMenu extends HTMLElement {
+		button = this.querySelector('button');
+
+		connectedCallback() {
+			if (!(this.button instanceof HTMLButtonElement) || this.dataset.bound === 'true') return;
+			this.dataset.bound = 'true';
+			this.button.addEventListener('click', () => this.setExpanded(this.getAttribute('aria-expanded') !== 'true'));
+			this.closest('nav')?.addEventListener('keyup', (event) => {
+				if (event.code !== 'Escape') return;
+				this.setExpanded(false);
+				this.button?.focus();
+			});
+		}
+
+		setExpanded(expanded: boolean) {
+			this.setAttribute('aria-expanded', String(expanded));
+			this.button?.setAttribute('aria-expanded', String(expanded));
+			document.body.toggleAttribute('data-mobile-menu-expanded', expanded);
+		}
+	}
+
+	if (!customElements.get('ts-docs-mobile-menu')) customElements.define('ts-docs-mobile-menu', DocsMobileMenu);
+</script>
+
+<style>
+	@layer starlight.core {
+		button {
+			position: fixed;
+			top: calc((var(--sl-nav-height) - var(--sl-menu-button-size)) / 2);
+			inset-inline-end: var(--sl-nav-pad-x);
+			z-index: var(--sl-z-index-navbar);
+			display: grid;
+			place-items: center;
+			border: 1px solid var(--sl-color-gray-5);
+			border-radius: 0.35rem;
+			width: var(--sl-menu-button-size);
+			height: var(--sl-menu-button-size);
+			padding: 0.55rem;
+			background: var(--sl-color-bg-nav);
+			color: var(--sl-color-text);
+			cursor: pointer;
+		}
+
+		button:hover,
+		button:focus-visible,
+		[aria-expanded='true'] button {
+			border-color: var(--sl-color-text-accent);
+			color: var(--sl-color-text-accent);
+		}
+
+		svg {
+			width: 1.35rem;
+			height: 1.35rem;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 1.8;
+			stroke-linecap: round;
+		}
+
+		[aria-expanded='true'] .open-menu,
+		:not([aria-expanded='true']) .close-menu {
+			display: none;
+		}
+
+		@media (min-width: 50rem) {
+			ts-docs-mobile-menu {
+				display: none;
+			}
+		}
+	}
+</style>
+
+<style is:global>
+	@layer starlight.core {
+		body[data-mobile-menu-expanded] {
+			overflow: hidden;
+		}
+
+		@media (min-width: 50rem) {
+			body[data-mobile-menu-expanded] {
+				overflow: auto;
+			}
+		}
+	}
+</style>

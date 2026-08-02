@@ -1,0 +1,8 @@
+---
+import Badge from '../../data/Badge.astro';
+interface Props { status: 'new' | 'triaged' | 'in_progress' | 'resolved'; }
+const { status } = Astro.props as Props;
+const labels = { new: 'New', triaged: 'Triaged', in_progress: 'In progress', resolved: 'Resolved' };
+const tones = { new: 'info', triaged: 'warning', in_progress: 'accent', resolved: 'success' } as const;
+---
+<Badge tone={tones[status]} size="sm">{labels[status]}</Badge>

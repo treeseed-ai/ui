@@ -20,9 +20,6 @@ export const operationsComponents: ComponentCatalogEntry[] = [
   display('capacity-diagnostics-panel', 'CapacityDiagnosticsPanel', 'Operations', 'astro', 'Reusable CapacityDiagnosticsPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/app/operations/CapacityDiagnosticsPanel.astro'),
-  display('deployment-timeline', 'DeploymentTimeline', 'Operations', 'astro', 'Reusable DeploymentTimeline component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
-      { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
-    ], undefined, '@treeseed/ui/components/astro/app/operations/DeploymentTimeline.astro'),
   display('governance-decision-panel', 'GovernanceDecisionPanel', 'Operations', 'astro', 'Reusable GovernanceDecisionPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/app/operations/GovernanceDecisionPanel.astro'),

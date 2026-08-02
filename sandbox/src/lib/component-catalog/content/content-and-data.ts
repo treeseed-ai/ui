@@ -2,6 +2,41 @@ import type { ComponentCatalogEntry } from '../support/component-kind.ts';
 import { display } from '../support/component-kind.ts';
 
 export const contentAndDataComponents: ComponentCatalogEntry[] = [
+  display('knowledge-project-collection', 'KnowledgeProjectCollection', 'Knowledge', 'astro', 'Responsive project collection for repository-native books and authoring entry points.', 'large', { projects: 2 }, [
+      { name: 'projects', type: 'ProjectItem[]', defaultValue: 2, description: 'Authorized projects with TreeDX readiness and knowledge counts.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeProjectCollection.astro'),
+  display('knowledge-authoring-form', 'KnowledgeAuthoringForm', 'Knowledge', 'astro', 'Schema-driven book and page metadata with the canonical rich Markdown editor.', 'large', { kind: 'page' }, [
+      { name: 'workspaceId', type: 'string', defaultValue: 'workspace-preview', description: 'TreeDX authoring workspace correlation.' },
+      { name: 'values', type: 'Record<string, unknown>', defaultValue: { kind: 'page' }, description: 'Validated draft metadata and Markdown body.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeAuthoringForm.astro'),
+  display('knowledge-relation-picker', 'KnowledgeRelationPicker', 'Knowledge', 'react', 'Authorized knowledge search and stable relationship selection with derived backlinks.', 'large', { initialIds: ['account.identity'] }, [
+      { name: 'initialIds', type: 'string[]', defaultValue: ['account.identity'], description: 'Existing stable knowledge-page relationships.' },
+      { name: 'searchEndpoint', type: 'string', defaultValue: '/v1/knowledge/search', description: 'Policy-filtered TreeDX knowledge search endpoint.' },
+    ], undefined, '@treeseed/ui/components/react/KnowledgeRelationPicker'),
+  display('knowledge-review-collection', 'KnowledgeReviewCollection', 'Knowledge', 'astro', 'Review queue with source revisions, user-time-zone timestamps, and structured decisions.', 'large', { reviews: 1 }, [
+      { name: 'reviews', type: 'KnowledgeReview[]', defaultValue: 1, description: 'Authorized review records.' },
+      { name: 'timeZone', type: 'string', defaultValue: 'UTC', description: 'Signed-in user IANA time zone.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeReviewCollection.astro'),
+  display('knowledge-outline', 'KnowledgeOutline', 'Knowledge', 'astro', 'Expandable ordered book and page outline with policy-resolved management actions.', 'large', { books: 1, pages: 2 }, [
+      { name: 'books', type: 'OutlineBook[]', defaultValue: 1, description: 'Books and their authorized ordered pages.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeOutline.astro'),
+  display('knowledge-outline-branch', 'KnowledgeOutlineBranch', 'Knowledge', 'astro', 'Recursive ordered page branch used by the shared knowledge outline.', 'large', { pages: 2 }, [
+      { name: 'pages', type: 'OutlinePage[]', defaultValue: 2, description: 'Pages in the current authorized outline.' },
+      { name: 'parentId', type: 'string', defaultValue: undefined, description: 'Optional parent page for a nested branch.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/outline/KnowledgeOutlineBranch.astro'),
+  display('knowledge-pack-workbench', 'KnowledgePackWorkbench', 'Knowledge', 'astro', 'Saved book collections and immutable TreeDX snapshot pack builds.', 'large', { books: 3, collections: 1, builds: 1 }, [
+      { name: 'books', type: 'BookDefinition[]', defaultValue: 3, description: 'Authorized pack-ready books.' },
+      { name: 'collections', type: 'BookCollectionDefinition[]', defaultValue: 1, description: 'Saved and managed book selections.' },
+      { name: 'builds', type: 'KnowledgePackBuild[]', defaultValue: 1, description: 'Immutable pack build history.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgePackWorkbench.astro'),
+  display('knowledge-lifecycle-panel', 'KnowledgeLifecyclePanel', 'Knowledge', 'astro', 'Fail-closed archive and restore preparation with visible graph and pack dependencies.', 'large', { kind: 'page', status: 'published' }, [
+      { name: 'kind', type: "'book' | 'page'", defaultValue: 'page', description: 'Repository-native content kind.' },
+      { name: 'dependencies', type: 'KnowledgeLifecycleDependencies', defaultValue: {}, description: 'Authorized blockers resolved from TreeDX and saved collections.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeLifecyclePanel.astro'),
+  display('knowledge-publication-status', 'KnowledgePublicationStatus', 'Knowledge', 'astro', 'Per-project source, graph, and atomic publication parity status.', 'large', { projects: 1 }, [
+      { name: 'status', type: 'KnowledgePublicationStatus', defaultValue: { projects: 1 }, description: 'Authorized atomic publication state.' },
+      { name: 'timeZone', type: 'string', defaultValue: 'UTC', description: 'Signed-in user IANA time zone.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgePublicationStatus.astro'),
   display('action-list', 'ActionList', 'Data', 'astro', 'Actionable list rows with metadata.', 'medium', { items: 3 }, [
       { name: 'items', type: 'ActionListItem[]', defaultValue: 3, description: 'Rows to render.' },
     ]),
@@ -75,9 +110,10 @@ export const contentAndDataComponents: ComponentCatalogEntry[] = [
   display('desktop-sidebar-toggle', 'DesktopSidebarToggle', 'Docs', 'astro', 'Reusable DesktopSidebarToggle component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/docs/DesktopSidebarToggle.astro'),
-  display('download-book', 'DownloadBook', 'Docs', 'astro', 'Reusable DownloadBook component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
-      { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
-    ], undefined, '@treeseed/ui/components/astro/docs/DownloadBook.astro'),
+  display('mobile-sidebar-toggle', 'MobileSidebarToggle', 'Docs', 'astro', 'Accessible mobile control for the canonical Starlight book contents sidebar.', 'small', { controls: 'starlight__sidebar' }, [
+      { name: 'controls', type: 'string', defaultValue: 'starlight__sidebar', description: 'ID of the controlled book sidebar.' },
+      { name: 'label', type: 'string', defaultValue: 'Toggle book contents', description: 'Accessible control label.' },
+    ], undefined, '@treeseed/ui/components/astro/docs/MobileSidebarToggle.astro'),
   display('footer', 'Footer', 'Docs', 'astro', 'Reusable Footer component copied into the TreeSeed UI library.', 'medium', { source: 'Docs' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/docs/Footer.astro'),

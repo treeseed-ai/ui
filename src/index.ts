@@ -5,7 +5,6 @@ export * from './forms.ts';
 export * from './lib/foundation/contracts.ts';
 export * from './lib/charts/index.ts';
 export * from './lib/pie-allocation/math.ts';
-export * from './lib/app/deployment-action-status.ts';
 export * from './lib/app/platform-operation-status.ts';
 export * from './lib/app/related-content-creator.ts';
 export * from './lib/app/markdown-field.ts';

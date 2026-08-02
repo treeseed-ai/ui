@@ -1,0 +1,52 @@
+---
+import HelpTrigger from '../help/HelpTrigger.astro';
+
+interface SetupStep {
+	id: string;
+	label: string;
+	description: string;
+	href?: string;
+	status: 'complete' | 'current' | 'upcoming' | 'blocked';
+	knowledgePageId?: string;
+}
+
+interface Props {
+	title?: string;
+	description?: string;
+	steps: SetupStep[];
+	label?: string;
+	class?: string;
+}
+
+const {
+	title = 'Setup progress',
+	description,
+	steps,
+	label = title,
+	class: className,
+} = Astro.props as Props;
+---
+
+<nav class:list={['ts-setup-progress', className]} aria-label={label}>
+	<header class="ts-setup-progress__header">
+		<p class="ts-setup-progress__eyebrow">Guided setup</p>
+		<h2>{title}</h2>
+		{description ? <p>{description}</p> : null}
+	</header>
+	<ol>
+		{steps.map((step, index) => (
+			<li data-status={step.status} aria-current={step.status === 'current' ? 'step' : undefined}>
+				<span class="ts-setup-progress__marker" aria-hidden="true">
+					{step.status === 'complete' ? '✓' : index + 1}
+				</span>
+				<div class="ts-setup-progress__content">
+					<div class="ts-setup-progress__title">
+						{step.href && step.status !== 'blocked' ? <a href={step.href}>{step.label}</a> : <strong>{step.label}</strong>}
+						{step.knowledgePageId ? <HelpTrigger knowledgePageId={step.knowledgePageId} label={`Help with ${step.label}`} /> : null}
+					</div>
+					<p>{step.description}</p>
+				</div>
+			</li>
+		))}
+	</ol>
+</nav>

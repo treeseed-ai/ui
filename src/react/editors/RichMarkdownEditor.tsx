@@ -56,10 +56,8 @@ const codeBlockLanguages = {
 };
 
 const jsxComponentDescriptors: JsxComponentDescriptor[] = [
-	{ name: '*', kind: 'flow', props: [], hasChildren: true, Editor: GenericJsxEditor },
-	{ name: '*', kind: 'text', props: [], hasChildren: true, Editor: GenericJsxEditor },
-	{ name: null, kind: 'flow', props: [], hasChildren: true, Editor: GenericJsxEditor },
-];
+	'Aside', 'Badge', 'Card', 'CardGrid', 'Code', 'Steps', 'TabItem', 'Tabs',
+].map((name) => ({ name, kind: 'flow', props: [], hasChildren: true, Editor: GenericJsxEditor }));
 
 type MdxEditorSurfaceProps = {
 	initialMarkdown: string;
@@ -88,13 +86,11 @@ function MdxEditorSurface(props: MdxEditorSurfaceProps) {
 				linkDialogPlugin(),
 				imagePlugin({
 					allowSetImageDimensions: true,
-					imageAutocompleteSuggestions: [
-						'https://placehold.co/1200x630',
-					],
+					imageAutocompleteSuggestions: [],
 				}),
 				jsxPlugin({
 					jsxComponentDescriptors: [...jsxComponentDescriptors],
-					allowFragment: true,
+					allowFragment: false,
 				}),
 				codeBlockPlugin({ defaultCodeBlockLanguage: 'mdx' }),
 				codeMirrorPlugin({

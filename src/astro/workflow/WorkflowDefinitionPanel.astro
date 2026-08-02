@@ -1,0 +1,32 @@
+---
+import Button from '../forms/actions/Button.astro';
+import Field from '../forms/fields/Field.astro';
+import TextArea from '../forms/fields/Textarea.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Panel from '../surface/Panel.astro';
+
+interface Props { action: string; csrfToken: string; repositoryBindingId: string; workflowBindingId: string; definition?: any; }
+const { action, csrfToken, repositoryBindingId, workflowBindingId, definition } = Astro.props;
+const names = (items: any[]) => (items ?? []).map((item) => item.name).join('\n');
+---
+
+<Panel title={definition ? 'Workflow operation' : 'Add workflow operation'} description="Allow only reviewed workflows, exact refs, declared inputs, and required configuration." knowledgePageId="services.workflow-execution">
+	<form method="post" action={action} data-ts-submit="enhanced" data-ts-form-adapter="workflow-operation"
+		data-ts-success-message="Workflow operation saved.">
+		<input type="hidden" name="csrfToken" value={csrfToken} />
+		<input type="hidden" name="repositoryBindingId" value={repositoryBindingId} />
+		<input type="hidden" name="workflowBindingId" value={workflowBindingId} />
+		{definition?.version ? <input type="hidden" name="version" value={definition.version} /> : null}
+		<Field label="Workflow file" name="workflowId" help="A YAML file under .github/workflows." required>
+			<TextInput name="workflowId" value={definition?.workflowId ?? '.github/workflows/remote-operation.yml'} required />
+		</Field>
+		<Field label="Allowed refs" name="refs" help="One full refs/heads or refs/tags value per line." required>
+			<TextArea name="refs" rows={3} value={(definition?.refPolicy ?? ['refs/heads/main']).join('\n')} required />
+		</Field>
+		<div class="ts-form-grid ts-form-grid--two">
+			<Field label="Required secrets" name="secrets" help="Repository-scoped names, one per line."><TextArea name="secrets" rows={3} value={names(definition?.requiredSecrets)} /></Field>
+			<Field label="Required variables" name="variables" help="Repository-scoped names, one per line."><TextArea name="variables" rows={3} value={names(definition?.requiredVariables)} /></Field>
+		</div>
+		<Button type="submit">Save workflow operation</Button>
+	</form>
+</Panel>

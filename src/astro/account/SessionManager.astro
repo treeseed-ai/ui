@@ -14,7 +14,7 @@ const viewModel = { title: 'Sessions', description: 'Review devices signed in to
 	<CollectionTemplate viewModel={viewModel} renderDefault={false}>
 		{sessions.length ? <div class="account-stack">{sessions.map((session) => (
 			<div data-session-entry={session.userAgent?.toLowerCase().replace(/[^a-z0-9]+/gu, '-') ?? session.id}>
-			<Panel title={session.current ? 'Current session' : (session.userAgent ?? session.provider)} description={session.current ? (session.userAgent ?? session.provider) : undefined}>
+			<Panel title={session.current ? 'Current session' : (session.userAgent ?? session.provider)} description={session.current ? (session.userAgent ?? session.provider) : undefined} knowledgePageId="account.sessions">
 				<dl class="account-session-details">
 					<div><dt>IP address</dt><dd data-session-ip>{session.ipAddress ?? 'Not recorded'}</dd></div>
 					<div><dt>Signed in</dt><dd><Timestamp value={session.authenticatedAt} timeZone={timeZone} class="account-session-signed-in" /></dd></div>

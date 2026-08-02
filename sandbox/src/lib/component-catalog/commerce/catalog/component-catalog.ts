@@ -8,6 +8,7 @@ import { shellAndLayoutComponents } from '../../support/shell-and-layout.ts';
 import { publicAndTemplatesComponents } from '../../support/public-and-templates.ts';
 import { helpAndFeedbackComponents } from '../../support/help-and-feedback.ts';
 import { themeAndChartsComponents } from '../../support/theme-and-charts.ts';
+import { serviceManagementComponents } from '../../services/service-management.ts';
 import { componentCatalogOrder } from '../orders/catalog-order.ts';
 
 const componentCatalogContributions: ComponentCatalogEntry[] = [
@@ -20,6 +21,7 @@ const componentCatalogContributions: ComponentCatalogEntry[] = [
   ...publicAndTemplatesComponents,
   ...helpAndFeedbackComponents,
   ...themeAndChartsComponents,
+  ...serviceManagementComponents,
 ];
 
 const componentCatalogById = new Map(

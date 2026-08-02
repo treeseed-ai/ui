@@ -26,14 +26,6 @@ export const LAYOUTS_COMPONENTS = [
     sandboxRoute: "/displays/authored-entry-layout",
   },
 {
-    uiPath: "src/astro/layouts/BookLayout.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/BookLayout.astro",
-    category: "Layouts",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/book-layout",
-  },
-{
     uiPath: "src/astro/layouts/BridgeLayout.astro",
     sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/layouts/BridgeLayout.astro",
     category: "Layouts",

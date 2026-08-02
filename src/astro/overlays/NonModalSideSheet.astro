@@ -1,0 +1,29 @@
+---
+interface Props {
+	id: string;
+	labelledBy: string;
+	describedBy?: string;
+	class?: string;
+	scene?: string;
+}
+
+const { id, labelledBy, describedBy, class: className, scene } = Astro.props as Props;
+---
+
+<aside
+	id={id}
+	class:list={['ts-side-sheet', className]}
+	role="dialog"
+	aria-modal="false"
+	aria-labelledby={labelledBy}
+	aria-describedby={describedBy}
+	data-ts-side-sheet
+	data-ts-feedback-panel={scene === 'feedback.panel' ? '' : undefined}
+	data-scene={scene}
+	popover="manual"
+	hidden
+>
+	<header class="ts-side-sheet__header"><slot name="header" /></header>
+	<div class="ts-side-sheet__body"><slot /></div>
+	{Astro.slots.has('footer') ? <footer class="ts-side-sheet__footer"><slot name="footer" /></footer> : null}
+</aside>

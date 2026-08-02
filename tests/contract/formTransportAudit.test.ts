@@ -41,7 +41,7 @@ describe('canonical form transport ownership', () => {
 			'src/astro/account/SessionManager.astro',
 			'src/astro/auth/RegistrationForm.astro',
 			'src/astro/auth/UsernameClaimForm.astro',
-			'src/astro/feedback/FeedbackDialog.astro',
+			'src/astro/feedback/FeedbackPanel.astro',
 			'src/astro/forms/ContactForm.astro',
 			'src/astro/forms/submission/FooterSubscribeForm.astro',
 		];

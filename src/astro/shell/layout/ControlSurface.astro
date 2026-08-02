@@ -3,19 +3,20 @@ interface Props {
 	title?: string;
 	description?: string;
 	class?: string;
+	renderActions?: boolean;
 }
 
-const { title, description, class: className } = Astro.props as Props;
+const { title, description, class: className, renderActions = Astro.slots.has('actions') } = Astro.props as Props;
 ---
 
 <main class:list={['ts-control-surface', className]} id="main-content">
-	{title || description || Astro.slots.has('actions') ? (
+	{title || description || renderActions ? (
 		<header class="ts-control-surface__header">
 			<div class="ts-control-surface__title">
 				{title ? <h1>{title}</h1> : null}
 				{description ? <p>{description}</p> : null}
 			</div>
-			{Astro.slots.has('actions') ? <div class="ts-control-surface__actions"><slot name="actions" /></div> : null}
+			{renderActions ? <div class="ts-control-surface__actions"><slot name="actions" /></div> : null}
 		</header>
 	) : null}
 	{Astro.slots.has('tabs') ? <div class="ts-control-surface__tabs"><slot name="tabs" /></div> : null}

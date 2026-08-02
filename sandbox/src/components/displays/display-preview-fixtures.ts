@@ -66,46 +66,6 @@ export const surfaceTabItems = [
   { id: 'activity', label: 'Activity', href: '/displays/surface-tabs/activity', panelId: 'surface-tabs-activity' },
   { id: 'settings', label: 'Settings', href: '/displays/surface-tabs/settings', panelId: 'surface-tabs-settings' },
 ];
-export const hostRequirement = {
-  key: 'web-host',
-  type: 'web',
-  displayName: 'Web host',
-  purpose: 'Choose the host that will serve the project web UI.',
-  required: true,
-  compatibleProviders: ['Cloudflare', 'Railway'],
-  choices: [
-    { label: 'Cloudflare Pages', value: 'cloudflare-pages', selected: true },
-    { label: 'Railway Web', value: 'railway-web' },
-  ],
-  configWritePreviews: [{ target: 'treeseed.site.yaml', path: 'hosts.web' }],
-  environmentWritePreviews: [{ env: 'WEB_HOST_ID', targets: ['runtime'] }],
-};
-export const resourceRequirement = {
-  key: 'database',
-  type: 'd1',
-  displayName: 'D1 database',
-  purpose: 'Provision or connect the database required by this template.',
-  required: false,
-  compatibleProviders: ['Cloudflare'],
-  configWritePreviews: [{ target: 'wrangler.toml', path: 'd1_databases' }],
-  environmentWritePreviews: [{ env: 'DATABASE_ID', targets: ['worker'] }],
-};
-export const secretRequirement = {
-  key: 'openai-api-key',
-  env: 'OPENAI_API_KEY',
-  source: 'team secret',
-  required: true,
-  sensitivity: 'secret',
-  targets: ['worker', 'agent'],
-};
-export const templates = [
-  {
-    slug: 'monitoring-console',
-    sourceRef: 'template:monitoring-console',
-    title: 'Monitoring Console',
-    launchRequirements: { hosts: [hostRequirement], resources: [resourceRequirement], secrets: [secretRequirement] },
-  },
-];
 export const actionItems = [
   { title: 'Review deployment guardrails', description: 'Confirm readiness gates.', meta: 'Required', tone: 'warning' as const, actionLabel: 'Open' },
   { title: 'Sync knowledge pack', description: 'Refresh generated artifacts.', meta: 'Ready', tone: 'success' as const, actionLabel: 'Run' },
@@ -132,7 +92,7 @@ export const feedbackContext = {
   title: 'Feedback preview',
   shell: 'public' as const,
   context: 'public' as const,
-  submissionEndpoint: '/api/feedback/submit',
+  submissionEndpoint: '/v1/feedback',
   allowAnonymous: true,
   screenshotPolicy: 'optional' as const,
   attachmentStoragePolicy: 'public' as const,
@@ -140,7 +100,7 @@ export const feedbackContext = {
 };
 export const helpContext = {
   capabilityId: 'work.questions',
-  topicIds: ['work-content', 'questions'],
+  knowledgePageIds: ['work-content', 'questions'],
   shell: 'product' as const,
   context: 'project' as const,
   resourceType: 'question',
@@ -148,12 +108,12 @@ export const helpContext = {
   canonicalPath: '/app/work/questions',
   template: 'collection' as const,
   summary: 'Questions capture uncertainty that directs project work.',
-  topics: [
-    { id: 'questions', title: 'Question records', summary: 'Use questions to preserve the decisions and research the team still needs.', href: '/displays/help-topic-link', visibility: 'team' as const, source: 'capability' as const },
+  knowledgePages: [
+    { id: 'questions', title: 'Question records', summary: 'Use questions to preserve the decisions and research the team still needs.', href: '/displays/help-knowledge-link', visibility: 'team' as const, source: 'capability' as const },
     { id: 'question-actions', title: 'Action availability', summary: 'Unavailable actions explain their blocker and the next safe step.', visibility: 'team' as const, source: 'action-state' as const },
   ],
   relatedDocs: [
-    { topicId: 'questions', title: 'Questions overview', href: '/displays/help-topic-link', visibility: 'team' as const, summary: 'How question records guide work.', source: 'capability' as const, current: true },
+    { knowledgePageId: 'questions', title: 'Questions overview', href: '/displays/help-knowledge-link', visibility: 'team' as const, summary: 'How question records guide work.', source: 'capability' as const, current: true },
   ],
   relatedActions: resolvedActions,
   searchScope: 'project' as const,
@@ -199,11 +159,11 @@ export const dashboardViewModel = {
   },
   nextActions: [
     { id: 'new-question', title: 'Clarify project direction', description: 'Capture the next uncertainty for the team.', href: '/displays/collection-template', status: 'Recommended' },
-    { id: 'review-reader', title: 'Review Knowledge Hub', description: 'Check the public runtime reader proof.', href: '/displays/reader-template', status: 'Ready' },
+    { id: 'review-reader', title: 'Review Knowledge Hub', description: 'Check the public runtime reader proof.', href: '/books', status: 'Ready' },
   ],
   primaryResources: [
     { id: 'questions', title: 'Questions', description: 'Project direction records.', href: '/displays/collection-template', status: 'Level 5' },
-    { id: 'knowledge', title: 'Knowledge', description: 'Runtime reader resources.', href: '/displays/reader-template', status: 'Level 5' },
+    { id: 'knowledge', title: 'Knowledge', description: 'Runtime reader resources.', href: '/books', status: 'Level 5' },
   ],
   alerts: [
     { id: 'setup', title: 'Setup attention', description: 'Add capacity before the next workday.', tone: 'warning' as const, href: '/displays/resource-card' },
@@ -290,11 +250,6 @@ export const workspaceViewModel = {
   queue: workQueueViewModel,
   timeline: activityTimelineViewModel,
 };
-export const timelineItems = [
-  { id: 'queued', phase: 'Queue', title: 'Operation queued', description: 'The release was accepted for guarded deployment.', status: 'queued', tone: 'info' as const, createdAt: '2026-06-10', meta: 'release/market-console' },
-  { id: 'verified', phase: 'Verify', title: 'Smoke checks passed', description: 'HTTP checks and worker probes returned healthy results.', status: 'passed', tone: 'success' as const, createdAt: '2026-06-10', meta: '3 checks' },
-  { id: 'approval', phase: 'Governance', title: 'Approval required', description: 'Budget policy requires reviewer sign-off before public promotion.', status: 'waiting', tone: 'warning' as const, createdAt: '2026-06-10', meta: 'policy: budget-threshold' },
-];
 export const phases = [
   { key: 'research', label: 'Research', description: 'Collect context before implementation.', state: 'complete', tone: 'success' },
   { key: 'implementation', label: 'Implementation', description: 'Ship the planned change.', state: 'active', tone: 'info' },
@@ -302,10 +257,10 @@ export const phases = [
 ];
 export const events = [
   { phase: 'research', category: 'context', title: 'Repository context collected', description: 'Core templates and runtime constraints were indexed.', state: 'complete', tone: 'success', timestamp: '2026-06-10', meta: '2 repositories' },
-  { phase: 'implementation', category: 'execution', title: 'Worker deployment prepared', description: 'Queue bindings and release notes are staged.', state: 'active', tone: 'info', timestamp: '2026-06-10', repositoryRefs: ['treeseed/market'] },
+  { phase: 'implementation', category: 'execution', title: 'Worker execution prepared', description: 'Queue bindings and review notes are staged.', state: 'active', tone: 'info', timestamp: '2026-06-10', repositoryRefs: ['treeseed/market'] },
 ];
 export const repositories = [
-  { owner: 'treeseed', name: 'market', role: 'application', status: 'connected', description: 'Market UI and launch workflow.', tone: 'success', href: '/displays/repository-context-panel' },
+  { owner: 'treeseed', name: 'market', role: 'application', status: 'connected', description: 'Market UI and governed work.', tone: 'success', href: '/displays/repository-context-panel' },
   { owner: 'treeseed', name: 'core', role: 'content', status: 'indexed', description: 'Docs and site components.', tone: 'info' },
 ];
 export const capacity = [
@@ -321,7 +276,7 @@ export const seeds = [
   { title: 'Knowledge starter pack', description: 'Loads initial docs and release templates.', meta: 'queued', tone: 'info' },
 ];
 export const workers = [
-  { title: 'release-coordinator', description: 'Processing deployment timeline events.', meta: 'active', tone: 'success', href: '/displays/worker-queue-panel' },
+  { title: 'release-coordinator', description: 'Processing governed workflow events.', meta: 'active', tone: 'success', href: '/displays/worker-queue-panel' },
   { title: 'knowledge-indexer', description: 'Waiting for artifact generation.', meta: '2 queued', tone: 'warning' },
 ];
 export const policies = [
@@ -347,8 +302,8 @@ export const chronicleItems = [
   { href: '/notes/capacity/', title: 'Capacity policy update', summary: 'Budget and provider routing notes for operators.', status: 'in progress', date: new Date('2026-06-09'), meta: 'ops', tags: ['capacity'] },
 ];
 export const bookItems = [
-  { href: '/books/operations/', title: 'Operational Continuity', summary: 'Reusable operating model for TreeSeed launches.', meta: 'Book', landingPath: '/operations/', downloadHref: '/books/operations.md' },
-  { href: '/books/governance/', title: 'Governance Playbook', summary: 'Approval and evidence patterns for releases.', meta: 'Book', landingPath: '/governance/', downloadHref: '/books/governance.md' },
+  { id: 'book.operations', slug: 'operations', title: 'Operational Continuity', summary: 'Reusable operating model for TreeSeed launches.', status: 'published', visibility: 'public', topics: ['operations'], audience: ['operators'], pageCount: 8, teamSlug: 'treeseed' },
+  { id: 'book.governance', slug: 'governance', title: 'Governance Playbook', summary: 'Approval and evidence patterns for releases.', status: 'published', visibility: 'public', topics: ['governance'], audience: ['teams'], pageCount: 6, teamSlug: 'treeseed' },
 ];
 export const profileItems = [
   { href: '/profiles/market-steward/', name: 'Market Steward', summary: 'Owns public launch readiness and release context.', meta: 'Team role', status: 'live', tags: ['operations'] },

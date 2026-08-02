@@ -12,10 +12,34 @@
 	display: grid;
 	gap: var(--ts-space-3);
 	min-width: 0;
+	padding-block-end: var(--ts-space-3);
 }
 
 .ts-password-setup > * {
 	min-width: 0;
+}
+
+.ts-form-stack {
+	display: grid;
+	gap: var(--ts-space-3);
+}
+
+.ts-form-stack > .ts-form-actions {
+	margin-block-start: var(--ts-space-1);
+}
+
+.ts-form-grid {
+	display: grid;
+	gap: var(--ts-space-4);
+	min-width: 0;
+}
+
+.ts-form-grid--two {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 42rem) {
+	.ts-form-grid--two { grid-template-columns: 1fr; }
 }
 
 .ts-field__label,
@@ -24,6 +48,18 @@
 	font-size: 0.875rem;
 	font-weight: 700;
 	line-height: 1.35;
+}
+
+.ts-field__label {
+	align-items: center;
+	display: flex;
+	gap: var(--ts-space-1);
+	justify-content: space-between;
+}
+
+.ts-field__label .ts-help-trigger {
+	height: 1.75rem;
+	width: 1.75rem;
 }
 
 .ts-field__required {

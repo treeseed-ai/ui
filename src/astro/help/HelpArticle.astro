@@ -1,0 +1,31 @@
+---
+import type { KnowledgeHelpPage } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	page?: KnowledgeHelpPage | null;
+}
+
+const { page = null } = Astro.props as Props;
+---
+
+<article class="ts-help-article" data-ts-help-article aria-live="polite">
+	{page ? (
+		<div class="ts-help-article__content">
+			<header class="ts-help-article__header">
+				<h2 data-ts-help-article-title>{page.title}</h2>
+				<p data-ts-help-article-summary>{page.summary}</p>
+			</header>
+			<div class="ts-help-article__body" data-ts-help-article-body set:html={page.bodyHtml ?? ''} />
+			{page.href ? (
+				<footer class="ts-help-article__actions">
+					<a class="ts-button" data-variant="secondary" href={page.href}>Open full page</a>
+				</footer>
+			) : null}
+		</div>
+	) : (
+		<div class="ts-help-article__state" data-ts-help-article-state>
+			<strong>Help is loading</strong>
+			<p>The requested guidance will appear here.</p>
+		</div>
+	)}
+</article>

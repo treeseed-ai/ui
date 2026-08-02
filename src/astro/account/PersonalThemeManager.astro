@@ -19,7 +19,7 @@ const defaults = basePalettes.fern;
 ---
 
 <div class="account-stack" data-scene="account-appearance">
-	<Panel eyebrow="Built in" title="TreeSeed themes" description="Use the theme selector in the application header to choose the active theme.">
+	<Panel eyebrow="Built in" title="TreeSeed themes" description="Use the theme selector in the application header to choose the active theme." knowledgePageId="account.appearance">
 		<div class="account-theme-table-wrap">
 			<table class="account-theme-table" data-built-in-theme-table>
 				<thead><tr><th scope="col">Preview</th><th scope="col">Theme</th><th scope="col">Status</th></tr></thead>
@@ -33,7 +33,7 @@ const defaults = basePalettes.fern;
 			</table>
 		</div>
 	</Panel>
-	<Panel eyebrow="Personal" title="Your themes" description="Create reusable color systems. Creating or editing a theme never activates it.">
+	<Panel eyebrow="Personal" title="Your themes" description="Create reusable color systems. Creating or editing a theme never activates it." knowledgePageId="account.appearance">
 		<div class="account-panel-stack">
 			<Button type="button" data-dialog-open="create-personal-theme">Create theme</Button>
 			<div class="account-list">{themes.length ? themes.map((theme) => (

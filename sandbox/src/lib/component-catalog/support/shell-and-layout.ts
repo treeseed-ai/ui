@@ -72,9 +72,6 @@ export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
   display('authored-entry-layout', 'AuthoredEntryLayout', 'Layouts', 'astro', 'Reusable AuthoredEntryLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/layouts/AuthoredEntryLayout.astro'),
-  display('book-layout', 'BookLayout', 'Layouts', 'astro', 'Reusable BookLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
-      { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
-    ], undefined, '@treeseed/ui/components/astro/layouts/BookLayout.astro'),
   display('bridge-layout', 'BridgeLayout', 'Layouts', 'astro', 'Reusable BridgeLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/layouts/BridgeLayout.astro'),
@@ -96,9 +93,9 @@ export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
   display('public-layout', 'PublicLayout', 'Layouts', 'astro', 'Reusable PublicLayout component copied into the TreeSeed UI library.', 'full-page', { source: 'Layouts' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/layouts/PublicLayout.astro'),
-  display('book-list', 'BookList', 'Site', 'astro', 'Reusable BookList component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
+  display('book-list', 'BookList', 'Knowledge', 'astro', 'Searchable, filterable book-library results for public and authenticated knowledge collections.', 'large', { items: 3 }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
-    ], undefined, '@treeseed/ui/components/astro/site/BookList.astro'),
+    ], undefined, '@treeseed/ui/components/astro/site/content/BookList.astro'),
   display('ctasection', 'CTASection', 'Site', 'astro', 'Reusable CTASection component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/site/CTASection.astro'),

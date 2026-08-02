@@ -1,4 +1,6 @@
 ---
+import HelpTrigger from '../../help/HelpTrigger.astro';
+
 interface Props {
 	label: string;
 	id?: string;
@@ -8,6 +10,7 @@ interface Props {
 	required?: boolean;
 	full?: boolean;
 	class?: string;
+	knowledgePageId?: string;
 }
 
 const {
@@ -19,6 +22,7 @@ const {
 	required = false,
 	full = false,
 	class: className,
+	knowledgePageId,
 } = Astro.props as Props;
 
 const fieldId = id ?? name;
@@ -29,8 +33,11 @@ const slotProps = { helpId, errorId, describedBy: [helpId, errorId].filter(Boole
 
 <div class:list={['ts-field', full && 'ts-field--full', className]} data-ts-field>
 	<label class="ts-field__label" for={fieldId}>
-		<span>{label}</span>
-		{required ? <span class="ts-field__required" aria-hidden="true">*</span> : null}
+		<span class="ts-field__label-text">
+			<span>{label}</span>
+			{required ? <span class="ts-field__required" aria-hidden="true">*</span> : null}
+		</span>
+		{knowledgePageId ? <HelpTrigger knowledgePageId={knowledgePageId} label={`Help with ${label}`} /> : null}
 	</label>
 	<div class="ts-field__control">
 		<slot {...slotProps} />

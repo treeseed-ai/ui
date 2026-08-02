@@ -1,0 +1,19 @@
+---
+import type { FeedbackContext } from '../../lib/foundation/contracts.ts';
+interface Props { context: FeedbackContext; }
+const { context } = Astro.props as Props;
+const scope = context.teamLabel ?? context.teamId ?? 'Personal scope';
+---
+
+<section class="ts-feedback-context" aria-labelledby="feedback-context-title">
+	<div class="ts-feedback-context__heading">
+		<strong id="feedback-context-title">Context attached</strong>
+		<span>Verified by TreeSeed when submitted</span>
+	</div>
+	<dl>
+		<div><dt>Signed in as</dt><dd>{context.identityLabel ?? 'Current account'}</dd></div>
+		<div><dt>Scope</dt><dd>{scope}</dd></div>
+		<div><dt>Page</dt><dd>{context.canonicalPath ?? '/'}</dd></div>
+		<div><dt>Environment</dt><dd>{context.environment ?? 'production'}</dd></div>
+	</dl>
+</section>

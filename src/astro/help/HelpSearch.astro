@@ -1,0 +1,19 @@
+---
+interface Props {
+	placeholder?: string;
+}
+
+const { placeholder = 'Search help' } = Astro.props as Props;
+---
+
+<div class="ts-help-search" data-ts-help-search-root>
+	<input
+		class="ts-control"
+		type="search"
+		placeholder={placeholder}
+		aria-label="Search help"
+		autocomplete="off"
+		data-ts-help-search-input
+	/>
+	<div class="ts-help-search__results" role="list" aria-live="polite" data-ts-help-search-results></div>
+</div>

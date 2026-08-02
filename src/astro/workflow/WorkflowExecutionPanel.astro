@@ -1,0 +1,147 @@
+---
+import Badge from '../data/Badge.astro';
+import Timestamp from '../data/Timestamp.astro';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import Field from '../forms/fields/Field.astro';
+import Select from '../forms/fields/Select.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Panel from '../surface/Panel.astro';
+import type { Tone } from '../types.ts';
+
+interface Props {
+	projectId: string;
+	definition: any;
+	runs?: any[];
+	csrfToken: string;
+	sourceSha?: string | null;
+	canOperate?: boolean;
+	timeZone?: string;
+}
+
+const { projectId, definition, runs = [], csrfToken, sourceSha, canOperate = false, timeZone = 'UTC' } = Astro.props as Props;
+const inputs = Object.entries(definition.allowedInputs ?? {}).filter(([name]) => name !== 'treeseed_operation_correlation');
+const actorReady = (definition.actorPolicy ?? []).some((actor: string) => actor === 'user' || actor === 'operator');
+const modeReady = (definition.modePolicy ?? []).includes('operator');
+const dispatchReady = canOperate && actorReady && modeReady && /^[0-9a-f]{40}$/u.test(sourceSha ?? '');
+const selector = `[data-workflow-operation-id="${definition.id}"]`;
+const activeStatuses = new Set(['authorizing', 'queued', 'running', 'cancelling']);
+const tone = (status: string): Tone => status === 'completed' ? 'success'
+	: status === 'failed' ? 'danger'
+		: status === 'cancelled' ? 'muted'
+			: activeStatuses.has(status) ? 'info' : 'warning';
+const label = (value: string) => value.replaceAll('_', ' ').replaceAll('-', ' ').replace(/\b\w/gu, (letter) => letter.toUpperCase());
+const requirements = [...(definition.requiredSecrets ?? []).map((item: any) => ({ ...item, kind: 'secret' })),
+	...(definition.requiredVariables ?? []).map((item: any) => ({ ...item, kind: 'variable' }))];
+---
+
+<div data-workflow-operation-id={definition.id} class="ts-workflow-operation" data-scene="workflow.operation">
+	<Panel title={definition.workflowId.split('/').at(-1) ?? 'Workflow operation'}
+		description={`Runs from ${definition.refPolicy.length} authorized ref${definition.refPolicy.length === 1 ? '' : 's'} at an exact reviewed commit.`}
+		knowledgePageId="services.workflow-execution">
+		<div class="ts-workflow-operation__summary">
+			<div><span>Actors</span><strong>{(definition.actorPolicy ?? []).map(label).join(', ') || 'None'}</strong></div>
+			<div><span>Modes</span><strong>{(definition.modePolicy ?? []).map(label).join(', ') || 'None'}</strong></div>
+			<div><span>Configuration</span><strong>{requirements.length ? `${requirements.length} required item${requirements.length === 1 ? '' : 's'}` : 'No provider configuration required'}</strong></div>
+		</div>
+		{requirements.length ? <ul class="ts-workflow-operation__requirements" aria-label="Required workflow configuration">
+			{requirements.map((item: any) => <li><Badge tone={item.kind === 'secret' ? 'warning' : 'info'} size="sm">{item.kind}</Badge><code>{item.name}</code><span>{item.scope}</span></li>)}
+		</ul> : null}
+
+		<form class="ts-form-stack ts-workflow-operation__dispatch" method="post"
+			action={`/v1/projects/${encodeURIComponent(projectId)}/workflow-operations/${encodeURIComponent(definition.id)}/dispatch`}
+			data-ts-submit="enhanced" data-ts-form-adapter="workflow-dispatch" data-ts-success-message="Workflow dispatch queued."
+			data-ts-refresh-target={selector} data-scene="workflow.operation.dispatch">
+			<input type="hidden" name="csrfToken" value={csrfToken} />
+			<div class="ts-form-grid ts-form-grid--two">
+				<Field label="Authorized ref" name={`workflow-ref-${definition.id}`} required>
+					<Select name="ref" options={(definition.refPolicy ?? []).map((ref: string) => ({ label: ref, value: ref }))} required disabled={!dispatchReady} />
+				</Field>
+				<Field label="Exact source commit" name={`workflow-sha-${definition.id}`} help="Dispatch is pinned to the provider-observed 40-character commit." required>
+					<TextInput name="sourceSha" value={sourceSha ?? ''} pattern="[0-9a-f]{40}" maxlength={40} readonly required disabled={!dispatchReady} />
+				</Field>
+			</div>
+			{inputs.length ? <div class="ts-form-grid ts-form-grid--two">
+				{inputs.map(([name, rawRules]) => { const rules = rawRules as any; return <Field label={label(name)} name={`workflow-input-${definition.id}-${name}`} required={rules.required === true}>
+					<TextInput name={`input.${name}`} required={rules.required === true} pattern={rules.pattern} maxlength={rules.maximumLength} disabled={!dispatchReady} />
+				</Field>; })}
+			</div> : null}
+			{!dispatchReady ? <p class="ts-workflow-operation__notice">{!canOperate ? 'Workflow authorization permission is required.' : !actorReady || !modeReady ? 'This operation does not permit interactive operator dispatch.' : 'Validate the repository binding to resolve an exact remote commit before dispatch.'}</p> : null}
+			<FormActions align="start"><Button type="submit" disabled={!dispatchReady}>Run workflow</Button></FormActions>
+		</form>
+
+		<section class="ts-workflow-operation__runs" aria-labelledby={`workflow-runs-${definition.id}`}>
+			<header><div><p class="ts-section__eyebrow">Execution history</p><h3 id={`workflow-runs-${definition.id}`}>Recent runs</h3></div><span>{runs.length} shown</span></header>
+			{runs.length ? <div class="ts-workflow-operation__run-list">
+				{runs.map((run) => { const providerHref = typeof run.providerRunUrl === 'string' && run.providerRunUrl.startsWith('https://github.com/') ? run.providerRunUrl : undefined; return <article class="ts-workflow-operation__run" data-workflow-run-id={run.id} data-workflow-run-status={run.status} data-workflow-run-active={activeStatuses.has(run.status) ? 'true' : undefined}>
+					<div class="ts-workflow-operation__run-main"><Badge tone={tone(run.status)} size="sm">{label(run.status)}</Badge><div><strong>{run.ref}</strong><p>Commit <code>{run.sourceSha.slice(0, 12)}</code> · <Timestamp value={run.createdAt} timeZone={timeZone} /></p></div></div>
+					<div class="ts-workflow-operation__run-actions">
+						{providerHref ? <Button href={providerHref} variant="secondary" size="sm">Provider run</Button> : null}
+						{(run.artifacts ?? []).filter((artifact: any) => !artifact.expired).map((artifact: any) => <Button href={`/v1/workflow-operation-runs/${encodeURIComponent(run.id)}/artifacts/${encodeURIComponent(artifact.id)}/download`} variant="secondary" size="sm">{artifact.name}</Button>)}
+						{canOperate && ['queued', 'running'].includes(run.status) ? <form method="post" action={`/v1/workflow-operation-runs/${encodeURIComponent(run.id)}/cancel`} data-ts-submit="enhanced" data-ts-form-adapter="json" data-ts-success-message="Workflow cancellation requested." data-ts-refresh-target={selector}>
+							<input type="hidden" name="csrfToken" value={csrfToken} /><Button type="submit" variant="danger" size="sm">Cancel</Button>
+						</form> : null}
+					</div>
+				</article>; })}
+			</div> : <p class="ts-workflow-operation__empty">No runs have been dispatched for this operation.</p>}
+		</section>
+	</Panel>
+</div>
+
+<script>
+	import { refreshContentTargets } from '../../forms-client';
+	function installWorkflowPolling() {
+		for (const run of document.querySelectorAll<HTMLElement>('[data-workflow-run-active="true"]:not([data-workflow-polling])')) {
+			run.dataset.workflowPolling = 'true';
+			const runId = run.dataset.workflowRunId;
+			const currentStatus = run.dataset.workflowRunStatus;
+			const panel = run.closest<HTMLElement>('[data-workflow-operation-id]');
+			const operationId = panel?.dataset.workflowOperationId;
+			if (!runId || !operationId) continue;
+			const poll = async () => {
+				if (!document.contains(run)) return;
+				try {
+					const response = await fetch(`/v1/workflow-operation-runs/${encodeURIComponent(runId)}`, { credentials: 'same-origin', headers: { accept: 'application/json' } });
+					const payload = response.ok ? (await response.json()).payload : null;
+					if (payload && payload.status !== currentStatus) {
+						await refreshContentTargets([`[data-workflow-operation-id="${CSS.escape(operationId)}"]`]);
+						return;
+					}
+				} catch { /* The visible run remains authoritative until connectivity recovers. */ }
+				window.setTimeout(poll, 5_000);
+			};
+			window.setTimeout(poll, 5_000);
+		}
+	}
+	installWorkflowPolling();
+	document.addEventListener('astro:page-load', installWorkflowPolling);
+	document.addEventListener('treeseed:content-updated', installWorkflowPolling);
+</script>
+
+<style>
+	.ts-workflow-operation__summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--ts-border); }
+	.ts-workflow-operation__summary > div { display: grid; gap: .2rem; padding: .8rem 1rem; border-inline-end: 1px solid var(--ts-border); }
+	.ts-workflow-operation__summary > div:last-child { border-inline-end: 0; }
+	.ts-workflow-operation__summary span, .ts-workflow-operation__runs header > span { color: var(--ts-text-muted); font-size: .78rem; }
+	.ts-workflow-operation__summary strong { font-size: .9rem; }
+	.ts-workflow-operation__requirements { display: flex; flex-wrap: wrap; gap: .5rem; padding: .8rem 0; margin: 0; list-style: none; }
+	.ts-workflow-operation__requirements li { display: inline-flex; align-items: center; gap: .45rem; padding: .35rem .55rem; border: 1px solid var(--ts-border); background: var(--ts-surface-subtle); }
+	.ts-workflow-operation__requirements span { color: var(--ts-text-muted); font-size: .76rem; }
+	.ts-workflow-operation__dispatch { padding-block: 1rem; }
+	.ts-workflow-operation__notice, .ts-workflow-operation__empty { color: var(--ts-text-muted); margin: 0; }
+	.ts-workflow-operation__runs { border-top: 1px solid var(--ts-border); padding-top: 1rem; }
+	.ts-workflow-operation__runs > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: .7rem; }
+	.ts-workflow-operation__runs h3, .ts-workflow-operation__runs p { margin: 0; }
+	.ts-workflow-operation__run-list { display: grid; gap: .55rem; }
+	.ts-workflow-operation__run { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem .8rem; border: 1px solid var(--ts-border); background: var(--ts-surface-subtle); }
+	.ts-workflow-operation__run-main, .ts-workflow-operation__run-actions { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+	.ts-workflow-operation__run-main p { color: var(--ts-text-muted); font-size: .78rem; margin-top: .18rem; }
+	.ts-workflow-operation__run-actions { flex-wrap: wrap; justify-content: end; }
+	@media (max-width: 48rem) {
+		.ts-workflow-operation__summary { grid-template-columns: 1fr; }
+		.ts-workflow-operation__summary > div { border-inline-end: 0; border-block-end: 1px solid var(--ts-border); }
+		.ts-workflow-operation__summary > div:last-child { border-block-end: 0; }
+		.ts-workflow-operation__run { align-items: stretch; flex-direction: column; }
+		.ts-workflow-operation__run-actions { justify-content: start; }
+	}
+</style>

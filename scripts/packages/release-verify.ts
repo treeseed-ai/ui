@@ -113,6 +113,7 @@ function assertTarballContents(packResult) {
     'dist/react/pie-allocation/DynamicPieAllocationInput.js',
     'dist/react/charts/MonitoringChart.js',
     'dist/react/editors/RichMarkdownEditor.js',
+    'dist/react/editors/KnowledgeRelationPicker.js',
     'dist/theme/schemes/fern.yaml',
   ];
 

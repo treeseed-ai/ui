@@ -3,7 +3,6 @@ import '../../styles/app-controls.css';
 import '../../styles/operations.css';
 import ProductShell from '../shell/layout/ProductShell.astro';
 import DeleteConfirmationModal from '../app/controls/data/DeleteConfirmationModal.astro';
-import SensitiveDataUnlock from '../app/sensitive/SensitiveDataUnlock.astro';
 import ShellIcon from '../shell/navigation/ShellIcon.astro';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
@@ -24,7 +23,6 @@ interface Props {
 	currentPath: string;
 	teams: TeamEntry[];
 	activeTeam?: TeamEntry | null;
-	showSensitiveUnlock?: boolean;
 	appearance?: ThemePreference;
 	navItems?: ShellNavItem[];
 	quickActions?: ButtonAction[];
@@ -40,7 +38,6 @@ const {
 	currentPath,
 	teams,
 	activeTeam = null,
-	showSensitiveUnlock: forceSensitiveUnlock = false,
 	appearance = { scheme: 'fern', mode: 'system' },
 	navItems: providedNavItems,
 	quickActions: providedQuickActions,
@@ -72,18 +69,6 @@ const teamOptions = teams.map((team) => ({
 	id: team.id,
 	label: team.displayName ?? team.name ?? team.slug ?? team.id,
 }));
-const sensitiveUnlockPaths = [
-	'/app/hosts',
-	'/app/projects/new',
-	'/app/capacity/providers/new',
-];
-const routePath = Astro.url.pathname;
-const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
-	currentPath === path
-	|| currentPath.startsWith(`${path}/`)
-	|| routePath === path
-	|| routePath.startsWith(`${path}/`)
-)) || forceSensitiveUnlock;
 ---
 
 <ProductShell
@@ -127,9 +112,7 @@ const showSensitiveUnlock = sensitiveUnlockPaths.some((path) => (
 			</a>
 		)}
 	</div>
-	{showSensitiveUnlock ? <SensitiveDataUnlock part="button" slot="headerAction" /> : null}
 	<slot />
-	{showSensitiveUnlock ? <SensitiveDataUnlock part="modal" slot="sensitiveModal" /> : null}
 	<DeleteConfirmationModal slot="modal" />
 </ProductShell>
 

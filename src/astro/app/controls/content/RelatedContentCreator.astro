@@ -5,7 +5,6 @@ import Select from '../../../forms/fields/Select.astro';
 import TextInput from '../../../forms/fields/TextInput.astro';
 import FormActions from '../../../forms/actions/FormActions.astro';
 import MarkdownField from './MarkdownField.astro';
-import ContentFieldHelp from './ContentFieldHelp.astro';
 
 const WORK_CONTENT_LABELS: Record<string, { singular: string; plural: string; title: string }> = {
 	objectives: { singular: 'objective', plural: 'objectives', title: 'Objectives' },
@@ -13,22 +12,6 @@ const WORK_CONTENT_LABELS: Record<string, { singular: string; plural: string; ti
 	proposals: { singular: 'proposal', plural: 'proposals', title: 'Proposals' },
 	decisions: { singular: 'decision', plural: 'decisions', title: 'Decisions' },
 	notes: { singular: 'note', plural: 'notes', title: 'Notes' },
-};
-
-const FIELD_HELP: Record<string, { label: string; purpose: string; example?: string }> = {
-	title: { label: 'Title', purpose: 'A short, scannable name for the related record.' },
-	slug: { label: 'Slug', purpose: 'An optional URL-safe identifier. Leave blank to generate one from the title.' },
-	status: { label: 'Status', purpose: 'Where this record sits in the current workflow.' },
-	description: { label: 'Description', purpose: 'A concise description of the record and its purpose.' },
-	summary: { label: 'Summary', purpose: 'A brief reader-facing summary.' },
-	rationale: { label: 'Rationale', purpose: 'Why this decision was made.' },
-	motivation: { label: 'Motivation', purpose: 'Why this work matters now.' },
-	author: { label: 'Author', purpose: 'The person or agent credited for the note.' },
-	body: { label: 'Body', purpose: 'The full Markdown body for the related record.' },
-	timeHorizon: { label: 'Horizon', purpose: 'The expected planning horizon for the objective.' },
-	questionType: { label: 'Question type', purpose: 'The kind of question being captured.' },
-	proposalType: { label: 'Proposal type', purpose: 'The kind of proposal being captured.' },
-	decisionType: { label: 'Decision type', purpose: 'The kind of decision outcome.' },
 };
 
 interface Props {
@@ -67,9 +50,6 @@ const typeField: Record<string, { name: string; label: string }> = {
 	proposals: { name: 'proposalType', label: 'Proposal type' },
 	decisions: { name: 'decisionType', label: 'Decision type' },
 };
-function help(name: string) {
-	return FIELD_HELP[name] ?? { label: name, purpose: '' };
-}
 ---
 
 {actions.length > 0 ? (
@@ -115,48 +95,33 @@ function help(name: string) {
 								<input type="hidden" name="parentCollection" value={parentCollection} />
 								<input type="hidden" name="parentSlug" value={parentSlug} />
 								<div class="ts-form-grid">
-									<Field label="Title" name={`related-${action.collection}-title`} required>
-										<div class="ts-help-row">
-											<TextInput name="title" required />
-											<ContentFieldHelp {...help('title')} />
-										</div>
+									<Field label="Title" name={`related-${action.collection}-title`} knowledgePageId="content.fields" required>
+										<TextInput name="title" required />
 									</Field>
-									<Field label="Slug" name={`related-${action.collection}-slug`}>
-										<div class="ts-help-row">
-											<TextInput name="slug" placeholder="Generated from title if empty" />
-											<ContentFieldHelp {...help('slug')} />
-										</div>
+									<Field label="Slug" name={`related-${action.collection}-slug`} knowledgePageId="content.fields">
+										<TextInput name="slug" placeholder="Generated from title if empty" />
 									</Field>
-									<Field label="Status" name={`related-${action.collection}-status`}>
-										<div class="ts-help-row">
-											<Select name="status" options={statusOptions} />
-											<ContentFieldHelp {...help('status')} />
-										</div>
+									<Field label="Status" name={`related-${action.collection}-status`} knowledgePageId="content.fields">
+										<Select name="status" options={statusOptions} />
 									</Field>
 									{type ? (
-										<Field label={type.label} name={`related-${action.collection}-${type.name}`}>
-											<div class="ts-help-row">
-												<Select name={type.name} options={typeOptions[action.collection] ?? []} />
-												<ContentFieldHelp {...help(type.name)} />
-											</div>
+										<Field label={type.label} name={`related-${action.collection}-${type.name}`} knowledgePageId="content.fields">
+											<Select name={type.name} options={typeOptions[action.collection] ?? []} />
 										</Field>
 									) : null}
 								</div>
-								<MarkdownField label="Description" name="description" rows={3} required help={help('description').purpose} />
-								<MarkdownField label="Summary" name="summary" rows={3} help={help('summary').purpose} />
+								<MarkdownField label="Description" name="description" rows={3} required />
+								<MarkdownField label="Summary" name="summary" rows={3} />
 								{action.collection === 'decisions' ? (
-									<MarkdownField label="Rationale" name="rationale" rows={4} help={help('rationale').purpose} />
+									<MarkdownField label="Rationale" name="rationale" rows={4} />
 								) : action.collection !== 'notes' ? (
-									<MarkdownField label="Motivation" name="motivation" rows={4} help={help('motivation').purpose} />
+									<MarkdownField label="Motivation" name="motivation" rows={4} />
 								) : (
-									<Field label="Author" name={`related-${action.collection}-author`}>
-										<div class="ts-help-row">
-											<TextInput name="author" value="market-steward" />
-											<ContentFieldHelp {...help('author')} />
-										</div>
+									<Field label="Author" name={`related-${action.collection}-author`} knowledgePageId="content.fields">
+										<TextInput name="author" value="market-steward" />
 									</Field>
 								)}
-								<MarkdownField label="Body" name="body" rows={8} help={help('body').purpose} />
+								<MarkdownField label="Body" name="body" rows={8} />
 								<FormActions align="start">
 									<Button type="submit">Create related {label}</Button>
 									<Button type="button" variant="secondary" class="ts-related-cancel">Cancel</Button>

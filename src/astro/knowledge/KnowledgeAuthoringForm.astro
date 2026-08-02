@@ -1,0 +1,122 @@
+---
+import RichMarkdownEditor from '../../react/editors/RichMarkdownEditor';
+import KnowledgeRelationPicker from '../../react/editors/KnowledgeRelationPicker';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import Field from '../forms/fields/Field.astro';
+import Select from '../forms/fields/Select.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Textarea from '../forms/fields/Textarea.astro';
+import DisclosureList from '../data/DisclosureList.astro';
+import InlineConfirmation from '../surface/InlineConfirmation.astro';
+
+interface Props {
+	action: string;
+	csrfToken: string;
+	workspaceId: string;
+	version: number;
+	sourcePath?: string;
+	expectedSha?: string;
+	values?: Record<string, any>;
+}
+const { action, csrfToken, workspaceId, version, sourcePath, expectedSha, values = {} } = Astro.props as Props;
+const kind = values.kind ?? 'page';
+const textList = (value: unknown) => Array.isArray(value) ? value.join(', ') : String(value ?? '');
+---
+
+<form class="ts-form-stack ts-knowledge-editor" method="post" action={action} data-ts-submit="enhanced" data-scene="knowledge.editor.form">
+	<input type="hidden" name="csrfToken" value={csrfToken} />
+	<input type="hidden" name="workspaceId" value={workspaceId} />
+	<input type="hidden" name="version" value={version} />
+	{sourcePath ? <input type="hidden" name="sourcePath" value={sourcePath} /> : null}
+	{expectedSha ? <input type="hidden" name="expectedSha" value={expectedSha} /> : null}
+	<div class="ts-form-grid">
+		<Field label="Content type" name="kind"><Select name="kind" value={kind} options={[{ label: 'Knowledge page', value: 'page' }, { label: 'Book', value: 'book' }]} /></Field>
+		<Field label="Stable ID" name="id" required><TextInput name="id" required value={values.id ?? ''} pattern="[a-z0-9]+(?:(?:[._]|-)[a-z0-9]+)*" /></Field>
+		<Field label="Slug" name="slug" required><TextInput name="slug" required value={values.slug ?? ''} pattern="[a-z0-9]+(?:(?:/|-)[a-z0-9]+)*" /></Field>
+		<Field label="Title" name="title" required><TextInput name="title" required value={values.title ?? ''} /></Field>
+		<Field label="Order" name="order"><TextInput name="order" type="number" value={String(values.order ?? 0)} /></Field>
+		<Field label="Summary" name="summary" class="ts-field--full" required><Textarea name="summary" rows={3} required value={values.summary ?? ''} /></Field>
+		<Field label="Visibility" name="visibility"><Select name="visibility" value={values.visibility ?? 'team'} options={[
+			{ label: 'Public', value: 'public' }, { label: 'Signed-in users', value: 'authenticated' },
+			{ label: 'Team members', value: 'team' }, { label: 'Project members', value: 'project' }, { label: 'Platform administrators', value: 'admin' },
+		]} /></Field>
+	</div>
+	<fieldset class="ts-form-stack ts-knowledge-editor__kind" data-knowledge-kind-section="book" hidden={kind !== 'book'} disabled={kind !== 'book'}>
+		<legend>Book organization</legend>
+		<div class="ts-form-grid">
+			<Field label="Description" name="description" class="ts-field--full" required><Textarea name="description" rows={4} required value={values.description ?? values.summary ?? ''} /></Field>
+			<Field label="Topics" name="topics" help="Comma-separated subjects used by library filters."><TextInput name="topics" value={textList(values.topics)} /></Field>
+			<Field label="Audience" name="audience" help="Comma-separated intended audiences."><TextInput name="audience" value={textList(values.audience)} /></Field>
+			<Field label="Editorial core note ID" name="editorialCoreNoteId" class="ts-field--full" help="Stable note ID compiled into assignments for this book."><TextInput name="editorialCoreNoteId" value={values.editorialCoreNoteId ?? ''} /></Field>
+			<Field label="Related book IDs" name="relatedBookIds" class="ts-field--full"><TextInput name="relatedBookIds" value={textList(values.relatedBookIds)} /></Field>
+			<Field label="Knowledge-pack policy" name="packPolicy"><Select name="packPolicy" value={values.packPolicy ?? 'allowed'} options={[{ label: 'Allowed', value: 'allowed' }, { label: 'Restricted', value: 'restricted' }, { label: 'Disabled', value: 'disabled' }]} /></Field>
+			<Field label="Cover image path" name="coverImage"><TextInput name="coverImage" value={values.cover?.image ?? ''} /></Field>
+			<Field label="Cover alternative text" name="coverAlt" class="ts-field--full"><TextInput name="coverAlt" value={values.cover?.alt ?? ''} /></Field>
+		</div>
+	</fieldset>
+	<fieldset class="ts-form-stack ts-knowledge-editor__kind" data-knowledge-kind-section="page" hidden={kind !== 'page'} disabled={kind !== 'page'}>
+		<legend>Page content and relationships</legend>
+		<div class="ts-form-grid">
+			<Field label="Book ID" name="bookId" required help="Stable ID of the book that owns this page."><TextInput name="bookId" required value={values.bookId ?? ''} pattern="[a-z0-9]+(?:(?:[._]|-)[a-z0-9]+)*" /></Field>
+			<Field label="Parent page ID" name="parentId"><TextInput name="parentId" value={values.parentId ?? ''} /></Field>
+			<Field label="Tags" name="tags" help="Comma-separated discovery terms."><TextInput name="tags" value={textList(values.tags)} /></Field>
+			<Field label="Contributors" name="contributors"><TextInput name="contributors" value={textList(values.contributors)} /></Field>
+			<Field label="Primary audiences" name="audiencesPrimary" help="Comma-separated: community, developer, operator, ai-agent."><TextInput name="audiencesPrimary" value={textList(values.audiences?.primary ?? values.audiencesPrimary)} /></Field>
+			<Field label="Secondary audiences" name="audiencesSecondary"><TextInput name="audiencesSecondary" value={textList(values.audiences?.secondary ?? values.audiencesSecondary)} /></Field>
+			<Field label="Excluded audiences" name="audiencesExcluded"><TextInput name="audiencesExcluded" value={textList(values.audiences?.excluded ?? values.audiencesExcluded)} /></Field>
+			<div class="ts-field--full"><KnowledgeRelationPicker client:load initialIds={Array.isArray(values.relatedKnowledgeIds) ? values.relatedKnowledgeIds : textList(values.relatedKnowledgeIds).split(',').map((item) => item.trim()).filter(Boolean)} /></div>
+			<KnowledgeRelationPicker client:load name="relatedNoteIds" label="Related notes" description="Search notes in this project knowledge graph." initialIds={Array.isArray(values.relatedNoteIds) ? values.relatedNoteIds : []} searchEndpoint={`/v1/knowledge/workspaces/${encodeURIComponent(workspaceId)}/relations/search?types=notes`} />
+			<KnowledgeRelationPicker client:load name="relatedQuestionIds" label="Related questions" description="Search questions in this project knowledge graph." initialIds={Array.isArray(values.relatedQuestionIds) ? values.relatedQuestionIds : []} searchEndpoint={`/v1/knowledge/workspaces/${encodeURIComponent(workspaceId)}/relations/search?types=questions`} />
+			<KnowledgeRelationPicker client:load name="relatedObjectiveIds" label="Related objectives" description="Search objectives in this project knowledge graph." initialIds={Array.isArray(values.relatedObjectiveIds) ? values.relatedObjectiveIds : []} searchEndpoint={`/v1/knowledge/workspaces/${encodeURIComponent(workspaceId)}/relations/search?types=objectives`} />
+			<KnowledgeRelationPicker client:load name="relatedProposalIds" label="Related proposals" description="Search proposals in this project knowledge graph." initialIds={Array.isArray(values.relatedProposalIds) ? values.relatedProposalIds : []} searchEndpoint={`/v1/knowledge/workspaces/${encodeURIComponent(workspaceId)}/relations/search?types=proposals`} />
+			<KnowledgeRelationPicker client:load name="relatedDecisionIds" label="Related decisions" description="Search decisions in this project knowledge graph." initialIds={Array.isArray(values.relatedDecisionIds) ? values.relatedDecisionIds : []} searchEndpoint={`/v1/knowledge/workspaces/${encodeURIComponent(workspaceId)}/relations/search?types=decisions`} />
+			<Field label="Guarantee IDs" name="guaranteeIds" class="ts-field--full" help="Comma-separated product guarantees documented by this page."><TextInput name="guaranteeIds" value={textList(values.guaranteeIds)} /></Field>
+			<Field label="Route patterns" name="routePatterns"><TextInput name="routePatterns" value={textList(values.context?.routePatterns ?? values.routePatterns)} /></Field>
+			<Field label="Capability IDs" name="capabilityIds"><TextInput name="capabilityIds" value={textList(values.context?.capabilityIds ?? values.capabilityIds)} /></Field>
+			<Field label="Resource types" name="resourceTypes"><TextInput name="resourceTypes" value={textList(values.context?.resourceTypes ?? values.resourceTypes)} /></Field>
+			<Field label="Action IDs" name="actionIds"><TextInput name="actionIds" value={textList(values.context?.actionIds ?? values.actionIds)} /></Field>
+			<Field label="Search keywords" name="keywords"><TextInput name="keywords" value={textList(values.context?.keywords ?? values.keywords)} /></Field>
+			<Field label="Authoritative documentation URLs" name="documentationUrls"><TextInput name="documentationUrls" value={textList(values.context?.documentationUrls ?? values.documentationUrls)} /></Field>
+		</div>
+		<div class="ts-field ts-field--full"><RichMarkdownEditor client:load label="Knowledge content" name="bodyMarkdown" initialMarkdown={values.bodyMarkdown ?? ''} required /></div>
+		<DisclosureList title="Published backlinks" description="Pages that currently link to this knowledge page. Backlinks are derived from the graph." itemNoun="backlink" emptyLabel="No published pages currently link here." items={(values.backlinks ?? []).map((item: any) => ({ label: item.title, description: item.summary, href: item.canonicalPath }))} />
+	</fieldset>
+	<Field label="Editorial context digest" name="contextDigest" class="ts-field--full" help="Required for TreeSeed Guide submission; copy the SHA-256 digest from the revision-pinned agent context trace."><TextInput name="contextDigest" value={values.contextDigest ?? ''} pattern="[a-f0-9]{64}" /></Field>
+	<FormActions align="start">
+		<Button type="submit" name="action" value="save">Save draft</Button>
+		<Button type="submit" variant="secondary" name="action" value="submit">Submit for review</Button>
+		<InlineConfirmation label="Abandon draft" tone="danger">
+			<p>Unpublished changes will no longer be available.</p>
+			<Button type="submit" variant="danger" name="action" value="abandon" formnovalidate>Confirm abandon</Button>
+		</InlineConfirmation>
+	</FormActions>
+</form>
+
+<script>
+	function initializeKnowledgeEditors(root: ParentNode = document) {
+		root.querySelectorAll<HTMLFormElement>('[data-scene="knowledge.editor.form"]').forEach((form) => {
+			if (form.dataset.knowledgeKindsReady) return;
+			form.dataset.knowledgeKindsReady = 'true';
+			const select = form.querySelector<HTMLSelectElement>('[name="kind"]');
+			const update = () => form.querySelectorAll<HTMLFieldSetElement>('[data-knowledge-kind-section]').forEach((section) => {
+				const active = section.dataset.knowledgeKindSection === select?.value;
+				section.hidden = !active;
+				section.disabled = !active;
+			});
+			select?.addEventListener('change', update);
+			form.addEventListener('treeseed:form-success', (event) => {
+				const workspaceVersion = Number((event as CustomEvent).detail?.payload?.workspace?.version);
+				const versionInput = form.querySelector<HTMLInputElement>('input[name="version"]');
+				if (versionInput && Number.isInteger(workspaceVersion) && workspaceVersion > 0) versionInput.value = String(workspaceVersion);
+			});
+			update();
+		});
+	}
+	initializeKnowledgeEditors();
+	document.addEventListener('astro:page-load', () => initializeKnowledgeEditors());
+</script>
+
+<style>
+	.ts-knowledge-editor__kind[hidden] { display: none; }
+</style>

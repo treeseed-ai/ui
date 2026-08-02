@@ -30,8 +30,8 @@ export interface ResolvedAction {
 	auditSensitivity?: 'normal' | 'sensitive' | 'danger';
 }
 
-export interface HelpTopicLink {
-	topicId: string;
+export interface KnowledgeHelpLink {
+	knowledgePageId: string;
 	title: string;
 	href: string;
 	visibility: 'public' | 'authenticated' | 'team' | 'project' | 'admin';
@@ -41,59 +41,64 @@ export interface HelpTopicLink {
 }
 
 export interface HelpDefinition {
-	topicIds: string[];
+	knowledgePageIds: string[];
 	summary?: string;
 	relatedDocs?: string[];
 	relatedActions?: string[];
 	feedbackType?: 'bug' | 'feature' | 'question' | 'contentIssue' | 'uxIssue';
 }
 
-export interface HelpTopic {
+export interface KnowledgeHelpPage {
 	id: string;
 	title: string;
 	summary: string;
 	href?: string;
-	visibility: HelpTopicLink['visibility'];
-	source: NonNullable<HelpTopicLink['source']>;
+	visibility: KnowledgeHelpLink['visibility'];
+	source: NonNullable<KnowledgeHelpLink['source']>;
 	bodyHtml?: string;
 }
 
 export interface HelpSearchResult {
-	topicId: string;
+	knowledgePageId: string;
 	title: string;
 	summary: string;
 	href?: string;
-	source: NonNullable<HelpTopicLink['source']>;
+	source: NonNullable<KnowledgeHelpLink['source']>;
 }
 
 export interface ResourceHelpSchema extends HelpDefinition {
-	primaryTopicId?: string;
+	primaryKnowledgePageId?: string;
 	searchTags?: string[];
 	actionHelp?: Record<string, { summary: string; remediation?: string }>;
 }
 
 export interface HelpContext {
 	capabilityId?: string;
-	topicIds: string[];
+	knowledgePageIds: string[];
 	shell: UiShellKind;
 	context: UiSurfaceContext;
 	resourceType?: string;
 	resourceId?: string;
+	teamId?: string;
+	projectId?: string;
 	routePattern?: string;
 	canonicalPath?: string;
 	template?: UiTemplateKind;
 	summary?: string;
-	topics?: HelpTopic[];
-	relatedDocs: HelpTopicLink[];
+	knowledgePages?: KnowledgeHelpPage[];
+	relatedDocs: KnowledgeHelpLink[];
 	relatedActions: ResolvedAction[];
-	searchScope: 'global' | 'public' | 'team' | 'project' | 'market' | 'admin';
+	searchScope: 'global' | 'public' | 'authenticated' | 'team' | 'project' | 'market' | 'admin';
 	searchPlaceholder?: string;
+	pageEndpoint?: string;
+	searchEndpoint?: string;
+	locale?: string;
 	visibility: 'public' | 'authenticated' | 'team' | 'project' | 'admin';
 	feedbackType?: FeedbackSubmissionType;
 }
 
 export interface FeedbackContext {
-	url: string;
+	url?: string;
 	canonicalPath?: string;
 	title?: string;
 	capabilityId?: string;
@@ -103,44 +108,45 @@ export interface FeedbackContext {
 	projectId?: string;
 	resourceType?: string;
 	resourceId?: string;
-	userId?: string;
+	identityLabel?: string;
+	teamLabel?: string;
 	environment?: 'local' | 'staging' | 'production';
 	submissionEndpoint?: string;
-	allowAnonymous?: boolean;
 	screenshotPolicy?: 'disabled' | 'optional';
-	attachmentStoragePolicy?: 'public' | 'private';
 	buildId?: string;
 	revision?: string;
 	routePattern?: string;
 	policy?: 'public' | 'authenticated' | 'team' | 'project' | 'admin';
 	source?: 'page' | 'help';
-	helpTopicId?: string;
-	helpTopicTitle?: string;
+	knowledgePageId?: string;
+	knowledgePageTitle?: string;
 }
 
 export type FeedbackSubmissionType = 'bug' | 'feature_suggestion' | 'question' | 'content_issue' | 'ux_issue';
 
 export interface FeedbackScreenshotAttachment {
-	name: string;
-	type: 'image/png' | 'image/jpeg' | 'image/webp';
-	size: number;
-	dataUrl?: string;
-	redacted: boolean;
-	storagePolicy: 'public' | 'private';
+	dataUrl: string;
+	mimeType: 'image/png';
+	byteSize: number;
+	width: number;
+	height: number;
+	digest: string;
+	redactionVersion: 'treeseed.feedback-capture/v3';
+	maskedRegionCount: number;
+	redacted: true;
 }
 
 export interface FeedbackSubmission {
 	type: FeedbackSubmissionType;
 	message: string;
-	contactEmail?: string;
+	allowContact: boolean;
 	context: FeedbackContext;
 	client: {
-		url: string;
 		userAgent?: string;
 		viewport: { width: number; height: number; devicePixelRatio: number };
 		locale?: string;
 		timeZone?: string;
-		appearance?: string;
+		theme?: string;
 		reducedMotion?: boolean;
 	};
 	screenshot?: FeedbackScreenshotAttachment;

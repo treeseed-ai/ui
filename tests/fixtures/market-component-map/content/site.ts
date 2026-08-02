@@ -2,14 +2,6 @@ import type { MarketComponentMapEntry } from '../../marketComponentMap.ts';
 
 export const SITE_COMPONENTS = [
 {
-    uiPath: "src/astro/site/content/BookList.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/components/site/BookList.astro",
-    category: "Site",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/book-list",
-  },
-{
     uiPath: "src/astro/site/marketing/CTASection.astro",
     sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/components/site/CTASection.astro",
     category: "Site",

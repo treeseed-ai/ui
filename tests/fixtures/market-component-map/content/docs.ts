@@ -18,14 +18,6 @@ export const DOCS_COMPONENTS = [
     sandboxRoute: "/displays/desktop-sidebar-toggle",
   },
 {
-    uiPath: "src/astro/docs/DownloadBook.astro",
-    sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/components/docs/DownloadBook.astro",
-    category: "Docs",
-    parityMode: "rendered-visual",
-    allowedSourceDifferences: ["import-paths", "package-safe-types", "structural-props", "route-base-props", "generic-component-names"],
-    sandboxRoute: "/displays/download-book",
-  },
-{
     uiPath: "src/astro/docs/Footer.astro",
     sourcePath: "/home/adrian/Projects/treeseed/market/packages/core/src/components/docs/Footer.astro",
     category: "Docs",

@@ -29,7 +29,7 @@ export default defineConfig({
         'react/charts/MonitoringChart': 'src/react/charts/MonitoringChart.tsx',
         'react/charts/ProjectActivityChart': 'src/react/charts/ProjectActivityChart.tsx',
         'react/editors/RichMarkdownEditor': 'src/react/editors/RichMarkdownEditor.tsx',
-        'lib/app/deployment-action-status': 'src/lib/app/deployment-action-status.ts',
+        'react/editors/KnowledgeRelationPicker': 'src/react/editors/KnowledgeRelationPicker.tsx',
         'lib/app/platform-operation-status': 'src/lib/app/platform-operation-status.ts',
         'lib/app/related-content-creator': 'src/lib/app/related-content-creator.ts',
         'lib/app/markdown-field': 'src/lib/app/markdown-field.ts',

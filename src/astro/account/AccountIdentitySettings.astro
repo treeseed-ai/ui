@@ -41,7 +41,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 ---
 
 <div class="account-stack" data-scene="account-identity">
-	<Panel eyebrow="Identity" title="Public profile" description="Your permanent handle and public identity.">
+	<Panel eyebrow="Identity" title="Public profile" description="Your permanent handle and public identity." knowledgePageId="account.identity">
 		<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 			<input type="hidden" name="csrfToken" value={csrfToken} />
 			<input type="hidden" name="intent" value="profile" />
@@ -78,7 +78,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 		</form>
 	</Panel>
 
-	<Panel eyebrow="Email" title="Email addresses" description="Keep at least one verified address.">
+	<Panel eyebrow="Email" title="Email addresses" description="Keep at least one verified address." knowledgePageId="account.emails">
 		<div class="account-list">
 			{identity.emails.map((email) => (
 				<form
@@ -111,7 +111,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 		</div>
 	</Panel>
 
-	<Panel eyebrow="Security" title={identity.hasCredential ? 'Change password' : 'Set a password'}>
+	<Panel eyebrow="Security" title={identity.hasCredential ? 'Change password' : 'Set a password'} knowledgePageId="account.security">
 			<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 			<input type="hidden" name="csrfToken" value={csrfToken} />
 			<input type="hidden" name="intent" value="password" />
@@ -128,7 +128,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 		</form>
 	</Panel>
 
-	<Panel eyebrow="Sign-in" title="Connected identities">
+	<Panel eyebrow="Sign-in" title="Connected identities" knowledgePageId="account.connected-identities">
 		<div class="account-list">
 			{identity.providers.length ? identity.providers.map((provider) => (
 				<form method="post" class="account-list-item account-provider-row" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">

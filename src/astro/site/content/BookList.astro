@@ -1,27 +1,153 @@
 ---
 type BookItem = {
-	href: string;
+	id: string;
+	slug: string;
 	title: string;
 	summary: string;
-	meta: string;
-	landingPath: string;
-	downloadHref: string;
+	status: string;
+	visibility: string;
+	topics: string[];
+	audience: string[];
+	pageCount?: number;
+	teamSlug: string;
+	manageHref?: string;
 };
 
-const { items } = Astro.props as { items: BookItem[] };
+const { items, searchEndpoint = '/v1/knowledge/library' } = Astro.props as { items: BookItem[]; searchEndpoint?: string };
+const topics = [...new Set(items.flatMap((item) => item.topics))].sort();
+const audiences = [...new Set(items.flatMap((item) => item.audience))].sort();
+const teams = [...new Set(items.map((item) => item.teamSlug))].sort();
 ---
 
-<div class="grid gap-6 md:grid-cols-2">
-	{items.map((item) => (
-		<div class="border border-[color:var(--ts-color-border)] bg-[color:var(--ts-color-surface)] p-6">
-			<p class="text-sm font-semibold uppercase tracking-[0.14em] text-[color:var(--ts-color-info-text)]">{item.meta}</p>
-			<h3 class="mt-4 text-2xl font-bold text-[color:var(--ts-color-text)]">{item.title}</h3>
-			<p class="mt-3 text-base leading-8 text-[color:var(--ts-color-text-muted)]">{item.summary}</p>
-			<div class="mt-5 flex flex-wrap gap-3">
-				<a href={item.href} class="border border-[color:var(--ts-color-border-strong)] px-4 py-2 text-sm font-semibold text-[color:var(--ts-color-text)] transition hover:border-[color:var(--ts-color-info)] hover:bg-[color:var(--ts-color-info-soft)]">Book page</a>
-				<a href={item.landingPath} class="border border-[color:var(--ts-color-border-strong)] px-4 py-2 text-sm font-semibold text-[color:var(--ts-color-text)] transition hover:border-[color:var(--ts-color-info)] hover:bg-[color:var(--ts-color-info-soft)]">Open knowledge</a>
-				<a href={item.downloadHref} class="border border-[color:var(--ts-color-accent)] bg-[color:var(--ts-color-accent)] px-4 py-2 text-sm font-semibold text-[color:var(--ts-color-text)] transition hover:border-[color:var(--ts-color-info)] hover:bg-[color:var(--ts-color-info-soft)]">Download</a>
-			</div>
-		</div>
-	))}
-</div>
+<section class="ts-book-library" data-ts-book-library data-search-endpoint={searchEndpoint}>
+	<form class="ts-book-library__filters" role="search" data-ts-book-filters>
+		<label class="ts-book-library__search">
+			<span>Search books</span>
+			<input class="ts-control" type="search" name="query" placeholder="Search titles, topics, and audiences" autocomplete="off" data-ts-book-query />
+		</label>
+		<label>
+			<span>Topic</span>
+			<select class="ts-control" name="topic" data-ts-book-topic>
+				<option value="">All topics</option>
+				{topics.map((topic) => <option value={topic}>{topic}</option>)}
+			</select>
+		</label>
+		<label>
+			<span>Audience</span>
+			<select class="ts-control" name="audience" data-ts-book-audience>
+				<option value="">All audiences</option>
+				{audiences.map((audience) => <option value={audience}>{audience}</option>)}
+			</select>
+		</label>
+		{teams.length > 1 ? <label>
+			<span>Team</span>
+			<select class="ts-control" name="team" data-ts-book-team>
+				<option value="">All teams</option>
+				{teams.map((team) => <option value={team}>{team}</option>)}
+			</select>
+		</label> : null}
+	</form>
+
+	<p class="ts-book-library__count" aria-live="polite" data-ts-book-count>{items.length} {items.length === 1 ? 'book' : 'books'}</p>
+	<div class="ts-book-library__results" data-ts-book-results>
+		{items.map((item) => (
+			<article
+				class="ts-book-card"
+				data-ts-book-card
+				data-book-id={item.id}
+				data-search={[item.title, item.summary, ...item.topics, ...item.audience].join(' ').toLowerCase()}
+				data-topics={item.topics.join('|').toLowerCase()}
+				data-audiences={item.audience.join('|').toLowerCase()}
+				data-team={item.teamSlug.toLowerCase()}
+			>
+				<div class="ts-book-card__meta">
+					<span class="ts-badge" data-tone={item.status === 'published' ? 'success' : 'neutral'}>{item.status}</span>
+					<span>{item.visibility}</span>
+					<span>{item.pageCount ?? 0} {(item.pageCount ?? 0) === 1 ? 'page' : 'pages'}</span>
+				</div>
+				<h2><a href={`/t/${encodeURIComponent(item.teamSlug)}/books/${encodeURIComponent(item.slug)}`}>{item.title}</a></h2>
+				<p>{item.summary}</p>
+				{item.topics.length ? <ul class="ts-book-card__topics" aria-label="Topics">{item.topics.map((topic) => <li>{topic}</li>)}</ul> : null}
+				<div class="ts-action-bar">
+					<a class="ts-button" data-variant="secondary" href={`/t/${encodeURIComponent(item.teamSlug)}/books/${encodeURIComponent(item.slug)}`}>Open book</a>
+					{item.manageHref ? <a class="ts-button" href={item.manageHref}>Manage</a> : null}
+				</div>
+			</article>
+		))}
+	</div>
+	<div class="ts-book-library__empty" hidden data-ts-book-empty>
+		<strong>No matching books</strong>
+		<p>Try a broader search or clear the topic filter.</p>
+	</div>
+</section>
+
+<script>
+	function initializeBookLibraries(root: ParentNode = document) {
+		root.querySelectorAll<HTMLElement>('[data-ts-book-library]').forEach((library) => {
+			if (library.dataset.tsBookLibraryReady) return;
+			library.dataset.tsBookLibraryReady = 'true';
+			const query = library.querySelector<HTMLInputElement>('[data-ts-book-query]');
+			const topic = library.querySelector<HTMLSelectElement>('[data-ts-book-topic]');
+			const audience = library.querySelector<HTMLSelectElement>('[data-ts-book-audience]');
+			const team = library.querySelector<HTMLSelectElement>('[data-ts-book-team]');
+			const cards = [...library.querySelectorAll<HTMLElement>('[data-ts-book-card]')];
+			const count = library.querySelector<HTMLElement>('[data-ts-book-count]');
+			const empty = library.querySelector<HTMLElement>('[data-ts-book-empty]');
+			let remoteIds: Set<string> | null = null;
+			let searchTimer = 0;
+			let searchRevision = 0;
+			const update = () => {
+				const words = (query?.value ?? '').trim().toLowerCase().split(/\s+/u).filter(Boolean);
+				const selected = (topic?.value ?? '').toLowerCase();
+				const selectedAudience = (audience?.value ?? '').toLowerCase();
+				const selectedTeam = (team?.value ?? '').toLowerCase();
+				let visible = 0;
+				for (const card of cards) {
+					const text = card.dataset.search ?? '';
+					const topics = (card.dataset.topics ?? '').split('|');
+					const audiences = (card.dataset.audiences ?? '').split('|');
+					const match = (remoteIds ? remoteIds.has(card.dataset.bookId ?? '') : words.every((word) => text.includes(word)))
+						&& (!selected || topics.includes(selected))
+						&& (!selectedAudience || audiences.includes(selectedAudience))
+						&& (!selectedTeam || card.dataset.team === selectedTeam);
+					card.hidden = !match;
+					if (match) visible += 1;
+				}
+				if (count) count.textContent = `${visible} ${visible === 1 ? 'book' : 'books'}`;
+				if (empty) empty.hidden = visible > 0;
+			};
+			query?.addEventListener('input', () => {
+				window.clearTimeout(searchTimer);
+				const revision = ++searchRevision;
+				const value = query.value.trim();
+				if (value.length < 2) { remoteIds = null; update(); return; }
+				// Hide locally matching cards until TreeDX returns. This makes the rendered result authoritative
+				// and prevents navigation while the request that established the result is still in flight.
+				remoteIds = new Set();
+				update();
+				searchTimer = window.setTimeout(async () => {
+					try {
+						const endpoint = new URL(library.dataset.searchEndpoint ?? '/v1/knowledge/library', window.location.origin);
+						endpoint.searchParams.set('q', value);
+						const response = await fetch(endpoint, { headers: { accept: 'application/json' }, credentials: 'same-origin' });
+						if (!response.ok) throw new Error('search unavailable');
+						const body = await response.json();
+						if (revision !== searchRevision) return;
+						remoteIds = new Set((body.payload?.books ?? []).map((book: { id: string }) => book.id));
+						update();
+					} catch {
+						if (revision !== searchRevision) return;
+						remoteIds = new Set();
+						update();
+						if (count) count.textContent = 'Search is temporarily unavailable';
+					}
+				}, 250);
+			});
+			topic?.addEventListener('change', update);
+			audience?.addEventListener('change', update);
+			team?.addEventListener('change', update);
+		});
+	}
+	initializeBookLibraries();
+	document.addEventListener('astro:page-load', () => initializeBookLibraries());
+</script>
