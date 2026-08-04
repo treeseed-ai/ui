@@ -2,6 +2,33 @@ import type { ComponentCatalogEntry } from '../support/component-kind.ts';
 import { display } from '../support/component-kind.ts';
 
 export const operationsComponents: ComponentCatalogEntry[] = [
+  display('agent-activity-gantt', 'AgentActivityGantt', 'Operating Loop', 'react', 'Accessible project and agent execution intervals with stable activity-profile lanes.', 'large', { intervals: 4 }, [
+      { name: 'intervals', type: 'ActivityIntervalItem[]', defaultValue: 4, description: 'Execution intervals in the selected workday.' },
+    ], undefined, '@treeseed/ui/components/react/OperationsMonitor'),
+  display('live-agent-activity-gantt', 'LiveAgentActivityGantt', 'Operating Loop', 'react', 'Realtime Agent Activity Gantt bound to the shared polling coordinator.', 'large', { realtime: true }, [
+      { name: 'endpoint', type: 'string', defaultValue: '/activity', description: 'Incremental activity projection.' },
+    ], undefined, '@treeseed/ui/components/react/OperationsMonitor'),
+  display('metric-history-chart', 'MetricHistoryChart', 'Operating Loop', 'react', 'Compact multi-signal metric history chart for the monitor dock.', 'large', { metrics: 9 }, [
+      { name: 'points', type: 'MetricSeriesPoint[]', defaultValue: 12, description: 'Time-bucketed metric values.' },
+    ], undefined, '@treeseed/ui/components/react/OperationsMonitor'),
+  display('metric-history-dashboard', 'MetricHistoryDashboard', 'Operating Loop', 'react', 'Nine workday metric small multiples with targets and deviation bands.', 'full-page', { metrics: 9 }, [
+      { name: 'metrics', type: 'VitalMetricItem[]', defaultValue: 9, description: 'Metric identity and current value.' },
+    ], undefined, '@treeseed/ui/components/react/OperationsMonitor'),
+  display('monitor-primitives', 'MonitorPrimitives', 'Operating Loop', 'react', 'Composable status, toggle, metric, and chart-dock primitives.', 'large', { primitives: 4 }, [
+      { name: 'metrics', type: 'VitalMetricItem[]', defaultValue: 9, description: 'Metric rail content.' },
+    ], undefined, '@treeseed/ui/components/react/OperationsMonitor'),
+  display('operations-monitor-header', 'OperationsMonitorHeader', 'Operating Loop', 'react', 'Persistent identity, vital metrics, and optional live chart dock.', 'full-page', { metrics: 9 }, [
+      { name: 'initialOverview', type: 'MonitorOverview', defaultValue: {}, description: 'Server-rendered coherent monitoring snapshot.' },
+    ], undefined, '@treeseed/ui/components/react/OperationsMonitor'),
+  display('operations-display-container', 'OperationsDisplayContainer', 'Operating Loop', 'astro', 'Shared Agent Lab content scaffold with contextual action slots.', 'large', { title: 'Direction' }, [
+      { name: 'title', type: 'string', defaultValue: 'Direction', description: 'Focused display title.' },
+    ], undefined, '@treeseed/ui/components/astro/operating/navigation/OperationsDisplayContainer.astro'),
+  display('operations-navigator', 'OperationsNavigator', 'Operating Loop', 'astro', 'Compact operational tabs paired with a scoped workday selector.', 'large', { tabs: 6 }, [
+      { name: 'items', type: 'SurfaceTabItem[]', defaultValue: 6, description: 'Agent Lab destinations.' },
+    ], undefined, '@treeseed/ui/components/astro/operating/navigation/OperationsNavigator.astro'),
+  display('workday-selector', 'WorkdaySelector', 'Operating Loop', 'astro', 'Date-aware current and historical workday selector.', 'medium', { workdays: 2 }, [
+      { name: 'workdays', type: 'WorkdaySummary[]', defaultValue: 2, description: 'Selectable workdays for the chosen date.' },
+    ], undefined, '@treeseed/ui/components/astro/operating/navigation/WorkdaySelector.astro'),
   display('allocation-panel', 'AllocationPanel', 'Operating Loop', 'astro', 'Allocation summary with desired, inherited, scheduled, active, and actual states.', 'large', { items: 2 }, [
       { name: 'viewModel', type: 'AllocationViewModel', defaultValue: { items: 2 }, description: 'Policy-shaped allocation view model.' },
     ], undefined, '@treeseed/ui/components/astro/operating/AllocationPanel.astro'),

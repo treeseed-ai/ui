@@ -2,6 +2,14 @@ import type { ComponentCatalogEntry } from '../support/component-kind.ts';
 import { display } from '../support/component-kind.ts';
 
 export const contentAndDataComponents: ComponentCatalogEntry[] = [
+  display('entity-collection', 'EntityCollection', 'Data', 'astro', 'Responsive filterable card collection for operational entities.', 'large', { items: 2 }, [
+      { name: 'items', type: 'EntityCollectionItem[]', defaultValue: 2, description: 'Server-authorized entity summaries.' },
+      { name: 'nextHref', type: 'string', defaultValue: undefined, description: 'Cursor-backed next-page destination.' },
+    ], undefined, '@treeseed/ui/components/astro/data/entities/EntityCollection.astro'),
+  display('entity-filter-toolbar', 'EntityFilterToolbar', 'Data', 'astro', 'Shared URL-backed search and status filters for entity collections.', 'medium', { query: 'guide', status: 'running' }, [
+      { name: 'query', type: 'string', defaultValue: '', description: 'Current text filter.' },
+      { name: 'status', type: 'string', defaultValue: '', description: 'Current status filter.' },
+    ], undefined, '@treeseed/ui/components/astro/data/entities/EntityFilterToolbar.astro'),
   display('knowledge-project-collection', 'KnowledgeProjectCollection', 'Knowledge', 'astro', 'Responsive project collection for repository-native books and authoring entry points.', 'large', { projects: 2 }, [
       { name: 'projects', type: 'ProjectItem[]', defaultValue: 2, description: 'Authorized projects with TreeDX readiness and knowledge counts.' },
     ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeProjectCollection.astro'),

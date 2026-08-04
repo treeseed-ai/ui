@@ -79,6 +79,23 @@
 	border-color: var(--ts-color-danger-border);
 }
 
+.ts-entity-collection {
+	display: grid;
+	gap: var(--ts-space-4);
+	min-width: 0;
+}
+
+.ts-entity-filters {
+	align-items: end;
+	display: grid;
+	gap: var(--ts-space-3);
+	grid-template-columns: repeat(2, minmax(10rem, 1fr)) auto;
+	min-width: 0;
+}
+
+.ts-entity-filters .ts-field,
+.ts-entity-filters .ts-control { min-width: 0; width: 100%; }
+
 .ts-button:focus-visible,
 .ts-card:focus-visible,
 .ts-action-list__link:focus-visible {
@@ -363,6 +380,7 @@
 }
 
 @media (max-width: 42rem) {
+	.ts-entity-filters { align-items: stretch; grid-template-columns: 1fr; }
 	.ts-provider-card__identity,
 	.ts-capability-option,
 	.ts-credential-field__control {

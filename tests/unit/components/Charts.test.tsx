@@ -37,7 +37,7 @@ describe('charts', () => {
     render(<ProjectActivityChart />);
     expect(screen.getByTestId('project-activity-chart')).toBeInTheDocument();
     expect(screen.getByLabelText('Project activity controls')).toHaveTextContent('Bucket');
-    expect(fetch).toHaveBeenCalledWith('/api/project-activity/events');
+		expect(fetch).toHaveBeenCalledWith('/api/project-activity/events', expect.objectContaining({ signal: expect.any(AbortSignal) }));
   });
 
   it('renders persisted creation and update activity without polling', () => {

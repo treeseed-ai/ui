@@ -1,0 +1,13 @@
+---
+import ResourceCard from '../../surface/ResourceCard.astro';
+import EmptyState from '../../surface/EmptyState.astro';
+import Button from '../../forms/actions/Button.astro';
+import EntityFilterToolbar from './EntityFilterToolbar.astro';
+interface Item { id: string; title: string; description: string; status?: string | null; projectName?: string | null; workdayName?: string | null; activityProfile?: string | null; }
+interface Props { items: Item[]; query?: string; status?: string; action?: string; emptyTitle?: string; nextHref?: string | null; }
+const { items, query = '', status = '', action, emptyTitle = 'No matching records', nextHref = null } = Astro.props as Props;
+---
+<section class="ts-entity-collection"><EntityFilterToolbar query={query} status={status} action={action} />
+	{items.length ? <div class="ts-resource-grid">{items.map((item) => <ResourceCard title={item.title} description={[item.description, item.projectName, item.workdayName, item.activityProfile].filter(Boolean).join(' · ')} status={item.status ?? undefined} />)}</div> : <EmptyState title={emptyTitle} description="Adjust the filters or return after the team records more activity." />}
+	{nextHref ? <nav class="ts-pagination" aria-label="More Agent Lab records"><Button href={nextHref} variant="secondary" size="sm">Next page</Button></nav> : null}
+</section>

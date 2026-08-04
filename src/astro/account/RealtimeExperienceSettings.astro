@@ -1,0 +1,19 @@
+---
+import Button from '../forms/actions/Button.astro';
+import Field from '../forms/fields/Field.astro';
+import Panel from '../surface/Panel.astro';
+interface Props { enabled: boolean; intervalSeconds: 2 | 5 | 15 | 30; csrfToken: string; }
+const { enabled, intervalSeconds, csrfToken } = Astro.props as Props;
+---
+<Panel eyebrow="Live experience" title="Real-time monitoring" description="Choose how often operational surfaces refresh. Turning live updates off preserves the server-rendered snapshot and makes no background requests.">
+	<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-success-message="Real-time experience saved.">
+		<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="intent" value="realtime" />
+		<Field label="Live updates" name="realTimeUpdates" help="Updates pause automatically while the page is hidden or the browser is offline.">
+			<select class="ts-control" id="realTimeUpdates" name="realTimeUpdates"><option value="true" selected={enabled}>Enabled</option><option value="false" selected={!enabled}>Off — server snapshot only</option></select>
+		</Field>
+		<Field label="Base polling interval" name="realTimePollingIntervalSeconds" help="Active status and activity use this cadence. Heavier metric history refreshes less often.">
+			<select class="ts-control" id="realTimePollingIntervalSeconds" name="realTimePollingIntervalSeconds">{[2, 5, 15, 30].map((seconds) => <option value={seconds} selected={intervalSeconds === seconds}>{seconds} seconds</option>)}</select>
+		</Field>
+		<Button type="submit">Save live experience</Button>
+	</form>
+</Panel>

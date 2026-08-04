@@ -14,7 +14,9 @@ function walkFiles(root: string): string[] {
 
 function isPublicComponentEntry(file: string): boolean {
   const ownerDirectory = dirname(file);
-  return !existsSync(`${ownerDirectory}.tsx`) && !existsSync(`${ownerDirectory}.astro`);
+  return !existsSync(`${ownerDirectory}.tsx`)
+    && !existsSync(`${ownerDirectory}.astro`)
+    && !existsSync(join(ownerDirectory, 'index.ts'));
 }
 
 function exportedTargetForSource(exports: Record<string, unknown>, sourcePath: string) {
@@ -63,6 +65,10 @@ describe('package exports', () => {
     expect(Ui.DynamicPieAllocationInput).toBeDefined();
     expect(Ui.MonitoringChart).toBeDefined();
     expect(Ui.ProjectActivityChart).toBeDefined();
+    expect(Ui.OperationsMonitorHeader).toBeDefined();
+    expect(Ui.AgentActivityGantt).toBeDefined();
+    expect(Ui.MetricHistoryChart).toBeDefined();
+    expect(Ui.useRealtimeResource).toBeDefined();
     expect(Ui.RichMarkdownEditor).toBeDefined();
     expect(Ui.initializeRichMarkdownEditors).toBeDefined();
     expect(Ui.CheckboxField).toBeDefined();

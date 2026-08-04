@@ -17,3 +17,4 @@ export { CheckboxField } from './react/form-controls/CheckboxField.tsx';
 export { SelectField } from './react/form-controls/SelectField.tsx';
 export type { SelectOption } from './react/form-controls/SelectField.tsx';
 export { TextField } from './react/form-controls/TextField.tsx';
+export * from './react/operations-monitor/index.ts';

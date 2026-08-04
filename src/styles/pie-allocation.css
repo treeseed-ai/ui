@@ -148,6 +148,48 @@ html[data-ts-mode='dark'] .dynamic-pie-allocation {
   color: var(--pie-allocation-error);
 }
 
+.dynamic-pie-allocation[data-density="compact"] {
+  gap: 10px;
+  padding: 12px;
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__body {
+  gap: 14px;
+  grid-template-columns: 176px minmax(0, 1fr);
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__svg {
+  max-width: 176px;
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__legend {
+  gap: 6px;
+  max-height: 14rem;
+  overflow: auto;
+  padding-left: 14px;
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__row {
+  gap: 6px;
+  grid-template-columns: 12px minmax(72px, 1fr) minmax(4.8rem, 5.8rem) auto auto;
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__swatch {
+  border-radius: 3px;
+  height: 12px;
+  width: 12px;
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__label,
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__input {
+  font-size: 0.82rem;
+}
+
+.dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__input {
+  min-height: 32px;
+  padding-block: 4px;
+}
+
 @media (max-width: 720px) {
   .dynamic-pie-allocation {
     padding: 14px;
@@ -173,5 +215,30 @@ html[data-ts-mode='dark'] .dynamic-pie-allocation {
 
   .dynamic-pie-allocation__locked {
     grid-column: 2 / -1;
+  }
+
+  .dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__body {
+    grid-template-columns: 144px minmax(0, 1fr);
+  }
+
+  .dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__svg {
+    max-width: 144px;
+  }
+}
+
+@media (max-width: 520px) {
+  .dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__body {
+    grid-template-columns: 1fr;
+  }
+
+  .dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__legend {
+    border-top: 1px solid var(--pie-allocation-border);
+    max-height: none;
+    padding-left: 0;
+    padding-top: 12px;
+  }
+
+  .dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__legend::before {
+    display: none;
   }
 }

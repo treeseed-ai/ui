@@ -23,6 +23,10 @@ export const authAndSensitiveDataComponents: ComponentCatalogEntry[] = [
   display('account-time-zone-settings', 'AccountTimeZoneSettings', 'Account', 'astro', 'Account time-zone selection used by application timestamp displays.', 'large', { source: 'Account' }, [
       { name: 'timeZone', type: 'string', defaultValue: 'UTC', description: 'Selected IANA time-zone identifier.' },
     ], undefined, '@treeseed/ui/components/astro/account/AccountTimeZoneSettings.astro'),
+  display('realtime-experience-settings', 'RealtimeExperienceSettings', 'Account', 'astro', 'Account-synced live-update and polling-cadence settings.', 'large', { enabled: true, intervalSeconds: 5 }, [
+      { name: 'enabled', type: 'boolean', defaultValue: true, description: 'Whether authenticated operational surfaces update in the background.' },
+      { name: 'intervalSeconds', type: '2 | 5 | 15 | 30', defaultValue: 5, description: 'Base cadence used by active monitoring resources.' },
+    ], undefined, '@treeseed/ui/components/astro/account/RealtimeExperienceSettings.astro'),
   display('notification-preference-panel', 'NotificationPreferencePanel', 'Account', 'astro', 'Account notification preference controls and state.', 'large', { source: 'Account' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Notification preference props.' },
     ], undefined, '@treeseed/ui/components/astro/account/NotificationPreferencePanel.astro'),

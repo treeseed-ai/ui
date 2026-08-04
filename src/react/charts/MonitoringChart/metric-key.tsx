@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../../styles/charts.css";
+import { useRealtimeResource } from "../../operations-monitor/use-realtime-resource";
 
 
 export type MetricKey = "cpu" | "memory" | "latency";
@@ -164,75 +165,32 @@ export function useMonitoringSeries({
   pollIntervalMs: PollIntervalMs;
   snapshotEndpoint: string;
 }) {
-  const [points, setPoints] = useState<MetricPoint[]>([]);
-  const [status, setStatus] = useState<PollStatus>("idle");
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [pollCount, setPollCount] = useState(0);
   const latestPointRef = useRef<MetricPoint | undefined>(undefined);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (pollIntervalMs === null) {
-      setStatus("idle");
-      setError(null);
-
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const poll = async () => {
-      setStatus("polling");
-
-      try {
-        const nextPoint = await fetchMonitoringSnapshot(snapshotEndpoint, latestPointRef.current);
-
-        if (cancelled) {
-          return;
-        }
-
-        latestPointRef.current = nextPoint;
-        setPoints((current) => [...current, nextPoint].slice(-maxPoints));
-        setLastUpdatedAt(nextPoint.timestamp);
-        setPollCount((current) => current + 1);
-        setError(null);
-      } catch (caughtError) {
-        if (cancelled) {
-          return;
-        }
-
-        setStatus("error");
-        setError(caughtError instanceof Error ? caughtError.message : "Unable to fetch monitoring snapshot");
-      }
-    };
-
-    void poll();
-    const intervalId = window.setInterval(() => {
-      void poll();
-    }, pollIntervalMs);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, [maxPoints, pollIntervalMs, snapshotEndpoint]);
-
-  const latestPoint = points.at(-1) ?? null;
+	const endpoint = useMemo(() => () => snapshotEndpoint, [snapshotEndpoint]);
+	const request = useMemo(() => async (url: string, signal: AbortSignal) => await fetch(url, {
+		method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ previous: latestPointRef.current }), signal,
+	}), []);
+	const parse = useMemo(() => (payload: unknown) => {
+		const value = typeof payload === 'object' && payload !== null && 'snapshot' in payload ? (payload as { snapshot?: unknown }).snapshot : payload;
+		if (!isMetricPoint(value)) throw new Error('Monitoring snapshot response was invalid');
+		latestPointRef.current = value; return { data: [value] };
+	}, []);
+	const merge = useMemo(() => (current: MetricPoint[], next: MetricPoint[]) => [...current, ...next].slice(-maxPoints), [maxPoints]);
+	const live = useRealtimeResource({ initialData: [] as MetricPoint[], endpoint, intervalMs: pollIntervalMs ?? 1_000, enabled: pollIntervalMs !== null, parse, merge, request });
+	const points = live.data; const latestPoint = points.at(-1) ?? null;
 
   const pollingState = useMemo<PollingState>(
     () => ({
-      status,
+		status: live.status === 'degraded' || live.status === 'offline' ? 'error' : live.status === 'snapshot' ? 'idle' : 'polling',
       pollIntervalMs,
       maxPoints,
       snapshotEndpoint,
       sampleCount: points.length,
-      pollCount,
-      lastUpdatedAt,
-      error,
+		pollCount: live.refreshCount,
+		lastUpdatedAt: live.lastUpdatedAt,
+		error: live.error,
     }),
-    [error, lastUpdatedAt, maxPoints, points.length, pollCount, pollIntervalMs, snapshotEndpoint, status],
+		[live.error, live.lastUpdatedAt, live.refreshCount, live.status, maxPoints, points.length, pollIntervalMs, snapshotEndpoint],
   );
 
   return {

@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-dev.feature-treeseed-guide-editorial-agents.20260802T111121Z",
+  "version": "0.12.18-dev.staging.20260804T170811Z",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -165,6 +165,7 @@
     "./components/astro/account/NotificationPreferencePanel.astro": "./dist/astro/account/NotificationPreferencePanel.astro",
     "./components/astro/account/AccountDeletionPanel.astro": "./dist/astro/account/AccountDeletionPanel.astro",
     "./components/astro/account/PersonalThemeManager.astro": "./dist/astro/account/PersonalThemeManager.astro",
+    "./components/astro/account/RealtimeExperienceSettings.astro": "./dist/astro/account/RealtimeExperienceSettings.astro",
     "./components/astro/overlays/AccessibleDialog.astro": "./dist/astro/overlays/AccessibleDialog.astro",
     "./components/astro/overlays/ImageLightbox.astro": "./dist/astro/overlays/ImageLightbox.astro",
     "./components/astro/content/ContentStatusLegend.astro": "./dist/astro/content/ContentStatusLegend.astro",
@@ -179,6 +180,11 @@
     "./components/astro/data/KeyValueList.astro": "./dist/astro/data/KeyValueList.astro",
     "./components/astro/data/metrics/MetricCard.astro": "./dist/astro/data/metrics/MetricCard.astro",
     "./components/astro/data/metrics/MetricGrid.astro": "./dist/astro/data/metrics/MetricGrid.astro",
+    "./components/astro/data/entities/EntityCollection.astro": "./dist/astro/data/entities/EntityCollection.astro",
+    "./components/astro/data/entities/EntityFilterToolbar.astro": "./dist/astro/data/entities/EntityFilterToolbar.astro",
+    "./components/astro/operating/navigation/OperationsDisplayContainer.astro": "./dist/astro/operating/navigation/OperationsDisplayContainer.astro",
+    "./components/astro/operating/navigation/OperationsNavigator.astro": "./dist/astro/operating/navigation/OperationsNavigator.astro",
+    "./components/astro/operating/navigation/WorkdaySelector.astro": "./dist/astro/operating/navigation/WorkdaySelector.astro",
     "./components/astro/data/StatusPill.astro": "./dist/astro/data/StatusPill.astro",
     "./components/astro/data/Timestamp.astro": "./dist/astro/data/Timestamp.astro",
     "./components/astro/data/ResponsiveTable.astro": "./dist/astro/data/ResponsiveTable.astro",
@@ -329,6 +335,14 @@
       "types": "./dist/react/charts/ProjectActivityChart.d.ts",
       "default": "./dist/react/charts/ProjectActivityChart.js"
     },
+    "./components/react/OperationsMonitor": {
+      "types": "./dist/react/operations-monitor/index.d.ts",
+      "default": "./dist/react/operations-monitor/index.js"
+    },
+    "./components/react/CommandCenter": {
+      "types": "./dist/react/command-center/index.d.ts",
+      "default": "./dist/react/command-center/index.js"
+    },
     "./components/react/RichMarkdownEditor": {
       "types": "./dist/react/editors/RichMarkdownEditor.d.ts",
       "default": "./dist/react/editors/RichMarkdownEditor.js"
@@ -378,6 +392,8 @@
     "./styles/account/forms.css": "./dist/styles/account/forms.css",
     "./styles/auth.css": "./dist/styles/auth.css",
     "./styles/charts.css": "./dist/styles/charts.css",
+    "./styles/operations-monitor.css": "./dist/styles/operations-monitor.css",
+    "./styles/command-center.css": "./dist/styles/command-center.css",
     "./styles/forms.css": "./dist/styles/forms.css",
     "./styles/toast.css": "./dist/styles/toast.css",
     "./styles/market.css": "./dist/styles/market.css",

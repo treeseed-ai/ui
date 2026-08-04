@@ -226,9 +226,6 @@
 	padding-top: 0.55rem;
 }
 
-	padding-top: 0.7rem;
-}
-
 .ts-governance-queue__severity[data-severity='low'] {
 	background: var(--ts-operational-severity-low);
 }

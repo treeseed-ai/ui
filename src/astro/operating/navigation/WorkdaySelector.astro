@@ -1,0 +1,55 @@
+---
+import type { WorkdaySummary } from '../../../react/operations-monitor/types.ts';
+
+interface Props {
+	selectedDate: string;
+	selectedWorkdayId: string | null;
+	workdays: Array<WorkdaySummary & { href: string }>;
+	latestHref: string;
+}
+const { selectedDate, selectedWorkdayId, workdays, latestHref } = Astro.props as Props;
+const selected = workdays.find((workday) => workday.id === selectedWorkdayId);
+---
+
+<div class="ts-workday-selector" data-ts-workday-selector>
+	<a class="ts-workday-selector__latest" href={latestHref} aria-label="Select the current or latest completed workday">
+		<span aria-hidden="true">↯</span><span>Latest</span>
+	</a>
+	<details class="ts-workday-selector__calendar" data-ts-workday-calendar>
+		<summary aria-label={`Choose workday. ${selected?.title ?? 'No workday selected'}`}>
+			<span class="ts-workday-selector__calendar-icon" aria-hidden="true">▦</span>
+			<span><small>Workday</small><strong>{selected?.title ?? selectedDate}</strong></span>
+		</summary>
+		<div class="ts-workday-selector__popover">
+			<label><span>Date</span><input type="date" value={selectedDate} data-ts-workday-date /></label>
+			<div class="ts-workday-selector__list" role="list" aria-label={`Workdays on ${selectedDate}`}>
+				{workdays.length ? workdays.map((workday) => <a href={workday.href} role="listitem" aria-current={workday.id === selectedWorkdayId ? 'true' : undefined}>
+					<span><strong>{workday.title}</strong><small>{workday.status}</small></span><span aria-hidden="true">→</span>
+				</a>) : <p>No workdays intersect this date.</p>}
+			</div>
+		</div>
+	</details>
+</div>
+
+<script is:inline>
+	(() => {
+		document.querySelectorAll('[data-ts-workday-selector]').forEach((root) => {
+			if (root.dataset.bound) return;
+			root.dataset.bound = 'true';
+			const details = root.querySelector('[data-ts-workday-calendar]');
+			let closeTimer;
+			root.addEventListener('pointerenter', (event) => {
+				if (event.pointerType === 'mouse' && details instanceof HTMLDetailsElement) { clearTimeout(closeTimer); details.open = true; }
+			});
+			root.addEventListener('pointerleave', (event) => {
+				if (event.pointerType === 'mouse' && details instanceof HTMLDetailsElement) closeTimer = setTimeout(() => { if (!details.matches(':focus-within')) details.open = false; }, 180);
+			});
+			root.addEventListener('change', (event) => {
+				const input = event.target;
+				if (!(input instanceof HTMLInputElement) || !input.matches('[data-ts-workday-date]') || !input.value) return;
+				const url = new URL(window.location.href); url.searchParams.set('date', input.value); url.searchParams.delete('workday'); window.location.assign(url);
+			});
+			root.querySelectorAll('.ts-workday-selector__list a').forEach((link) => link.addEventListener('click', () => { if (details instanceof HTMLDetailsElement) details.open = false; }));
+		});
+	})();
+</script>

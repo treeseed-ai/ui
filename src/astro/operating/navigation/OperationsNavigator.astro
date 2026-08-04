@@ -1,0 +1,23 @@
+---
+import type { SurfaceTabItem } from '../../types.ts';
+import type { WorkdaySummary } from '../../../react/operations-monitor/types.ts';
+import SurfaceTabs from '../../shell/navigation/SurfaceTabs.astro';
+import WorkdaySelector from './WorkdaySelector.astro';
+import '../../../styles/operations-monitor.css';
+
+interface Props {
+	items: SurfaceTabItem[];
+	current: string;
+	selectedDate: string;
+	selectedWorkdayId: string | null;
+	workdays: Array<WorkdaySummary & { href: string }>;
+	latestHref: string;
+	label?: string;
+}
+const { items, current, selectedDate, selectedWorkdayId, workdays, latestHref, label = 'Agent Lab' } = Astro.props as Props;
+---
+
+<div class="ts-operations-navigator" data-ts-operations-navigator>
+	<SurfaceTabs items={items} current={current} label={`${label} sections`} variant="compact" />
+	<WorkdaySelector {selectedDate} {selectedWorkdayId} {workdays} {latestHref} />
+</div>

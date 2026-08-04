@@ -9,6 +9,8 @@ import MetricGrid from '../../../../src/astro/data/metrics/MetricGrid.astro';
 import StatusPill from '../../../../src/astro/data/StatusPill.astro';
 import Timestamp from '../../../../src/astro/data/Timestamp.astro';
 import ResponsiveTable from '../../../../src/astro/data/ResponsiveTable.astro';
+import EntityCollection from '../../../../src/astro/data/entities/EntityCollection.astro';
+import EntityFilterToolbar from '../../../../src/astro/data/entities/EntityFilterToolbar.astro';
 import DistributionSummary from '../../../../src/astro/distribution/DistributionSummary.astro';
 import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
 import FeedbackTrigger from '../../../../src/astro/feedback/FeedbackTrigger.astro';
@@ -84,9 +86,13 @@ import OperationalTimeline from '../../../../src/astro/app/operations/Operationa
 import RepositoryContextPanel from '../../../../src/astro/app/operations/RepositoryContextPanel.astro';
 import SeedOperationsPanel from '../../../../src/astro/app/operations/SeedOperationsPanel.astro';
 import WorkerQueuePanel from '../../../../src/astro/app/operations/WorkerQueuePanel.astro';
+import OperationsDisplayContainer from '../../../../src/astro/operating/navigation/OperationsDisplayContainer.astro';
+import OperationsNavigator from '../../../../src/astro/operating/navigation/OperationsNavigator.astro';
+import WorkdaySelector from '../../../../src/astro/operating/navigation/WorkdaySelector.astro';
 import AccountDeletionPanel from '../../../../src/astro/account/AccountDeletionPanel.astro';
 import AccountIdentitySettings from '../../../../src/astro/account/AccountIdentitySettings.astro';
 import AccountTimeZoneSettings from '../../../../src/astro/account/AccountTimeZoneSettings.astro';
+import RealtimeExperienceSettings from '../../../../src/astro/account/RealtimeExperienceSettings.astro';
 import NotificationPreferencePanel from '../../../../src/astro/account/NotificationPreferencePanel.astro';
 import PersonalThemeManager from '../../../../src/astro/account/PersonalThemeManager.astro';
 import SessionManager from '../../../../src/astro/account/SessionManager.astro';
@@ -153,6 +159,8 @@ import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
 import { accountIdentity, accountProjects, accountSessions, notificationCapabilities, notificationPreferences, personalThemes, navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
+const labTabs = ['Inbox', 'Decisions', 'Build', 'Direction', 'Results', 'Find'].map((label) => ({ id: label.toLowerCase(), label, href: '#' }));
+const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running', startedAt: '2026-08-04T13:00:00.000Z', finishedAt: null, href: '#' }, { id: 'prior', title: 'Research cycle', status: 'completed', startedAt: '2026-08-04T10:00:00.000Z', finishedAt: '2026-08-04T12:00:00.000Z', href: '#' }];
 ---
 
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
@@ -180,6 +188,8 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'allocation-state-legend' ? <AllocationStateLegend /> : null}
 {entry.id === 'work-queue-summary' ? <WorkQueueSummary viewModel={workQueueViewModel} /> : null}
 {entry.id === 'activity-timeline' ? <ActivityTimeline viewModel={activityTimelineViewModel} /> : null}
+{entry.id === 'entity-collection' ? <EntityCollection items={[{ id: 'assignment-1', title: 'Review Guide evidence', description: 'Planning assignment', status: 'running', projectName: 'TreeSeed Guide', activityProfile: 'reviewing' }, { id: 'assignment-2', title: 'Estimate editorial work', description: 'Capacity estimate', status: 'completed', projectName: 'TreeSeed Guide', activityProfile: 'estimating' }]} /> : null}
+{entry.id === 'entity-filter-toolbar' ? <EntityFilterToolbar query="guide" status="running" action="/displays/entity-filter-toolbar" /> : null}
 {entry.id === 'data-table' ? <DataTable caption="DataTable preview" columns={tableColumns.slice(0, 3)} rows={[{ name: 'Monitoring Console', type: 'Template', status: 'Published' }, { name: 'Capacity Diagnostics', type: 'Panel', status: 'Draft' }, { name: 'Knowledge Pack', type: 'Artifact', status: 'Ready' }]} /> : null}
 {entry.id === 'responsive-table' ? <ResponsiveTable caption="Team members"><thead><tr><th>Member</th><th>Role</th></tr></thead><tbody><tr><td data-label="Member">Ada Lovelace</td><td data-label="Role">Owner</td></tr><tr><td data-label="Member">Grace Hopper</td><td data-label="Role">Reviewer</td></tr></tbody></ResponsiveTable> : null}
 {entry.id === 'disclosure-list' ? <DisclosureList title="Project lead" description="Leads projects and non-owner membership." items={[{ label: 'Create projects', description: 'Create and configure team projects.' }, { label: 'Manage workstreams', description: 'Organize and advance project work.' }]} open /> : null}
@@ -242,6 +252,9 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'project-control-nav' ? <ProjectControlNav projectId="project-42" current="deploy" /> : null}
 {entry.id === 'related-content-creator' ? <RelatedContentCreator projectId="project-42" parentCollection="objectives" parentSlug="market-launch" parentTitle="Market launch readiness" actions={[{ collection: 'questions', label: 'Question' }, { collection: 'decisions', label: 'Decision' }]} /> : null}
 {entry.id === 'work-content-nav' ? <WorkContentNav current="objectives" /> : null}
+{entry.id === 'operations-display-container' ? <OperationsDisplayContainer title="Direction" description="Follow assignments and execution-provider activity."><Panel title="Selected workday"><p>Focused operational content occupies this stable display region.</p></Panel><span slot="context">Knowledge and question context</span></OperationsDisplayContainer> : null}
+{entry.id === 'operations-navigator' ? <OperationsNavigator items={labTabs} current="direction" selectedDate="2026-08-04" selectedWorkdayId="current" workdays={labWorkdays} latestHref="#" /> : null}
+{entry.id === 'workday-selector' ? <WorkdaySelector selectedDate="2026-08-04" selectedWorkdayId="current" workdays={labWorkdays} latestHref="#" /> : null}
 {entry.id === 'capacity-diagnostics-panel' ? <CapacityDiagnosticsPanel capacity={capacity} diagnostics={diagnostics} /> : null}
 {entry.id === 'governance-decision-panel' ? <GovernanceDecisionPanel approval={approval} /> : null}
 {entry.id === 'governance-policy-summary' ? <GovernancePolicySummary policies={policies} constraints={constraints} /> : null}
@@ -253,6 +266,7 @@ import { accountIdentity, accountProjects, accountSessions, notificationCapabili
 {entry.id === 'account-deletion-panel' ? <AccountDeletionPanel blockers={[]} csrfToken="preview-csrf" hasCredential /> : null}
 {entry.id === 'account-identity-settings' ? <AccountIdentitySettings identity={accountIdentity} availableProviders={[{ id: 'google', label: 'Google' }]} csrfToken="preview-csrf" /> : null}
 {entry.id === 'account-time-zone-settings' ? <AccountTimeZoneSettings timeZone="America/New_York" csrfToken="preview-csrf" /> : null}
+{entry.id === 'realtime-experience-settings' ? <RealtimeExperienceSettings enabled intervalSeconds={5} csrfToken="preview-csrf" /> : null}
 {entry.id === 'notification-preference-panel' ? <NotificationPreferencePanel preferences={notificationPreferences} capabilities={notificationCapabilities} projects={accountProjects} csrfToken="preview-csrf" /> : null}
 {entry.id === 'personal-theme-manager' ? <PersonalThemeManager themes={personalThemes} activeScheme="fern" csrfToken="preview-csrf" /> : null}
 {entry.id === 'session-manager' ? <SessionManager sessions={accountSessions} csrfToken="preview-csrf" /> : null}

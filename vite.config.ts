@@ -28,6 +28,8 @@ export default defineConfig({
         'react/pie-allocation/DynamicPieAllocationInput': 'src/react/pie-allocation/DynamicPieAllocationInput.tsx',
         'react/charts/MonitoringChart': 'src/react/charts/MonitoringChart.tsx',
         'react/charts/ProjectActivityChart': 'src/react/charts/ProjectActivityChart.tsx',
+		'react/operations-monitor/index': 'src/react/operations-monitor/index.ts',
+		'react/command-center/index': 'src/react/command-center/index.ts',
         'react/editors/RichMarkdownEditor': 'src/react/editors/RichMarkdownEditor.tsx',
         'react/editors/KnowledgeRelationPicker': 'src/react/editors/KnowledgeRelationPicker.tsx',
         'lib/app/platform-operation-status': 'src/lib/app/platform-operation-status.ts',

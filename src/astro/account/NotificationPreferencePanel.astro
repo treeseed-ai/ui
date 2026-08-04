@@ -6,7 +6,7 @@ import FormActions from '../forms/actions/FormActions.astro';
 interface NotificationPreferencesModel { emailCadence: 'immediate' | 'daily' | 'weekly'; globalContentTypes: string[]; projectOverrides: Array<{ projectId: string; contentTypes: string[] }>; }
 interface ContentCapability { id: string; label: string; description: string; }
 interface ProjectOption { id: string; name?: string | null; slug: string; }
-interface Props { preferences: NotificationPreferencesModel; capabilities: ContentCapability[]; projects: ProjectOption[]; csrfToken: string; }
+interface Props { preferences: NotificationPreferencesModel; capabilities: readonly ContentCapability[]; projects: ProjectOption[]; csrfToken: string; }
 const { preferences, capabilities, projects, csrfToken } = Astro.props as Props;
 const overrides = new Map<string, string[]>(preferences.projectOverrides.map((entry) => [entry.projectId, entry.contentTypes]));
 ---

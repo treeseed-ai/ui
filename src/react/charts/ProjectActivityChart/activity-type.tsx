@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import "../../../styles/charts.css";
+import { useRealtimeResource } from "../../operations-monitor/use-realtime-resource";
 
 
 export type ActivityType = "questions" | "objectives" | "notes" | "proposals" | "decisions" | "agents";
@@ -188,82 +189,30 @@ export function useProjectActivityEvents({
   eventsEndpoint: string;
   initialEvents?: ProjectActivityEvent[];
 }) {
-  const [events, setEvents] = useState<ProjectActivityEvent[]>(
-    () => initialEvents.slice(-maxEvents)
-  );
-  const [status, setStatus] = useState<PollStatus>("idle");
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
-  const [pollCount, setPollCount] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (pollIntervalMs === null) {
-      setStatus("idle");
-      setError(null);
-
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const poll = async () => {
-      setStatus("polling");
-
-      try {
-        const nextEvents = await fetchProjectActivityEvents(eventsEndpoint);
-
-        if (cancelled) {
-          return;
-        }
-
-        setEvents((current) => {
-          const byId = new Map(current.map((event) => [event.id, event]));
-          for (const event of nextEvents) byId.set(event.id, event);
-          return [...byId.values()]
-            .sort((left, right) => left.timestamp - right.timestamp)
-            .slice(-maxEvents);
-        });
-        setLastUpdatedAt(Date.now());
-        setPollCount((current) => current + 1);
-        setError(null);
-      } catch (caughtError) {
-        if (cancelled) {
-          return;
-        }
-
-        setStatus("error");
-        setError(
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Unable to fetch project activity events"
-        );
-      }
-    };
-
-    void poll();
-    const intervalId = window.setInterval(() => {
-      void poll();
-    }, pollIntervalMs);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, [eventsEndpoint, maxEvents, pollIntervalMs]);
+	const endpoint = useMemo(() => () => eventsEndpoint, [eventsEndpoint]);
+	const parse = useMemo(() => (payload: unknown) => {
+		const events = Array.isArray(payload) ? payload : typeof payload === 'object' && payload !== null ? (payload as { events?: unknown }).events : null;
+		if (!Array.isArray(events) || events.some((event) => typeof event?.id !== 'string' || typeof event?.timestamp !== 'number' || !activityTypes.includes(event.type) || !['created', 'updated', 'deleted'].includes(event.action))) throw new Error('Project activity events response was invalid');
+		return { data: events as ProjectActivityEvent[] };
+	}, []);
+	const merge = useMemo(() => (current: ProjectActivityEvent[], next: ProjectActivityEvent[]) => {
+		const byId = new Map(current.map((event) => [event.id, event])); for (const event of next) byId.set(event.id, event);
+		return [...byId.values()].sort((left, right) => left.timestamp - right.timestamp).slice(-maxEvents);
+	}, [maxEvents]);
+	const live = useRealtimeResource({ initialData: initialEvents.slice(-maxEvents), endpoint, intervalMs: pollIntervalMs ?? 1_000, enabled: pollIntervalMs !== null, parse, merge });
+	const events = live.data;
 
   return {
     events,
     pollingState: {
-      status,
+		status: live.status === 'degraded' || live.status === 'offline' ? 'error' : live.status === 'snapshot' ? 'idle' : 'polling',
       pollIntervalMs,
       maxEvents,
       eventsEndpoint,
       retainedEvents: events.length,
-      pollCount,
-      lastUpdatedAt,
-      error
+		pollCount: live.refreshCount,
+		lastUpdatedAt: live.lastUpdatedAt,
+		error: live.error
     }
   };
 }

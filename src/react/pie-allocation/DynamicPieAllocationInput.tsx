@@ -33,6 +33,7 @@ export type DynamicPieAllocationInputProps = {
   allowAddRemove?: boolean;
   ariaLabel?: string;
   palette?: string[];
+  density?: "default" | "compact";
   onChange?: (
     slices: PieAllocationSlice[],
     validity: PieAllocationValidity
@@ -97,6 +98,7 @@ export default function DynamicPieAllocationInput({
   allowAddRemove: _allowAddRemove = false,
   ariaLabel = "Percentage allocation pie chart",
   palette = defaultPalette,
+  density = "default",
   onChange
 }: DynamicPieAllocationInputProps) {
   const initial = useMemo(() => {
@@ -313,6 +315,7 @@ export default function DynamicPieAllocationInput({
   return (
     <div
       className="dynamic-pie-allocation"
+      data-density={density}
       data-hydrated={hydrated ? "true" : "false"}
       data-testid="dynamic-pie-allocation"
     >
