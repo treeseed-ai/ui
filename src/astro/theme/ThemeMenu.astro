@@ -1,12 +1,13 @@
 ---
 import ThemeSelector from './ThemeSelector.astro';
-import type { ThemePreference, ThemeConfig } from '../../theme/index.ts';
+import type { AppearancePreference, ThemePreference, ThemeConfig } from '../../theme/index.ts';
 
 interface Props {
 	selectedScheme?: ThemePreference['scheme'];
 	selectedMode?: ThemePreference['mode'];
 	label?: string;
 	themeConfig?: ThemeConfig;
+	workspace?: AppearancePreference['workspace'];
 }
 
 const {
@@ -14,6 +15,7 @@ const {
 	selectedMode,
 	label = 'Appearance',
 	themeConfig,
+	workspace,
 } = Astro.props as Props;
 ---
 
@@ -28,6 +30,7 @@ const {
 			label={label}
 			selectedScheme={selectedScheme}
 			selectedMode={selectedMode}
+			selectedWorkspace={workspace}
 			themeConfig={themeConfig}
 			compact={false}
 		/>

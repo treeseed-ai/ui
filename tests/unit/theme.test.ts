@@ -4,10 +4,12 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   buildThemeCss,
+  buildWorkspaceThemeCss,
   compileGuidedThemePalette,
   defineTheme,
   guidedThemePaletteForScheme,
   loadColorSchemes,
+  normalizeAppearancePreference,
   parseColorSchemeYaml,
   resolveThemeConfig,
   validateGuidedThemePalette,
@@ -90,6 +92,31 @@ describe('YAML themes', () => {
     expect(css).toContain('--ts-color-accent: #336633;');
   });
 
+  it('builds a scoped workspace palette without fading readable tokens', () => {
+    const scheme = parseColorSchemeYaml(validYaml);
+    const css = buildWorkspaceThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
+    expect(css).toContain('.ts-control-surface,.ts-workspace-overlay-scope');
+    expect(css).toContain('data-ts-workspace-mode="inherit"');
+    expect(css).toContain('--ts-color-canvas: color-mix(in srgb, #ffffff 70%');
+    expect(css).toContain('--ts-color-border: color-mix(in srgb, #dddddd 55%');
+    expect(css).toContain('--ts-color-text: #111111;');
+    expect(css).toContain('color-scheme: dark;');
+  });
+
+  it('normalizes independent content workspace appearance', () => {
+    expect(normalizeAppearancePreference({
+      colorScheme: 'fern',
+      themeMode: 'light',
+      contentThemeOverlayEnabled: true,
+      contentThemeOverlayScheme: 'tidepool',
+      contentThemeOverlayMode: 'dark',
+    })).toEqual({
+      scheme: 'fern',
+      mode: 'light',
+      workspace: { enabled: true, scheme: 'tidepool', mode: 'dark' },
+    });
+  });
+
   it('compiles accessible guided personal-theme palettes without activating them', () => {
     const palette = {
       light: { canvas: '#ffffff', surface: '#f5f5f5', text: '#111111', accent: '#176b45' },
@@ -117,6 +144,8 @@ describe('YAML themes', () => {
     expect(selector).toContain("selector.dataset.tsThemeSelectorBound = 'true'");
     expect(selector).toContain("document.querySelectorAll('[data-ts-theme-selector]').forEach((peer)");
     expect(selector).toContain('window.__tsThemeSelectorMediaBound');
+    expect(selector).toContain('data-ts-workspace-enabled');
+    expect(selector).toContain('data-ts-workspace-scheme-select');
   });
 
   it('rejects guided palettes that fail text contrast', () => {

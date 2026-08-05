@@ -10,8 +10,8 @@ import ThemePreviewSwatch from '../theme/ThemePreviewSwatch.astro';
 import { guidedThemePaletteForScheme, loadColorSchemes } from '../../theme/index.ts';
 
 interface PersonalThemeItem { id: string; schemeId: string; name: string; baseScheme: string; palette: { light: Record<'canvas' | 'surface' | 'text' | 'accent', string>; dark: Record<'canvas' | 'surface' | 'text' | 'accent', string> }; }
-interface Props { themes: PersonalThemeItem[]; activeScheme: string; csrfToken: string; }
-const { themes, activeScheme, csrfToken } = Astro.props as Props;
+interface Props { themes: PersonalThemeItem[]; activeScheme: string; workspaceScheme?: string; csrfToken: string; }
+const { themes, activeScheme, workspaceScheme, csrfToken } = Astro.props as Props;
 const definitions = loadColorSchemes();
 const schemes = definitions.map((scheme) => ({ value: scheme.id, label: scheme.name }));
 const basePalettes = Object.fromEntries(definitions.map((scheme) => [scheme.id, guidedThemePaletteForScheme(scheme.id)]));
@@ -38,7 +38,7 @@ const defaults = basePalettes.fern;
 			<Button type="button" data-dialog-open="create-personal-theme">Create theme</Button>
 			<div class="account-list">{themes.length ? themes.map((theme) => (
 			<details class="account-disclosure" data-active-personal-theme-name={activeScheme === theme.schemeId ? theme.name : undefined}>
-				<summary><ThemePreviewSwatch swatches={[theme.palette.light.accent, theme.palette.light.surface, theme.palette.dark.accent, theme.palette.dark.canvas]} label={`${theme.name} preview`} /> <strong>{theme.name}</strong>{activeScheme === theme.schemeId ? ' · active' : ''}</summary>
+				<summary><ThemePreviewSwatch swatches={[theme.palette.light.accent, theme.palette.light.surface, theme.palette.dark.accent, theme.palette.dark.canvas]} label={`${theme.name} preview`} /> <strong>{theme.name}</strong>{activeScheme === theme.schemeId ? ' · application' : workspaceScheme === theme.schemeId ? ' · content overlay' : ''}</summary>
 				<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-appearance']">
 					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="themeId" value={theme.id} /><input type="hidden" name="intent" value="update-theme" />
 					<div class="account-field-row">
@@ -46,7 +46,7 @@ const defaults = basePalettes.fern;
 						<Field label="Base theme" name={`base-${theme.id}`}><Select id={`base-${theme.id}`} name="baseScheme" options={schemes} value={theme.baseScheme} /></Field>
 					</div>
 					{(['light', 'dark'] as const).map((mode) => <fieldset class="account-palette-group"><legend>{mode} palette</legend><div class="account-color-grid">{(['canvas', 'surface', 'text', 'accent'] as const).map((key) => <Field label={key} name={`${mode}.${key}`}><input id={`${theme.id}-${mode}-${key}`} class="ts-control" type="color" name={`${mode}.${key}`} value={theme.palette[mode][key]} /></Field>)}</div></fieldset>)}
-					<FormActions class="account-form-actions"><Button type="submit">Save theme</Button><Button type="submit" name="intent" value="delete-theme" variant="danger" disabled={activeScheme === theme.schemeId}>Delete theme</Button></FormActions>
+					<FormActions class="account-form-actions"><Button type="submit">Save theme</Button><Button type="submit" name="intent" value="delete-theme" variant="danger" disabled={activeScheme === theme.schemeId || workspaceScheme === theme.schemeId}>Delete theme</Button></FormActions>
 				</form>
 			</details>
 			)) : <p>No personal themes yet.</p>}</div>

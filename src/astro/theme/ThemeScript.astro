@@ -2,9 +2,11 @@
 import {
 	buildThemeCss,
 	normalizeThemePreference,
+	normalizeWorkspaceThemePreference,
 	resolveThemeConfig,
 	type ThemePreference,
 	type ThemeConfig,
+	type WorkspaceThemePreference,
 } from '../../theme/index.ts';
 
 interface Props {
@@ -13,6 +15,7 @@ interface Props {
 	includeCss?: boolean;
 	preferDefaultPreference?: boolean;
 	themeConfig?: ThemeConfig;
+	workspace?: WorkspaceThemePreference;
 }
 
 const themeConfig = (Astro.props as Props).themeConfig;
@@ -20,6 +23,7 @@ const preference = normalizeThemePreference({
 	scheme: (Astro.props as Props).defaultScheme,
 	mode: (Astro.props as Props).defaultMode,
 });
+const workspace = normalizeWorkspaceThemePreference((Astro.props as Props).workspace, preference.scheme);
 const { includeCss = true, preferDefaultPreference = false } = Astro.props as Props;
 const resolvedTheme = resolveThemeConfig(themeConfig);
 const builtInSchemeIds = resolvedTheme.summaries.map((scheme) => scheme.id);
@@ -36,6 +40,7 @@ const themeCss = buildThemeCss(themeConfig);
 		defaultScheme: preference.scheme,
 		defaultMode: preference.mode,
 		preferDefaultPreference,
+		workspace,
 	}}
 >
 	(() => {
@@ -97,9 +102,24 @@ const themeCss = buildThemeCss(themeConfig);
 		const scheme = preferDefaultPreference ? resolveScheme(defaultScheme) : resolveScheme(storedScheme || defaultScheme);
 		const storedMode = preferDefaultPreference ? resolveMode(defaultMode) : resolveMode(storedModeValue || defaultMode);
 		const renderedMode = resolveRenderedMode(storedMode);
+		const storedWorkspaceEnabled = readStored('treeseed_workspace_theme_enabled');
+		const storedWorkspaceScheme = readStored('treeseed_workspace_theme_scheme');
+		const storedWorkspaceMode = readStored('treeseed_workspace_theme_mode');
+		const workspaceEnabled = preferDefaultPreference || !storedWorkspaceEnabled
+			? workspace.enabled
+			: storedWorkspaceEnabled === 'true';
+		const workspaceScheme = !preferDefaultPreference && schemes.has(storedWorkspaceScheme)
+			? storedWorkspaceScheme
+			: workspace.scheme;
+		const workspaceMode = !preferDefaultPreference && ['inherit', 'light', 'dark', 'system'].includes(storedWorkspaceMode)
+			? storedWorkspaceMode
+			: workspace.mode;
 
 		root.dataset.tsScheme = scheme;
 		root.dataset.tsMode = renderedMode;
+		root.dataset.tsWorkspaceThemeEnabled = String(workspaceEnabled);
+		root.dataset.tsWorkspaceThemeScheme = workspaceScheme;
+		root.dataset.tsWorkspaceThemeMode = workspaceMode;
 		if (storedMode === 'system') {
 			root.dataset.tsModeSource = 'system';
 		} else {

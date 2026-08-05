@@ -1,7 +1,9 @@
 ---
 import {
 	normalizeThemePreference,
+	normalizeWorkspaceThemePreference,
 	resolveThemeConfig,
+	type AppearancePreference,
 	type ThemePreference,
 	type ThemeConfig,
 } from '../../theme/index.ts';
@@ -16,6 +18,7 @@ interface Props {
 	modeFieldName?: string;
 	compact?: boolean;
 	themeConfig?: ThemeConfig;
+	selectedWorkspace?: AppearancePreference['workspace'];
 }
 
 const {
@@ -27,18 +30,28 @@ const {
 	modeFieldName = 'themeMode',
 	compact = true,
 	themeConfig,
+	selectedWorkspace,
 } = Astro.props as Props;
 
 const schemes = resolveThemeConfig(themeConfig).summaries;
 const preference = normalizeThemePreference({ scheme: selectedScheme, mode: selectedMode });
+const workspacePreference = normalizeWorkspaceThemePreference(selectedWorkspace, preference.scheme);
 const activeScheme = schemes.find((scheme) => scheme.id === preference.scheme) ?? schemes[0];
 const initialSwatches = preference.mode === 'dark'
 	? activeScheme.modeSwatches.dark
 	: activeScheme.modeSwatches.light;
+const workspaceScheme = schemes.find((scheme) => scheme.id === workspacePreference.scheme) ?? activeScheme;
+const workspaceSwatches = workspacePreference.mode === 'dark'
+	? workspaceScheme.modeSwatches.dark
+	: workspaceScheme.modeSwatches.light;
 const modes = [
 	{ value: 'system', label: 'System' },
 	{ value: 'light', label: 'Light' },
 	{ value: 'dark', label: 'Dark' },
+];
+const workspaceModes = [
+	{ value: 'inherit', label: 'Match application' },
+	...modes,
 ];
 ---
 
@@ -79,10 +92,37 @@ const modes = [
 			</select>
 		</label>
 	</div>
+	<section class="ts-theme-selector__workspace" data-ts-workspace-selector data-enabled={workspacePreference.enabled ? 'true' : 'false'}>
+		<label class="ts-theme-selector__workspace-toggle">
+			<input type="checkbox" checked={workspacePreference.enabled} data-ts-workspace-enabled />
+			<span><strong>Content theme overlay</strong><small>Give the workspace its own high-contrast palette.</small></span>
+		</label>
+		<div class="ts-theme-selector__workspace-preview">
+			<ThemePreviewSwatch swatches={workspaceSwatches} label={`${workspaceScheme.name} content preview`} />
+			<span><strong data-ts-workspace-preview-label>{workspaceScheme.name}</strong><small>70% surface influence · full-strength text</small></span>
+		</div>
+		<div class="ts-theme-selector__controls" data-ts-workspace-controls>
+			<label class="ts-theme-selector__field">
+				<span>Content scheme</span>
+				<select data-ts-workspace-scheme-select aria-label="Content color scheme" disabled={!workspacePreference.enabled}>
+					{schemes.map((scheme) => <option value={scheme.id} selected={scheme.id === workspacePreference.scheme}>{scheme.name}</option>)}
+				</select>
+			</label>
+			<label class="ts-theme-selector__field">
+				<span>Content mode</span>
+				<select data-ts-workspace-mode-select aria-label="Content theme mode" disabled={!workspacePreference.enabled}>
+					{workspaceModes.map((mode) => <option value={mode.value} selected={mode.value === workspacePreference.mode}>{mode.label}</option>)}
+				</select>
+			</label>
+		</div>
+	</section>
 	{includeHiddenFields ? (
 		<>
 			<input type="hidden" name={schemeFieldName} value={preference.scheme} data-ts-theme-scheme-field />
 			<input type="hidden" name={modeFieldName} value={preference.mode} data-ts-theme-mode-field />
+			<input type="hidden" name="contentThemeOverlayEnabled" value={String(workspacePreference.enabled)} data-ts-workspace-enabled-field />
+			<input type="hidden" name="contentThemeOverlayScheme" value={workspacePreference.scheme} data-ts-workspace-scheme-field />
+			<input type="hidden" name="contentThemeOverlayMode" value={workspacePreference.mode} data-ts-workspace-mode-field />
 		</>
 	) : null}
 </div>
@@ -93,6 +133,7 @@ const modes = [
 		const modeKey = 'treeseed_theme_mode';
 		const maxAge = 60 * 60 * 24 * 365;
 		const modeValues = new Set(['light', 'dark', 'system']);
+		const workspaceModeValues = new Set(['inherit', 'light', 'dark', 'system']);
 		const schemeValues = new Set(schemes.map((scheme) => scheme.id));
 		const schemeMap = new Map(schemes.map((scheme) => [scheme.id, scheme]));
 		const media = window.matchMedia?.('(prefers-color-scheme: dark)');
@@ -120,10 +161,37 @@ const modes = [
 			return media?.matches ? 'dark' : 'light';
 		}
 
-		function applyTheme(scheme, mode, persist = true) {
+		function safeWorkspace(workspace, fallbackScheme) {
+			return {
+				enabled: workspace?.enabled === true,
+				scheme: schemeValues.has(workspace?.scheme) ? workspace.scheme : fallbackScheme,
+				mode: workspaceModeValues.has(workspace?.mode) ? workspace.mode : 'inherit',
+			};
+		}
+
+		function applyWorkspace(workspace, persist) {
+			const root = document.documentElement;
+			root.dataset.tsWorkspaceThemeEnabled = String(workspace.enabled);
+			root.dataset.tsWorkspaceThemeScheme = workspace.scheme;
+			root.dataset.tsWorkspaceThemeMode = workspace.mode;
+			document.querySelectorAll('[data-ts-workspace-scope]').forEach((scope) => {
+				if (workspace.enabled) scope.setAttribute('data-ts-workspace-theme', 'true');
+				else scope.removeAttribute('data-ts-workspace-theme');
+				scope.setAttribute('data-ts-workspace-scheme', workspace.scheme);
+				scope.setAttribute('data-ts-workspace-mode', workspace.mode);
+			});
+			if (persist) {
+				store('treeseed_workspace_theme_enabled', String(workspace.enabled));
+				store('treeseed_workspace_theme_scheme', workspace.scheme);
+				store('treeseed_workspace_theme_mode', workspace.mode);
+			}
+		}
+
+		function applyTheme(scheme, mode, workspace, persist = true) {
 			const root = document.documentElement;
 			const safeScheme = schemeValues.has(scheme) ? scheme : 'fern';
 			const safeMode = modeValues.has(mode) ? mode : 'system';
+			const safeWorkspacePreference = safeWorkspace(workspace, safeScheme);
 			root.dataset.tsScheme = safeScheme;
 			root.dataset.tsMode = renderedMode(safeMode);
 			if (safeMode === 'system') {
@@ -137,8 +205,15 @@ const modes = [
 				store(schemeKey, safeScheme);
 				store(modeKey, safeMode);
 			}
+			applyWorkspace(safeWorkspacePreference, persist);
 			window.dispatchEvent(new CustomEvent('treeseed:theme-change', {
-				detail: { scheme: safeScheme, mode: safeMode, renderedMode: renderedMode(safeMode), persist },
+				detail: {
+					scheme: safeScheme,
+					mode: safeMode,
+					renderedMode: renderedMode(safeMode),
+					workspace: safeWorkspacePreference,
+					persist,
+				},
 			}));
 		}
 
@@ -149,7 +224,7 @@ const modes = [
 
 		function updateSwatch(selector, schemeId, mode) {
 			const scheme = schemeMap.get(schemeId);
-			const swatch = selector.querySelector('.ts-theme-swatch');
+			const swatch = selector.querySelector('.ts-theme-selector__summary .ts-theme-swatch');
 			const previewLabel = selector.querySelector('[data-ts-theme-preview-label]');
 			if (!scheme || !swatch) return;
 			swatch.setAttribute('aria-label', `${scheme.name} preview`);
@@ -161,6 +236,23 @@ const modes = [
 			}
 		}
 
+		function updateWorkspacePreview(selector, workspace) {
+			const scheme = schemeMap.get(workspace.scheme);
+			const section = selector.querySelector('[data-ts-workspace-selector]');
+			const swatch = section?.querySelector('.ts-theme-swatch');
+			const label = section?.querySelector('[data-ts-workspace-preview-label]');
+			if (!scheme || !section || !swatch) return;
+			section.dataset.enabled = String(workspace.enabled);
+			swatch.setAttribute('aria-label', `${scheme.name} content preview`);
+			const previewMode = workspace.mode === 'inherit'
+				? (document.documentElement.dataset.tsModeSource === 'system' ? 'system' : document.documentElement.dataset.tsMode)
+				: workspace.mode;
+			modeSwatches(scheme, previewMode).slice(0, 4).forEach((value, index) => {
+				swatch.style.setProperty(`--ts-preview-swatch-${index + 1}`, value);
+			});
+			if (label) label.textContent = `${scheme.name} · ${workspace.mode === 'inherit' ? 'application mode' : workspace.mode}`;
+		}
+
 		function currentPreference() {
 			const root = document.documentElement;
 			const scheme = schemeValues.has(root.dataset.tsScheme) ? root.dataset.tsScheme : '';
@@ -168,6 +260,11 @@ const modes = [
 			return {
 				scheme,
 				mode: modeValues.has(mode) ? mode : '',
+				workspace: safeWorkspace({
+					enabled: root.dataset.tsWorkspaceThemeEnabled === 'true',
+					scheme: root.dataset.tsWorkspaceThemeScheme,
+					mode: root.dataset.tsWorkspaceThemeMode,
+				}, scheme || 'fern'),
 			};
 		}
 
@@ -175,32 +272,57 @@ const modes = [
 			if (selector.dataset.tsThemeSelectorBound === 'true') return;
 			const schemeSelect = selector.querySelector('[data-ts-theme-scheme-select]');
 			const modeSelect = selector.querySelector('[data-ts-theme-mode-select]');
-			if (!(schemeSelect instanceof HTMLSelectElement) || !(modeSelect instanceof HTMLSelectElement)) return;
+			const workspaceEnabled = selector.querySelector('[data-ts-workspace-enabled]');
+			const workspaceScheme = selector.querySelector('[data-ts-workspace-scheme-select]');
+			const workspaceMode = selector.querySelector('[data-ts-workspace-mode-select]');
+			if (!(schemeSelect instanceof HTMLSelectElement) || !(modeSelect instanceof HTMLSelectElement)
+				|| !(workspaceEnabled instanceof HTMLInputElement) || !(workspaceScheme instanceof HTMLSelectElement)
+				|| !(workspaceMode instanceof HTMLSelectElement)) return;
 			selector.dataset.tsThemeSelectorBound = 'true';
 
 			const activePreference = currentPreference();
 			if (activePreference.scheme) schemeSelect.value = activePreference.scheme;
 			if (activePreference.mode) modeSelect.value = activePreference.mode;
+			workspaceEnabled.checked = activePreference.workspace.enabled;
+			workspaceScheme.value = activePreference.workspace.scheme;
+			workspaceMode.value = activePreference.workspace.mode;
 
 			function sync(persist = true) {
 				const scheme = schemeSelect.value;
 				const mode = modeSelect.value;
+				const workspace = safeWorkspace({ enabled: workspaceEnabled.checked, scheme: workspaceScheme.value, mode: workspaceMode.value }, scheme);
 				document.querySelectorAll('[data-ts-theme-selector]').forEach((peer) => {
 					const peerScheme = peer.querySelector('[data-ts-theme-scheme-select]');
 					const peerMode = peer.querySelector('[data-ts-theme-mode-select]');
 					const peerSchemeField = peer.querySelector('[data-ts-theme-scheme-field]');
 					const peerModeField = peer.querySelector('[data-ts-theme-mode-field]');
+					const peerWorkspaceEnabled = peer.querySelector('[data-ts-workspace-enabled]');
+					const peerWorkspaceScheme = peer.querySelector('[data-ts-workspace-scheme-select]');
+					const peerWorkspaceMode = peer.querySelector('[data-ts-workspace-mode-select]');
+					const peerWorkspaceEnabledField = peer.querySelector('[data-ts-workspace-enabled-field]');
+					const peerWorkspaceSchemeField = peer.querySelector('[data-ts-workspace-scheme-field]');
+					const peerWorkspaceModeField = peer.querySelector('[data-ts-workspace-mode-field]');
 					if (peerScheme instanceof HTMLSelectElement) peerScheme.value = scheme;
 					if (peerMode instanceof HTMLSelectElement) peerMode.value = mode;
 					if (peerSchemeField instanceof HTMLInputElement) peerSchemeField.value = scheme;
 					if (peerModeField instanceof HTMLInputElement) peerModeField.value = mode;
+					if (peerWorkspaceEnabled instanceof HTMLInputElement) peerWorkspaceEnabled.checked = workspace.enabled;
+					if (peerWorkspaceScheme instanceof HTMLSelectElement) { peerWorkspaceScheme.value = workspace.scheme; peerWorkspaceScheme.disabled = !workspace.enabled; }
+					if (peerWorkspaceMode instanceof HTMLSelectElement) { peerWorkspaceMode.value = workspace.mode; peerWorkspaceMode.disabled = !workspace.enabled; }
+					if (peerWorkspaceEnabledField instanceof HTMLInputElement) peerWorkspaceEnabledField.value = String(workspace.enabled);
+					if (peerWorkspaceSchemeField instanceof HTMLInputElement) peerWorkspaceSchemeField.value = workspace.scheme;
+					if (peerWorkspaceModeField instanceof HTMLInputElement) peerWorkspaceModeField.value = workspace.mode;
 					updateSwatch(peer, scheme, mode);
+					updateWorkspacePreview(peer, workspace);
 				});
-				applyTheme(scheme, mode, persist);
+				applyTheme(scheme, mode, workspace, persist);
 			}
 
 			schemeSelect.addEventListener('change', () => sync(true));
 			modeSelect.addEventListener('change', () => sync(true));
+			workspaceEnabled.addEventListener('change', () => sync(true));
+			workspaceScheme.addEventListener('change', () => sync(true));
+			workspaceMode.addEventListener('change', () => sync(true));
 			sync(false);
 		}
 
@@ -209,7 +331,9 @@ const modes = [
 			window.__tsThemeSelectorMediaBound = true;
 			media?.addEventListener?.('change', () => {
 				const mode = document.documentElement.dataset.tsModeSource === 'system' ? 'system' : document.documentElement.dataset.tsMode;
-				applyTheme(document.documentElement.dataset.tsScheme || 'fern', mode || 'system', false);
+				const current = currentPreference();
+				applyTheme(document.documentElement.dataset.tsScheme || 'fern', mode || 'system', current.workspace, false);
+				document.querySelectorAll('[data-ts-theme-selector]').forEach((selector) => updateWorkspacePreview(selector, current.workspace));
 			});
 		}
 	})();

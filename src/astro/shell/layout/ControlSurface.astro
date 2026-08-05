@@ -4,12 +4,20 @@ interface Props {
 	description?: string;
 	class?: string;
 	renderActions?: boolean;
+	workspaceTheme?: { enabled: boolean; scheme: string; mode: string };
 }
 
-const { title, description, class: className, renderActions = Astro.slots.has('actions') } = Astro.props as Props;
+const { title, description, class: className, renderActions = Astro.slots.has('actions'), workspaceTheme } = Astro.props as Props;
 ---
 
-<main class:list={['ts-control-surface', className]} id="main-content">
+<main
+	class:list={['ts-control-surface', className]}
+	id="main-content"
+	data-ts-workspace-scope
+	data-ts-workspace-theme={workspaceTheme?.enabled ? 'true' : undefined}
+	data-ts-workspace-scheme={workspaceTheme?.scheme}
+	data-ts-workspace-mode={workspaceTheme?.mode}
+>
 	{title || description || renderActions ? (
 		<header class="ts-control-surface__header">
 			<div class="ts-control-surface__title">

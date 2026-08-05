@@ -4,13 +4,13 @@ import HelpTrigger from '../../help/HelpTrigger.astro';
 import FeedbackTrigger from '../../feedback/FeedbackTrigger.astro';
 import ShellIconLink from '../navigation/ShellIconLink.astro';
 import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
-import type { ThemePreference, ThemeConfig } from '../../../theme/index.ts';
+import type { AppearancePreference, ThemePreference, ThemeConfig } from '../../../theme/index.ts';
 import type { SiteUserControlItem } from '../../types.ts';
 
 interface Props {
 	items?: SiteUserControlItem[];
 	currentPath?: string;
-	appearance: ThemePreference;
+	appearance: ThemePreference | AppearancePreference;
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
@@ -52,7 +52,7 @@ function isCurrentPath(href: string) {
 		</nav>
 	) : null}
 	<div class="ts-site-user-controls__utilities">
-		{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} themeConfig={themeConfig} /> : null}
+		{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} workspace={'workspace' in appearance ? appearance.workspace : undefined} themeConfig={themeConfig} /> : null}
 		{helpContext ? <HelpTrigger targetId={helpDrawerId} knowledgePageId={helpContext.knowledgePageIds[0]} label={helpContext.summary ?? 'Open contextual help'} class="ts-shell-context-action" /> : null}
 		{feedbackContext ? <FeedbackTrigger targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
 		{showManagerLink ? <ShellIconLink href="/app/" label="Manager" icon="manager" /> : null}

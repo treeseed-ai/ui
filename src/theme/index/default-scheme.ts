@@ -7,12 +7,15 @@ export type {
   RequiredSchemeTokenInput,
   ResolvedThemeConfig,
   ThemePreference,
+  AppearancePreference,
   ColorSchemeId,
   ColorSchemeSummary,
   SchemeTokens,
   SemanticColorTokens,
   ThemeConfig,
   ThemeMode,
+  WorkspaceThemeMode,
+  WorkspaceThemePreference,
 } from '../types.ts';
 
 export const DEFAULT_SCHEME: ColorSchemeId = 'fern';

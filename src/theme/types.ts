@@ -1,4 +1,5 @@
 export type ThemeMode = 'light' | 'dark' | 'system';
+export type WorkspaceThemeMode = ThemeMode | 'inherit';
 
 export type ColorSchemeId = 'fern' | 'lichen' | 'cedar' | 'tidepool' | (string & {});
 
@@ -82,6 +83,16 @@ export interface ThemeConfig {
 export type ThemePreference = {
   scheme: ColorSchemeId;
   mode: ThemeMode;
+};
+
+export type WorkspaceThemePreference = {
+  enabled: boolean;
+  scheme: ColorSchemeId;
+  mode: WorkspaceThemeMode;
+};
+
+export type AppearancePreference = ThemePreference & {
+  workspace: WorkspaceThemePreference;
 };
 
 export type ColorSchemeSummary = {

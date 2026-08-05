@@ -7,7 +7,7 @@ import TeamOperationsDrawer from '../team-operations/TeamOperationsDrawer.astro'
 import ControlSurface from './ControlSurface.astro';
 import type { ButtonAction, ShellBrand, ShellNavItem, SiteUserControlItem } from '../../types.ts';
 import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
-import type { ThemePreference, ThemeConfig } from '../../../theme/index.ts';
+import { normalizeWorkspaceThemePreference, type AppearancePreference, type ThemePreference, type ThemeConfig } from '../../../theme/index.ts';
 
 // Feedback and contextual help are composed once through SiteUserControls and ShellFrame.
 
@@ -15,7 +15,7 @@ interface Props {
 	title: string;
 	description: string;
 	currentPath: string;
-	appearance: ThemePreference;
+	appearance: ThemePreference | AppearancePreference;
 	brand: ShellBrand;
 	navItems: ShellNavItem[];
 	siteItems?: SiteUserControlItem[];
@@ -53,6 +53,7 @@ const helpDrawerId = 'shell-help';
 const drawerId = 'team-operations-drawer';
 const sidebarId = 'team-operations-sidebar';
 const renderHeaderAction = !contentOwnsPageHeader && Astro.slots.has('headerAction');
+const workspaceTheme = normalizeWorkspaceThemePreference('workspace' in appearance ? appearance.workspace : undefined, appearance.scheme);
 ---
 
 <ShellFrame
@@ -66,6 +67,7 @@ const renderHeaderAction = !contentOwnsPageHeader && Astro.slots.has('headerActi
 	feedbackDialogId={feedbackDialogId}
 	bodyClass="ts-product-shell-body"
 	timeZone={timeZone}
+	workspaceTheme={workspaceTheme}
 >
 	<script is:inline slot="head">
 		(() => {
@@ -118,6 +120,7 @@ const renderHeaderAction = !contentOwnsPageHeader && Astro.slots.has('headerActi
 				title={contentOwnsPageHeader ? undefined : title}
 				description={contentOwnsPageHeader ? undefined : description}
 				renderActions={renderHeaderAction}
+				workspaceTheme={workspaceTheme}
 			>
 				{renderHeaderAction ? (
 					<Fragment slot="actions"><slot name="headerAction" /></Fragment>
@@ -142,8 +145,16 @@ const renderHeaderAction = !contentOwnsPageHeader && Astro.slots.has('headerActi
 			feedbackDialogId={feedbackDialogId}
 		/>
 	</TeamOperationsDrawer>
-	<slot name="sensitiveModal" />
-	<slot name="modal" />
+	<div
+		class="ts-workspace-overlay-scope"
+		data-ts-workspace-scope
+		data-ts-workspace-theme={workspaceTheme.enabled ? 'true' : undefined}
+		data-ts-workspace-scheme={workspaceTheme.scheme}
+		data-ts-workspace-mode={workspaceTheme.mode}
+	>
+		<slot name="sensitiveModal" />
+		<slot name="modal" />
+	</div>
 	<script is:inline data-astro-rerun>
 		(() => {
 			const storageKey = 'treeseed.app-sidebar-collapsed';

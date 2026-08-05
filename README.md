@@ -117,6 +117,8 @@ Field errors are adjacent English validation messages. Success notifications exp
 
 The package owns reusable tokens, theme CSS, app shell styles, form styles, operation styles, market/card styles, and Stripe-free commerce/governance components. Tenant-specific brand colors, public marketing art direction, copy, data loading, and workflow orchestration belong in the host app or Admin/API packages.
 
+Authenticated `ProductShell` surfaces may enable a content workspace palette independently from the application palette. The workspace scope blends canvas, surface, and soft-state colors 70% toward the selected content scheme while retaining fully opaque text, accents, focus, and semantic status tokens from the selected content mode. `ControlSurface` and content-originated overlay slots receive the scoped tokens; the shell header, team navigation, and persistent site utilities remain on the application palette. Do not reproduce this behavior with element opacity or page-local token overrides.
+
 ## Sandbox
 
 Run the component sandbox while developing UI primitives:
