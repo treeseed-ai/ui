@@ -4,4 +4,6 @@ export { CommandDetailViews } from './CommandDetailViews.tsx';
 export { CommandMetricStrip, CommandRelationGraph, CommandThroughput, CommandAuditTrail } from './CommandVisuals.tsx';
 export { CommandWorkspace } from './CommandWorkspace.tsx';
 export { StructuredSourceEditor } from './SourceEditor.tsx';
+export { AgentFlowCanvas } from './flow/AgentFlowCanvas.tsx';
+export { YamlIde,type YamlIdeDiagnostic } from './YamlIde.tsx';
 export type * from './types.ts';

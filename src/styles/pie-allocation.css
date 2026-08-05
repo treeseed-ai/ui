@@ -185,6 +185,49 @@ html[data-ts-mode='dark'] .dynamic-pie-allocation {
   font-size: 0.82rem;
 }
 
+.dynamic-pie-allocation[data-density="monitor"] {
+  background: transparent;
+  border: 0;
+  gap: 8px;
+  padding: 0;
+}
+
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__body {
+  align-items: center;
+  gap: 10px;
+  grid-template-columns: 140px minmax(9rem, 1fr);
+}
+
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__svg {
+  max-width: 140px;
+}
+
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__legend {
+  gap: 4px;
+  max-height: 11rem;
+  overflow: auto;
+  padding-left: 10px;
+}
+
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__row {
+  gap: 4px;
+  grid-template-columns: 9px minmax(4.8rem, 1fr) 3.6rem auto;
+}
+
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__swatch { height: 9px; width: 9px; }
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__label,
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__input,
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__percent { font-size: .68rem; }
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__input { min-height: 27px; padding: 2px 4px; }
+.dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__status { font-size: .62rem; padding-top: 6px; }
+
+@media (max-width: 520px) {
+  .dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__body { grid-template-columns: 1fr; }
+  .dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__svg { max-width: 136px; }
+  .dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__legend { border-top: 1px solid var(--pie-allocation-border); max-height: none; padding: 8px 0 0; }
+  .dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__legend::before { display: none; }
+}
+
 .dynamic-pie-allocation[data-density="compact"] .dynamic-pie-allocation__input {
   min-height: 32px;
   padding-block: 4px;

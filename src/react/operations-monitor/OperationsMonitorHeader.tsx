@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AgentActivityGantt } from './AgentActivityGantt.tsx';
 import { MetricHistoryChart } from './MetricHistoryChart.tsx';
-import { AllocationManagementPanel } from './AllocationManagementPanel.tsx';
+import { AllocationManagementPanel } from './allocation/AllocationManagementPanel.tsx';
 import { MonitorToggleRail, OperationsMonitorDock, OperationsStatusBar, VitalMetricRail } from './MonitorPrimitives.tsx';
 import type { ActivityIntervalItem, AllocationSnapshot, DeltaPayload, MetricSeriesPoint, MonitorOverview, RealtimePreference, VitalMetricItem } from './types.ts';
 import { mergeVersioned, useRealtimeResource } from './use-realtime-resource.ts';
@@ -41,7 +41,7 @@ export default function OperationsMonitorHeader({ initialOverview, initialActivi
 			<MonitorToggleRail allocation={showAllocation} activity={showActivity} metrics={showMetrics} onAllocation={() => persist(!showAllocation, showActivity, showMetrics)} onActivity={() => persist(showAllocation, !showActivity, showMetrics)} onMetrics={() => persist(showAllocation, showActivity, !showMetrics)} />
 			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} />
 		</div>
-		{showAllocation || showActivity || showMetrics ? <OperationsMonitorDock panels={Number(showAllocation) + Number(showActivity) + Number(showMetrics)}>
+		{showAllocation || showActivity || showMetrics ? <OperationsMonitorDock panels={(showAllocation ? 3 : 0) + Number(showActivity) + Number(showMetrics)}>
 			{showAllocation ? <AllocationManagementPanel initialSnapshot={initialAllocation} endpoint={endpoints.allocation} csrfToken={csrfToken} realtime={{ enabled: preference.enabled, intervalMs: baseMs }} /> : null}
 			{showActivity ? <AgentActivityGantt intervals={activity.data} start={overview.data.operatingDay.start} end={overview.data.operatingDay.end} timeZone={overview.data.timeZone} /> : null}
 			{showMetrics ? <MetricHistoryChart points={series.data} metrics={metrics} timeZone={overview.data.timeZone} /> : null}

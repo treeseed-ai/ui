@@ -3,7 +3,7 @@ export { AgentActivityGantt } from './AgentActivityGantt.tsx';
 export { LiveAgentActivityGantt } from './LiveAgentActivityGantt.tsx';
 export { MetricHistoryChart } from './MetricHistoryChart.tsx';
 export { MetricHistoryDashboard } from './MetricHistoryDashboard.tsx';
-export { AllocationManagementPanel } from './AllocationManagementPanel.tsx';
+export { AllocationManagementPanel } from './allocation/AllocationManagementPanel.tsx';
 export { MonitorToggleRail, OperationsMonitorDock, OperationsStatusBar, VitalMetricRail } from './MonitorPrimitives.tsx';
 export { mergeVersioned, useRealtimeResource } from './use-realtime-resource.ts';
 export type * from './types.ts';

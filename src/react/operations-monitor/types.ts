@@ -26,6 +26,6 @@ export interface RealtimePreference { enabled: boolean; intervalSeconds: 2 | 5 |
 export interface AllocationSliceItem { id: string; name: string; percentage: number; projectId?: string; }
 export interface AllocationSnapshot {
 	revision: string; generatedAt: string; canManage: boolean; activeAllocationSetId: string | null;
-	credits: { budget: number | null; requested: number; reserved: number; committed: number; reported: number; spent: number; remaining: number | null; overrun: number };
-	projects: AllocationSliceItem[]; agentClasses: AllocationSliceItem[];
+	time: { availableSeconds: number | null; requestedSeconds: number; reservedSeconds: number; activeSeconds: number; elapsedSeconds: number; releasedSeconds: number; remainingSeconds: number | null; overrunSeconds: number };
+	projects: AllocationSliceItem[]; agentClasses: AllocationSliceItem[]; workdayTime: AllocationSliceItem[];
 }

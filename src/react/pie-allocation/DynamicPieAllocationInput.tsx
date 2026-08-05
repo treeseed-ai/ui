@@ -33,7 +33,7 @@ export type DynamicPieAllocationInputProps = {
   allowAddRemove?: boolean;
   ariaLabel?: string;
   palette?: string[];
-  density?: "default" | "compact";
+  density?: "default" | "compact" | "monitor";
   onChange?: (
     slices: PieAllocationSlice[],
     validity: PieAllocationValidity

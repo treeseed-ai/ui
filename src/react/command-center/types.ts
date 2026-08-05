@@ -1,6 +1,6 @@
 export type CommandEntityKind =
 	| 'proposal' | 'decision' | 'question' | 'artifact' | 'error'
-	| 'agent' | 'artifact-contract' | 'signal' | 'assignment'
+	| 'agent' | 'signal' | 'proposal-type' | 'assignment'
 	| 'execution' | 'simulation' | 'seed' | 'workday' | 'note';
 
 export interface CommandMetric {
@@ -59,7 +59,11 @@ export interface CommandEntityDetail extends CommandEntity {
 	sections?: Array<{ id: string; title: string; fields?: Array<{ label: string; value: unknown }>; body?: string | null }>;
 	timeline?: CommandTimelineEntry[];
 	related?: CommandEntity[];
-	permissions?: { edit?: boolean; vote?: boolean; resolve?: boolean; note?: boolean; question?: boolean; cancel?: boolean; rerun?: boolean };
+	permissions?: {
+		edit?: boolean; vote?: boolean; resolve?: boolean; note?: boolean; question?: boolean;
+		open?: boolean; startVoting?: boolean; decide?: boolean; withdraw?: boolean; supersede?: boolean;
+		answer?: boolean; cancel?: boolean; rerun?: boolean; create?: boolean; clone?: boolean; deactivate?: boolean;
+	};
 	links?: Array<{ label: string; href: string; external?: boolean }>;
 }
 
@@ -89,4 +93,6 @@ export interface CommandWorkspaceEndpoints {
 	state: string;
 	actions: string;
 	simulations?: string;
+	draft?: string;
+	authoringBundle?: string;
 }
