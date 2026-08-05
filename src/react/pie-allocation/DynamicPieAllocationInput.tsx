@@ -73,6 +73,15 @@ function toSubmittedSlices(slices: PieAllocationSlice[]) {
   return slices.map(({ id, name, percentage }) => ({ id, name, percentage }));
 }
 
+function slicesMatch(left: PieAllocationSlice[], right: PieAllocationSlice[]) {
+  return left.length === right.length && left.every((slice, index) => {
+    const candidate = right[index];
+    return candidate?.id === slice.id && candidate.name === slice.name &&
+      candidate.percentage === slice.percentage && candidate.locked === slice.locked &&
+      candidate.minPercentage === slice.minPercentage && candidate.maxPercentage === slice.maxPercentage;
+  });
+}
+
 function getBoundaryAngle(slices: PieAllocationSlice[], boundaryIndex: number): number {
   return slices
     .slice(0, boundaryIndex + 1)
@@ -122,11 +131,16 @@ export default function DynamicPieAllocationInput({
   const [hydrated, setHydrated] = useState(false);
   const dragStateRef = useRef<DragState | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const onChangeRef = useRef(onChange);
 
   useEffect(() => {
-    setSlices(initial.slices);
+    setSlices((current) => slicesMatch(current, initial.slices) ? current : initial.slices);
     setInitializationError(initial.error);
   }, [initial]);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     setHydrated(true);
@@ -145,8 +159,8 @@ export default function DynamicPieAllocationInput({
   }, [initializationError, precision, slices]);
 
   useEffect(() => {
-    onChange?.(slices, validity);
-  }, [onChange, slices, validity]);
+    onChangeRef.current?.(slices, validity);
+  }, [slices, validity]);
 
   const geometry = useMemo(() => {
     let startAngle = 0;

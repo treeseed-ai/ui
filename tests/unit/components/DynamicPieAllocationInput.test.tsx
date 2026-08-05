@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import DynamicPieAllocationInput, { type PieAllocationSlice } from '../../../src/react/pie-allocation/DynamicPieAllocationInput.tsx';
 
@@ -34,5 +35,17 @@ describe('DynamicPieAllocationInput', () => {
     renderInput({ disabled: true, onChange });
     expect(screen.getByTestId('slice-input-planning')).toBeDisabled();
     expect(onChange).toHaveBeenCalled();
+  });
+
+  it('supports a controlled parent with a render-local change callback', async () => {
+    function ControlledInput() {
+      const [value, setValue] = useState(sample);
+      return <DynamicPieAllocationInput initialValue={value} name="controlled" onChange={(next) => setValue(next)} />;
+    }
+    const user = userEvent.setup();
+    render(<ControlledInput />);
+    await user.clear(screen.getByTestId('slice-input-planning'));
+    await user.type(screen.getByTestId('slice-input-planning'), '40');
+    expect(JSON.parse((screen.getByTestId('allocation-hidden-input') as HTMLInputElement).value)[0].percentage).toBe(40);
   });
 });

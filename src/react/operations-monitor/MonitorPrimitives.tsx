@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { formatTimestamp } from '../../timestamps.ts';
 import type { LiveConnectionState, VitalMetricItem } from './types.ts';
 
@@ -6,7 +6,13 @@ export function OperationsStatusBar({ connection, teamName, logoSrc, workdayTitl
 	connection: LiveConnectionState | 'connecting'; teamName: string; activeWorkdays: number; activeProviders: number;
 	logoSrc?: string; workdayTitle?: string | null; executionProviders: string[]; timeZone: string; observedAt: number; onReconnect?: () => void;
 }) {
-	const lagSeconds = Math.max(0, Math.round((Date.now() - observedAt) / 1_000));
+	const [lagSeconds, setLagSeconds] = useState(0);
+	useEffect(() => {
+		const update = () => setLagSeconds(Math.max(0, Math.round((Date.now() - observedAt) / 1_000)));
+		update();
+		const timer = window.setInterval(update, 1_000);
+		return () => window.clearInterval(timer);
+	}, [observedAt]);
 	return <div className="ts-operations-status" data-status={connection}>
 		<a className="ts-operations-status__brand" href="/app/work">{logoSrc ? <img src={logoSrc} alt="" width="25" height="25" /> : null}<span><small>Agent Lab</small><strong>{teamName}</strong></span></a>
 		<div className="ts-operations-status__primary"><span className="ts-operations-status__connection"><i aria-hidden="true" />{connection === 'live' ? 'Live' : connection === 'snapshot' ? 'Snapshot' : connection}</span><span>{workdayTitle ?? `${activeWorkdays} active workday${activeWorkdays === 1 ? '' : 's'}`}</span><span>{activeProviders} provider{activeProviders === 1 ? '' : 's'}</span><span>Updated {formatTimestamp(observedAt, { timeZone, style: 'time' })} · {lagSeconds < 2 ? 'current' : `${lagSeconds}s lag`}</span></div>

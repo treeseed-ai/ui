@@ -378,6 +378,7 @@ html[data-ts-app-sidebar='collapsed'] .ts-product-shell {
 	.ts-metric-card,
 	.ts-record-card,
 	.ts-resource-card,
+	.dynamic-pie-allocation__input,
 	.ts-dashboard-alert,
 	.ts-dashboard-section,
 	.ts-dashboard-metric,
