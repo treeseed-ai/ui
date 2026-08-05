@@ -3,6 +3,7 @@ import { AgentActivityGantt } from './AgentActivityGantt.tsx';
 import { MetricHistoryChart } from './MetricHistoryChart.tsx';
 import { AllocationManagementPanel } from './allocation/AllocationManagementPanel.tsx';
 import { MonitorToggleRail, OperationsMonitorDock, OperationsStatusBar, VitalMetricRail } from './MonitorPrimitives.tsx';
+import { ExpandableMonitorSurface } from './ExpandableMonitorSurface.tsx';
 import type { ActivityIntervalItem, AllocationSnapshot, DeltaPayload, MetricSeriesPoint, MonitorOverview, RealtimePreference, VitalMetricItem } from './types.ts';
 import { mergeVersioned, useRealtimeResource } from './use-realtime-resource.ts';
 import '../../styles/operations-monitor.css';
@@ -18,6 +19,8 @@ function storedToggles() { if (typeof window === 'undefined') return { allocatio
 
 export default function OperationsMonitorHeader({ initialOverview, initialActivity, initialSeries, initialAllocation, endpoints, preference, metricDestinations, csrfToken, logoSrc }: Props) {
 	const [showAllocation, setShowAllocation] = useState(false); const [showActivity, setShowActivity] = useState(false); const [showMetrics, setShowMetrics] = useState(false);
+	const [expandedSurface, setExpandedSurface] = useState<string | null>(null);
+	const dismissSurface = useCallback(() => setExpandedSurface(null), []);
 	useEffect(() => { const saved = storedToggles(); setShowAllocation(saved.allocation === true); setShowActivity(saved.activity === true); setShowMetrics(saved.metrics === true); }, []);
 	const persist = (allocation: boolean, activity: boolean, metrics: boolean) => { setShowAllocation(allocation); setShowActivity(activity); setShowMetrics(metrics); try { window.localStorage.setItem('treeseed.agent-lab.monitors', JSON.stringify({ allocation, activity, metrics })); } catch {} };
 	const baseMs = preference.intervalSeconds * 1_000;
@@ -35,16 +38,16 @@ export default function OperationsMonitorHeader({ initialOverview, initialActivi
 	const connection = !preference.enabled ? 'snapshot' : liveStatuses.includes('offline') ? 'offline' : liveStatuses.includes('degraded') ? 'degraded' : liveStatuses.includes('connecting') ? 'connecting' : overview.data.connectivity;
 	const reconnect = () => { overview.reconnect(); if (showActivity) activity.reconnect(); if (showMetrics) series.reconnect(); };
 	const checkedAt = overview.lastUpdatedAt ?? Date.parse(overview.data.generatedAt); const observedAt = Date.parse(overview.data.generatedAt);
-	return <section className="ts-operations-monitor" data-scene="agent-lab.monitoring-header">
+	return <section className="ts-operations-monitor" data-expanded-surface={expandedSurface ?? undefined} data-scene="agent-lab.monitoring-header">
 		<OperationsStatusBar connection={connection} teamName={overview.data.team.name} logoSrc={logoSrc} workdayTitle={overview.data.workdayContext.workdays.find((workday) => workday.id === overview.data.workdayContext.selectedWorkdayId)?.title} activeWorkdays={overview.data.activeWorkdays} activeProviders={overview.data.activeProviders} executionProviders={overview.data.executionProviders} timeZone={overview.data.timeZone} observedAt={checkedAt} onReconnect={liveStatuses.some((status) => status === 'offline' || status === 'degraded') ? reconnect : undefined} />
 		<div className="ts-vital-rail">
 			<MonitorToggleRail allocation={showAllocation} activity={showActivity} metrics={showMetrics} onAllocation={() => persist(!showAllocation, showActivity, showMetrics)} onActivity={() => persist(showAllocation, !showActivity, showMetrics)} onMetrics={() => persist(showAllocation, showActivity, !showMetrics)} />
-			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} />
+			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} expandedSurface={expandedSurface} onExpand={setExpandedSurface} onDismiss={dismissSurface} />
 		</div>
 		{showAllocation || showActivity || showMetrics ? <OperationsMonitorDock panels={(showAllocation ? 3 : 0) + Number(showActivity) + Number(showMetrics)}>
-			{showAllocation ? <AllocationManagementPanel initialSnapshot={initialAllocation} endpoint={endpoints.allocation} csrfToken={csrfToken} realtime={{ enabled: preference.enabled, intervalMs: baseMs }} /> : null}
-			{showActivity ? <AgentActivityGantt intervals={activity.data} start={overview.data.operatingDay.start} end={overview.data.operatingDay.end} timeZone={overview.data.timeZone} /> : null}
-			{showMetrics ? <MetricHistoryChart points={series.data} metrics={metrics} timeZone={overview.data.timeZone} /> : null}
+			{showAllocation ? <AllocationManagementPanel initialSnapshot={initialAllocation} endpoint={endpoints.allocation} csrfToken={csrfToken} realtime={{ enabled: preference.enabled, intervalMs: baseMs }} expandedSurface={expandedSurface} onExpand={setExpandedSurface} onDismiss={dismissSurface} /> : null}
+			{showActivity ? <ExpandableMonitorSurface id="chart:activity" label="agent activity chart" expanded={expandedSurface === 'chart:activity'} onExpand={setExpandedSurface} onDismiss={dismissSurface}><AgentActivityGantt intervals={activity.data} start={overview.data.operatingDay.start} end={overview.data.operatingDay.end} timeZone={overview.data.timeZone} /></ExpandableMonitorSurface> : null}
+			{showMetrics ? <ExpandableMonitorSurface id="chart:metrics" label="metric history chart" expanded={expandedSurface === 'chart:metrics'} onExpand={setExpandedSurface} onDismiss={dismissSurface}><MetricHistoryChart points={series.data} metrics={metrics} timeZone={overview.data.timeZone} /></ExpandableMonitorSurface> : null}
 		</OperationsMonitorDock> : null}
 	</section>;
 }

@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -129,6 +130,7 @@ export default function DynamicPieAllocationInput({
     initial.error
   );
   const [hydrated, setHydrated] = useState(false);
+  const glossId = `pie-gloss-${useId().replace(/:/g, "")}`;
   const dragStateRef = useRef<DragState | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const onChangeRef = useRef(onChange);
@@ -355,6 +357,14 @@ export default function DynamicPieAllocationInput({
             role="img"
             viewBox={`0 0 ${size} ${size}`}
           >
+            <defs>
+              <linearGradient id={glossId} x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stopColor="#fff" stopOpacity=".72" />
+                <stop offset=".34" stopColor="#fff" stopOpacity=".18" />
+                <stop offset=".56" stopColor="#fff" stopOpacity="0" />
+                <stop offset="1" stopColor="#000" stopOpacity=".24" />
+              </linearGradient>
+            </defs>
             {geometry.map(({ slice, startAngle, endAngle, color }) =>
               slice.percentage > 0 ? (
                 <path
@@ -366,6 +376,17 @@ export default function DynamicPieAllocationInput({
                 >
                   <title>{`${slice.name} ${toInputValue(slice.percentage, precision)}%`}</title>
                 </path>
+              ) : null
+            )}
+            {geometry.map(({ slice, startAngle, endAngle }) =>
+              slice.percentage > 0 ? (
+                <path
+                  aria-hidden="true"
+                  className="dynamic-pie-allocation__gloss"
+                  d={describeArcSlice(center, center, radius, startAngle, endAngle)}
+                  fill={`url(#${glossId})`}
+                  key={`gloss-${slice.id}`}
+                />
               ) : null
             )}
             {allowDragEditing && !disabled && slices.length > 1

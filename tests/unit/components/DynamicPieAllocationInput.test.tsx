@@ -16,9 +16,10 @@ function renderInput(props = {}) {
 
 describe('DynamicPieAllocationInput', () => {
   it('renders initial slices and hidden input', () => {
-    renderInput();
+    const { container } = renderInput();
     expect(screen.getByText('Planning')).toBeInTheDocument();
     expect(JSON.parse((screen.getByTestId('allocation-hidden-input') as HTMLInputElement).value)).toEqual(sample);
+    expect(container.querySelectorAll('.dynamic-pie-allocation__gloss')).toHaveLength(sample.length);
   });
 
   it('numeric edit updates hidden input JSON', async () => {

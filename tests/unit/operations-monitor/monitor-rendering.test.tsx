@@ -1,9 +1,12 @@
 import { renderToString } from 'react-dom/server';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
 import { CommandOverlayStack } from '../../../src/react/command-center/CommandOverlayStack.tsx';
 import { CommandWorkspace } from '../../../src/react/command-center/CommandWorkspace.tsx';
 import { MetricHistoryDashboard } from '../../../src/react/operations-monitor/MetricHistoryDashboard.tsx';
 import OperationsMonitorHeader from '../../../src/react/operations-monitor/OperationsMonitorHeader.tsx';
+import { ExpandableMonitorSurface } from '../../../src/react/operations-monitor/ExpandableMonitorSurface.tsx';
 
 const generatedAt = '2026-08-04T14:00:00.000Z';
 const keys = ['agents', 'workdays', 'systemEvents', 'assignments', 'executions', 'artifacts', 'passed', 'failed', 'running'];
@@ -13,7 +16,7 @@ describe('Agent Lab server rendering', () => {
 		const html = renderToString(<><OperationsMonitorHeader
 			initialOverview={{ revision: 'one', generatedAt, timeZone: 'America/New_York', connectivity: 'idle', operatingDay: { start: generatedAt, end: '2026-08-04T15:00:00.000Z' }, activeWorkdays: 0, activeProviders: 0, executionProviders: [], team: { id: 'team', name: 'Editorial' }, metrics: keys.map((key) => ({ key, value: 0, semantic: key === 'agents' ? 'configured' : key === 'running' ? 'instantaneous' : ['workdays', 'systemEvents'].includes(key) ? 'exact-total' : 'cumulative', observedAt: generatedAt })), workdayContext: { selectedDate: '2026-08-04', selectedWorkdayId: null, latestWorkdayId: null, workdays: [] }, metricTargets: {}, targetRevision: null }}
 			initialActivity={{ revision: 'one', generatedAt, cursor: null, upserts: [], removedIds: [] }} initialSeries={{ revision: 'one', generatedAt, cursor: null, upserts: [], removedIds: [] }}
-			initialAllocation={{ revision: 'one', generatedAt, canManage: false, activeAllocationSetId: null, credits: { budget: null, requested: 0, reserved: 0, committed: 0, reported: 0, spent: 0, remaining: null, overrun: 0 }, projects: [], agentClasses: [] }}
+			initialAllocation={{ revision: 'one', generatedAt, canManage: false, activeAllocationSetId: null, time: { availableSeconds: null, requestedSeconds: 0, reservedSeconds: 0, activeSeconds: 0, elapsedSeconds: 0, releasedSeconds: 0, remainingSeconds: null, overrunSeconds: 0 }, projects: [], agentClasses: [], workdayTime: [] }}
 			endpoints={{ overview: '/overview', activity: '/activity', metricSeries: '/series', allocation: '/allocation' }} preference={{ enabled: false, intervalSeconds: 5 }} metricDestinations={{}} csrfToken="csrf" logoSrc="/logo.svg" />
 			<CommandOverlayStack endpoints={{ collection: '/collection', detailBase: '/details', state: '/state', actions: '/actions', simulations: '/simulations' }} realtime={{ enabled: false, intervalMs: 5000 }} timeZone="America/New_York" /></>);
 		expect(html).toContain('Agent Lab'); expect(html).toContain('/logo.svg'); expect(html).toContain('Allocation');
@@ -22,8 +25,25 @@ describe('Agent Lab server rendering', () => {
 	it('renders the complete workspace and metric grid before browser hydration', () => {
 		const semantic = { semantic: 'configured' as const, sampleSize: 1, mean: 2, standardDeviation: 0, low: 2, high: 2, exactTotal: 2, observedAt: generatedAt };
 		const workspace = renderToString(<CommandWorkspace surface="inbox" initial={{ revision: 'one', generatedAt, surface: 'inbox', title: 'Inbox', description: 'Operational inbox', unreadCount: 0, items: [] }} endpoints={{ collection: '/collection', detailBase: '/details', state: '/state', actions: '/actions' }} realtime={{ enabled: false, intervalMs: 5000 }} timeZone="America/New_York" />);
-		const metrics = renderToString(<MetricHistoryDashboard initialSeries={{ revision: 'one', generatedAt, cursor: null, removedIds: [], upserts: [{ id: 'point', version: 1, timestamp: generatedAt, values: { agents: 2 }, statistics: { agents: semantic } }] }} endpoint="/series" metrics={[{ key: 'agents', label: 'Agents', value: 2, href: '/agents', semantic: 'configured', observedAt: generatedAt }]} timeZone="America/New_York" targets={{}} targetRevision={null} targetEndpoint="/targets" csrfToken="csrf" canManage={false} realtime={{ enabled: false, intervalMs: 10_000 }} />);
+		const metrics = renderToString(<MetricHistoryDashboard initialSeries={{ revision: 'one', generatedAt, cursor: null, removedIds: [], upserts: [{ id: 'point', stateVersion: 1, timestamp: generatedAt, values: { agents: 2 }, statistics: { agents: semantic } }] }} endpoint="/series" metrics={[{ key: 'agents', label: 'Agents', value: 2, href: '/agents', semantic: 'configured', observedAt: generatedAt }]} timeZone="America/New_York" targets={{}} targetRevision={null} targetEndpoint="/targets" csrfToken="csrf" canManage={false} realtime={{ enabled: false, intervalMs: 10_000 }} />);
 		expect(workspace).toContain('Operational inbox');
 		expect(metrics).toContain('Current roster mean: 2');
+	});
+
+	it('keeps one mounted monitor surface expanded until close or an outside pointer', () => {
+		function Harness() {
+			const [expanded, setExpanded] = useState<string | null>(null);
+			return <section className="ts-operations-monitor"><ExpandableMonitorSurface id="metric:agents" label="Agents metric" expanded={expanded === 'metric:agents'} onExpand={setExpanded} onDismiss={() => setExpanded(null)}><article>Agents</article></ExpandableMonitorSurface><button type="button">Outside</button></section>;
+		}
+		const { container } = render(<Harness />);
+		const surface = container.querySelector<HTMLElement>('[data-monitor-surface="metric:agents"]')!;
+		fireEvent.mouseEnter(surface);
+		expect(surface).toHaveAttribute('data-expanded', 'true');
+		fireEvent.click(screen.getByRole('button', { name: 'Close expanded Agents metric' }));
+		expect(surface).toHaveAttribute('data-expanded', 'false');
+		fireEvent.pointerUp(surface, { pointerType: 'touch' });
+		expect(surface).toHaveAttribute('data-expanded', 'true');
+		fireEvent.pointerDown(screen.getByRole('button', { name: 'Outside' }));
+		expect(surface).toHaveAttribute('data-expanded', 'false');
 	});
 });
