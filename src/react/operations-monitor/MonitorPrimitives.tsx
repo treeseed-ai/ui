@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { formatTimestamp } from '../../timestamps.ts';
 import type { LiveConnectionState, VitalMetricItem } from './types.ts';
-import { ExpandableMonitorSurface } from './ExpandableMonitorSurface.tsx';
 
 export function OperationsStatusBar({ connection, teamName, logoSrc, workdayTitle, activeWorkdays, activeProviders, executionProviders, timeZone, observedAt, onReconnect }: {
 	connection: LiveConnectionState | 'connecting'; teamName: string; activeWorkdays: number; activeProviders: number;
@@ -30,13 +29,13 @@ export function MonitorToggleRail({ allocation, activity, metrics, onAllocation,
 	</div>;
 }
 
-export function VitalMetricRail({ metrics, observedAt, timeZone, expandedSurface, onExpand, onDismiss }: { metrics: VitalMetricItem[]; observedAt: number; timeZone: string; expandedSurface: string | null; onExpand: (id: string) => void; onDismiss: () => void }) {
+export function VitalMetricRail({ metrics, observedAt, timeZone }: { metrics: VitalMetricItem[]; observedAt: number; timeZone: string }) {
 	const groups = [
 		{ label: 'Activity', keys: ['agents', 'workdays', 'systemEvents'] },
 		{ label: 'Direction', keys: ['assignments', 'executions', 'artifacts'] },
 		{ label: 'Status', keys: ['passed', 'failed', 'running'] },
 	];
-	return <div className="ts-vital-rail__metrics">{groups.map((group) => <section key={group.label} className="ts-vital-bank" data-bank={group.label.toLowerCase()}><h2>{group.label}</h2><div>{group.keys.flatMap((key) => { const metric = metrics.find((item) => item.key === key); const updated = metric?.observedAt ? Date.parse(metric.observedAt) : observedAt; const surfaceId = `metric:${metric?.key}`; return metric ? [<ExpandableMonitorSurface key={metric.key} id={surfaceId} label={`${metric.label} metric`} expanded={expandedSurface === surfaceId} onExpand={onExpand} onDismiss={onDismiss}><article className="ts-vital-metric" data-tone={metric.tone}><small>{metric.label}</small><strong>{metric.value}</strong><span>{metric.secondary ?? semanticLabel(metric.semantic)}</span><time dateTime={new Date(updated).toISOString()}>Data {formatTimestamp(updated, { timeZone, style: 'time' })}</time><a className="ts-vital-metric__link" href={metric.href}>Inspect {metric.label}</a></article></ExpandableMonitorSurface>] : []; })}</div></section>)}</div>;
+	return <div className="ts-vital-rail__metrics">{groups.map((group) => <section key={group.label} className="ts-vital-bank" data-bank={group.label.toLowerCase()}><h2>{group.label}</h2><div>{group.keys.flatMap((key) => { const metric = metrics.find((item) => item.key === key); const updated = metric?.observedAt ? Date.parse(metric.observedAt) : observedAt; return metric ? [<article key={metric.key} className="ts-vital-metric" data-tone={metric.tone}><small>{metric.label}</small><strong>{metric.value}</strong><span>{metric.secondary ?? semanticLabel(metric.semantic)}</span><time dateTime={new Date(updated).toISOString()}>Data {formatTimestamp(updated, { timeZone, style: 'time' })}</time><a className="ts-vital-metric__link" href={metric.href}>Inspect {metric.label}</a></article>] : []; })}</div></section>)}</div>;
 }
 
 function semanticLabel(value: VitalMetricItem['semantic']) { return value === 'instantaneous' ? 'Current state' : value === 'configured' ? 'Configured roster' : value === 'exact-total' ? 'Team total' : 'Cumulative'; }

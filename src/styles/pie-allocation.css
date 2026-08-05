@@ -214,9 +214,9 @@ html[data-ts-mode='dark'] .dynamic-pie-allocation {
 .dynamic-pie-allocation[data-density="monitor"] .dynamic-pie-allocation__legend {
   gap: 4px;
   justify-content: flex-start;
-  max-height: 11rem;
+  max-height: none;
   min-width: 0;
-  overflow: auto;
+  overflow: visible;
   padding-left: 8px;
 }
 

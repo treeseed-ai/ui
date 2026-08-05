@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { CommandOverlayStack } from '../../../src/react/command-center/CommandOverlayStack.tsx';
 import { CommandWorkspace } from '../../../src/react/command-center/CommandWorkspace.tsx';
 import { MetricHistoryDashboard } from '../../../src/react/operations-monitor/MetricHistoryDashboard.tsx';
+import { fromLogScale, metricLogDomain, toLogScale } from '../../../src/react/operations-monitor/MetricHistoryChart.tsx';
 import OperationsMonitorHeader from '../../../src/react/operations-monitor/OperationsMonitorHeader.tsx';
 import { ExpandableMonitorSurface } from '../../../src/react/operations-monitor/ExpandableMonitorSurface.tsx';
 
@@ -30,7 +31,7 @@ describe('Agent Lab server rendering', () => {
 		expect(metrics).toContain('Current roster mean: 2');
 	});
 
-	it('keeps one mounted monitor surface expanded until close or an outside pointer', () => {
+	it('expands a monitor surface only from its explicit control', () => {
 		function Harness() {
 			const [expanded, setExpanded] = useState<string | null>(null);
 			return <section className="ts-operations-monitor"><ExpandableMonitorSurface id="metric:agents" label="Agents metric" expanded={expanded === 'metric:agents'} onExpand={setExpanded} onDismiss={() => setExpanded(null)}><article>Agents</article></ExpandableMonitorSurface><button type="button">Outside</button></section>;
@@ -38,12 +39,20 @@ describe('Agent Lab server rendering', () => {
 		const { container } = render(<Harness />);
 		const surface = container.querySelector<HTMLElement>('[data-monitor-surface="metric:agents"]')!;
 		fireEvent.mouseEnter(surface);
+		expect(surface).toHaveAttribute('data-expanded', 'false');
+		fireEvent.pointerUp(surface, { pointerType: 'touch' });
+		expect(surface).toHaveAttribute('data-expanded', 'false');
+		fireEvent.click(screen.getByRole('button', { name: 'Expand Agents metric' }));
 		expect(surface).toHaveAttribute('data-expanded', 'true');
 		fireEvent.click(screen.getByRole('button', { name: 'Close expanded Agents metric' }));
 		expect(surface).toHaveAttribute('data-expanded', 'false');
-		fireEvent.pointerUp(surface, { pointerType: 'touch' });
-		expect(surface).toHaveAttribute('data-expanded', 'true');
-		fireEvent.pointerDown(screen.getByRole('button', { name: 'Outside' }));
-		expect(surface).toHaveAttribute('data-expanded', 'false');
+	});
+
+	it('uses a zero-safe logarithmic scale with a tight visible-series domain', () => {
+		expect(toLogScale(0)).toBe(0);
+		expect(fromLogScale(toLogScale(99))).toBeCloseTo(99);
+		const [minimum, maximum] = metricLogDomain([{ assignments: toLogScale(9), failed: toLogScale(0) }, { assignments: toLogScale(99), failed: toLogScale(1) }], ['assignments']);
+		expect(minimum).toBeGreaterThan(0);
+		expect(maximum).toBeGreaterThan(toLogScale(99));
 	});
 });

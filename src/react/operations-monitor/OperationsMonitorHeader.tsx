@@ -42,7 +42,7 @@ export default function OperationsMonitorHeader({ initialOverview, initialActivi
 		<OperationsStatusBar connection={connection} teamName={overview.data.team.name} logoSrc={logoSrc} workdayTitle={overview.data.workdayContext.workdays.find((workday) => workday.id === overview.data.workdayContext.selectedWorkdayId)?.title} activeWorkdays={overview.data.activeWorkdays} activeProviders={overview.data.activeProviders} executionProviders={overview.data.executionProviders} timeZone={overview.data.timeZone} observedAt={checkedAt} onReconnect={liveStatuses.some((status) => status === 'offline' || status === 'degraded') ? reconnect : undefined} />
 		<div className="ts-vital-rail">
 			<MonitorToggleRail allocation={showAllocation} activity={showActivity} metrics={showMetrics} onAllocation={() => persist(!showAllocation, showActivity, showMetrics)} onActivity={() => persist(showAllocation, !showActivity, showMetrics)} onMetrics={() => persist(showAllocation, showActivity, !showMetrics)} />
-			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} expandedSurface={expandedSurface} onExpand={setExpandedSurface} onDismiss={dismissSurface} />
+			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} />
 		</div>
 		{showAllocation || showActivity || showMetrics ? <OperationsMonitorDock panels={(showAllocation ? 3 : 0) + Number(showActivity) + Number(showMetrics)}>
 			{showAllocation ? <AllocationManagementPanel initialSnapshot={initialAllocation} endpoint={endpoints.allocation} csrfToken={csrfToken} realtime={{ enabled: preference.enabled, intervalMs: baseMs }} expandedSurface={expandedSurface} onExpand={setExpandedSurface} onDismiss={dismissSurface} /> : null}
