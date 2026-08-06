@@ -6,6 +6,7 @@ repository: treeseed-ai/ui
 publishTarget: npm
 capabilities: { save: true, verify: true, publish: true, deploy: false, localOnly: false }
 workflowTemplateVersion: "1"
+workflowDependencies: ["@treeseed/sdk"]
 githubEnvironments:
   - production
 requiredSecrets:
