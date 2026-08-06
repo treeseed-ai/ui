@@ -64,6 +64,8 @@ export const componentCatalogOrder = [
   'page-header',
   'action-bar',
   'stack',
+  'discussion-trigger',
+  'discussion-panel',
   'feedback-trigger',
   'feedback-panel',
   'feedback-context-summary',

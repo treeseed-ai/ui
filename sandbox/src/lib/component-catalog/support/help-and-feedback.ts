@@ -2,6 +2,14 @@ import type { ComponentCatalogEntry } from './component-kind.ts';
 import { display } from './component-kind.ts';
 
 export const helpAndFeedbackComponents: ComponentCatalogEntry[] = [
+  display('discussion-trigger', 'DiscussionTrigger', 'Discussion', 'astro', 'Shell action that opens the shared non-modal Discussion panel.', 'inline', { targetId: 'catalog-discussion' }, [
+      { name: 'targetId', type: 'string', defaultValue: 'catalog-discussion', description: 'Discussion panel id to open.' },
+      { name: 'title', type: 'string', defaultValue: 'Open Discussions', description: 'Accessible action title.' },
+    ], undefined, '@treeseed/ui/components/astro/discussion/DiscussionTrigger.astro'),
+  display('discussion-panel', 'DiscussionPanel', 'Discussion', 'astro', 'Durable TreeDX-backed agent conversation panel with assignment traces and a Markdown composer.', 'large', { id: 'catalog-discussion', teamId: 'team-demo', projectId: 'project-demo' }, [
+      { name: 'id', type: 'string', defaultValue: 'catalog-discussion', description: 'Unique panel and trigger target id.' },
+      { name: 'context', type: 'DiscussionContext', defaultValue: { teamId: 'team-demo', projectId: 'project-demo' }, description: 'Authorized team, project, endpoint, identity, and agent context.' },
+    ], undefined, '@treeseed/ui/components/astro/discussion/DiscussionPanel.astro'),
   display('feedback-trigger', 'FeedbackTrigger', 'Feedback', 'astro', 'Shell feedback trigger bound to the shared non-modal panel.', 'inline', { targetId: 'catalog-feedback' }, [
       { name: 'targetId', type: 'string', defaultValue: 'catalog-feedback', description: 'Dialog id to open.' },
       { name: 'label', type: 'string', defaultValue: 'Feedback', description: 'Visible button text.' },

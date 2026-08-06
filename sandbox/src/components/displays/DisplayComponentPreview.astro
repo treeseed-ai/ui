@@ -15,6 +15,8 @@ import DistributionSummary from '../../../../src/astro/distribution/Distribution
 import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
 import FeedbackTrigger from '../../../../src/astro/feedback/FeedbackTrigger.astro';
 import FeedbackPanel from '../../../../src/astro/feedback/FeedbackPanel.astro';
+import DiscussionTrigger from '../../../../src/astro/discussion/DiscussionTrigger.astro';
+import DiscussionPanel from '../../../../src/astro/discussion/DiscussionPanel.astro';
 import FeedbackRedactionBoundary from '../../../../src/astro/feedback/FeedbackRedactionBoundary.astro';
 import ToastRegion from '../../../../src/astro/feedback/ToastRegion.astro';
 import HelpArticle from '../../../../src/astro/help/HelpArticle.astro';
@@ -201,6 +203,8 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
 {entry.id === 'action-bar' ? <ActionBar actions={resolvedActions} /> : null}
+{entry.id === 'discussion-trigger' ? <div class="primitive-inline"><DiscussionTrigger targetId="catalog-discussion-trigger" /><DiscussionPanel id="catalog-discussion-trigger" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /></div> : null}
+{entry.id === 'discussion-panel' ? <div><DiscussionTrigger targetId="catalog-discussion-panel" /><DiscussionPanel id="catalog-discussion-panel" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /></div> : null}
 {entry.id === 'feedback-trigger' ? <div class="primitive-inline"><FeedbackTrigger targetId="catalog-feedback" /><FeedbackPanel id="catalog-feedback" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-panel' ? <div><FeedbackTrigger targetId="catalog-feedback-panel" /><FeedbackPanel id="catalog-feedback-panel" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-redaction-boundary' ? <p>Public value <FeedbackRedactionBoundary reason="secret">secret-token-preview</FeedbackRedactionBoundary></p> : null}

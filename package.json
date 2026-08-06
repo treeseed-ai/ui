@@ -218,6 +218,8 @@
     "./components/astro/forms/TextInput.astro": "./dist/astro/forms/fields/TextInput.astro",
     "./components/astro/feedback/FeedbackTrigger.astro": "./dist/astro/feedback/FeedbackTrigger.astro",
     "./components/astro/feedback/FeedbackPanel.astro": "./dist/astro/feedback/FeedbackPanel.astro",
+    "./components/astro/discussion/DiscussionTrigger.astro": "./dist/astro/discussion/DiscussionTrigger.astro",
+    "./components/astro/discussion/DiscussionPanel.astro": "./dist/astro/discussion/DiscussionPanel.astro",
     "./components/astro/feedback/FeedbackContextSummary.astro": "./dist/astro/feedback/FeedbackContextSummary.astro",
     "./components/astro/feedback/management/FeedbackCollection.astro": "./dist/astro/feedback/management/FeedbackCollection.astro",
     "./components/astro/feedback/management/FeedbackFilterToolbar.astro": "./dist/astro/feedback/management/FeedbackFilterToolbar.astro",

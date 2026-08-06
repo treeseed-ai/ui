@@ -1,3 +1,5 @@
+import { sendFormRequest } from '../../forms-client.ts';
+
 type Item = { id?: string; path?: string; frontmatter?: Record<string, unknown>; body?: string };
 type DiscussionEnvelope = { discussion?: { id?: string; topic?: string }; message?: { id?: string; authorLabel?: string; body?: string }; assignments?: Array<{ id?: string; agentSlug?: string; status?: string }> };
 
@@ -11,7 +13,7 @@ function togglePanel(panel: HTMLElement, open: boolean) {
 }
 
 async function renderMarkdown(element: HTMLElement, body: string) {
-	const response = await fetch('/api/markdown/preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ markdown: body }) }).catch(() => null);
+	const response = await sendFormRequest({ url: '/api/markdown/preview', init: { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ markdown: body }) } }).catch(() => null);
 	const payload = response ? await response.json().catch(() => null) : null;
 	if (response?.ok && payload?.ok) element.innerHTML = payload.payload.html;
 	else { const fallback = document.createElement('pre'); fallback.textContent = body; element.replaceChildren(fallback); }
@@ -53,7 +55,7 @@ async function send(panel: HTMLElement, form: HTMLFormElement) {
 	const state = panel.querySelector('[data-ts-discussion-state]');
 	if (state) state.textContent = 'Committing…';
 	try {
-		const response = await fetch(root.dataset.endpoint ?? '/v1/discussions', { method: 'POST', credentials: 'same-origin', headers: { accept: 'application/json', 'content-type': 'application/json' }, body: JSON.stringify({ teamId: root.dataset.teamId, projectId: root.dataset.projectId || undefined, discussionId: root.dataset.discussionId || undefined, body, intent, fileRefs }) });
+		const response = await sendFormRequest({ url: root.dataset.endpoint ?? '/v1/discussions', init: { method: 'POST', credentials: 'same-origin', headers: { accept: 'application/json', 'content-type': 'application/json' }, body: JSON.stringify({ teamId: root.dataset.teamId, projectId: root.dataset.projectId || undefined, discussionId: root.dataset.discussionId || undefined, body, intent, fileRefs }) } });
 		const envelope = await response.json() as DiscussionEnvelope & { error?: string };
 		if (!response.ok) throw new Error(envelope.error ?? `Discussion request failed (${response.status}).`);
 		const topic = panel.querySelector('[data-ts-discussion-topic]');
