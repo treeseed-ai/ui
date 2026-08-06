@@ -343,6 +343,10 @@
       "types": "./dist/react/command-center/index.d.ts",
       "default": "./dist/react/command-center/index.js"
     },
+    "./components/react/progressive": {
+      "types": "./dist/react/progressive/index.d.ts",
+      "default": "./dist/react/progressive/index.js"
+    },
     "./components/react/RichMarkdownEditor": {
       "types": "./dist/react/editors/RichMarkdownEditor.d.ts",
       "default": "./dist/react/editors/RichMarkdownEditor.js"

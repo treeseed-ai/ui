@@ -28,6 +28,7 @@ describe('Astro island request ownership', () => {
 			['src/astro/site/content/BookList.astro', 'client:visible'],
 			['src/astro/workflow/WorkflowExecutionPanel.astro', 'client:visible'],
 			['src/astro/forms/fields/MarkdownField.astro', 'client:visible'],
+			['src/astro/layouts/AppLayout.astro', 'client:load'],
 		] as const) expect(readFileSync(path, 'utf8'), path).toContain(directive);
 	});
 });
