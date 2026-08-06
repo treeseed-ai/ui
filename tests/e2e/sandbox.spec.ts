@@ -447,9 +447,9 @@ test('theme works on form and display pages without mobile overflow', async ({ p
   await page.setViewportSize({ width: 390, height: 760 });
   await page.goto('/forms/text-input');
   await page.getByLabel('Appearance').click();
-  await expect(page.getByLabel('Color scheme')).toContainText('Moss Lab');
-  await page.getByLabel('Color scheme').selectOption('moss-lab');
-  await page.getByLabel('Theme mode').selectOption('dark');
+	await expect(page.getByLabel('Color scheme', { exact: true })).toContainText('Moss Lab');
+	await page.getByLabel('Color scheme', { exact: true }).selectOption('moss-lab');
+	await page.getByLabel('Theme mode', { exact: true }).selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-ts-scheme', 'moss-lab');
   await expect(page.locator('html')).toHaveAttribute('data-ts-mode', 'dark');
   let noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
