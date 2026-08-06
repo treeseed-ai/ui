@@ -1,0 +1,46 @@
+.ts-discussion-panel .ts-side-sheet__body { padding: 0; }
+.ts-discussion { display: grid; grid-template-rows: auto auto minmax(12rem, 1fr) auto; height: 100%; min-height: 0; }
+.ts-discussion__toolbar { align-items: end; background: color-mix(in srgb, var(--ts-color-surface) 88%, var(--ts-color-canvas)); border-bottom: 1px solid var(--ts-color-border); display: grid; gap: .65rem; grid-template-columns: 1fr auto; padding: .8rem 1rem; }
+.ts-discussion__toolbar label span,.ts-discussion__editor>span,.ts-discussion__kicker { color: var(--ts-color-text-muted); display: block; font-size: .63rem; font-weight: 800; letter-spacing: .08em; margin-bottom: .3rem; text-transform: uppercase; }
+.ts-discussion__threads { border-bottom: 1px solid var(--ts-color-border); display: flex; gap: .45rem; min-height: 2.6rem; overflow-x: auto; padding: .55rem 1rem; }
+.ts-discussion__empty { color: var(--ts-color-text-muted); font-size: .72rem; margin: auto 0; }
+.ts-discussion__thread { background: var(--ts-color-surface); border: 1px solid var(--ts-color-border); border-radius: 999px; color: var(--ts-color-text); cursor: pointer; flex: 0 0 auto; font: 700 .68rem/1 var(--ts-font-family-body); padding: .48rem .7rem; }
+.ts-discussion__thread:hover { border-color: var(--ts-color-accent); color: var(--ts-color-accent); }
+.ts-discussion__conversation { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
+.ts-discussion__topic { align-items: center; border-bottom: 1px solid var(--ts-color-border); display: flex; justify-content: space-between; padding: .75rem 1rem; }
+.ts-discussion__topic strong { display: block; font-family: var(--ts-font-family-heading); font-size: .95rem; }
+.ts-discussion__state { background: color-mix(in srgb, var(--ts-color-accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--ts-color-accent) 35%, var(--ts-color-border)); border-radius: 999px; color: var(--ts-color-accent); font-size: .65rem; font-weight: 750; padding: .2rem .5rem; }
+.ts-discussion__timeline { display: flex; flex-direction: column; gap: .9rem; list-style: none; margin: 0; min-height: 0; overflow: auto; padding: 1rem; }
+.ts-discussion__welcome { border-left: 2px solid var(--ts-color-accent); color: var(--ts-color-text-muted); padding: .3rem .8rem; }
+.ts-discussion__welcome strong { color: var(--ts-color-text); }
+.ts-discussion__welcome p { font-size: .78rem; margin: .25rem 0 0; }
+.ts-discussion__message { border-left: 2px solid var(--ts-color-border-strong); padding-left: .75rem; }
+.ts-discussion__message header { align-items: center; display: flex; gap: .5rem; }
+.ts-discussion__message header span { color: var(--ts-color-text-muted); font-size: .62rem; text-transform: uppercase; }
+.ts-discussion__markdown { color: var(--ts-color-text); font: inherit; font-size: .82rem; line-height: 1.55; margin: .35rem 0 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.ts-discussion__markdown pre { overflow-x: auto; white-space: pre; }
+.ts-discussion__file-card,.ts-discussion__file-ref { background: color-mix(in srgb, var(--ts-color-accent) 8%, var(--ts-color-surface)); border: 1px solid var(--ts-color-border); border-radius: .35rem; color: var(--ts-color-text-muted); display: inline-block; font: .65rem/1.35 var(--ts-font-family-mono); margin-top: .5rem; max-width: 100%; overflow: hidden; padding: .35rem .5rem; text-overflow: ellipsis; white-space: nowrap; }
+.ts-discussion__trace { background: color-mix(in srgb, var(--ts-color-canvas) 65%, transparent); border-top: 1px solid var(--ts-color-border); display: grid; gap: .5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: .65rem 1rem; }
+.ts-discussion__trace[hidden] { display: none; }
+.ts-discussion__trace div { min-width: 0; }
+.ts-discussion__trace span { color: var(--ts-color-text-muted); display: block; font-size: .58rem; text-transform: uppercase; }
+.ts-discussion__trace strong { display: block; font-size: .68rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ts-discussion__composer { --composer-height: 15rem; background: var(--ts-color-surface); border-top: 1px solid var(--ts-color-border-strong); display: grid; grid-template-rows: .55rem auto minmax(4rem, 1fr) auto; height: var(--composer-height); min-height: 9.5rem; padding: 0 1rem .8rem; }
+.ts-discussion__resize { cursor: ns-resize; margin: 0 -1rem; position: relative; touch-action: none; }
+.ts-discussion__resize::after { background: var(--ts-color-border-strong); border-radius: 1rem; content: ''; height: 3px; left: 50%; position: absolute; top: 3px; transform: translateX(-50%); width: 3rem; }
+.ts-discussion__intent { display: flex; gap: .35rem; padding: .35rem 0 .55rem; }
+.ts-discussion__intent input { position: absolute; opacity: 0; }
+.ts-discussion__intent span { border: 1px solid var(--ts-color-border); border-radius: 999px; cursor: pointer; display: block; font-size: .65rem; font-weight: 800; padding: .28rem .55rem; text-transform: capitalize; }
+.ts-discussion__intent input:checked+span { background: var(--ts-color-accent); border-color: var(--ts-color-accent); color: var(--ts-color-on-accent); }
+.ts-discussion__editor { min-height: 0; overflow: auto; }
+.ts-discussion__editor .ts-markdown-field { height: 100%; margin: 0; }
+.ts-discussion__editor .ts-markdown-field__editor,.ts-discussion__editor .ts-markdown-field__codemirror,.ts-discussion__editor .cm-editor { min-height: 4rem; }
+.ts-discussion__composer-actions { align-items: center; display: grid; gap: .55rem; grid-template-columns: auto minmax(0, 1fr) auto auto; padding-top: .65rem; }
+.ts-discussion__composer-actions span { color: var(--ts-color-text-muted); font-size: .62rem; }
+@media (min-width: 64rem) {
+	.ts-shell-workspace:has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(27rem, 36rem); }
+	.ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden])):has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(24rem, 31rem); }
+	.ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden])):has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden]))>.ts-feedback-panel { display: none; }
+	.ts-side-sheet[data-ts-discussion-presentation='docked'] { align-self: start; box-shadow: none; display: grid; height: 100vh; inset: auto; max-height: 100vh; position: sticky; top: 0; width: 100%; z-index: 20; }
+}
+@media (max-width: 40rem) { .ts-discussion__composer-actions { grid-template-columns: 1fr auto; }.ts-discussion__composer-actions>span { display: none; } }

@@ -6,7 +6,7 @@ import TeamOperationsPanel from '../team-operations/TeamOperationsPanel.astro';
 import TeamOperationsDrawer from '../team-operations/TeamOperationsDrawer.astro';
 import ControlSurface from './ControlSurface.astro';
 import type { ButtonAction, ShellBrand, ShellNavItem, SiteUserControlItem } from '../../types.ts';
-import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
+import type { DiscussionContext, FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import { normalizeWorkspaceThemePreference, type AppearancePreference, type ThemePreference, type ThemeConfig } from '../../../theme/index.ts';
 
 // Feedback and contextual help are composed once through SiteUserControls and ShellFrame.
@@ -25,6 +25,7 @@ interface Props {
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
+	discussionContext?: DiscussionContext;
 	contentOwnsPageHeader?: boolean;
 	timeZone?: string;
 }
@@ -45,10 +46,12 @@ const {
 	themeConfig,
 	helpContext,
 	feedbackContext,
+	discussionContext,
 	contentOwnsPageHeader = false,
 	timeZone = 'UTC',
 } = Astro.props as Props;
 const feedbackDialogId = 'product-shell-feedback';
+const discussionDialogId = 'product-shell-discussion';
 const helpDrawerId = 'shell-help';
 const drawerId = 'team-operations-drawer';
 const sidebarId = 'team-operations-sidebar';
@@ -63,8 +66,10 @@ const workspaceTheme = normalizeWorkspaceThemePreference('workspace' in appearan
 	themeConfig={themeConfig}
 	helpContext={helpContext}
 	feedbackContext={feedbackContext}
+	discussionContext={discussionContext}
 	helpDrawerId={helpDrawerId}
 	feedbackDialogId={feedbackDialogId}
+	discussionDialogId={discussionDialogId}
 	bodyClass="ts-product-shell-body"
 	timeZone={timeZone}
 	workspaceTheme={workspaceTheme}
@@ -104,8 +109,10 @@ const workspaceTheme = normalizeWorkspaceThemePreference('workspace' in appearan
 						themeConfig={themeConfig}
 						helpContext={helpContext}
 						feedbackContext={feedbackContext}
+						discussionContext={discussionContext}
 						helpDrawerId={helpDrawerId}
 						feedbackDialogId={feedbackDialogId}
+						discussionDialogId={discussionDialogId}
 					/>
 				</Fragment>
 			</ShellHeader>
@@ -141,8 +148,10 @@ const workspaceTheme = normalizeWorkspaceThemePreference('workspace' in appearan
 			themeConfig={themeConfig}
 			helpContext={helpContext}
 			feedbackContext={feedbackContext}
+			discussionContext={discussionContext}
 			helpDrawerId={helpDrawerId}
 			feedbackDialogId={feedbackDialogId}
+			discussionDialogId={discussionDialogId}
 		/>
 	</TeamOperationsDrawer>
 	<div

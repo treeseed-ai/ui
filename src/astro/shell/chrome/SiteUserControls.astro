@@ -2,8 +2,9 @@
 import ThemeMenu from '../../theme/ThemeMenu.astro';
 import HelpTrigger from '../../help/HelpTrigger.astro';
 import FeedbackTrigger from '../../feedback/FeedbackTrigger.astro';
+import DiscussionTrigger from '../../discussion/DiscussionTrigger.astro';
 import ShellIconLink from '../navigation/ShellIconLink.astro';
-import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
+import type { DiscussionContext, FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import type { AppearancePreference, ThemePreference, ThemeConfig } from '../../../theme/index.ts';
 import type { SiteUserControlItem } from '../../types.ts';
 
@@ -14,8 +15,10 @@ interface Props {
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
+	discussionContext?: DiscussionContext;
 	helpDrawerId?: string;
 	feedbackDialogId?: string;
+	discussionDialogId?: string;
 	showAppearanceControl?: boolean;
 	showManagerLink?: boolean;
 	showBookLibraryLink?: boolean;
@@ -29,8 +32,10 @@ const {
 	themeConfig,
 	helpContext,
 	feedbackContext,
+	discussionContext,
 	helpDrawerId = 'shell-help',
 	feedbackDialogId = 'shell-feedback',
+	discussionDialogId = 'shell-discussion',
 	showAppearanceControl = true,
 	showManagerLink = false,
 	showBookLibraryLink = true,
@@ -55,6 +60,7 @@ function isCurrentPath(href: string) {
 		{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} workspace={'workspace' in appearance ? appearance.workspace : undefined} themeConfig={themeConfig} /> : null}
 		{helpContext ? <HelpTrigger targetId={helpDrawerId} knowledgePageId={helpContext.knowledgePageIds[0]} label={helpContext.summary ?? 'Open contextual help'} class="ts-shell-context-action" /> : null}
 		{feedbackContext ? <FeedbackTrigger targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
+		{discussionContext ? <DiscussionTrigger targetId={discussionDialogId} /> : null}
 		{showManagerLink ? <ShellIconLink href="/app/" label="Manager" icon="manager" /> : null}
 		<slot />
 		{showBookLibraryLink ? <ShellIconLink href="/books" label="Book library" icon="book" /> : null}

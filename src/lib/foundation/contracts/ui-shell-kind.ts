@@ -122,6 +122,21 @@ export interface FeedbackContext {
 	knowledgePageTitle?: string;
 }
 
+export interface DiscussionAgentOption {
+	slug: string;
+	name: string;
+	role?: string;
+}
+
+export interface DiscussionContext {
+	teamId: string;
+	projectId?: string;
+	identityLabel: string;
+	endpoint?: string;
+	agents?: DiscussionAgentOption[];
+	initialTopic?: string;
+}
+
 export type FeedbackSubmissionType = 'bug' | 'feature_suggestion' | 'question' | 'content_issue' | 'ux_issue';
 
 export interface FeedbackScreenshotAttachment {
