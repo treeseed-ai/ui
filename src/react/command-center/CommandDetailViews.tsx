@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import type { CommandEntity, CommandEntityDetail } from './types.ts';
 import { CommandOverlayTrigger } from './overlay-navigation.tsx';
-import { StructuredSourceEditor } from './SourceEditor.tsx';
+import { StructuredSourceEditor } from './editor/SourceEditor.tsx';
 import { ProposalReviewEditor } from './detail/ProposalReviewEditor.tsx';
 import { NestedRelationTimelines } from './detail/NestedRelationTimelines.tsx';
 import { AgentDefinitionEditor } from './detail/AgentDefinitionEditor.tsx';

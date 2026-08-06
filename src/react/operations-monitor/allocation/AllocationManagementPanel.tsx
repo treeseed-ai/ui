@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type * as React from 'react';
 import DynamicPieAllocationInput, { type PieAllocationSlice, type PieAllocationValidity } from '../../pie-allocation/DynamicPieAllocationInput.tsx';
+import { requestJson } from '../../../forms-client.ts';
 import type { AllocationSnapshot } from '../types.ts';
 import { useRealtimeResource } from '../use-realtime-resource.ts';
 import { ExpandableMonitorSurface } from '../ExpandableMonitorSurface.tsx';
@@ -32,7 +33,7 @@ export function AllocationManagementPanel({ initialSnapshot, endpoint, csrfToken
 		const key = scope === 'agent-class' ? `class:${projectId}` : scope === 'workday-time' ? 'workday' : 'portfolio';
 		const slices = scope === 'portfolio' ? portfolio : scope === 'agent-class' ? classDrafts[projectId] ?? [] : workday;
 		setMessages((value) => ({ ...value, [scope]: 'Saving…' }));
-		const response = await fetch(endpoint, { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-treeseed-csrf': csrfToken }, body: JSON.stringify({ scope, projectId: scope === 'agent-class' ? projectId : undefined, slices, expectedActiveAllocationSetId: resource.data.activeAllocationSetId, requestId: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}` }) });
+		const response = await requestJson(endpoint, { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-treeseed-csrf': csrfToken }, body: JSON.stringify({ scope, projectId: scope === 'agent-class' ? projectId : undefined, slices, expectedActiveAllocationSetId: resource.data.activeAllocationSetId, requestId: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}` }) });
 		const body = await response.json().catch(() => ({}));
 		if (!response.ok) { setMessages((value) => ({ ...value, [scope]: body.error ?? 'Could not save.' })); return; }
 		resource.replaceData((body.payload ?? body) as AllocationSnapshot); setDirty((value) => ({ ...value, [key]: false })); setMessages((value) => ({ ...value, [scope]: 'Active' }));

@@ -4,6 +4,7 @@ import TextInput from '../forms/fields/TextInput.astro';
 import Button from '../forms/actions/Button.astro';
 import FormActions from '../forms/actions/FormActions.astro';
 import PasswordSetupFields from '../forms/fields/PasswordSetupFields.astro';
+import { AvailabilityIsland } from '../../react/progressive/index.ts';
 interface Props {
 	action: string;
 	values?: { firstName?: string; lastName?: string; username?: string; email?: string };
@@ -12,11 +13,12 @@ interface Props {
 	invitedEmailReadonly?: boolean;
 	usernameAvailabilityEndpoint?: string;
 	emailAvailabilityEndpoint?: string;
+	id?: string;
 }
-const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly = false, usernameAvailabilityEndpoint = '/v1/auth/availability/username', emailAvailabilityEndpoint = '/v1/auth/availability/email' } = Astro.props as Props;
+const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly = false, usernameAvailabilityEndpoint = '/v1/auth/availability/username', emailAvailabilityEndpoint = '/v1/auth/availability/email', id = 'registration-form' } = Astro.props as Props;
 ---
 
-<form class="auth-form" method="post" action={action} data-registration-form data-scene="registration-form" data-ts-submit="enhanced">
+<form id={id} class="auth-form" method="post" action={action} data-registration-form data-scene="registration-form" data-ts-submit="enhanced">
 	<input type="hidden" name="colorScheme" value={appearance.scheme} data-auth-theme-scheme-field />
 	<input type="hidden" name="themeMode" value={appearance.mode} data-auth-theme-mode-field />
 	{inviteToken ? <input type="hidden" name="inviteToken" value={inviteToken} /> : null}
@@ -35,83 +37,4 @@ const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly 
 	<PasswordSetupFields passwordId="registerPassword" confirmId="registerPasswordConfirmation" />
 	<FormActions><Button type="submit" disabled data-registration-submit>Create account</Button></FormActions>
 </form>
-
-<script is:inline data-astro-rerun define:vars={{ usernameAvailabilityEndpoint, emailAvailabilityEndpoint }}>
-	(() => {
-		const form = document.querySelector('[data-registration-form]');
-		if (!(form instanceof HTMLFormElement)) return;
-		if (form.dataset.registrationReady === 'true') return;
-		form.dataset.registrationReady = 'true';
-		const submit = form.querySelector('[data-registration-submit]');
-		const schemeField = form.querySelector('[data-auth-theme-scheme-field]');
-		const modeField = form.querySelector('[data-auth-theme-mode-field]');
-		const states = { username: false, email: false };
-		const timers = {};
-		const sequences = { username: 0, email: 0 };
-		const endpoints = { username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint };
-		function updateSubmit() { if (submit instanceof HTMLButtonElement) submit.disabled = !states.username || !states.email; }
-		function syncTheme(event) {
-			const detail = event?.detail || {};
-			if (schemeField instanceof HTMLInputElement) schemeField.value = detail.scheme || document.documentElement.dataset.tsScheme || schemeField.value;
-			if (modeField instanceof HTMLInputElement) modeField.value = detail.mode || (document.documentElement.dataset.tsModeSource === 'system' ? 'system' : document.documentElement.dataset.tsMode) || modeField.value;
-		}
-		async function check(kind) {
-			const input = form.querySelector(`[data-availability-input="${kind}"]`);
-			const status = form.querySelector(`[data-availability-status="${kind}"]`);
-			if (!(input instanceof HTMLInputElement) || !status) return;
-			const value = input.value.trim();
-			const sequence = ++sequences[kind];
-			states[kind] = false; updateSubmit();
-			status.removeAttribute('aria-busy');
-			if (!value) {
-				status.textContent = '';
-				status.removeAttribute('data-tone');
-				input.removeAttribute('aria-invalid');
-				return;
-			}
-			if (!input.checkValidity()) {
-				status.textContent = `Enter a valid ${kind}.`;
-				status.setAttribute('data-tone', 'danger');
-				input.setAttribute('aria-invalid', 'true');
-				return;
-			}
-			status.textContent = '';
-			status.removeAttribute('data-tone');
-			status.setAttribute('aria-busy', 'true');
-			input.removeAttribute('aria-invalid');
-			try {
-				const response = await fetch(`${endpoints[kind]}?value=${encodeURIComponent(value)}`, { headers: { accept: 'application/json' } });
-				const result = await response.json();
-				if (sequence !== sequences[kind] || input.value.trim() !== value) return;
-				const payload = result?.payload ?? result;
-				states[kind] = payload.available === true;
-				if (states[kind]) {
-					status.textContent = '';
-					status.removeAttribute('data-tone');
-					input.setAttribute('aria-invalid', 'false');
-				} else {
-					status.textContent = payload.status === 'taken'
-						? `This ${kind} isn’t available for registration.`
-						: (payload.status === 'throttled' ? 'Please wait before continuing registration.' : payload.message || `This ${kind} can’t be used.`);
-					status.setAttribute('data-tone', 'danger');
-					input.setAttribute('aria-invalid', 'true');
-				}
-			} catch {
-				status.textContent = `We couldn’t validate this ${kind}. Please try again.`;
-				status.setAttribute('data-tone', 'danger');
-				input.setAttribute('aria-invalid', 'true');
-			} finally {
-				if (sequence === sequences[kind]) status.removeAttribute('aria-busy');
-			}
-			updateSubmit();
-		}
-		for (const kind of ['username', 'email']) {
-			const input = form.querySelector(`[data-availability-input="${kind}"]`);
-			input?.addEventListener('input', () => { clearTimeout(timers[kind]); timers[kind] = setTimeout(() => check(kind), 350); });
-			input?.addEventListener('change', () => check(kind));
-			if (input?.value) check(kind);
-		}
-		window.addEventListener('treeseed:theme-change', syncTheme);
-		form.addEventListener('submit', (event) => { syncTheme(); if (!states.username || !states.email || !form.checkValidity()) { event.preventDefault(); form.reportValidity(); } });
-	})();
-</script>
+<AvailabilityIsland rootId={id} mode="registration" endpoints={{ username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint }} client:load />

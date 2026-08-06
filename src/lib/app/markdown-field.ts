@@ -121,17 +121,9 @@ function initializeMarkdownField(root: MarkdownFieldRoot) {
 	previewTab?.addEventListener('click', () => selectMode('preview'));
 }
 
-export function initializeMarkdownFields() {
-	document
+export function initializeMarkdownFields(scope: ParentNode = document) {
+	scope
 		.querySelectorAll<MarkdownFieldRoot>('[data-markdown-field]')
 		.forEach((root) => initializeMarkdownField(root));
-}
-
-if (typeof document !== 'undefined') {
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initializeMarkdownFields, { once: true });
-	} else {
-		initializeMarkdownFields();
-	}
-	document.addEventListener('astro:page-load', initializeMarkdownFields);
+	if (scope instanceof HTMLElement && scope.matches('[data-markdown-field]')) initializeMarkdownField(scope as MarkdownFieldRoot);
 }

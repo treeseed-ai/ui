@@ -69,12 +69,12 @@ describe('UI foundation', () => {
 
 	it('keeps browser runtime initializers inert during server rendering', () => {
 		for (const path of [
-			'src/lib/app/markdown-field.ts',
 			'src/lib/app/related-content-creator.ts',
-			'src/astro/forms/composition/markdown-field.ts',
 		]) {
 			expect(readFileSync(path, 'utf8'), path).toContain("if (typeof document !== 'undefined')");
 		}
+		expect(readFileSync('src/lib/app/markdown-field.ts', 'utf8')).not.toMatch(/if \(typeof document[\s\S]*initializeMarkdownFields/u);
+		expect(readFileSync('src/react/progressive/MarkdownFieldIsland.tsx', 'utf8')).toContain('initializeMarkdownFields(root)');
 	});
 
 	it('exports ProductShell as the canonical authenticated shell', () => {
@@ -241,6 +241,7 @@ describe('UI foundation', () => {
 
 	it('keeps registration validation focused on completing registration', () => {
 		const registration = readFileSync('src/astro/auth/RegistrationForm.astro', 'utf8');
+		const availability = readFileSync('src/react/progressive/AvailabilityIsland.tsx', 'utf8');
 		const passwordSetup = readFileSync('src/astro/forms/fields/PasswordSetupFields.astro', 'utf8');
 		const passwordMeter = readFileSync('src/astro/forms/fields/PasswordMeter.astro', 'utf8');
 		const formsCss = readFileSync('src/styles/forms.css', 'utf8');
@@ -248,11 +249,12 @@ describe('UI foundation', () => {
 		expect(registration).not.toContain('Enter a username to check availability.');
 		expect(registration).not.toContain('Enter an email to check availability.');
 		expect(registration).not.toMatch(/Checking \$\{kind\} availability|is available\./u);
-		expect(registration).toContain('This ${kind} isn’t available for registration.');
+		expect(availability).toContain('This ${kind} isn’t available for registration.');
 		expect(registration).toContain('<PasswordSetupFields passwordId="registerPassword"');
 		expect(registration).toContain('aria-live="polite"');
-		expect(registration).toContain('payload.available === true');
-		expect(registration).toContain('submit.disabled = !states.username || !states.email');
+		expect(availability).toContain('payload.available === true');
+		expect(availability).toContain("kinds.some((kind) => states[kind] !== true)");
+		expect(registration).toContain('client:load');
 		expect(passwordSetup).toContain('Passwords do not match.');
 		expect(passwordSetup).toContain('Passwords match.');
 		expect(passwordSetup).toContain('<PasswordMeter');

@@ -1,4 +1,5 @@
 ---
+import { MarkdownFieldIsland } from '../../../../react/progressive/index.ts';
 interface Props {
 	label: string;
 	name: string;
@@ -23,10 +24,12 @@ const {
 const previewId = `${id}-preview`;
 const editorId = `${id}-editor`;
 const errorId = `${id}-error`;
+const rootId = `markdown-field-${crypto.randomUUID()}`;
 const size = rows >= 12 ? 'xl' : rows >= 8 ? 'lg' : 'md';
 ---
 
 <div
+	id={rootId}
 	class="ts-field ts-markdown-field"
 	data-markdown-field
 	data-markdown-required={required ? 'true' : 'false'}
@@ -71,62 +74,4 @@ const size = rows >= 12 ? 'xl' : rows >= 8 ? 'lg' : 'md';
 	</div>
 	<p class="ts-markdown-field__error" id={errorId} hidden data-markdown-error>{label} is required.</p>
 </div>
-
-<script is:inline>
-	(() => {
-		function debounce(callback, delay = 250) {
-			let timer = 0;
-			return (...args) => {
-				window.clearTimeout(timer);
-				timer = window.setTimeout(() => callback(...args), delay);
-			};
-		}
-		function initializeFallback(root) {
-			if (root.dataset.markdownFallbackReady === 'true') return;
-			root.dataset.markdownFallbackReady = 'true';
-			const textarea = root.querySelector('[data-markdown-textarea]');
-			const editTab = root.querySelector('[data-markdown-editor-tab]');
-			const previewTab = root.querySelector('[data-markdown-preview-tab]');
-			const editPanel = root.querySelector('[data-markdown-editor-panel]');
-			const previewPanel = root.querySelector('[data-markdown-preview-panel]');
-			if (!textarea || !editPanel || !previewPanel) return;
-			const renderPreview = debounce(async () => {
-				previewPanel.innerHTML = '<p class="ts-empty-inline">Rendering preview...</p>';
-				const response = await fetch('/api/markdown/preview', {
-					method: 'POST',
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify({ markdown: textarea.value }),
-				});
-				const payload = await response.json().catch(() => null);
-				previewPanel.innerHTML = response.ok && payload?.ok
-					? payload.payload.html || '<p class="ts-empty-inline">Nothing to preview.</p>'
-					: '<p class="ts-empty-inline">Preview is unavailable.</p>';
-			}, 150);
-			function selectMode(mode) {
-				const preview = mode === 'preview';
-				editTab?.setAttribute('aria-selected', preview ? 'false' : 'true');
-				previewTab?.setAttribute('aria-selected', preview ? 'true' : 'false');
-				editPanel.hidden = preview;
-				previewPanel.hidden = !preview;
-				if (preview) renderPreview();
-			}
-			editTab?.addEventListener('click', () => {
-				if (root.dataset.enhanced === 'true') return;
-				selectMode('edit');
-			});
-			previewTab?.addEventListener('click', () => {
-				if (root.dataset.enhanced === 'true') return;
-				selectMode('preview');
-			});
-		}
-		function initializeFallbacks() {
-			document.querySelectorAll('[data-markdown-field]').forEach(initializeFallback);
-		}
-		initializeFallbacks();
-		document.addEventListener('astro:page-load', initializeFallbacks);
-	})();
-</script>
-
-<script>
-	import '../../../../lib/app/markdown-field.ts';
-</script>
+<MarkdownFieldIsland rootId={rootId} client:visible />

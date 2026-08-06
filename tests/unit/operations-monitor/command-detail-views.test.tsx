@@ -6,7 +6,7 @@ import { CommandDetailViews } from '../../../src/react/command-center/CommandDet
 describe('command detail views', () => {
 	it('opens in readability mode and preserves the complete debug record', async () => {
 		const user = userEvent.setup();
-		render(<CommandDetailViews timeZone="America/New_York" detail={{
+		render(<CommandDetailViews timeZone="America/New_York" authoringEndpoint="/v1/authoring" detail={{
 			id: 'proposal-one', kind: 'proposal', title: 'Improve the guide', description: 'A concise summary.', status: 'voting',
 			primary: { actor: { label: 'Proposed by', name: 'Adrian Webb' }, postedAt: '2026-08-04T14:00:00.000Z', content: { label: 'Proposal', classification: 'editorial-test', body: 'Publish the reviewed editorial cycle.', missing: false }, facts: [{ label: 'Status', value: 'Voting' }] },
 			sections: [{ id: 'identity', title: 'Operational identity', fields: [{ label: 'Provider', value: { id: 'provider-one' } }] }],
@@ -16,14 +16,14 @@ describe('command detail views', () => {
 		expect(screen.getByText('Publish the reviewed editorial cycle.')).toBeVisible();
 		expect(screen.getByText('editorial test')).toBeVisible();
 		expect(screen.queryByText('Operational identity')).not.toBeInTheDocument();
-		await user.click(screen.getByRole('tab', { name: /Debug/i }));
+		await user.click(screen.getByRole('tab', { name: /Inspector/i }));
 		expect(screen.getByRole('heading', { name: 'Data integrity' })).toBeVisible();
 		expect(screen.getByText('Operational identity')).toBeVisible();
 		expect(screen.getByRole('heading', { name: 'Complete record' })).toBeVisible();
 	});
 
 	it('makes missing primary content explicit instead of substituting a summary', () => {
-		render(<CommandDetailViews timeZone="America/New_York" detail={{
+		render(<CommandDetailViews timeZone="America/New_York" authoringEndpoint="/v1/authoring" detail={{
 			id: 'proposal-missing', kind: 'proposal', title: 'Incomplete proposal', description: 'This summary must not masquerade as proposal content.', status: 'draft',
 			primary: { actor: { label: 'Proposed by', name: 'Agent Lab simulation operator' }, content: { label: 'Proposal', body: '', classification: 'editorial-test', missing: true } },
 			data: { body: null },

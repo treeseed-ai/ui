@@ -1,4 +1,5 @@
 ---
+import { BookLibraryIsland } from '../../../react/progressive/index.ts';
 type BookItem = {
 	id: string;
 	slug: string;
@@ -13,13 +14,13 @@ type BookItem = {
 	manageHref?: string;
 };
 
-const { items, searchEndpoint = '/v1/knowledge/library' } = Astro.props as { items: BookItem[]; searchEndpoint?: string };
+const { items, searchEndpoint = '/v1/knowledge/library', id = 'book-library' } = Astro.props as { items: BookItem[]; searchEndpoint?: string; id?: string };
 const topics = [...new Set(items.flatMap((item) => item.topics))].sort();
 const audiences = [...new Set(items.flatMap((item) => item.audience))].sort();
 const teams = [...new Set(items.map((item) => item.teamSlug))].sort();
 ---
 
-<section class="ts-book-library" data-ts-book-library data-search-endpoint={searchEndpoint}>
+<section id={id} class="ts-book-library" data-ts-book-library>
 	<form class="ts-book-library__filters" role="search" data-ts-book-filters>
 		<label class="ts-book-library__search">
 			<span>Search books</span>
@@ -80,74 +81,4 @@ const teams = [...new Set(items.map((item) => item.teamSlug))].sort();
 		<p>Try a broader search or clear the topic filter.</p>
 	</div>
 </section>
-
-<script>
-	function initializeBookLibraries(root: ParentNode = document) {
-		root.querySelectorAll<HTMLElement>('[data-ts-book-library]').forEach((library) => {
-			if (library.dataset.tsBookLibraryReady) return;
-			library.dataset.tsBookLibraryReady = 'true';
-			const query = library.querySelector<HTMLInputElement>('[data-ts-book-query]');
-			const topic = library.querySelector<HTMLSelectElement>('[data-ts-book-topic]');
-			const audience = library.querySelector<HTMLSelectElement>('[data-ts-book-audience]');
-			const team = library.querySelector<HTMLSelectElement>('[data-ts-book-team]');
-			const cards = [...library.querySelectorAll<HTMLElement>('[data-ts-book-card]')];
-			const count = library.querySelector<HTMLElement>('[data-ts-book-count]');
-			const empty = library.querySelector<HTMLElement>('[data-ts-book-empty]');
-			let remoteIds: Set<string> | null = null;
-			let searchTimer = 0;
-			let searchRevision = 0;
-			const update = () => {
-				const words = (query?.value ?? '').trim().toLowerCase().split(/\s+/u).filter(Boolean);
-				const selected = (topic?.value ?? '').toLowerCase();
-				const selectedAudience = (audience?.value ?? '').toLowerCase();
-				const selectedTeam = (team?.value ?? '').toLowerCase();
-				let visible = 0;
-				for (const card of cards) {
-					const text = card.dataset.search ?? '';
-					const topics = (card.dataset.topics ?? '').split('|');
-					const audiences = (card.dataset.audiences ?? '').split('|');
-					const match = (remoteIds ? remoteIds.has(card.dataset.bookId ?? '') : words.every((word) => text.includes(word)))
-						&& (!selected || topics.includes(selected))
-						&& (!selectedAudience || audiences.includes(selectedAudience))
-						&& (!selectedTeam || card.dataset.team === selectedTeam);
-					card.hidden = !match;
-					if (match) visible += 1;
-				}
-				if (count) count.textContent = `${visible} ${visible === 1 ? 'book' : 'books'}`;
-				if (empty) empty.hidden = visible > 0;
-			};
-			query?.addEventListener('input', () => {
-				window.clearTimeout(searchTimer);
-				const revision = ++searchRevision;
-				const value = query.value.trim();
-				if (value.length < 2) { remoteIds = null; update(); return; }
-				// Hide locally matching cards until TreeDX returns. This makes the rendered result authoritative
-				// and prevents navigation while the request that established the result is still in flight.
-				remoteIds = new Set();
-				update();
-				searchTimer = window.setTimeout(async () => {
-					try {
-						const endpoint = new URL(library.dataset.searchEndpoint ?? '/v1/knowledge/library', window.location.origin);
-						endpoint.searchParams.set('q', value);
-						const response = await fetch(endpoint, { headers: { accept: 'application/json' }, credentials: 'same-origin' });
-						if (!response.ok) throw new Error('search unavailable');
-						const body = await response.json();
-						if (revision !== searchRevision) return;
-						remoteIds = new Set((body.payload?.books ?? []).map((book: { id: string }) => book.id));
-						update();
-					} catch {
-						if (revision !== searchRevision) return;
-						remoteIds = new Set();
-						update();
-						if (count) count.textContent = 'Search is temporarily unavailable';
-					}
-				}, 250);
-			});
-			topic?.addEventListener('change', update);
-			audience?.addEventListener('change', update);
-			team?.addEventListener('change', update);
-		});
-	}
-	initializeBookLibraries();
-	document.addEventListener('astro:page-load', () => initializeBookLibraries());
-</script>
+<BookLibraryIsland rootId={id} searchEndpoint={searchEndpoint} client:visible />

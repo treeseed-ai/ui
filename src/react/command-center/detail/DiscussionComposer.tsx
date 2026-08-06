@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { requestJson } from '../../../forms-client.ts';
 import RichMarkdownEditor from '../../editors/RichMarkdownEditor.tsx';
 import type { CommandEntity, CommandEntityDetail } from '../types.ts';
 
@@ -7,7 +8,7 @@ export function DiscussionComposer({ detail,initialKind,onClose,onSaved,parent }
 	async function save() {
 		if (!detail.projectId || !message.trim()) { setState('error'); setStatus('Write a meaningful note or question first.'); return; }
 		setState('saving'); setStatus('Committing linked content through TreeDX…');
-		const response = await fetch(`/v1/projects/${encodeURIComponent(detail.projectId)}/proposals/${encodeURIComponent(detail.id)}/discussion`, { method:'POST',headers:{ 'content-type':'application/json','Idempotency-Key':globalThis.crypto?.randomUUID?.() ?? `${Date.now()}` },body:JSON.stringify({ kind,message,expectedProposalVersion:detail.version,...(parent && resolve ? { resolvesEventId: parent.id } : {}) }) });
+		const response = await requestJson(`/v1/projects/${encodeURIComponent(detail.projectId)}/proposals/${encodeURIComponent(detail.id)}/discussion`, { method:'POST',headers:{ 'content-type':'application/json','Idempotency-Key':globalThis.crypto?.randomUUID?.() ?? `${Date.now()}` },body:JSON.stringify({ kind,message,expectedProposalVersion:detail.version,...(parent && resolve ? { resolvesEventId: parent.id } : {}) }) });
 		const result = await response.json();
 		if (!response.ok) { setState('error'); setStatus(result.error ?? 'The discussion entry could not be published.'); return; }
 		onSaved(); onClose();

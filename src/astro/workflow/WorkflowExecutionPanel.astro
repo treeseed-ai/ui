@@ -8,6 +8,7 @@ import Select from '../forms/fields/Select.astro';
 import TextInput from '../forms/fields/TextInput.astro';
 import Panel from '../surface/Panel.astro';
 import type { Tone } from '../types.ts';
+import { WorkflowPollingIsland } from '../../react/progressive/index.ts';
 
 interface Props {
 	projectId: string;
@@ -33,9 +34,10 @@ const tone = (status: string): Tone => status === 'completed' ? 'success'
 const label = (value: string) => value.replaceAll('_', ' ').replaceAll('-', ' ').replace(/\b\w/gu, (letter) => letter.toUpperCase());
 const requirements = [...(definition.requiredSecrets ?? []).map((item: any) => ({ ...item, kind: 'secret' })),
 	...(definition.requiredVariables ?? []).map((item: any) => ({ ...item, kind: 'variable' }))];
+const rootId = `workflow-operation-${String(definition.id).replace(/[^a-zA-Z0-9_-]/gu, '-')}`;
 ---
 
-<div data-workflow-operation-id={definition.id} class="ts-workflow-operation" data-scene="workflow.operation">
+<div id={rootId} data-workflow-operation-id={definition.id} class="ts-workflow-operation" data-scene="workflow.operation">
 	<Panel title={definition.workflowId.split('/').at(-1) ?? 'Workflow operation'}
 		description={`Runs from ${definition.refPolicy.length} authorized ref${definition.refPolicy.length === 1 ? '' : 's'} at an exact reviewed commit.`}
 		knowledgePageId="services.workflow-execution">
@@ -87,36 +89,7 @@ const requirements = [...(definition.requiredSecrets ?? []).map((item: any) => (
 		</section>
 	</Panel>
 </div>
-
-<script>
-	import { refreshContentTargets } from '../../forms-client';
-	function installWorkflowPolling() {
-		for (const run of document.querySelectorAll<HTMLElement>('[data-workflow-run-active="true"]:not([data-workflow-polling])')) {
-			run.dataset.workflowPolling = 'true';
-			const runId = run.dataset.workflowRunId;
-			const currentStatus = run.dataset.workflowRunStatus;
-			const panel = run.closest<HTMLElement>('[data-workflow-operation-id]');
-			const operationId = panel?.dataset.workflowOperationId;
-			if (!runId || !operationId) continue;
-			const poll = async () => {
-				if (!document.contains(run)) return;
-				try {
-					const response = await fetch(`/v1/workflow-operation-runs/${encodeURIComponent(runId)}`, { credentials: 'same-origin', headers: { accept: 'application/json' } });
-					const payload = response.ok ? (await response.json()).payload : null;
-					if (payload && payload.status !== currentStatus) {
-						await refreshContentTargets([`[data-workflow-operation-id="${CSS.escape(operationId)}"]`]);
-						return;
-					}
-				} catch { /* The visible run remains authoritative until connectivity recovers. */ }
-				window.setTimeout(poll, 5_000);
-			};
-			window.setTimeout(poll, 5_000);
-		}
-	}
-	installWorkflowPolling();
-	document.addEventListener('astro:page-load', installWorkflowPolling);
-	document.addEventListener('treeseed:content-updated', installWorkflowPolling);
-</script>
+{runs.some((run) => activeStatuses.has(run.status)) ? <WorkflowPollingIsland rootId={rootId} operationId={definition.id} client:visible /> : null}
 
 <style>
 	.ts-workflow-operation__summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--ts-border); }
