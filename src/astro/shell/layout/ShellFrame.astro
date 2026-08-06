@@ -4,12 +4,14 @@ import '../../../styles/theme.css';
 import '../../../styles/ui.css';
 import '../../../styles/forms.css';
 import '../../../styles/app-shell.css';
+import '../../../styles/discussion.css';
 import { ClientRouter } from 'astro:transitions';
 import ThemeScript from '../../theme/ThemeScript.astro';
 import FeedbackPanel from '../../feedback/FeedbackPanel.astro';
+import DiscussionPanel from '../../discussion/DiscussionPanel.astro';
 import ToastRegion from '../../feedback/ToastRegion.astro';
 import HelpDialog from '../../help/HelpDialog.astro';
-import type { FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
+import type { DiscussionContext, FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import type { ThemePreference, ThemeConfig, WorkspaceThemePreference } from '../../../theme/index.ts';
 
 interface Props {
@@ -19,8 +21,10 @@ interface Props {
 	themeConfig?: ThemeConfig;
 	helpContext?: HelpContext;
 	feedbackContext?: FeedbackContext;
+	discussionContext?: DiscussionContext;
 	helpDrawerId?: string;
 	feedbackDialogId?: string;
+	discussionDialogId?: string;
 	bodyClass?: string;
 	preferServerAppearance?: boolean;
 	timeZone?: string;
@@ -34,8 +38,10 @@ const {
 	themeConfig,
 	helpContext,
 	feedbackContext,
+	discussionContext,
 	helpDrawerId = 'shell-help',
 	feedbackDialogId = 'shell-feedback',
+	discussionDialogId = 'shell-discussion',
 	bodyClass,
 	preferServerAppearance = false,
 	timeZone = 'UTC',
@@ -67,6 +73,7 @@ const {
 		<div class="ts-shell-workspace" data-ts-shell-workspace>
 			<div class="ts-shell-workspace__content"><slot /></div>
 			{feedbackContext ? <FeedbackPanel id={feedbackDialogId} context={feedbackContext} /> : null}
+			{discussionContext ? <DiscussionPanel id={discussionDialogId} context={discussionContext} /> : null}
 		</div>
 		{helpContext ? <HelpDialog id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
 		<ToastRegion />

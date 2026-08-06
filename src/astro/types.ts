@@ -12,6 +12,7 @@ export type ShellIconName =
 	| 'create'
 	| 'expand'
 	| 'feedback'
+	| 'discussion'
 	| 'help'
 	| 'knowledge'
 	| 'link'

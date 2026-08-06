@@ -107,6 +107,11 @@ function initializeMarkdownField(root: MarkdownFieldRoot) {
 	}
 
 	const form = markdownTextarea.form;
+	root.addEventListener('treeseed:markdown-set', (event) => {
+		const value = event instanceof CustomEvent && typeof event.detail === 'string' ? event.detail : '';
+		markdownTextarea.value = value;
+		if (view) view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } });
+	});
 	form?.addEventListener('submit', (event) => {
 		if (root.dataset.markdownRequired !== 'true') return;
 		if (markdownTextarea.value.trim()) return;
