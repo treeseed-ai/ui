@@ -1,0 +1,29 @@
+---
+interface Props {
+	label: string;
+	used: number;
+	reserved?: number;
+	total: number;
+	unit?: string;
+	tone?: 'mint' | 'amber' | 'violet' | 'danger';
+}
+const { label, used, reserved = 0, total, unit = '', tone = 'mint' } = Astro.props as Props;
+const safeTotal = Math.max(0, Number(total) || 0);
+const safeUsed = Math.max(0, Number(used) || 0);
+const safeReserved = Math.max(0, Number(reserved) || 0);
+const usedPercent = safeTotal ? Math.min(100, safeUsed / safeTotal * 100) : 0;
+const reservedPercent = safeTotal ? Math.min(100 - usedPercent, safeReserved / safeTotal * 100) : 0;
+const remaining = Math.max(0, safeTotal - safeUsed - safeReserved);
+const format = (value: number) => new Intl.NumberFormat('en', { maximumFractionDigits: 1, notation: value >= 10000 ? 'compact' : 'standard' }).format(value);
+---
+<div class:list={['ts-capacity-meter', `ts-capacity-meter--${tone}`]} data-capacity-meter>
+	<div class="ts-capacity-meter__header"><span>{label}</span><strong>{format(remaining)}{unit}</strong></div>
+	<div class="ts-capacity-meter__rail" role="meter" aria-label={label} aria-valuemin="0" aria-valuemax={safeTotal} aria-valuenow={Math.min(safeTotal, safeUsed + safeReserved)}>
+		<span class="ts-capacity-meter__used" style={`width:${usedPercent}%`}></span>
+		<span class="ts-capacity-meter__reserved" style={`left:${usedPercent}%;width:${reservedPercent}%`}></span>
+	</div>
+	<div class="ts-capacity-meter__legend"><span>used {format(safeUsed)}{unit}</span><span>reserved {format(safeReserved)}{unit}</span><span>limit {format(safeTotal)}{unit}</span></div>
+</div>
+<style>
+	.ts-capacity-meter{display:grid;gap:.42rem;font:600 .7rem/1.2 var(--ts-font-mono,monospace);letter-spacing:.035em;text-transform:uppercase}.ts-capacity-meter__header,.ts-capacity-meter__legend{display:flex;justify-content:space-between;gap:.7rem}.ts-capacity-meter__header strong{color:var(--meter,#66efc4);font-size:.82rem}.ts-capacity-meter__legend{color:var(--sl-color-gray-3,#89939b);font-size:.58rem;letter-spacing:.02em}.ts-capacity-meter__rail{position:relative;height:.72rem;overflow:hidden;border:1px solid color-mix(in srgb,var(--meter,#66efc4) 35%,transparent);background:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 8%,transparent 8% 10%);box-shadow:inset 0 0 0 2px rgba(0,0,0,.18)}.ts-capacity-meter__used,.ts-capacity-meter__reserved{position:absolute;inset-block:0}.ts-capacity-meter__used{left:0;background:var(--meter,#66efc4);box-shadow:0 0 12px color-mix(in srgb,var(--meter,#66efc4) 45%,transparent)}.ts-capacity-meter__reserved{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--meter,#66efc4) 65%,transparent) 0 3px,transparent 3px 6px)}.ts-capacity-meter--amber{--meter:#f5b94f}.ts-capacity-meter--violet{--meter:#aa87ff}.ts-capacity-meter--danger{--meter:#ff647c}@media(max-width:34rem){.ts-capacity-meter__legend{display:grid;grid-template-columns:1fr 1fr}.ts-capacity-meter__legend span:last-child{text-align:right}}
+</style>

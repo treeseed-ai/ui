@@ -46,7 +46,7 @@ const textList = (value: unknown) => Array.isArray(value) ? value.join(', ') : S
 		<legend>Book organization</legend>
 		<div class="ts-form-grid">
 			<Field label="Description" name="description" class="ts-field--full" required><Textarea name="description" rows={4} required value={values.description ?? values.summary ?? ''} /></Field>
-			<Field label="Topics" name="topics" help="Comma-separated subjects used by library filters."><TextInput name="topics" value={textList(values.topics)} /></Field>
+			<Field label="Groups" name="groupIds" help="Comma-separated group IDs used by the team ontology."><TextInput name="groupIds" value={textList(values.groupIds)} /></Field>
 			<Field label="Audience" name="audience" help="Comma-separated intended audiences."><TextInput name="audience" value={textList(values.audience)} /></Field>
 			<Field label="Editorial core note ID" name="editorialCoreNoteId" class="ts-field--full" help="Stable note ID compiled into assignments for this book."><TextInput name="editorialCoreNoteId" value={values.editorialCoreNoteId ?? ''} /></Field>
 			<Field label="Related book IDs" name="relatedBookIds" class="ts-field--full"><TextInput name="relatedBookIds" value={textList(values.relatedBookIds)} /></Field>
@@ -60,7 +60,7 @@ const textList = (value: unknown) => Array.isArray(value) ? value.join(', ') : S
 		<div class="ts-form-grid">
 			<Field label="Book ID" name="bookId" required help="Stable ID of the book that owns this page."><TextInput name="bookId" required value={values.bookId ?? ''} pattern="[a-z0-9]+(?:(?:[._]|-)[a-z0-9]+)*" /></Field>
 			<Field label="Parent page ID" name="parentId"><TextInput name="parentId" value={values.parentId ?? ''} /></Field>
-			<Field label="Tags" name="tags" help="Comma-separated discovery terms."><TextInput name="tags" value={textList(values.tags)} /></Field>
+			<Field label="Groups" name="groupIds" help="Comma-separated group IDs used by the team ontology."><TextInput name="groupIds" value={textList(values.groupIds)} /></Field>
 			<Field label="Contributors" name="contributors"><TextInput name="contributors" value={textList(values.contributors)} /></Field>
 			<Field label="Primary audiences" name="audiencesPrimary" help="Comma-separated: community, developer, operator, ai-agent."><TextInput name="audiencesPrimary" value={textList(values.audiences?.primary ?? values.audiencesPrimary)} /></Field>
 			<Field label="Secondary audiences" name="audiencesSecondary"><TextInput name="audiencesSecondary" value={textList(values.audiences?.secondary ?? values.audiencesSecondary)} /></Field>

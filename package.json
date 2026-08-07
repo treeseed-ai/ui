@@ -166,6 +166,7 @@
     "./components/astro/account/AccountDeletionPanel.astro": "./dist/astro/account/AccountDeletionPanel.astro",
     "./components/astro/account/PersonalThemeManager.astro": "./dist/astro/account/PersonalThemeManager.astro",
     "./components/astro/account/RealtimeExperienceSettings.astro": "./dist/astro/account/RealtimeExperienceSettings.astro",
+    "./components/astro/capacity/*": "./dist/astro/capacity/*",
     "./components/astro/overlays/AccessibleDialog.astro": "./dist/astro/overlays/AccessibleDialog.astro",
     "./components/astro/overlays/ImageLightbox.astro": "./dist/astro/overlays/ImageLightbox.astro",
     "./components/astro/content/ContentStatusLegend.astro": "./dist/astro/content/ContentStatusLegend.astro",
