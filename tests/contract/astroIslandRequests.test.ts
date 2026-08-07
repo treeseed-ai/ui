@@ -35,6 +35,7 @@ describe('Astro island request ownership', () => {
 
 	it('persists Discussion and keeps the session network lifecycle in a client island', () => {
 		expect(readFileSync('src/astro/discussion/DiscussionPanel.astro', 'utf8')).toContain('transition:persist="shell-discussion"');
+		expect(readFileSync('src/astro/shell/layout/ShellFrame.astro', 'utf8')).toContain("from '../../../react/progressive/index.ts'");
 		const island = readFileSync('src/react/progressive/SessionConnectionIsland.tsx', 'utf8');
 		expect(island).toContain('new EventSource');
 		expect(island).toContain("sessionStorage.setItem(cursorKey(teamId)");
