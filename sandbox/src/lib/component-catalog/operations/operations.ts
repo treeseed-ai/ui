@@ -47,6 +47,21 @@ export const operationsComponents: ComponentCatalogEntry[] = [
   display('capacity-diagnostics-panel', 'CapacityDiagnosticsPanel', 'Operations', 'astro', 'Reusable CapacityDiagnosticsPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/app/operations/CapacityDiagnosticsPanel.astro'),
+  display('capacity-meter', 'CapacityMeter', 'Capacity', 'astro', 'Compact used, reserved, and remaining capacity meter for a single supply dimension.', 'medium', { label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }, [
+      { name: 'label', type: 'string', defaultValue: 'Tokens', description: 'Capacity dimension label.' },
+      { name: 'used', type: 'number', defaultValue: 3200, description: 'Consumed capacity.' },
+      { name: 'reserved', type: 'number', defaultValue: 800, description: 'Reserved capacity.' },
+      { name: 'total', type: 'number', defaultValue: 10000, description: 'Total capacity limit.' },
+    ], undefined, '@treeseed/ui/components/astro/capacity/CapacityMeter.astro'),
+  display('provider-battery-card', 'ProviderBatteryCard', 'Capacity', 'astro', 'Provider availability, capabilities, assignments, and dimensional supply telemetry.', 'large', { id: 'provider-demo', name: 'Local provider', status: 'available', assignments: 2 }, [
+      { name: 'id', type: 'string', defaultValue: 'provider-demo', description: 'Stable provider identity.' },
+      { name: 'status', type: 'string', defaultValue: 'available', description: 'Current provider availability.' },
+      { name: 'meters', type: 'Meter[]', defaultValue: 2, description: 'Supply dimensions reported by the provider.' },
+    ], undefined, '@treeseed/ui/components/astro/capacity/ProviderBatteryCard.astro'),
+  display('capacity-control-room', 'CapacityControlRoom', 'Capacity', 'astro', 'Responsive team capacity fleet with live provider pressure and availability.', 'full-page', { providers: 2, timeZone: 'America/New_York' }, [
+      { name: 'providers', type: 'Provider[]', defaultValue: 2, description: 'Provider batteries shown in the fleet.' },
+      { name: 'timeZone', type: 'string', defaultValue: 'America/New_York', description: 'Authenticated user time zone for provider signals.' },
+    ], undefined, '@treeseed/ui/components/astro/capacity/CapacityControlRoom.astro'),
   display('governance-decision-panel', 'GovernanceDecisionPanel', 'Operations', 'astro', 'Reusable GovernanceDecisionPanel component copied into the TreeSeed UI library.', 'medium', { source: 'Operations' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/app/operations/GovernanceDecisionPanel.astro'),
