@@ -95,6 +95,19 @@ async function loadDiscussion(panel: HTMLElement, discussionId?: string, query =
 export function initializeDiscussionPanels(root: Document = document) {
 	if (root.documentElement.dataset.tsDiscussionBound === 'true') return;
 	root.documentElement.dataset.tsDiscussionBound = 'true';
+	root.addEventListener('treeseed:session-event', (event) => {
+		const detail = event instanceof CustomEvent ? event.detail as Record<string, unknown> : {};
+		if (detail.eventType !== 'discussion.updated' && detail.eventType !== 'session.ready') return;
+		for (const panel of root.querySelectorAll<HTMLElement>('[data-ts-side-sheet]:has([data-ts-discussion])')) {
+			const shell = panel.querySelector<HTMLElement>('[data-ts-discussion]');
+			if (!shell || shell.dataset.teamId !== detail.teamId) continue;
+			if (detail.eventType === 'session.ready') { if (!panel.hidden) void loadDiscussion(panel, shell.dataset.discussionId); continue; }
+			if (detail.projectId && shell.dataset.projectId && shell.dataset.projectId !== detail.projectId) continue;
+			const discussionId = String((detail.payload as Record<string, unknown> | undefined)?.discussionId ?? detail.resourceId ?? '');
+			if (!discussionId || (shell.dataset.discussionId && shell.dataset.discussionId !== discussionId)) void loadDiscussion(panel);
+			else void loadDiscussion(panel, discussionId);
+		}
+	});
 	root.addEventListener('click', (event) => {
 		const target = event.target instanceof Element ? event.target : null;
 		const opener = target?.closest<HTMLElement>('[data-ts-discussion-open]');

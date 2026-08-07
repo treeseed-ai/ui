@@ -29,6 +29,15 @@ describe('Astro island request ownership', () => {
 			['src/astro/workflow/WorkflowExecutionPanel.astro', 'client:visible'],
 			['src/astro/forms/fields/MarkdownField.astro', 'client:visible'],
 			['src/astro/layouts/AppLayout.astro', 'client:load'],
+			['src/astro/shell/layout/ShellFrame.astro', 'transition:persist="session-connection"'],
 		] as const) expect(readFileSync(path, 'utf8'), path).toContain(directive);
+	});
+
+	it('persists Discussion and keeps the session network lifecycle in a client island', () => {
+		expect(readFileSync('src/astro/discussion/DiscussionPanel.astro', 'utf8')).toContain('transition:persist="shell-discussion"');
+		const island = readFileSync('src/react/progressive/SessionConnectionIsland.tsx', 'utf8');
+		expect(island).toContain('new EventSource');
+		expect(island).toContain("sessionStorage.setItem(cursorKey(teamId)");
+		expect(island).toContain("CustomEvent('treeseed:session-event'");
 	});
 });

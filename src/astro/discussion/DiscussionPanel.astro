@@ -7,7 +7,7 @@ const { id, context } = Astro.props as Props;
 const endpoint = context.endpoint ?? '/v1/discussions';
 ---
 
-<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-discussion-panel" scene="discussion.panel">
+<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-discussion-panel" scene="discussion.panel" transition:persist="shell-discussion">
 	<Fragment slot="header">
 		<div>
 			<p class="ts-section__eyebrow">Agent correspondence</p>

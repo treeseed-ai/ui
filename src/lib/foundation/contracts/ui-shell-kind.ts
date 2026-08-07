@@ -135,6 +135,7 @@ export interface DiscussionContext {
 	endpoint?: string;
 	agents?: DiscussionAgentOption[];
 	initialTopic?: string;
+	realtime?: { endpoint: string; enabled: boolean };
 }
 
 export type FeedbackSubmissionType = 'bug' | 'feature_suggestion' | 'question' | 'content_issue' | 'ux_issue';

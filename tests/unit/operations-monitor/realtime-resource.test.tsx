@@ -24,4 +24,17 @@ describe('real-time resource coordinator', () => {
 		await act(async () => { await vi.advanceTimersByTimeAsync(1_999); }); expect(fetch).toHaveBeenCalledTimes(1);
 		await act(async () => { await vi.advanceTimersByTimeAsync(1); }); expect(fetch).toHaveBeenCalledTimes(2);
 	});
+
+	it('debounces matching session invalidations into an island-owned refresh', async () => {
+		vi.useFakeTimers();
+		const request = vi.fn(async () => Response.json({ value: 8 }));
+		const endpoint = () => '/v1/teams/team-a/agent-lab/overview';
+		const parse = (value: unknown) => ({ data: value as { value: number } });
+		renderHook(() => useRealtimeResource({ initialData: { value: 7 }, endpoint, intervalMs: 60_000, enabled: true, parse, request }));
+		await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+		document.dispatchEvent(new CustomEvent('treeseed:session-event', { detail: { eventType: 'resource.invalidated', payload: { endpoints: ['/v1/teams/team-a/agent-lab'] } } }));
+		document.dispatchEvent(new CustomEvent('treeseed:session-event', { detail: { eventType: 'resource.invalidated', payload: { endpoints: ['/v1/teams/team-a/agent-lab'] } } }));
+		await act(async () => { await vi.advanceTimersByTimeAsync(100); });
+		expect(request).toHaveBeenCalledTimes(2);
+	});
 });

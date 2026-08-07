@@ -69,5 +69,21 @@ export function useRealtimeResource<T>({
 		return () => { disposed = true; clear(); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('online', resume); window.removeEventListener('offline', offline); };
 	}, [enabled, endpoint, intervalMs, merge, parse, refreshVersion, request]);
 
+	useEffect(() => {
+		if (!enabled) return;
+		let debounce: number | null = null;
+		const invalidate = (event: Event) => {
+			const detail = event instanceof CustomEvent ? event.detail as Record<string, unknown> : {};
+			if (detail.eventType !== 'resource.invalidated') return;
+			const payload = detail.payload && typeof detail.payload === 'object' ? detail.payload as Record<string, unknown> : {};
+			const endpoints = Array.isArray(payload.endpoints) ? payload.endpoints.map(String) : [];
+			if (!endpoints.some((prefix) => endpoint(cursor.current).includes(prefix))) return;
+			if (debounce !== null) window.clearTimeout(debounce);
+			debounce = window.setTimeout(reconnect, 100);
+		};
+		document.addEventListener('treeseed:session-event', invalidate);
+		return () => { document.removeEventListener('treeseed:session-event', invalidate); if (debounce !== null) window.clearTimeout(debounce); };
+	}, [enabled, endpoint, reconnect]);
+
 	return { data, status, lastUpdatedAt, refreshCount, error, reconnect, replaceData };
 }
