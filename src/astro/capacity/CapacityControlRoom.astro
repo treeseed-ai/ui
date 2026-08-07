@@ -1,6 +1,7 @@
 ---
+import type { ComponentProps } from 'astro/types';
 import ProviderBatteryCard from './ProviderBatteryCard.astro';
-type Provider = Astro.ComponentProps<typeof ProviderBatteryCard>;
+type Provider = ComponentProps<typeof ProviderBatteryCard>;
 interface Props { providers: Provider[]; title?: string; description?: string; timeZone?: string }
 const { providers, title = 'Capacity control room', description = 'Live supply, reservations, and provider pressure.', timeZone = 'UTC' } = Astro.props as Props;
 const online = providers.filter((provider) => ['active','available','ready','online'].includes(provider.status.toLowerCase())).length;
