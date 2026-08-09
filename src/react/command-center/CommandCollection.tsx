@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { formatTimestamp } from '../../timestamps.ts';
+import { requestJson } from '../../forms-client.ts';
 import { CommandOverlayTrigger } from './CommandOverlayStack.tsx';
 import type { CommandEntity } from './types.ts';
 
@@ -9,7 +10,7 @@ export function CommandFilterToolbar({ query, onQuery, statuses, status, onStatu
 
 export function CommandEntityCard({ item, stateEndpoint, timeZone }: { item: CommandEntity; stateEndpoint?: string; timeZone: string }) {
 	const [state, setState] = useState({ pinned: item.pinned === true, hidden: item.hidden === true, resolved: item.resolved === true });
-	async function change(field: 'pinned' | 'hidden' | 'resolved') { const next = !state[field]; setState((current) => ({ ...current, [field]: next })); if (!stateEndpoint) return; const response = await fetch(stateEndpoint, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: item.kind, id: item.id, [field]: next }) }); if (!response.ok) setState((current) => ({ ...current, [field]: !next })); }
+	async function change(field: 'pinned' | 'hidden' | 'resolved') { const next = !state[field]; setState((current) => ({ ...current, [field]: next })); if (!stateEndpoint) return; const response = await requestJson(stateEndpoint, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: item.kind, id: item.id, [field]: next }) }); if (!response.ok) setState((current) => ({ ...current, [field]: !next })); }
 	return <article className="ts-command-card" data-kind={item.kind} data-severity={item.severity ?? ''} data-pinned={state.pinned}><header><span className="ts-command-card__kind">{item.kind.replace(/-/gu, ' ')}</span><div className="ts-command-card__actions">{stateEndpoint ? <><button type="button" aria-pressed={state.pinned} onClick={() => void change('pinned')}>{state.pinned ? 'Pinned' : 'Pin'}</button><button type="button" onClick={() => void change('hidden')}>Hide</button>{item.kind === 'error' && item.actionable ? <button type="button" aria-pressed={state.resolved} onClick={() => void change('resolved')}>{state.resolved ? 'Resolved' : 'Resolve'}</button> : null}</> : null}{item.status ? <span className="ts-command-card__status">{item.status}</span> : null}</div></header><h3>{item.title}</h3><p>{item.description}</p>{item.metrics?.length ? <dl>{item.metrics.slice(0, 6).map((metric) => <div key={metric.label}><dt>{metric.label}</dt><dd>{metric.value}</dd></div>)}</dl> : null}<footer><div>{item.projectName ? <span>{item.projectName}</span> : null}{item.activityProfile ? <span>{item.activityProfile}</span> : null}{item.occurredAt ? <time dateTime={item.occurredAt}>{formatTimestamp(item.occurredAt, { timeZone })}</time> : null}{item.tags?.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}</div><CommandOverlayTrigger target={{ kind: item.kind, id: item.id }}>Inspect <span aria-hidden="true">→</span></CommandOverlayTrigger></footer></article>;
 }
 

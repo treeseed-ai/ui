@@ -136,6 +136,7 @@ export interface DiscussionContext {
 	agents?: DiscussionAgentOption[];
 	initialTopic?: string;
 	contextRefs?: DiscussionContextReference[];
+	realtime?: { endpoint: string; enabled: boolean };
 }
 
 export interface DiscussionContextReference { kind:string; id:string; projectId:string; workdayId?:string; eventSequence?:number; immutableRef?:string; path?:string; digest?:string; }

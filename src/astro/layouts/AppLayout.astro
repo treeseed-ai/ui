@@ -4,6 +4,7 @@ import '../../styles/operations.css';
 import ProductShell from '../shell/layout/ProductShell.astro';
 import DeleteConfirmationModal from '../app/controls/data/DeleteConfirmationModal.astro';
 import ShellIcon from '../shell/navigation/ShellIcon.astro';
+import { AppearancePersistenceIsland } from '../../react/progressive/index.ts';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
 import type { ButtonAction, ShellNavItem } from '../types.ts';
@@ -90,7 +91,7 @@ const teamOptions = teams.map((team) => ({
 	helpContext={helpContext}
 	feedbackContext={feedbackContext}
 >
-	<div slot="railContext" class="ts-team-switcher" data-appearance-endpoint={appearanceEndpoint}>
+	<div slot="railContext" class="ts-team-switcher">
 		<div class="ts-section__eyebrow">Team</div>
 		{teams.length > 0 ? (
 			<form class="ts-team-selector" aria-label="Active team" data-team-switcher>
@@ -116,6 +117,8 @@ const teamOptions = teams.map((team) => ({
 	<DeleteConfirmationModal slot="modal" />
 </ProductShell>
 
+<AppearancePersistenceIsland endpoint={appearanceEndpoint} client:load />
+
 <script>
 	document.querySelectorAll('[data-team-switcher]').forEach((form) => {
 		const select = (form as HTMLFormElement).elements.namedItem('teamId') as HTMLSelectElement | null;
@@ -126,37 +129,4 @@ const teamOptions = teams.map((team) => ({
 			window.location.href = url.toString();
 		});
 	});
-</script>
-
-<script>
-	import { sendFormRequest } from '../../forms-client.ts';
-
-	const bindingKey = '__treeseedAuthenticatedAppearanceSyncBound';
-	const syncWindow = window as unknown as Record<string, unknown>;
-	if (!syncWindow[bindingKey]) {
-		syncWindow[bindingKey] = true;
-		window.addEventListener('treeseed:theme-change', (event) => {
-			const detail = (event as CustomEvent).detail || {};
-			if (detail.persist !== true || !detail.scheme || !detail.mode) return;
-			const endpoint = document.querySelector<HTMLElement>('[data-appearance-endpoint]')?.dataset.appearanceEndpoint;
-			if (!endpoint) return;
-			void sendFormRequest({
-				url: endpoint,
-				init: {
-					method: 'PATCH',
-					headers: { accept: 'application/json', 'content-type': 'application/json', 'x-treeseed-csrf': document.cookie.split('; ').find((entry) => entry.startsWith('ts_csrf='))?.split('=').slice(1).join('=') || '' },
-					body: JSON.stringify({
-						colorScheme: detail.scheme,
-						themeMode: detail.mode,
-						contentThemeOverlayEnabled: detail.workspace?.enabled === true,
-						contentThemeOverlayScheme: detail.workspace?.scheme,
-						contentThemeOverlayMode: detail.workspace?.mode,
-					}),
-					keepalive: true,
-				},
-			}).catch(() => {
-				// Local cookies retain the immediate preference; the next change can retry persistence.
-			});
-		});
-	}
 </script>

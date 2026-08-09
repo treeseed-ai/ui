@@ -19,3 +19,4 @@ export type { SelectOption } from './react/form-controls/SelectField.tsx';
 export { TextField } from './react/form-controls/TextField.tsx';
 export * from './react/operations-monitor/index.ts';
 export * from './react/agent-atlas/index.ts';
+export * from './react/progressive/index.ts';

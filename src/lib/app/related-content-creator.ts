@@ -1,4 +1,3 @@
-import { initializeMarkdownFields } from './markdown-field.ts';
 import { dismissToast, formActionUrl, registerFormAdapter, showToast } from '../../forms-client.ts';
 import { waitForPlatformOperation } from './platform-operation-status.ts';
 
@@ -104,7 +103,6 @@ function initializeRelatedContentCreator(root: HTMLElement) {
 		});
 		if (title) title.textContent = label;
 		floatingLayer.hidden = false;
-		initializeMarkdownFields();
 		requestAnimationFrame(() => {
 			const input = activeForm()?.querySelector<HTMLInputElement>('input[name="title"]');
 			input?.focus();

@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-dev.staging.20260804T170811Z",
+  "version": "0.12.18-dev.staging.20260809T135255Z",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -167,6 +167,9 @@
     "./components/astro/account/PersonalThemeManager.astro": "./dist/astro/account/PersonalThemeManager.astro",
     "./components/astro/account/RealtimeExperienceSettings.astro": "./dist/astro/account/RealtimeExperienceSettings.astro",
     "./components/astro/capacity/*": "./dist/astro/capacity/*",
+    "./components/astro/capacity/CapacityControlRoom.astro": "./dist/astro/capacity/CapacityControlRoom.astro",
+    "./components/astro/capacity/CapacityMeter.astro": "./dist/astro/capacity/CapacityMeter.astro",
+    "./components/astro/capacity/ProviderBatteryCard.astro": "./dist/astro/capacity/ProviderBatteryCard.astro",
     "./components/astro/overlays/AccessibleDialog.astro": "./dist/astro/overlays/AccessibleDialog.astro",
     "./components/astro/overlays/ImageLightbox.astro": "./dist/astro/overlays/ImageLightbox.astro",
     "./components/astro/content/ContentStatusLegend.astro": "./dist/astro/content/ContentStatusLegend.astro",
@@ -219,6 +222,8 @@
     "./components/astro/forms/TextInput.astro": "./dist/astro/forms/fields/TextInput.astro",
     "./components/astro/feedback/FeedbackTrigger.astro": "./dist/astro/feedback/FeedbackTrigger.astro",
     "./components/astro/feedback/FeedbackPanel.astro": "./dist/astro/feedback/FeedbackPanel.astro",
+    "./components/astro/discussion/DiscussionTrigger.astro": "./dist/astro/discussion/DiscussionTrigger.astro",
+    "./components/astro/discussion/DiscussionPanel.astro": "./dist/astro/discussion/DiscussionPanel.astro",
     "./components/astro/feedback/FeedbackContextSummary.astro": "./dist/astro/feedback/FeedbackContextSummary.astro",
     "./components/astro/feedback/management/FeedbackCollection.astro": "./dist/astro/feedback/management/FeedbackCollection.astro",
     "./components/astro/feedback/management/FeedbackFilterToolbar.astro": "./dist/astro/feedback/management/FeedbackFilterToolbar.astro",
@@ -347,6 +352,10 @@
     "./components/react/AgentAtlas": {
       "types": "./dist/react/agent-atlas/index.d.ts",
       "default": "./dist/react/agent-atlas/index.js"
+    },
+    "./components/react/progressive": {
+      "types": "./dist/react/progressive/index.d.ts",
+      "default": "./dist/react/progressive/index.js"
     },
     "./components/react/RichMarkdownEditor": {
       "types": "./dist/react/editors/RichMarkdownEditor.d.ts",

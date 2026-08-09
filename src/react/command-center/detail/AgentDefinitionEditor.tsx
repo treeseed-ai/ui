@@ -1,4 +1,5 @@
 import { useMemo,useState } from 'react';
+import { requestJson } from '../../../forms-client.ts';
 import { parse } from 'yaml';
 import type { CommandEntityDetail } from '../types.ts';
 
@@ -61,7 +62,7 @@ export function AgentDefinitionEditor({ detail,authoring,saveEndpoint }: { detai
 	const status=String(detail.status ?? (definition.enabled===false?'dormant':'idle')).replace(/[_-]/gu,' ');
 	function field(name:string,value:unknown){setDefinition((current)=>({...current,[name]:value}));setState('idle');}
 	function intent(next=definition){const identity=object(next.identity);return {name:String(next.name ?? next.title ?? ''),description:String(next.description ?? ''),purpose:String(identity.purpose ?? ''),responsibilities:list(identity.responsibilities).map(String),durableInstructions:String(identity.durableInstructions ?? ''),agentClass:String(next.agentClass ?? ''),template:String(next.template ?? ''),enabled:next.enabled!==false,designMaturity:String(next.designMaturity ?? 'draft'),activityProfiles:object(next.activityProfiles)};}
-	async function commit(next=definition,summary='Update agent definition',source=String(authoring.source ?? '')){setState('saving');setMessage('Compiling intent, validating contracts and committing through TreeDX…');const response=await fetch(saveEndpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({projectId:authoring.projectId,path:authoring.path,expectedBase:source?authoring.expectedBase:undefined,source,intent:intent(next),contentBody:original.body,changeSummary:summary})});const result=await response.json();if(response.ok){setState('saved');setMessage(`Committed ${String(result.payload?.commit ?? '').slice(0,12)}. Generated identity and live class roster are synchronized.`);}else{setState(response.status===409?'conflict':'error');setMessage(result.error ?? 'The agent could not be committed.');}}
+	async function commit(next=definition,summary='Update agent definition',source=String(authoring.source ?? '')){setState('saving');setMessage('Compiling intent, validating contracts and committing through TreeDX…');const response=await requestJson(saveEndpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({projectId:authoring.projectId,path:authoring.path,expectedBase:source?authoring.expectedBase:undefined,source,intent:intent(next),contentBody:original.body,changeSummary:summary})});const result=await response.json();if(response.ok){setState('saved');setMessage(`Committed ${String(result.payload?.commit ?? '').slice(0,12)}. Generated identity and live class roster are synchronized.`);}else{setState(response.status===409?'conflict':'error');setMessage(result.error ?? 'The agent could not be committed.');}}
 	async function clone(){const name=`${String(definition.name ?? detail.title)} copy`;await commit({...definition,name,title:name},`Clone agent ${name}`,'');}
 	async function deactivate(){if(!confirm(`Deactivate ${detail.title}? Future workdays will exclude it after this commit.`))return;const next={...definition,enabled:false};setDefinition(next);await commit(next,`Deactivate agent ${detail.title}`);}
 	return <section className="ts-agent-anatomy">
@@ -74,3 +75,4 @@ export function AgentDefinitionEditor({ detail,authoring,saveEndpoint }: { detai
 		<footer><div className="ts-agent-editor__lifecycle"><button type="button" disabled={state==='saving'} onClick={()=>void commit()}>{state==='saving'?'Compiling…':'Compile & commit design'}</button><button type="button" disabled={state==='saving'} onClick={()=>void clone()}>Clone from design</button>{definition.enabled!==false?<button type="button" data-tone="danger" disabled={state==='saving'} onClick={()=>void deactivate()}>Deactivate</button>:null}</div>{message?<span role="status" data-state={state}>{message}</span>:null}</footer>
 	</section>;
 }
+

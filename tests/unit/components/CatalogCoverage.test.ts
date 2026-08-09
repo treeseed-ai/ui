@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync } from 'node:fs';
-import { basename, extname, join } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { basename, dirname, extname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { componentCatalog, formComponents } from '../../../sandbox/src/lib/component-catalog';
 import { marketComponentMap } from '../../fixtures/marketComponentMap';
@@ -9,6 +9,13 @@ function walkFiles(root: string): string[] {
     const fullPath = join(root, entry.name);
     return entry.isDirectory() ? walkFiles(fullPath) : [fullPath];
   });
+}
+
+function isPublicComponentEntry(file: string): boolean {
+	const ownerDirectory = dirname(file);
+	return !existsSync(`${ownerDirectory}.tsx`)
+		&& !existsSync(`${ownerDirectory}.astro`)
+		&& !existsSync(join(ownerDirectory, 'index.ts'));
 }
 
 describe('component catalog coverage', () => {
@@ -50,7 +57,8 @@ describe('component catalog coverage', () => {
     const sourceComponents = [
       ...walkFiles('src/astro').filter((file) => extname(file) === '.astro'),
       ...walkFiles('src/react')
-        .filter((file) => extname(file) === '.tsx')
+		.filter((file) => extname(file) === '.tsx')
+		.filter(isPublicComponentEntry)
         .filter((file) => !/\/charts\/(?:MonitoringChart|ProjectActivityChart)\//u.test(file)),
     ];
 

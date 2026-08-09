@@ -1,4 +1,5 @@
 import { useMemo,useState } from 'react';
+import { requestJson } from '../../../forms-client.ts';
 import RichMarkdownEditor from '../../editors/RichMarkdownEditor.tsx';
 import type { CommandEntityDetail } from '../types.ts';
 
@@ -23,7 +24,7 @@ export function ProposalReviewEditor({ detail }: { detail: CommandEntityDetail }
 	async function save() {
 		if (!detail.projectId || !reason.trim()) { setState('error'); setMessage('Describe what changed before publishing a proposal version.'); return; }
 		setState('saving'); setMessage('Committing proposal content through TreeDX…');
-		const response = await fetch(`/v1/projects/${encodeURIComponent(detail.projectId)}/proposals/${encodeURIComponent(detail.id)}`, { method: 'PATCH',headers: { 'content-type': 'application/json' },body: JSON.stringify({ title,summary,body,plan,proposalTypes: types.split(',').map((value) => value.trim()).filter(Boolean),changeReason: reason,expectedProposalVersion: detail.version ?? Number(source.active_version ?? 0) }) });
+		const response = await requestJson(`/v1/projects/${encodeURIComponent(detail.projectId)}/proposals/${encodeURIComponent(detail.id)}`, { method: 'PATCH',headers: { 'content-type': 'application/json' },body: JSON.stringify({ title,summary,body,plan,proposalTypes: types.split(',').map((value) => value.trim()).filter(Boolean),changeReason: reason,expectedProposalVersion: detail.version ?? Number(source.active_version ?? 0) }) });
 		const result = await response.json().catch(() => ({}));
 		if (response.ok) { setState('saved'); setMessage(`Version ${result.payload?.activeVersion ?? 'published'} committed at ${String(result.authoringReceipt?.commitSha ?? '').slice(0,12)}.`); setReason(''); }
 		else { setState(response.status === 409 ? 'conflict' : 'error'); setMessage(result.error ?? 'The proposal version could not be published.'); }

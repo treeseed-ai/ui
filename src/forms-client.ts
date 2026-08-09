@@ -36,6 +36,12 @@ export function sendFormRequest(request: import('./forms.js').FormRequest) {
 	return sendRequest(request);
 }
 
+export function requestJson(url: string | URL, init: RequestInit = {}) {
+	const headers = new Headers(init.headers);
+	headers.set('accept', 'application/json');
+	return sendRequest({ url: String(url), init: { credentials: 'same-origin', ...init, headers } });
+}
+
 export function formActionUrl(form: HTMLFormElement) {
 	return resolveFormActionUrl(form);
 }

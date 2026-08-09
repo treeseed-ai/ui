@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Area, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatTimestamp } from '../../timestamps.ts';
+import { requestJson } from '../../forms-client.ts';
 import type { DeltaPayload, MetricSeriesPoint, VitalMetricItem } from './types.ts';
 import { mergeVersioned, useRealtimeResource } from './use-realtime-resource.ts';
 import { rangeStart, TimeRangeControl, type MonitorTimeRange } from './controls/TimeRangeControl.tsx';
@@ -22,7 +23,7 @@ export function MetricHistoryDashboard({ initialSeries, endpoint, metrics, timeZ
 	const saveTarget = async (event: FormEvent<HTMLFormElement>, key: string) => {
 		event.preventDefault(); const form = new FormData(event.currentTarget); const raw = String(form.get('target') ?? '').trim();
 		setMessage('Saving target…');
-		const response = await fetch(targetEndpoint, { method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-treeseed-csrf': csrfToken }, body: JSON.stringify({ targets: { ...targets, [key]: raw ? Number(raw) : null }, expectedRevision: revision }) });
+		const response = await requestJson(targetEndpoint, { method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-treeseed-csrf': csrfToken }, body: JSON.stringify({ targets: { ...targets, [key]: raw ? Number(raw) : null }, expectedRevision: revision }) });
 		const body = await response.json().catch(() => ({})); if (!response.ok) { setMessage(body.error ?? 'Target could not be saved.'); return; }
 		const payload = body.payload ?? body; setTargets(payload.targets ?? targets); setRevision(payload.revision ?? revision); setMessage(`${metrics.find((metric) => metric.key === key)?.label ?? key} target saved.`);
 	};

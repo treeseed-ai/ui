@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { requestJson } from "../../../forms-client.ts";
 import { CommandCollection } from "../CommandCollection.tsx";
-import { YamlIde, type YamlIdeDiagnostic } from "../YamlIde.tsx";
+import { YamlIde, type YamlIdeDiagnostic } from "../editor/YamlIde.tsx";
 import type { CommandEntity, CommandWorkspaceEndpoints } from "../types.ts";
 
 interface Draft {
@@ -42,7 +43,7 @@ export function SimulationBay({
     if (loaded.current || !endpoints.draft) return;
     loaded.current = true;
     const controller = new AbortController();
-    void fetch(endpoints.draft, { signal: controller.signal })
+    void requestJson(endpoints.draft, { signal: controller.signal })
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok)
@@ -72,7 +73,7 @@ export function SimulationBay({
     setBusy("save");
     setMessage("Validating and committing both definitions through TreeDX…");
     try {
-      const response = await fetch(endpoints.authoringBundle, {
+      const response = await requestJson(endpoints.authoringBundle, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
@@ -105,7 +106,7 @@ export function SimulationBay({
     setBusy("launch");
     setMessage("Queueing the committed scene for the seeded provider manager…");
     try {
-      const response = await fetch(endpoints.simulations, {
+      const response = await requestJson(endpoints.simulations, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
