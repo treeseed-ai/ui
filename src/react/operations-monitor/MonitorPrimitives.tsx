@@ -2,9 +2,9 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { formatTimestamp } from '../../timestamps.ts';
 import type { LiveConnectionState, VitalMetricItem } from './types.ts';
 
-export function OperationsStatusBar({ connection, teamName, logoSrc, workdayTitle, activeWorkdays, activeProviders, executionProviders, timeZone, observedAt, onReconnect }: {
+export function OperationsStatusBar({ connection, teamName, logoSrc, workdayTitle, activeWorkdays, activeProviders, executionProviders, timeZone, observedAt, onReconnect, density, onDensityChange }: {
 	connection: LiveConnectionState | 'connecting'; teamName: string; activeWorkdays: number; activeProviders: number;
-	logoSrc?: string; workdayTitle?: string | null; executionProviders: string[]; timeZone: string; observedAt: number; onReconnect?: () => void;
+	logoSrc?: string; workdayTitle?: string | null; executionProviders: string[]; timeZone: string; observedAt: number; onReconnect?: () => void; density?: 'expanded'|'compact'; onDensityChange?:()=>void;
 }) {
 	const [lagSeconds, setLagSeconds] = useState(0);
 	useEffect(() => {
@@ -15,6 +15,7 @@ export function OperationsStatusBar({ connection, teamName, logoSrc, workdayTitl
 	}, [observedAt]);
 	return <div className="ts-operations-status" data-status={connection}>
 		<a className="ts-operations-status__brand" href="/app/work">{logoSrc ? <img src={logoSrc} alt="" width="25" height="25" /> : null}<span><small>Agent Lab</small><strong>{teamName}</strong></span></a>
+		{onDensityChange?<button className="ts-operations-density" type="button" onClick={onDensityChange} aria-label={`${density==='compact'?'Expand':'Compress'} vital metrics`}>{density==='compact'?'Expand':'Compress'}</button>:null}
 		<div className="ts-operations-status__primary"><span className="ts-operations-status__connection"><i aria-hidden="true" />{connection === 'live' ? 'Live' : connection === 'snapshot' ? 'Snapshot' : connection}</span><span>{workdayTitle ?? `${activeWorkdays} active workday${activeWorkdays === 1 ? '' : 's'}`}</span><span>{activeProviders} provider{activeProviders === 1 ? '' : 's'}</span><span>Updated {formatTimestamp(observedAt, { timeZone, style: 'time' })} · {lagSeconds < 2 ? 'current' : `${lagSeconds}s lag`}</span></div>
 		<details className="ts-operations-status__details"><summary>System info</summary><div><span><small>Execution</small><strong>{executionProviders.join(', ') || 'No provider active'}</strong></span><span><small>Timezone</small><strong>{timeZone}</strong></span><span><small>Connection</small><strong>{connection}</strong></span>{onReconnect ? <button type="button" onClick={onReconnect}>Reconnect</button> : null}</div></details>
 		<span className="ts-visually-hidden" aria-live="polite">Connection {connection}</span>

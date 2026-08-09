@@ -19,9 +19,11 @@ function storedToggles() { if (typeof window === 'undefined') return { allocatio
 
 export default function OperationsMonitorHeader({ initialOverview, initialActivity, initialSeries, initialAllocation, endpoints, preference, metricDestinations, csrfToken, logoSrc }: Props) {
 	const [showAllocation, setShowAllocation] = useState(false); const [showActivity, setShowActivity] = useState(false); const [showMetrics, setShowMetrics] = useState(false);
+	const [density,setDensity]=useState<'expanded'|'compact'>('expanded');
 	const [expandedSurface, setExpandedSurface] = useState<string | null>(null);
 	const dismissSurface = useCallback(() => setExpandedSurface(null), []);
-	useEffect(() => { const saved = storedToggles(); setShowAllocation(saved.allocation === true); setShowActivity(saved.activity === true); setShowMetrics(saved.metrics === true); }, []);
+	useEffect(() => { const saved = storedToggles(); setShowAllocation(saved.allocation === true); setShowActivity(saved.activity === true); setShowMetrics(saved.metrics === true); try{setDensity(localStorage.getItem('treeseed.agent-lab.vitals-density')==='compact'?'compact':'expanded')}catch{} }, []);
+	const toggleDensity=()=>setDensity(current=>{const next=current==='compact'?'expanded':'compact';try{localStorage.setItem('treeseed.agent-lab.vitals-density',next)}catch{}return next});
 	const persist = (allocation: boolean, activity: boolean, metrics: boolean) => { setShowAllocation(allocation); setShowActivity(activity); setShowMetrics(metrics); try { window.localStorage.setItem('treeseed.agent-lab.monitors', JSON.stringify({ allocation, activity, metrics })); } catch {} };
 	const baseMs = preference.intervalSeconds * 1_000;
 	const overviewEndpoint = useCallback(() => endpoints.overview, [endpoints.overview]);
@@ -38,8 +40,8 @@ export default function OperationsMonitorHeader({ initialOverview, initialActivi
 	const connection = !preference.enabled ? 'snapshot' : liveStatuses.includes('offline') ? 'offline' : liveStatuses.includes('degraded') ? 'degraded' : liveStatuses.includes('connecting') ? 'connecting' : overview.data.connectivity;
 	const reconnect = () => { overview.reconnect(); if (showActivity) activity.reconnect(); if (showMetrics) series.reconnect(); };
 	const checkedAt = overview.lastUpdatedAt ?? Date.parse(overview.data.generatedAt); const observedAt = Date.parse(overview.data.generatedAt);
-	return <section className="ts-operations-monitor" data-expanded-surface={expandedSurface ?? undefined} data-scene="agent-lab.monitoring-header">
-		<OperationsStatusBar connection={connection} teamName={overview.data.team.name} logoSrc={logoSrc} workdayTitle={overview.data.workdayContext.workdays.find((workday) => workday.id === overview.data.workdayContext.selectedWorkdayId)?.title} activeWorkdays={overview.data.activeWorkdays} activeProviders={overview.data.activeProviders} executionProviders={overview.data.executionProviders} timeZone={overview.data.timeZone} observedAt={checkedAt} onReconnect={liveStatuses.some((status) => status === 'offline' || status === 'degraded') ? reconnect : undefined} />
+	return <section className="ts-operations-monitor" data-density={density} data-expanded-surface={expandedSurface ?? undefined} data-scene="agent-lab.monitoring-header">
+		<OperationsStatusBar connection={connection} teamName={overview.data.team.name} logoSrc={logoSrc} workdayTitle={overview.data.workdayContext.workdays.find((workday) => workday.id === overview.data.workdayContext.selectedWorkdayId)?.title} activeWorkdays={overview.data.activeWorkdays} activeProviders={overview.data.activeProviders} executionProviders={overview.data.executionProviders} timeZone={overview.data.timeZone} observedAt={checkedAt} onReconnect={liveStatuses.some((status) => status === 'offline' || status === 'degraded') ? reconnect : undefined} density={density} onDensityChange={toggleDensity} />
 		<div className="ts-vital-rail">
 			<MonitorToggleRail allocation={showAllocation} activity={showActivity} metrics={showMetrics} onAllocation={() => persist(!showAllocation, showActivity, showMetrics)} onActivity={() => persist(showAllocation, !showActivity, showMetrics)} onMetrics={() => persist(showAllocation, showActivity, !showMetrics)} />
 			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} />

@@ -48,12 +48,13 @@ async function send(panel: HTMLElement, form: HTMLFormElement) {
 	if (!root || !body) return;
 	const context = JSON.parse(panel.querySelector('[data-ts-discussion-context]')?.textContent ?? '{}');
 	const fileRefs = JSON.parse(root.dataset.fileRefs ?? '[]');
+	const contextRefs = JSON.parse(root.dataset.contextRefs ?? '[]');
 	appendMessage(panel, context.identityLabel ?? 'You', body, 'committed', fileRefs);
 	input.value = ''; input.closest('[data-markdown-field]')?.dispatchEvent(new CustomEvent('treeseed:markdown-set', { detail: '' }));
 	const state = panel.querySelector('[data-ts-discussion-state]');
 	if (state) state.textContent = 'Committing…';
 	try {
-		const response = await fetch(root.dataset.endpoint ?? '/v1/discussions', { method: 'POST', credentials: 'same-origin', headers: { accept: 'application/json', 'content-type': 'application/json' }, body: JSON.stringify({ teamId: root.dataset.teamId, projectId: root.dataset.projectId || undefined, discussionId: root.dataset.discussionId || undefined, body, intent, fileRefs }) });
+		const response = await fetch(root.dataset.endpoint ?? '/v1/discussions', { method: 'POST', credentials: 'same-origin', headers: { accept: 'application/json', 'content-type': 'application/json' }, body: JSON.stringify({ teamId: root.dataset.teamId, projectId: root.dataset.projectId || undefined, discussionId: root.dataset.discussionId || undefined, body, intent, fileRefs, contextRefs }) });
 		const envelope = await response.json() as DiscussionEnvelope & { error?: string };
 		if (!response.ok) throw new Error(envelope.error ?? `Discussion request failed (${response.status}).`);
 		const topic = panel.querySelector('[data-ts-discussion-topic]');
@@ -111,4 +112,12 @@ export function initializeDiscussionPanels(root: Document = document) {
 		const stop = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', stop); };
 		window.addEventListener('pointermove', move); window.addEventListener('pointerup', stop);
 	}));
+	const activePanel = () => root.querySelector<HTMLElement>('[data-ts-discussion]')?.closest<HTMLElement>('[data-ts-side-sheet]') ?? null;
+	const renderContext = (panel: HTMLElement, references: unknown[]) => {
+		const shell = panel.querySelector<HTMLElement>('[data-ts-discussion]'); const host = panel.querySelector<HTMLElement>('[data-ts-discussion-context-refs]'); if (!shell || !host) return;
+		shell.dataset.contextRefs = JSON.stringify(references); host.replaceChildren(); host.hidden = references.length === 0;
+		for (const [index, value] of references.entries()) { const entry = value && typeof value === 'object' ? value as Record<string,unknown> : {}; const chip=document.createElement('span');chip.textContent=`${String(entry.kind??'context')}: ${String(entry.id??'unknown')}`;const remove=document.createElement('button');remove.type='button';remove.ariaLabel=`Remove ${chip.textContent}`;remove.textContent='×';remove.addEventListener('click',()=>{const next=references.filter((_,candidate)=>candidate!==index);renderContext(panel,next)});chip.append(remove);host.append(chip); }
+	};
+	root.addEventListener('treeseed:discussion-context-change',event=>{const panel=activePanel();if(!panel)return;const detail=(event as CustomEvent).detail??{};const shell=panel.querySelector<HTMLElement>('[data-ts-discussion]');if(shell&&detail.references?.[0]?.projectId)shell.dataset.projectId=detail.references[0].projectId;renderContext(panel,Array.isArray(detail.references)?detail.references:[]);const topic=panel.querySelector<HTMLElement>('[data-ts-discussion-topic]');if(topic&&detail.identityLabel)topic.textContent=`Discuss ${detail.identityLabel}`;});
+	root.addEventListener('treeseed:discussion-open',()=>{const panel=activePanel();if(panel){togglePanel(panel,true);void loadDiscussion(panel)}});
 }

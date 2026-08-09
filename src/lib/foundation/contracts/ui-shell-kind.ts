@@ -135,7 +135,10 @@ export interface DiscussionContext {
 	endpoint?: string;
 	agents?: DiscussionAgentOption[];
 	initialTopic?: string;
+	contextRefs?: DiscussionContextReference[];
 }
+
+export interface DiscussionContextReference { kind:string; id:string; projectId:string; workdayId?:string; eventSequence?:number; immutableRef?:string; path?:string; digest?:string; }
 
 export type FeedbackSubmissionType = 'bug' | 'feature_suggestion' | 'question' | 'content_issue' | 'ux_issue';
 

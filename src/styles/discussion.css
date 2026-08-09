@@ -44,3 +44,4 @@
 	.ts-side-sheet[data-ts-discussion-presentation='docked'] { align-self: start; box-shadow: none; display: grid; height: 100vh; inset: auto; max-height: 100vh; position: sticky; top: 0; width: 100%; z-index: 20; }
 }
 @media (max-width: 40rem) { .ts-discussion__composer-actions { grid-template-columns: 1fr auto; }.ts-discussion__composer-actions>span { display: none; } }
+.ts-discussion__context-refs{border-bottom:1px solid var(--ts-color-border);display:flex;flex-wrap:wrap;gap:.35rem;padding:.45rem .7rem}.ts-discussion__context-refs[hidden]{display:none}.ts-discussion__context-refs>span{align-items:center;background:var(--ts-color-canvas);border:1px solid var(--ts-color-border-strong);color:var(--ts-color-text-muted);display:flex;font-size:.6rem;gap:.35rem;padding:.28rem .4rem}.ts-discussion__context-refs button{background:transparent;border:0;color:var(--ts-color-text);cursor:pointer;padding:0}

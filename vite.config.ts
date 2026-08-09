@@ -30,6 +30,7 @@ export default defineConfig({
         'react/charts/ProjectActivityChart': 'src/react/charts/ProjectActivityChart.tsx',
 		'react/operations-monitor/index': 'src/react/operations-monitor/index.ts',
 		'react/command-center/index': 'src/react/command-center/index.ts',
+		'react/agent-atlas/index': 'src/react/agent-atlas/index.ts',
         'react/editors/RichMarkdownEditor': 'src/react/editors/RichMarkdownEditor.tsx',
         'react/editors/KnowledgeRelationPicker': 'src/react/editors/KnowledgeRelationPicker.tsx',
         'lib/app/platform-operation-status': 'src/lib/app/platform-operation-status.ts',

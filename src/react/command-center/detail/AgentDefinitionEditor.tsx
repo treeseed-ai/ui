@@ -42,7 +42,7 @@ function ProfileEditor({ profileId,profile,onChange }: { profileId:string; profi
 	return <div className="ts-agent-anatomy__profile">
 		<div className="ts-agent-anatomy__profile-title"><span>{profileId}</span><label><input type="checkbox" checked={profile.enabled!==false} onChange={(event)=>set('enabled',event.target.checked)}/> Enabled</label></div>
 		<label><span>Handler</span><input value={String(profile.handler ?? '')} onChange={(event)=>set('handler',event.target.value)}/></label>
-		<label><span>Preferred providers</span><input value={csv(execution.providerPreference)} onChange={(event)=>setExecution('providerPreference',values(event.target.value))}/></label>
+		<label><span>Required capabilities</span><input value={csv(execution.requiredCapabilities)} onChange={(event)=>setExecution('requiredCapabilities',values(event.target.value))}/></label>
 		<label><span>Runtime limit · seconds</span><input type="number" min="1" value={String(execution.maxRuntimeSeconds ?? '')} onChange={(event)=>setExecution('maxRuntimeSeconds',Number(event.target.value))}/></label>
 		<label><span>Retry limit</span><input type="number" min="0" value={String(execution.maxRetries ?? 0)} onChange={(event)=>setExecution('maxRetries',Number(event.target.value))}/></label>
 		<label className="wide"><span>System prompt</span><textarea rows={4} value={String(prompt.system ?? '')} onChange={(event)=>set('prompt',{...prompt,system:event.target.value})}/></label>

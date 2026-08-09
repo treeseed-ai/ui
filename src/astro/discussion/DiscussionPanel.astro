@@ -18,6 +18,7 @@ const endpoint = context.endpoint ?? '/v1/discussions';
 	</Fragment>
 	<div class="ts-discussion" data-ts-discussion data-endpoint={endpoint} data-team-id={context.teamId} data-project-id={context.projectId}>
 		<script is:inline type="application/json" data-ts-discussion-context set:html={JSON.stringify(context)} />
+		<div class="ts-discussion__context-refs" data-ts-discussion-context-refs hidden aria-label="Attached Atlas context"></div>
 		<div class="ts-discussion__toolbar">
 			<label><span>Find a conversation</span><input class="ts-control" type="search" placeholder="Topic, agent, or file…" data-ts-discussion-search /></label>
 			<button class="ts-button" data-variant="secondary" data-size="sm" type="button" data-ts-discussion-new>New</button>

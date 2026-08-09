@@ -344,6 +344,10 @@
       "types": "./dist/react/command-center/index.d.ts",
       "default": "./dist/react/command-center/index.js"
     },
+    "./components/react/AgentAtlas": {
+      "types": "./dist/react/agent-atlas/index.d.ts",
+      "default": "./dist/react/agent-atlas/index.js"
+    },
     "./components/react/RichMarkdownEditor": {
       "types": "./dist/react/editors/RichMarkdownEditor.d.ts",
       "default": "./dist/react/editors/RichMarkdownEditor.js"
@@ -395,6 +399,7 @@
     "./styles/charts.css": "./dist/styles/charts.css",
     "./styles/operations-monitor.css": "./dist/styles/operations-monitor.css",
     "./styles/command-center.css": "./dist/styles/command-center.css",
+    "./styles/agent-atlas.css": "./dist/styles/agent-atlas.css",
     "./styles/forms.css": "./dist/styles/forms.css",
     "./styles/toast.css": "./dist/styles/toast.css",
     "./styles/market.css": "./dist/styles/market.css",
