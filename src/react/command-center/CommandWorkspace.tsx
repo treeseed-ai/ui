@@ -4,7 +4,7 @@ import { CommandCollection } from './CommandCollection.tsx';
 import { CommandOverlayStack } from './CommandOverlayStack.tsx';
 import { CommandMetricStrip, CommandRelationGraph, CommandThroughput } from './CommandVisuals.tsx';
 import { AgentFlowCanvas } from './flow/AgentFlowCanvas.tsx';
-import { SimulationBay } from './simulation/SimulationBay.tsx';
+import { SimulationBay } from './simulation/index.ts';
 import type { CommandCollectionPage, CommandEntity, CommandRealtimePreference, CommandWorkspaceEndpoints } from './types.ts';
 
 export interface CommandWorkspaceProps {

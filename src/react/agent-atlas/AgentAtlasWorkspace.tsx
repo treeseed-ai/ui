@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { requestJson } from "../../forms-client.ts";
 import { ExpandableMonitorSurface } from "../operations-monitor/ExpandableMonitorSurface.tsx";
 import { AtlasCanvas } from "./AtlasCanvas.tsx";
 import { AtlasDocks } from "./AtlasDocks.tsx";
@@ -163,7 +164,7 @@ export function AgentAtlasWorkspace({
   useEffect(() => {
     if (!endpoints.viewState || !viewReady) return;
     const timer = window.setTimeout(() => {
-      void fetch(endpoints.viewState!, {
+      void requestJson(endpoints.viewState!, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

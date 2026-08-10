@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { requestJson } from "../../../forms-client.ts";
 
 export function GroupCreator({
   projects,
@@ -21,7 +22,7 @@ export function GroupCreator({
       return;
     }
     setState("Validating group topology and committing through TreeDX…");
-    const response = await fetch(saveEndpoint, {
+    const response = await requestJson(saveEndpoint, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
