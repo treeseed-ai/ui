@@ -1,11 +1,21 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { WorkspaceOverlay } from "../workspace-surfaces/WorkspaceOverlay.tsx";
 import type { AtlasEndpoints } from "./types.ts";
+import type { AgentLabInterfaceMode } from "./types.ts";
 
 type Selection = { kind: string; id: string };
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+export function DefinitionProvenance({ revision, historical = false }: { revision: string; historical?: boolean }) {
+  return <section className="ts-atlas-definition-provenance" data-mode={historical ? "historical" : "live"} data-scene="agent-lab.definition-provenance" aria-label={historical ? "Historical agent definition" : "Agent definition authority"}>
+    <div><small>{historical ? "Historical definition" : "Definition authority"}</small><strong>{historical ? "Captured for this workday" : "Active immutable revision"}</strong></div>
+    <code title={revision}>{revision}</code>
+    <p>{historical ? "Atlas is showing the immutable definition used by this recorded workday. Later agent edits do not rewrite this evidence." : "Assignments in this topology resolve the agent definition from this exact repository revision."}</p>
+  </section>;
 }
 
 export function AtlasOverlay({
@@ -15,6 +25,11 @@ export function AtlasOverlay({
   onClose,
   onDiscuss,
   onInspect,
+  interfaceMode,
+  definitionRevision,
+  historical,
+  top,
+  depth,
 }: {
   selection: Selection;
   endpoints: AtlasEndpoints;
@@ -22,12 +37,16 @@ export function AtlasOverlay({
   onClose: () => void;
   onDiscuss: () => void;
   onInspect: (kind: string, id: string) => void;
+  interfaceMode: AgentLabInterfaceMode;
+  definitionRevision?: string | null;
+  historical?: boolean;
+  top: boolean;
+  depth: number;
 }) {
   const [detail, setDetail] = useState<unknown>(null);
   const [mode, setMode] = useState<"designed" | "assigned" | "observed">(
     "observed",
   );
-  const close = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     const controller = new AbortController();
     const path =
@@ -41,6 +60,7 @@ export function AtlasOverlay({
       if (value) url.searchParams.set(key, value);
     }
     url.searchParams.set("at", observedAt);
+    url.searchParams.set("detail", interfaceMode);
     void fetch(`${url.pathname}${url.search}`, {
       signal: controller.signal,
       headers: { accept: "application/json" },
@@ -48,7 +68,6 @@ export function AtlasOverlay({
       .then((response) => response.json())
       .then((envelope) => setDetail(envelope.payload ?? envelope))
       .catch(() => setDetail(null));
-    close.current?.focus();
     return () => controller.abort();
   }, [
     endpoints.assignmentGraphs,
@@ -56,22 +75,12 @@ export function AtlasOverlay({
     observedAt,
     selection.id,
     selection.kind,
+    interfaceMode,
   ]);
-  useEffect(() => {
-    const key = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", key);
-    return () => document.removeEventListener("keydown", key);
-  }, [onClose]);
   const data = record(detail);
   return (
-    <section
-      className="ts-atlas-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${selection.kind} detail`}
-    >
+    <WorkspaceOverlay reference={{ kind: selection.kind === "assignment-graph" ? "diagnostic" : "detail", id: selection.id }} label={`${selection.kind} detail`} onClose={onClose} top={top} depth={depth}>
+    <section className="ts-atlas-overlay">
       <header>
         <div>
           <small>Focused Atlas record</small>
@@ -80,12 +89,12 @@ export function AtlasOverlay({
         </div>
         <span>
           <button onClick={onDiscuss}>Discuss</button>
-          <button ref={close} onClick={onClose} aria-label="Close detail">
+          <button onClick={onClose} aria-label="Close detail">
             ×
           </button>
         </span>
       </header>
-      {selection.kind === "agent" && (
+      {selection.kind === "agent" && interfaceMode === "diagnostic" && (
         <nav
           className="ts-atlas-evidence-tabs"
           aria-label="Agent evidence mode"
@@ -102,18 +111,20 @@ export function AtlasOverlay({
         </nav>
       )}
       <div className="ts-atlas-overlay-body">
+        {selection.kind === "agent" && definitionRevision ? <DefinitionProvenance revision={definitionRevision} historical={historical} /> : null}
         {selection.kind === "assignment-graph" ? (
           <GraphDetail
             graphs={Array.isArray(detail) ? detail : []}
             onInspect={onInspect}
           />
         ) : detail ? (
-          <RecordDetail data={data} mode={mode} />
+          <RecordDetail data={data} mode={interfaceMode === "diagnostic" ? mode : "easy"} />
         ) : (
           <p>Loading canonical detail…</p>
         )}
       </div>
     </section>
+    </WorkspaceOverlay>
   );
 }
 
@@ -127,7 +138,9 @@ function RecordDetail({
   const source = record(data.data);
   const primary = record(data.primary);
   const fields =
-    data.kind === "agent"
+    mode === "easy"
+      ? record(data.summary)
+      : data.kind === "agent"
       ? mode === "designed"
         ? record(source.definition)
         : mode === "assigned"

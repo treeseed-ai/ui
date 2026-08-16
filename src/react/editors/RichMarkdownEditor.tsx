@@ -33,6 +33,8 @@ import {
 } from '@mdxeditor/editor';
 import type { JsxComponentDescriptor } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
+import { WorkspaceFocusSurface } from '../workspace-surfaces/WorkspaceFocusSurface.tsx';
+import { useWorkspaceSurfaceMode } from '../workspace-surfaces/use-workspace-surface-mode.ts';
 
 type RichMarkdownEditorRoot = HTMLElement & {
 	dataset: DOMStringMap & {
@@ -156,6 +158,7 @@ export type RichMarkdownEditorProps = {
 	required?: boolean;
 	errorLabel?: string;
 	onChange?: (markdown: string) => void;
+	focusable?: boolean;
 };
 
 export default function RichMarkdownEditor({
@@ -165,9 +168,12 @@ export default function RichMarkdownEditor({
 	required = false,
 	errorLabel = 'Rich markdown is required.',
 	onChange,
+	focusable = true,
 }: RichMarkdownEditorProps) {
 	const [markdown, setMarkdown] = useState(initialMarkdown);
 	const [invalid, setInvalid] = useState(false);
+	const surfaceId = `rich-editor:${name}`;
+	const [surfaceMode, setSurfaceMode] = useWorkspaceSurfaceMode({ surfaceId });
 
 	const handleChange = (nextMarkdown: string) => {
 		setMarkdown(nextMarkdown);
@@ -175,7 +181,7 @@ export default function RichMarkdownEditor({
 		onChange?.(nextMarkdown);
 	};
 
-	return (
+	const field = (
 		<div className="ts-rich-markdown-field">
 			<label className="ts-field__label" htmlFor={`${name}-input`}>
 				<span>{label}</span>
@@ -200,7 +206,10 @@ export default function RichMarkdownEditor({
 			</div>
 		</div>
 	);
+	return focusable ? <WorkspaceFocusSurface id={surfaceId} label={`${label} editor`} mode={surfaceMode} boundary="workspace-content" onModeChange={setSurfaceMode} headerContext={<span><strong>{label}</strong> · Markdown / MDX · Unsaved draft preserved</span>}>{field}</WorkspaceFocusSurface> : field;
 }
+
+export const RichContentEditor = RichMarkdownEditor;
 
 function initializeRichMarkdownEditor(root: RichMarkdownEditorRoot) {
 	if (root.dataset.richMarkdownReady === 'true' || root.dataset.richMarkdownInitializing === 'true') return;

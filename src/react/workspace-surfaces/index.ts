@@ -1,0 +1,11 @@
+export { WorkspaceFocusSurface, WorkspaceExpandButton, WorkspaceShrinkButton } from './WorkspaceFocusSurface.tsx';
+export { WorkspaceOverlay, WorkspaceOverlayStack } from './WorkspaceOverlay.tsx';
+export { WorkspaceOverlayCoordinator, useWorkspaceOverlayCoordinator } from './WorkspaceOverlayCoordinator.tsx';
+export { closeTopWorkspaceOverlay, closeWorkspaceOverlay, currentWorkspaceReturnPath, openWorkspaceOverlay, readWorkspaceNavigation, safeWorkspaceReturnPath, setWorkspaceFocus } from './workspace-navigation.ts';
+export { useWorkspaceSurfaceMode } from './use-workspace-surface-mode.ts';
+export { LinkedDiagnosticTable } from './LinkedDiagnosticTable.tsx';
+export type { LinkedDiagnosticColumn } from './LinkedDiagnosticTable.tsx';
+export { EvidenceDiffViewer } from './EvidenceDiffViewer.tsx';
+export { ForensicEventExplorer } from './ForensicEventExplorer.tsx';
+export type { ForensicEventRecord } from './ForensicEventExplorer.tsx';
+export type * from './types.ts';

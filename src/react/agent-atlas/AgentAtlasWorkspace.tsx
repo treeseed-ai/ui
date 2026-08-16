@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { requestJson } from "../../forms-client.ts";
-import { ExpandableMonitorSurface } from "../operations-monitor/ExpandableMonitorSurface.tsx";
+import { WorkspaceFocusSurface } from "../workspace-surfaces/WorkspaceFocusSurface.tsx";
+import { closeTopWorkspaceOverlay, openWorkspaceOverlay, readWorkspaceNavigation, safeWorkspaceReturnPath, setWorkspaceFocus } from "../workspace-surfaces/workspace-navigation.ts";
+import type { WorkspaceSurfaceMode } from "../workspace-surfaces/types.ts";
 import { AtlasCanvas } from "./AtlasCanvas.tsx";
 import { AtlasDocks } from "./AtlasDocks.tsx";
 import { PlaybackControls } from "./PlaybackControls.tsx";
 import { AtlasOverlay } from "./AtlasOverlay.tsx";
+import { AtlasWorkdaySummary } from "./AtlasWorkdaySummary.tsx";
 import type {
   AtlasContextReference,
   AtlasEndpoints,
+  AgentLabInterfaceMode,
   AtlasNode,
   AtlasProjection,
   AtlasSizingMetric,
@@ -18,7 +22,8 @@ interface Props {
   initialProjection: AtlasProjection;
   endpoints: AtlasEndpoints;
   canManage?: boolean;
-  initialResearch?: boolean;
+  canDiagnose?: boolean;
+  initialSurfaceMode?: WorkspaceSurfaceMode;
 }
 const metrics: AtlasSizingMetric[] = [
   "activity",
@@ -38,28 +43,28 @@ function withQuery(
     value ? url.searchParams.set(key, value) : url.searchParams.delete(key);
   return `${url.pathname}${url.search}`;
 }
-function inspect(kind: string, id: string) {
-  const url = new URL(location.href);
-  url.searchParams.set("inspect", `${kind}~${encodeURIComponent(id)}`);
-  history.pushState({ ...history.state, atlasInspect: true }, "", url);
-  window.dispatchEvent(new PopStateEvent("popstate"));
+
+export function selectedWorkdayUnavailable(projection: AtlasProjection, search: string) {
+  const requested = new URLSearchParams(search).get("workday")?.trim();
+  return Boolean(requested && projection.scope.workdayIds.length === 0);
 }
-function closeInspect() {
-  if (history.state?.atlasInspect) {
-    history.back();
-    return;
-  }
-  const url = new URL(location.href);
-  url.searchParams.delete("inspect");
-  history.replaceState(history.state, "", url);
-  window.dispatchEvent(new PopStateEvent("popstate"));
+
+export function selectedDefinitionRevision(projection: AtlasProjection, selection: { kind: string; id: string }) {
+  if (selection.kind !== "agent") return null;
+  const canonicalId = selection.id.replace(/@[a-f0-9]{8}$/u, "");
+  return projection.topologies.find((topology) => topology.nodes.some((node) => node.kind === "agent" && node.id.replace(/@[a-f0-9]{8}$/u, "") === canonicalId))?.immutableRef ?? null;
+}
+
+export function atlasDesignerReturnPath(search: string) {
+  return safeWorkspaceReturnPath(new URLSearchParams(search).get("returnTo")) ?? "";
 }
 
 export function AgentAtlasWorkspace({
   initialProjection,
   endpoints,
   canManage = false,
-  initialResearch = false,
+  canDiagnose = false,
+  initialSurfaceMode = "inline",
 }: Props) {
   const [projection, setProjection] = useState(initialProjection);
   const [metric, setMetric] = useState<AtlasSizingMetric>(
@@ -67,28 +72,41 @@ export function AgentAtlasWorkspace({
   );
   const [signals, setSignals] = useState(true);
   const [seed, setSeed] = useState(0);
-  const [dock, setDock] = useState<"events" | "assignments" | null>("events");
-  const [research, setResearch] = useState(initialResearch);
-  const [newEvents, setNewEvents] = useState(0);
-  const [overlay, setOverlay] = useState<{ kind: string; id: string } | null>(
-    null,
+  const [dock, setDock] = useState<"events" | "assignments" | "diagnostics" | null>(null);
+  const [interfaceMode, setInterfaceMode] = useState<AgentLabInterfaceMode>(() =>
+    canDiagnose && typeof location !== "undefined" && new URL(location.href).searchParams.get("mode") === "diagnostic" ? "diagnostic" : "easy",
   );
+  const [surfaceMode, setSurfaceMode] = useState(initialSurfaceMode);
+  const [newEvents, setNewEvents] = useState(0);
+  const [overlays, setOverlays] = useState<Array<{ kind: string; id: string }>>([]);
   const [viewReady, setViewReady] = useState(!endpoints.viewState);
+  const unavailableSelection = typeof location !== "undefined"
+    && selectedWorkdayUnavailable(projection, location.search);
   const returnFocus = useRef<{ focus: () => void } | null>(null);
   useEffect(() => {
     const pop = () => {
-      const value = new URL(location.href).searchParams.get("inspect");
-      if (!value) {
-        setOverlay(null);
+      const url = new URL(location.href);
+      const navigation = readWorkspaceNavigation(url.search);
+      setSurfaceMode(url.searchParams.get("focus") === "atlas" ? "focused" : "inline");
+      setInterfaceMode(canDiagnose && url.searchParams.get("mode") === "diagnostic" ? "diagnostic" : "easy");
+      if (!navigation.overlays.length) {
+        setOverlays([]);
         requestAnimationFrame(() => returnFocus.current?.focus());
         return;
       }
-      const [kind, id] = value.split("~");
-      setOverlay(kind && id ? { kind, id: decodeURIComponent(id) } : null);
+      setOverlays(navigation.overlays);
     };
     pop();
     addEventListener("popstate", pop);
     return () => removeEventListener("popstate", pop);
+  }, [canDiagnose]);
+  useEffect(() => {
+    const url = new URL(location.href);
+    if (url.searchParams.get("research") !== "1") return;
+    url.searchParams.delete("research");
+    url.searchParams.set("focus", "atlas");
+    history.replaceState({ ...history.state, workspaceFocus: "atlas" }, "", url);
+    setSurfaceMode("focused");
   }, []);
   const load = useCallback(
     async (values: Record<string, string | undefined>) => {
@@ -109,14 +127,14 @@ export function AgentAtlasWorkspace({
     );
     source.addEventListener("atlas.delta", (event) => {
       const delta = JSON.parse((event as MessageEvent).data);
-      if (projection.playback.mode === "historical") {
+      if (projection.playback.mode === "historical" || overlays.length) {
         setNewEvents((value) => value + (delta.activity?.length ?? 0));
         return;
       }
       void load({});
     });
     return () => source.close();
-  }, [endpoints.stream, load, projection.playback.mode, projection.revision]);
+  }, [endpoints.stream, load, overlays.length, projection.playback.mode, projection.revision]);
   useEffect(() => {
     try {
       sessionStorage.setItem(
@@ -142,16 +160,12 @@ export function AgentAtlasWorkspace({
         const layout = entry?.layout ?? {};
         if (metrics.includes(layout.metric)) setMetric(layout.metric);
         if (
-          ["events", "assignments"].includes(layout.dock) ||
+          ["events", "assignments", ...(canDiagnose ? ["diagnostics"] : [])].includes(layout.dock) ||
           layout.dock === null
         )
           setDock(layout.dock);
-        if (Number.isInteger(layout.seed)) setSeed(layout.seed);
-        if (
-          typeof layout.research === "boolean" &&
-          !new URL(location.href).searchParams.has("research")
-        )
-          setResearch(layout.research);
+        if (Number.isInteger(layout.redrawSeed)) setSeed(layout.redrawSeed);
+        else if (Number.isInteger(layout.seed)) setSeed(layout.seed);
       })
       .catch(() => {})
       .finally(() => {
@@ -160,7 +174,7 @@ export function AgentAtlasWorkspace({
     return () => {
       active = false;
     };
-  }, [endpoints.viewState, projection.scope.teamId]);
+  }, [canDiagnose, endpoints.viewState, projection.scope.teamId]);
   useEffect(() => {
     if (!endpoints.viewState || !viewReady) return;
     const timer = window.setTimeout(() => {
@@ -171,7 +185,7 @@ export function AgentAtlasWorkspace({
           namespace: "atlas",
           kind: "atlas-workspace",
           id: projection.scope.teamId,
-          layout: { metric, dock, seed, research },
+          layoutPatch: { metric, dock, redrawSeed: seed },
         }),
       });
     }, 300);
@@ -181,7 +195,6 @@ export function AgentAtlasWorkspace({
     endpoints.viewState,
     metric,
     projection.scope.teamId,
-    research,
     seed,
     viewReady,
   ]);
@@ -193,7 +206,7 @@ export function AgentAtlasWorkspace({
     const canonicalId = ["agent", "group", "project", "signal"].includes(kind)
       ? id.replace(/@[a-f0-9]{8}$/u, "")
       : id;
-    inspect(kind, canonicalId);
+    openWorkspaceOverlay({ kind, id: canonicalId });
     const event = projection.activity.find((item) => item.id === id);
     const assignment = projection.assignments.find((item) => item.id === id);
     const topology = projection.topologies.find(
@@ -235,7 +248,7 @@ export function AgentAtlasWorkspace({
     setNewEvents(0);
     void load({});
   };
-  const openDag = () => inspect("assignment-graph", "scope");
+  const openDag = () => openWorkspaceOverlay({ kind: "assignment-graph", id: "scope" });
   const title = useMemo(
     () =>
       projection.scope.workdayIds.length === 1
@@ -243,6 +256,10 @@ export function AgentAtlasWorkspace({
         : "Operating portfolio",
     [projection.scope.workdayIds.length],
   );
+  const returnTo = useMemo(() => {
+    if (typeof location === "undefined") return "";
+    return atlasDesignerReturnPath(location.search);
+  }, []);
   const observedLabel = useMemo(() => {
     try {
       return new Intl.DateTimeFormat(undefined, {
@@ -263,23 +280,29 @@ export function AgentAtlasWorkspace({
         .join(":"),
     [projection.topologies],
   );
+  const changeSurfaceMode = (mode: WorkspaceSurfaceMode) => {
+    setSurfaceMode(mode);
+    if (mode === "focused") {
+      setWorkspaceFocus("atlas");
+      return;
+    }
+    setWorkspaceFocus(null, "replace");
+  };
+  const changeInterfaceMode = (mode: AgentLabInterfaceMode) => {
+    const url = new URL(location.href);
+    setInterfaceMode(mode);
+    if (mode === "diagnostic") url.searchParams.set("mode", "diagnostic");
+    else url.searchParams.delete("mode");
+    history.pushState({ ...history.state, agentLabInterfaceMode: mode }, "", url);
+  };
   return (
-    <ExpandableMonitorSurface
+    <WorkspaceFocusSurface
       id="agent-atlas"
-      label="Agent Atlas research view"
-      expanded={research}
-      onExpand={() => {
-        setResearch(true);
-        const url = new URL(location.href);
-        url.searchParams.set("research", "1");
-        history.replaceState({}, "", url);
-      }}
-      onDismiss={() => {
-        setResearch(false);
-        const url = new URL(location.href);
-        url.searchParams.delete("research");
-        history.replaceState({}, "", url);
-      }}
+      label="Agent Atlas"
+      boundary="workspace-content"
+      mode={surfaceMode}
+      onModeChange={changeSurfaceMode}
+      headerContext={<span><strong>Agent Atlas</strong> · {title} · {projection.playback.mode === "live" ? "Live" : "Historical"}</span>}
       className="ts-agent-atlas-surface"
     >
       <section
@@ -313,6 +336,8 @@ export function AgentAtlasWorkspace({
             </select>
           </label>
           <div className="ts-atlas-toolbar-actions">
+            {returnTo && <a href={returnTo}>Return to Designer</a>}
+            {canDiagnose && <button aria-pressed={interfaceMode === "diagnostic"} onClick={() => changeInterfaceMode(interfaceMode === "easy" ? "diagnostic" : "easy")}>{interfaceMode === "easy" ? "Diagnostic" : "Easy mode"}</button>}
             <button
               aria-pressed={signals}
               onClick={() => setSignals((value) => !value)}
@@ -334,27 +359,51 @@ export function AgentAtlasWorkspace({
             Observed {observedLabel}
           </span>
         </header>
+        {projection.workdaySummary && <AtlasWorkdaySummary
+          summary={projection.workdaySummary}
+          timeZone={projection.timeZone}
+          onOpenEvents={() => setDock("events")}
+          onOpenAssignments={() => setDock("assignments")}
+        />}
         <div className="ts-atlas-workspace">
-          <AtlasCanvas
-            topologies={projection.topologies}
-            states={projection.nodeStates}
-            metric={metric}
-            redrawSeed={seed}
-            signalsVisible={signals}
-            storageKey={`agent-atlas:${projection.scope.teamId}:${topologyRevision}:viewport`}
-            onInspect={openInspect}
-          />
+          {projection.topologies.length ? <AtlasCanvas
+              topologies={projection.topologies}
+              states={projection.nodeStates}
+              metric={metric}
+              redrawSeed={seed}
+              signalsVisible={signals}
+              storageKey={`agent-atlas:${projection.scope.teamId}:${topologyRevision}:viewport`}
+              onInspect={openInspect}
+            /> : <section className="ts-atlas-empty" data-scene="agent-lab.atlas.empty">
+              <small>{unavailableSelection ? "Active team boundary" : "Nothing is hidden"}</small>
+              <h2>{unavailableSelection ? "This workday is not available here" : "No agent circuit is available"}</h2>
+              <p>{unavailableSelection
+                ? "The requested workday is not visible to the active team. Choose a team that owns the workday, or clear the selection to view this team's operating portfolio."
+                : projection.alerts[0]?.message ?? "This scope has no configured agent topology to draw."}</p>
+              <div>
+                {unavailableSelection
+                  ? <a href="/app/work">Clear workday selection</a>
+                  : <>{endpoints.createAgent && <a href={endpoints.createAgent}>Review agent definitions</a>}<a href="/app/work/workdays">Choose a workday</a></>}
+              </div>
+              <dl>
+                <div><dt>Workdays in scope</dt><dd>{projection.scope.workdayIds.length}</dd></div>
+                <div><dt>Assignments observed</dt><dd>{projection.assignments.length}</dd></div>
+                <div><dt>Events observed</dt><dd>{projection.activityWindow.total}</dd></div>
+              </dl>
+            </section>}
           <AtlasDocks
             activity={projection.activity}
+            activityWindow={projection.activityWindow}
             assignments={projection.assignments}
             timeZone={projection.timeZone}
             open={dock}
             onOpen={setDock}
             onInspect={openInspect}
             onOpenDag={openDag}
+            diagnostic={interfaceMode === "diagnostic"}
           />
         </div>
-        <PlaybackControls
+        {projection.scope.workdayIds.length > 0 && <PlaybackControls
           start={projection.playback.startedAt}
           end={projection.playback.endedAt ?? projection.playback.liveEdgeAt}
           current={projection.playback.cursor.observedAt}
@@ -363,7 +412,7 @@ export function AgentAtlasWorkspace({
           newEvents={newEvents}
           onSeek={seek}
           onLive={live}
-        />
+        />}
         {projection.alerts.length > 0 && (
           <div className="ts-atlas-alerts">
             {projection.alerts.map((alert) => (
@@ -373,21 +422,27 @@ export function AgentAtlasWorkspace({
             ))}
           </div>
         )}
-        {overlay && (
+        {overlays.map((overlay, index) => (
           <AtlasOverlay
+            key={`${index}:${overlay.kind}:${overlay.id}`}
             selection={overlay}
             endpoints={endpoints}
             observedAt={projection.playback.cursor.observedAt}
-            onClose={closeInspect}
+            onClose={closeTopWorkspaceOverlay}
             onDiscuss={() =>
               document.dispatchEvent(
                 new CustomEvent("treeseed:discussion-open"),
               )
             }
-            onInspect={inspect}
+            onInspect={(kind, id) => openWorkspaceOverlay({ kind, id })}
+            interfaceMode={interfaceMode}
+            definitionRevision={selectedDefinitionRevision(projection, overlay)}
+            historical={projection.playback.mode === "historical"}
+            top={index === overlays.length - 1}
+            depth={index}
           />
-        )}
+        ))}
       </section>
-    </ExpandableMonitorSurface>
+    </WorkspaceFocusSurface>
   );
 }

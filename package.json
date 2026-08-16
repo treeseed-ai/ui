@@ -345,6 +345,10 @@
       "types": "./dist/react/operations-monitor/index.d.ts",
       "default": "./dist/react/operations-monitor/index.js"
     },
+    "./components/react/WorkspaceSurfaces": {
+      "types": "./dist/react/workspace-surfaces/index.d.ts",
+      "default": "./dist/react/workspace-surfaces/index.js"
+    },
     "./components/react/CommandCenter": {
       "types": "./dist/react/command-center/index.d.ts",
       "default": "./dist/react/command-center/index.js"
@@ -352,6 +356,10 @@
     "./components/react/AgentAtlas": {
       "types": "./dist/react/agent-atlas/index.d.ts",
       "default": "./dist/react/agent-atlas/index.js"
+    },
+    "./components/react/AgentDesigner": {
+      "types": "./dist/react/agent-designer/index.d.ts",
+      "default": "./dist/react/agent-designer/index.js"
     },
     "./components/react/progressive": {
       "types": "./dist/react/progressive/index.d.ts",
@@ -407,6 +415,7 @@
     "./styles/auth.css": "./dist/styles/auth.css",
     "./styles/charts.css": "./dist/styles/charts.css",
     "./styles/operations-monitor.css": "./dist/styles/operations-monitor.css",
+    "./styles/workspace-surfaces.css": "./dist/styles/workspace-surfaces.css",
     "./styles/command-center.css": "./dist/styles/command-center.css",
     "./styles/agent-atlas.css": "./dist/styles/agent-atlas.css",
     "./styles/forms.css": "./dist/styles/forms.css",

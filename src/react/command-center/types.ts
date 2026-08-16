@@ -1,7 +1,7 @@
 export type CommandEntityKind =
 	| 'proposal' | 'decision' | 'question' | 'artifact' | 'error'
 	| 'agent' | 'signal' | 'proposal-type' | 'assignment'
-	| 'execution' | 'simulation' | 'seed' | 'workday' | 'note';
+	| 'execution' | 'simulation' | 'seed' | 'workday' | 'note' | 'group' | 'group-edge';
 
 export interface CommandMetric {
 	label: string;
@@ -80,6 +80,7 @@ export interface CommandCollectionPage {
 	relations?: CommandRelation[];
 	page?: { hasMore: boolean; nextCursor: string | null; total: number };
 	filters?: Record<string, string>;
+	projects?: Array<{ id: string; name: string }>;
 }
 
 export interface CommandRealtimePreference {

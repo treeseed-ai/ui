@@ -70,6 +70,7 @@ describe('package exports', () => {
     expect(Ui.MetricHistoryChart).toBeDefined();
     expect(Ui.useRealtimeResource).toBeDefined();
     expect(Ui.RichMarkdownEditor).toBeDefined();
+    expect(Ui.RichContentEditor).toBeDefined();
     expect(Ui.initializeRichMarkdownEditors).toBeDefined();
     expect(Ui.CheckboxField).toBeDefined();
     expect(Ui.SelectField).toBeDefined();
@@ -105,6 +106,19 @@ describe('package exports', () => {
     ]) {
       expect(forms).toContain(marker);
     }
+  });
+
+  it('retains responsive and forced-color boundaries for workspace authoring and historical evidence', () => {
+    const workspace = readFileSync('src/styles/workspace-surfaces.css', 'utf8');
+    const command = readFileSync('src/styles/command-center.css', 'utf8');
+    const atlas = readFileSync('src/styles/agent-atlas.css', 'utf8');
+    expect(workspace).toContain('@media(forced-colors:active)');
+    expect(workspace).toContain('@media(max-width:50rem)');
+    expect(command).toContain('.ts-agent-designer__exit-confirmation');
+    expect(command).toContain('@media(forced-colors:active)');
+    expect(atlas).toContain('.ts-atlas-definition-provenance');
+    expect(atlas).toContain('@media(forced-colors:active)');
+    expect(atlas).toContain('@media(max-width:42rem)');
   });
 
   it('resolves the public theme subpath through package exports', async () => {

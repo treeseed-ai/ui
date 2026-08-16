@@ -120,6 +120,21 @@ export interface AtlasProjection {
   nodeStates: AtlasNodeState[];
   assignments: AtlasAssignment[];
   activity: AtlasActivity[];
+  workdaySummary: {
+    id: string;
+    title: string;
+    status: string;
+    startedAt: string | null;
+    finishedAt: string | null;
+    assignments: { total: number; active: number; completed: number; failed: number; cancelled: number };
+    eventCount: number;
+    message: string;
+  } | null;
+  activityWindow: {
+    total: number;
+    loaded: number;
+    truncated: boolean;
+  };
   playback: {
     mode: "live" | "historical";
     startedAt: string;
@@ -147,6 +162,7 @@ export interface AtlasEndpoints {
   createAgent?: string;
   createGroup?: string;
 }
+export type AgentLabInterfaceMode = "easy" | "diagnostic";
 export interface AtlasContextReference {
   kind: string;
   id: string;

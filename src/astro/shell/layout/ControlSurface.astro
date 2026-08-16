@@ -13,6 +13,7 @@ const { title, description, class: className, renderActions = Astro.slots.has('a
 <main
 	class:list={['ts-control-surface', className]}
 	id="main-content"
+	data-ts-workspace-content
 	data-ts-workspace-scope
 	data-ts-workspace-theme={workspaceTheme?.enabled ? 'true' : undefined}
 	data-ts-workspace-scheme={workspaceTheme?.scheme}

@@ -4,6 +4,7 @@ import {
 	applyFieldErrors,
 	initializeFormSubmissions,
 	initializeToasts,
+	requestJson,
 	showToast,
 	submitForm,
 	updateToast,
@@ -137,6 +138,19 @@ describe('enhanced form controller', () => {
 		});
 		expect(button).not.toBeDisabled();
 		expect(document.querySelector('[data-ts-toast-region]')).toHaveTextContent('Saved.');
+	});
+
+	it('adds the browser CSRF cookie to direct same-origin JSON mutations', async () => {
+		document.cookie = 'ts_csrf=workspace-csrf; path=/';
+		const fetchMock = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => new Response(JSON.stringify({ ok: true }), {
+			headers: { 'content-type': 'application/json' },
+		}));
+		vi.stubGlobal('fetch', fetchMock);
+
+		await requestJson('/v1/teams/team-1/agent-lab/view-state', { method: 'PATCH' });
+
+		const headers = fetchMock.mock.calls[0]![1]!.headers as Headers;
+		expect(headers.get('x-treeseed-csrf')).toBe('workspace-csrf');
 	});
 
 	it('creates one request identifier per rendered form and preserves it across retries', async () => {

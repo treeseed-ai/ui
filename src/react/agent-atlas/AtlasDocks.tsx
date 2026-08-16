@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { AtlasActivity, AtlasAssignment } from "./types.ts";
+import { LinkedDiagnosticTable } from "../workspace-surfaces/LinkedDiagnosticTable.tsx";
 
 const categories = [
   "question",
@@ -19,12 +20,14 @@ const directions = ["input", "output", "internal"];
 const severities = ["debug", "info", "warning", "error"];
 interface Props {
   activity: AtlasActivity[];
+  activityWindow: { total: number; loaded: number; truncated: boolean };
   assignments: AtlasAssignment[];
   timeZone: string;
-  open: "events" | "assignments" | null;
-  onOpen: (value: "events" | "assignments" | null) => void;
+  open: "events" | "assignments" | "diagnostics" | null;
+  onOpen: (value: "events" | "assignments" | "diagnostics" | null) => void;
   onInspect: (kind: string, id: string) => void;
   onOpenDag: () => void;
+  diagnostic?: boolean;
 }
 
 function timestamp(value: string, timeZone: string) {
@@ -42,21 +45,22 @@ function timestamp(value: string, timeZone: string) {
 
 export function AtlasDocks({
   activity,
+  activityWindow,
   assignments,
   timeZone,
   open,
   onOpen,
   onInspect,
   onOpenDag,
+  diagnostic = false,
 }: Props) {
-  const [selected, setSelected] = useState<Record<string, Set<string>>>({
-    category: new Set(categories),
-    direction: new Set(directions),
-    severity: new Set(severities),
-    project: new Set(),
-    agent: new Set(),
-    signal: new Set(),
-  });
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("");
+  const [direction, setDirection] = useState("");
+  const [severity, setSeverity] = useState("");
+  const [showRoutine, setShowRoutine] = useState(false);
+  const [page, setPage] = useState(0);
+  const pageSize = 25;
   const choices = useMemo(
     () => ({
       category: categories,
@@ -78,31 +82,23 @@ export function AtlasDocks({
   );
   const visible = useMemo(
     () =>
-      activity.filter(
-        (item) =>
-          selected.category.has(item.category) &&
-          selected.direction.has(item.direction) &&
-          selected.severity.has(item.severity) &&
-          (!selected.project.size ||
-            Boolean(item.projectId && selected.project.has(item.projectId))) &&
-          (!selected.agent.size ||
-            Boolean(item.agentId && selected.agent.has(item.agentId))) &&
-          (!selected.signal.size ||
-            Boolean(
-              item.signalContractId &&
-              selected.signal.has(item.signalContractId),
-            )),
-      ),
-    [activity, selected],
+      [...activity].reverse().filter((item) => {
+        const needle = query.trim().toLocaleLowerCase();
+        const eventType = String(item.metadata.eventType ?? "").toLocaleLowerCase();
+        const routine = /(?:tick|heartbeat|check[-_. ]?in|lease[._-]renew)/u.test(eventType) || /(?:compilation tick|heartbeat)/iu.test(item.summary);
+        return (!category || item.category === category) &&
+          (!direction || item.direction === direction) &&
+          (!severity || item.severity === severity) &&
+          (showRoutine || !routine) &&
+          (!needle || [item.summary, item.agentId, item.projectId, item.signalContractId]
+            .some((value) => value?.toLocaleLowerCase().includes(needle)));
+      }),
+    [activity, category, direction, query, severity, showRoutine],
   );
-  const toggle = (bucket: string, value: string) =>
-    setSelected((current) => {
-      const next = { ...current, [bucket]: new Set(current[bucket]) };
-      next[bucket].has(value)
-        ? next[bucket].delete(value)
-        : next[bucket].add(value);
-      return next;
-    });
+  useEffect(() => setPage(0), [category, direction, query, severity, showRoutine]);
+  const pageCount = Math.max(1, Math.ceil(visible.length / pageSize));
+  const currentPage = Math.min(page, pageCount - 1);
+  const pageItems = visible.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
   return (
     <aside
       className="ts-atlas-docks"
@@ -116,6 +112,7 @@ export function AtlasDocks({
         >
           Events <b>{visible.length}</b>
         </button>
+        {diagnostic && <button aria-pressed={open === "diagnostics"} onClick={() => onOpen(open === "diagnostics" ? null : "diagnostics")}>Datasets <b>{activity.length + assignments.length}</b></button>}
         <button
           aria-pressed={open === "assignments"}
           onClick={() => onOpen(open === "assignments" ? null : "assignments")}
@@ -124,7 +121,7 @@ export function AtlasDocks({
         </button>
       </nav>
       {open === "events" && (
-        <section className="ts-atlas-dock">
+        <section className="ts-atlas-dock ts-atlas-event-dock">
           <header>
             <div>
               <small>Scoped monitor</small>
@@ -134,30 +131,19 @@ export function AtlasDocks({
               ×
             </button>
           </header>
-          <details className="ts-atlas-filters">
-            <summary>Filter monitored evidence</summary>
-            <div>
-              {Object.entries(choices)
-                .filter(([, values]) => values.length)
-                .map(([bucket, values]) => (
-                  <fieldset key={bucket}>
-                    <legend>{bucket}</legend>
-                    {values.map((value) => (
-                      <label key={value}>
-                        <input
-                          type="checkbox"
-                          checked={selected[bucket].has(value)}
-                          onChange={() => toggle(bucket, value)}
-                        />
-                        {value}
-                      </label>
-                    ))}
-                  </fieldset>
-                ))}
-            </div>
-          </details>
+          <div className="ts-atlas-filters" role="search" aria-label="Filter Atlas events">
+            <label><span>Search</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Agent, project, or event" /></label>
+            <label><span>Type</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="">All types</option>{choices.category.map((value) => <option key={value}>{value}</option>)}</select></label>
+            <label><span>Severity</span><select value={severity} onChange={(event) => setSeverity(event.target.value)}><option value="">All severities</option>{choices.severity.map((value) => <option key={value}>{value}</option>)}</select></label>
+            <label><span>Flow</span><select value={direction} onChange={(event) => setDirection(event.target.value)}><option value="">All flows</option>{choices.direction.map((value) => <option key={value}>{value}</option>)}</select></label>
+            <label className="ts-atlas-routine-filter"><input type="checkbox" checked={showRoutine} onChange={(event)=>setShowRoutine(event.target.checked)} /><span>Include routine scheduler activity</span></label>
+          </div>
+          <p className="ts-atlas-result-count" aria-live="polite">
+            {visible.length} matching {visible.length === 1 ? "event" : "events"}
+            {activityWindow.truncated ? ` in the latest ${activityWindow.loaded} of ${activityWindow.total}` : ""}
+          </p>
           <ol className="ts-atlas-event-list">
-            {visible.map((item) => (
+            {pageItems.map((item) => (
               <li key={item.id}>
                 <button onClick={() => onInspect("event", item.id)}>
                   <span data-severity={item.severity}>{item.category}</span>
@@ -173,10 +159,16 @@ export function AtlasDocks({
               </li>
             ))}
           </ol>
+          {!pageItems.length && <p className="ts-atlas-dock-empty">No events match these filters.</p>}
+          {visible.length > pageSize && <nav className="ts-atlas-pagination" aria-label="Event log pages">
+            <button disabled={currentPage === 0} onClick={() => setPage((value) => Math.max(0, value - 1))}>Previous</button>
+            <span>Page {currentPage + 1} of {pageCount}</span>
+            <button disabled={currentPage + 1 >= pageCount} onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))}>Next</button>
+          </nav>}
         </section>
       )}
       {open === "assignments" && (
-        <section className="ts-atlas-dock">
+        <section className="ts-atlas-dock ts-atlas-assignment-dock">
           <header>
             <div>
               <small>Control plane</small>
@@ -217,6 +209,15 @@ export function AtlasDocks({
           </ol>
         </section>
       )}
+      {open === "diagnostics" && diagnostic && <section className="ts-atlas-dock ts-atlas-diagnostic-dock">
+        <header><div><small>Protected evidence</small><h2>Diagnostic datasets</h2></div><button onClick={() => onOpen(null)} aria-label="Close diagnostic datasets">×</button></header>
+        <LinkedDiagnosticTable label="Workday activity evidence" rows={visible} columns={[
+          { id: "sequence", label: "Sequence", value: (row) => <code>{row.sequence}</code> },
+          { id: "type", label: "Type", value: (row) => row.category },
+          { id: "subject", label: "Subject", value: (row) => row.agentId ?? row.projectId ?? "control plane" },
+          { id: "time", label: "Observed", value: (row) => <time dateTime={row.timestamp}>{timestamp(row.timestamp, timeZone)}</time> },
+        ]} onInspect={(row) => onInspect("event", row.id)} />
+      </section>}
     </aside>
   );
 }

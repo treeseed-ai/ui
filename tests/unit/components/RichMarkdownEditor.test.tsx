@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RichMarkdownEditor, { initializeRichMarkdownEditors } from '../../../src/react/editors/RichMarkdownEditor.tsx';
@@ -65,6 +65,7 @@ vi.mock('@mdxeditor/editor', async () => {
 describe('RichMarkdownEditor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    history.replaceState({}, '', '/app/work');
   });
 
   it('renders a hidden form field and visible MDX editing surface', () => {
@@ -88,6 +89,23 @@ describe('RichMarkdownEditor', () => {
 
     expect(backingField).toHaveValue('Updated objective');
     expect(onChange).toHaveBeenLastCalledWith('Updated objective');
+  });
+
+  it('preserves the mounted draft when browser history leaves focused mode', async () => {
+    const user = userEvent.setup();
+    render(<main data-ts-workspace-content><RichMarkdownEditor label="Objective" name="objective" initialMarkdown="# Plan" /></main>);
+    const editor = screen.getByLabelText('MDX editor mock');
+    await user.clear(editor);
+    await user.type(editor, 'Uncommitted objective');
+    await user.click(screen.getByRole('button', { name: 'Expand Objective editor' }));
+    expect(location.search).toContain('focus=rich-editor%3Aobjective');
+
+    history.replaceState({}, '', '/app/work');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+
+    expect(screen.getByLabelText('MDX editor mock')).toBe(editor);
+    expect(editor).toHaveValue('Uncommitted objective');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Expand Objective editor' })).toBeVisible());
   });
 
   it('exports an initializer for server-rendered editor shells', () => {

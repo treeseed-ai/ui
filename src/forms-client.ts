@@ -36,9 +36,20 @@ export function sendFormRequest(request: import('./forms.js').FormRequest) {
 	return sendRequest(request);
 }
 
+function browserCsrfToken() {
+	if (typeof document === 'undefined') return '';
+	const encoded = document.cookie.split(';').map((part) => part.trim()).find((part) => part.startsWith('ts_csrf='))?.slice('ts_csrf='.length) ?? '';
+	try { return decodeURIComponent(encoded); } catch { return ''; }
+}
+
 export function requestJson(url: string | URL, init: RequestInit = {}) {
 	const headers = new Headers(init.headers);
 	headers.set('accept', 'application/json');
+	const method = (init.method ?? 'GET').toUpperCase();
+	if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && !headers.has('x-treeseed-csrf')) {
+		const csrfToken = browserCsrfToken();
+		if (csrfToken) headers.set('x-treeseed-csrf', csrfToken);
+	}
 	return sendRequest({ url: String(url), init: { credentials: 'same-origin', ...init, headers } });
 }
 

@@ -2,6 +2,19 @@ import { sendFormRequest } from '../../forms-client.ts';
 
 type Item = { id?: string; path?: string; frontmatter?: Record<string, unknown>; body?: string };
 type DiscussionEnvelope = { discussion?: { id?: string; topic?: string }; message?: { id?: string; authorLabel?: string; body?: string }; assignments?: Array<{ id?: string; agentSlug?: string; status?: string }> };
+type ContentDiagnostic = { field?: string; message?: string; code?: string };
+type DiscussionErrorEnvelope = { error?: string; code?: string; details?: unknown };
+
+function diagnostics(value: unknown): ContentDiagnostic[] {
+	return Array.isArray(value) ? value.filter((entry): entry is ContentDiagnostic => Boolean(entry) && typeof entry === 'object') : [];
+}
+
+export function discussionErrorMessage(envelope: DiscussionErrorEnvelope | null, status: number) {
+	const message = envelope?.error ?? `Discussion request failed (${status}).`;
+	const issues = diagnostics(envelope?.details);
+	if (!issues.length) return message;
+	return `${message}\n\n${issues.map((issue) => `- **${issue.field || 'content'}**: ${issue.message || issue.code || 'Invalid value.'}`).join('\n')}`;
+}
 
 function togglePanel(panel: HTMLElement, open: boolean) {
 	panel.hidden = !open;
@@ -21,7 +34,7 @@ async function renderMarkdown(element: HTMLElement, body: string) {
 
 function appendMessage(panel: HTMLElement, author: string, body: string, state?: string, fileRefs: unknown[] = []) {
 	const timeline = panel.querySelector('[data-ts-discussion-timeline]');
-	if (!timeline) return;
+	if (!timeline) return null;
 	panel.querySelector('.ts-discussion__welcome')?.remove();
 	const item = document.createElement('li');
 	item.className = 'ts-discussion__message';
@@ -40,6 +53,12 @@ function appendMessage(panel: HTMLElement, author: string, body: string, state?:
 	}
 	timeline.append(item);
 	item.scrollIntoView({ block: 'nearest' });
+	return item;
+}
+
+function setMessageState(item: HTMLElement | null, state: string) {
+	const badge = item?.querySelector<HTMLElement>('header span');
+	if (badge) badge.textContent = state;
 }
 
 async function send(panel: HTMLElement, form: HTMLFormElement) {
@@ -51,14 +70,15 @@ async function send(panel: HTMLElement, form: HTMLFormElement) {
 	const context = JSON.parse(panel.querySelector('[data-ts-discussion-context]')?.textContent ?? '{}');
 	const fileRefs = JSON.parse(root.dataset.fileRefs ?? '[]');
 	const contextRefs = JSON.parse(root.dataset.contextRefs ?? '[]');
-	appendMessage(panel, context.identityLabel ?? 'You', body, 'committed', fileRefs);
+	const pending = appendMessage(panel, context.identityLabel ?? 'You', body, 'pending', fileRefs);
 	input.value = ''; input.closest('[data-markdown-field]')?.dispatchEvent(new CustomEvent('treeseed:markdown-set', { detail: '' }));
 	const state = panel.querySelector('[data-ts-discussion-state]');
 	if (state) state.textContent = 'Committing…';
 	try {
 		const response = await sendFormRequest({ url: root.dataset.endpoint ?? '/v1/discussions', init: { method: 'POST', credentials: 'same-origin', headers: { accept: 'application/json', 'content-type': 'application/json' }, body: JSON.stringify({ teamId: root.dataset.teamId, projectId: root.dataset.projectId || undefined, discussionId: root.dataset.discussionId || undefined, body, intent, fileRefs, contextRefs }) } });
-		const envelope = await response.json() as DiscussionEnvelope & { error?: string };
-		if (!response.ok) throw new Error(envelope.error ?? `Discussion request failed (${response.status}).`);
+		const envelope = await response.json() as DiscussionEnvelope & DiscussionErrorEnvelope;
+		if (!response.ok) throw new Error(discussionErrorMessage(envelope, response.status));
+		setMessageState(pending, 'committed');
 		const topic = panel.querySelector('[data-ts-discussion-topic]');
 		if (topic && envelope.discussion?.topic) topic.textContent = envelope.discussion.topic;
 		if (envelope.discussion?.id) root.dataset.discussionId = envelope.discussion.id;
@@ -71,6 +91,7 @@ async function send(panel: HTMLElement, form: HTMLFormElement) {
 			if (assignment) assignment.textContent = envelope.assignments.map((entry) => `${entry.agentSlug}: ${entry.status ?? 'queued'}`).join(' · ');
 		}
 	} catch (error) {
+		setMessageState(pending, 'failed');
 		if (state) state.textContent = 'Not committed';
 		appendMessage(panel, 'Platform', error instanceof Error ? error.message : 'Discussion request failed.', 'error');
 	}
@@ -79,7 +100,11 @@ async function send(panel: HTMLElement, form: HTMLFormElement) {
 async function loadDiscussion(panel: HTMLElement, discussionId?: string, query = '') {
 	const root = panel.querySelector<HTMLElement>('[data-ts-discussion]'); if (!root?.dataset.projectId) return;
 	const url = new URL(root.dataset.endpoint ?? '/v1/discussions', location.origin); url.searchParams.set('projectId', root.dataset.projectId); if (discussionId) url.searchParams.set('discussionId', discussionId); if (query) url.searchParams.set('query', query);
-	const response = await fetch(url, { credentials: 'same-origin', headers: { accept: 'application/json' } }); const envelope = await response.json().catch(() => null); if (!response.ok || !envelope?.ok) return;
+	const response = await fetch(url, { credentials: 'same-origin', headers: { accept: 'application/json' } }); const envelope = await response.json().catch(() => null);
+	if (!response.ok || !envelope?.ok) {
+		const state = panel.querySelector('[data-ts-discussion-state]'); if (state) state.textContent = 'Content invalid';
+		appendMessage(panel, 'Platform', discussionErrorMessage(envelope, response.status), 'error'); return;
+	}
 	const payload = envelope.payload as { discussions: Item[]; messages: Item[]; events: Item[] };
 	if (!discussionId) {
 		const list = panel.querySelector('[data-ts-discussion-list]'); if (!list) return; list.replaceChildren();

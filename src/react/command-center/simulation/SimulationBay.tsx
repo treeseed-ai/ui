@@ -3,14 +3,19 @@ import { requestJson } from "../../../forms-client.ts";
 import { CommandCollection } from "../CommandCollection.tsx";
 import { YamlIde, type YamlIdeDiagnostic } from "../editor/YamlIde.tsx";
 import type { CommandEntity, CommandWorkspaceEndpoints } from "../types.ts";
+import { WorkspaceFocusSurface } from "../../workspace-surfaces/WorkspaceFocusSurface.tsx";
+import { useWorkspaceSurfaceMode } from "../../workspace-surfaces/use-workspace-surface-mode.ts";
+import { safeWorkspaceReturnPath, setWorkspaceFocus } from "../../workspace-surfaces/workspace-navigation.ts";
 
 interface Draft {
   projectId: string;
   projectName: string;
   seedPath: string;
   scenePath: string;
+  testPath?: string;
   seedYaml: string;
   sceneYaml: string;
+  testMdx?: string;
   expectedBase: string;
   diagnostics: YamlIdeDiagnostic[];
 }
@@ -19,6 +24,17 @@ function requestId() {
     globalThis.crypto?.randomUUID?.() ??
     `${Date.now()}-${Math.random().toString(36).slice(2)}`
   );
+}
+function object(value: unknown): Record<string, unknown> { return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; }
+
+export function simulationAtlasPath(workdayId: string, operationId: string, returnTo: string) {
+  const url = new URL("/app/work", "https://workspace.invalid");
+  url.searchParams.set("focus", "atlas");
+  url.searchParams.set("workday", workdayId);
+  url.searchParams.set("simulation", operationId);
+  const safeReturn = safeWorkspaceReturnPath(returnTo);
+  if (safeReturn) url.searchParams.set("returnTo", safeReturn);
+  return `${url.pathname}${url.search}`;
 }
 
 export function SimulationBay({
@@ -35,15 +51,25 @@ export function SimulationBay({
   const [draft, setDraft] = useState<Draft | null>(null);
   const [seed, setSeed] = useState("");
   const [scene, setScene] = useState("");
+  const [agentTest, setAgentTest] = useState("");
   const [commit, setCommit] = useState("");
   const [message, setMessage] = useState("Loading the current team profile…");
   const [busy, setBusy] = useState("");
-  const loaded = useRef(false);
+  const [sourceVisible, setSourceVisible] = useState(() => typeof location !== "undefined" && new URL(location.href).searchParams.get("mode") === "diagnostic");
+  const [surfaceMode, changeSurfaceMode] = useWorkspaceSurfaceMode({ surfaceId: "simulation", inlineParameters: { return: null } });
+  const loaded = useRef("");
+  const followController = useRef<AbortController | null>(null);
+  const selectedProjectId = typeof location !== "undefined" ? new URL(location.href).searchParams.get("project") ?? "" : "";
   useEffect(() => {
-    if (loaded.current || !endpoints.draft) return;
-    loaded.current = true;
+    if (!endpoints.draft) return;
+    const url = new URL(endpoints.draft, location.origin);
+    if (selectedProjectId) url.searchParams.set("project", selectedProjectId);
+    const draftEndpoint = `${url.pathname}${url.search}`;
+    if (loaded.current === draftEndpoint) return;
+    loaded.current = draftEndpoint;
     const controller = new AbortController();
-    void requestJson(endpoints.draft, { signal: controller.signal })
+    setDraft(null); setCommit(""); setMessage("Loading the selected project profile…");
+    void requestJson(draftEndpoint, { signal: controller.signal })
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok)
@@ -54,6 +80,7 @@ export function SimulationBay({
         setDraft(next);
         setSeed(next.seedYaml);
         setScene(next.sceneYaml);
+        setAgentTest(next.testMdx ?? "");
         setMessage(
           next.diagnostics?.length
             ? "The generated profile needs attention before launch."
@@ -67,7 +94,23 @@ export function SimulationBay({
           );
       });
     return () => controller.abort();
-  }, [endpoints.draft]);
+  }, [endpoints.draft, selectedProjectId]);
+  useEffect(() => () => followController.current?.abort(), []);
+  async function followSimulation(operationId: string, returnTo: string) {
+    followController.current?.abort(); const controller = new AbortController(); followController.current = controller;
+    for (let attempt = 0; attempt < 120 && !controller.signal.aborted; attempt += 1) {
+      const response = await requestJson(endpoints.collection, { signal: controller.signal }).catch(() => null);
+      const envelope = response?.ok ? await response.json().catch(() => null) : null;
+      const run = (Array.isArray(envelope?.payload?.items) ? envelope.payload.items : []).find((item: CommandEntity) => item.id === operationId);
+      const data = object(run?.data); const workdayId = typeof data.workdayId === "string" ? data.workdayId : "";
+      if (workdayId) {
+        location.assign(simulationAtlasPath(workdayId, operationId, returnTo)); return;
+      }
+      if (["failed", "cancelled"].includes(String(run?.status))) { setMessage(`Simulation ${String(run.status)} before a workday became available.`); return; }
+      await new Promise((resolve) => window.setTimeout(resolve, 1_000));
+    }
+    if (!controller.signal.aborted) setMessage("Simulation is still starting. Its retained run remains available below.");
+  }
   async function save() {
     if (!draft || !endpoints.authoringBundle) return;
     setBusy("save");
@@ -83,6 +126,7 @@ export function SimulationBay({
           files: [
             { path: draft.seedPath, source: seed },
             { path: draft.scenePath, source: scene },
+            ...(draft.testPath && agentTest ? [{ path: draft.testPath, source: agentTest }] : []),
           ],
         }),
       });
@@ -93,7 +137,7 @@ export function SimulationBay({
         );
       setCommit(String(result.payload.commit));
       setMessage(
-        `Saved both definitions at ${String(result.payload.commit).slice(0, 12)}.`,
+        `Saved definitions at ${String(result.payload.commit).slice(0, 12)}.`,
       );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Save failed.");
@@ -106,6 +150,8 @@ export function SimulationBay({
     setBusy("launch");
     setMessage("Queueing the committed scene for the seeded provider manager…");
     try {
+      const navigation = new URL(location.href);
+      const returnTo = safeWorkspaceReturnPath(navigation.searchParams.get("returnTo")) ?? `${location.pathname}${location.search}`;
       const response = await requestJson(endpoints.simulations, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -121,8 +167,9 @@ export function SimulationBay({
       if (!response.ok)
         throw new Error(result.error ?? "Simulation launch failed.");
       setMessage(
-        `Simulation ${String(result.payload.id).slice(0, 12)} queued. Follow it below without leaving this workspace.`,
+        `Simulation ${String(result.payload.id).slice(0, 12)} queued. Atlas will open when its workday is ready.`,
       );
+      void followSimulation(String(result.payload.id), returnTo);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Launch failed.");
     } finally {
@@ -130,19 +177,26 @@ export function SimulationBay({
     }
   }
   const simulations = items.filter((item) => item.kind === "simulation");
+  const returningToDesigner = typeof location !== "undefined" && new URL(location.href).searchParams.get("return") === "designer";
+  function returnToDesigner() {
+    setWorkspaceFocus("designer", "push", { return: null, returnTo: null, view: "edit", project: null });
+  }
   return (
+    <WorkspaceFocusSurface id="simulation-bay" label="Simulation Bay" mode={surfaceMode} boundary="workspace-content" onModeChange={changeSurfaceMode} headerContext={<span><strong>Simulation Bay</strong> · {draft?.projectName ?? "Loading team profile"} · {commit ? commit.slice(0, 12) : "Working draft"}</span>}>
     <section className="ts-command-bay">
       <header>
         <div>
           <span>Production path</span>
           <h2>Simulation Bay</h2>
           <p>
-            Generate a secret-free team profile, author both YAML definitions
+            Generate a secret-free project profile, author the validated definitions
             atomically, then launch the immutable scene through the existing
             provider.
           </p>
         </div>
         <div className="ts-simulation-bay__actions">
+          {surfaceMode === "focused" && returningToDesigner ? <button type="button" onClick={returnToDesigner}>Return to Designer</button> : null}
+          <button type="button" aria-expanded={sourceVisible} onClick={() => setSourceVisible((value) => !value)}>{sourceVisible ? "Hide generated source" : "Show generated source"}</button>
           <button
             type="button"
             onClick={save}
@@ -169,7 +223,13 @@ export function SimulationBay({
                 : "Working draft"}
             </span>
           </div>
-          <div className="ts-simulation-bay__editors">
+          <section className="ts-simulation-bay__readiness" aria-label="Simulation readiness">
+            <div><span>Project profile</span><strong>{draft.seedPath}</strong></div>
+            <div><span>Workday scene</span><strong>{draft.scenePath}</strong></div>
+            <div data-state={draft.diagnostics.length ? "attention" : "ready"}><span>Readiness</span><strong>{draft.diagnostics.length ? `${draft.diagnostics.length} issue${draft.diagnostics.length === 1 ? "" : "s"} to resolve` : "Ready to validate"}</strong></div>
+            {draft.diagnostics.length ? <ol>{draft.diagnostics.map((diagnostic,index) => <li key={`${diagnostic.line}:${diagnostic.column}:${index}`}><span>{diagnostic.line ? `Line ${diagnostic.line}${diagnostic.column ? `:${diagnostic.column}` : ""}` : "Definition"}</span>{diagnostic.message}</li>)}</ol> : <p>The generated definitions use the current team inventory, exact repository authority, and governed provider configuration.</p>}
+          </section>
+          {sourceVisible ? <div className="ts-simulation-bay__editors" data-mode="diagnostic">
             <section>
               <header>
                 <span>Seed profile</span>
@@ -199,7 +259,11 @@ export function SimulationBay({
                 label="Scene YAML"
               />
             </section>
-          </div>
+            {draft.testPath ? <section>
+              <header><span>Agent test</span><code>{draft.testPath}</code></header>
+              <YamlIde value={agentTest} onChange={(value) => { setAgentTest(value); setCommit(""); }} label="Agent test MDX" />
+            </section> : null}
+          </div> : null}
         </>
       ) : (
         <div className="ts-command-empty">
@@ -224,5 +288,6 @@ export function SimulationBay({
         </section>
       ) : null}
     </section>
+    </WorkspaceFocusSurface>
   );
 }
