@@ -37,4 +37,4 @@ const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly 
 	<PasswordSetupFields passwordId="registerPassword" confirmId="registerPasswordConfirmation" />
 	<FormActions><Button type="submit" disabled data-registration-submit>Create account</Button></FormActions>
 </form>
-<AvailabilityIsland rootId={id} mode="registration" endpoints={{ username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint }} client:load />
+<AvailabilityIsland rootId={id} mode="registration" endpoints={{ username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint }} client:only="react" />

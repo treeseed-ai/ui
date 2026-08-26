@@ -16,4 +16,4 @@ const { csrfToken, value = '', endpoint = '/v1/auth/availability/username', id =
 	</Field>
 	<FormActions><Button type="submit" disabled data-claim-submit>Set permanent username</Button></FormActions>
 </form>
-<AvailabilityIsland rootId={id} mode="username-claim" endpoints={{ username: endpoint }} client:load />
+<AvailabilityIsland rootId={id} mode="username-claim" endpoints={{ username: endpoint }} client:only="react" />

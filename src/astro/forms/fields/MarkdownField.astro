@@ -74,4 +74,4 @@ const size = rows >= 12 ? 'xl' : rows >= 8 ? 'lg' : 'md';
 	</div>
 	<p class="ts-markdown-field__error" id={errorId} hidden data-markdown-error>{label} is required.</p>
 </div>
-<MarkdownFieldIsland rootId={rootId} client:visible />
+<MarkdownFieldIsland rootId={rootId} client:only="react" />

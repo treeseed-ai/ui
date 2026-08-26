@@ -117,7 +117,7 @@ const teamOptions = teams.map((team) => ({
 	<DeleteConfirmationModal slot="modal" />
 </ProductShell>
 
-<AppearancePersistenceIsland endpoint={appearanceEndpoint} client:load />
+<AppearancePersistenceIsland endpoint={appearanceEndpoint} client:only="react" />
 
 <script>
 	document.querySelectorAll('[data-team-switcher]').forEach((form) => {

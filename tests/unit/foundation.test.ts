@@ -254,7 +254,7 @@ describe('UI foundation', () => {
 		expect(registration).toContain('aria-live="polite"');
 		expect(availability).toContain('payload.available === true');
 		expect(availability).toContain("kinds.some((kind) => states[kind] !== true)");
-		expect(registration).toContain('client:load');
+		expect(registration).toContain('client:only="react"');
 		expect(passwordSetup).toContain('Passwords do not match.');
 		expect(passwordSetup).toContain('Passwords match.');
 		expect(passwordSetup).toContain('<PasswordMeter');
