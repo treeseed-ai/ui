@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-dev.feature-content-repository-authority.20260811T113238Z",
+  "version": "0.12.18-rc.1",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -293,7 +293,7 @@
     "./components/astro/shell/TeamOperationsDrawer.astro": "./dist/astro/shell/team-operations/TeamOperationsDrawer.astro",
     "./components/astro/shell/TeamOperationsPanel.astro": "./dist/astro/shell/team-operations/TeamOperationsPanel.astro",
     "./components/astro/shell/TopBar.astro": "./dist/astro/shell/navigation/TopBar.astro",
-	"./components/astro/data/MetricGrid.astro": "./dist/astro/data/metrics/MetricGrid.astro",
+    "./components/astro/data/MetricGrid.astro": "./dist/astro/data/metrics/MetricGrid.astro",
     "./components/astro/public/PublicHeroSection.astro": "./dist/astro/public/PublicHeroSection.astro",
     "./components/astro/public/PublicKnowledgeSection.astro": "./dist/astro/public/PublicKnowledgeSection.astro",
     "./components/astro/public/PublicProfileHeader.astro": "./dist/astro/public/PublicProfileHeader.astro",
@@ -306,7 +306,7 @@
     "./components/astro/public/profile/KnowledgeProfileLayout.astro": "./dist/astro/public/profile/KnowledgeProfileLayout.astro",
     "./components/astro/public/profile/KnowledgeProfileStats.astro": "./dist/astro/public/profile/KnowledgeProfileStats.astro",
     "./components/astro/site/ChronicleList.astro": "./dist/astro/site/content/ChronicleList.astro",
-	"./components/astro/site/BookList.astro": "./dist/astro/site/content/BookList.astro",
+    "./components/astro/site/BookList.astro": "./dist/astro/site/content/BookList.astro",
     "./components/astro/site/CTASection.astro": "./dist/astro/site/marketing/CTASection.astro",
     "./components/astro/site/Hero.astro": "./dist/astro/site/marketing/Hero.astro",
     "./components/astro/site/NotesList.astro": "./dist/astro/site/content/NotesList.astro",
