@@ -214,7 +214,7 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'local-companion-link' ? <LocalCompanionLink href="http://127.0.0.1:4173" /> : null}
 {entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
 {entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" href="/displays/metric-card" /> : null}
-{entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
+{entry.id === 'metric-grid' || entry.id === 'metric-grid-public-entrypoint' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
 {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
 {entry.id === 'action-bar' ? <ActionBar actions={resolvedActions} /> : null}
@@ -321,7 +321,7 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'commons-decision-timeline' ? <CommonsDecisionTimeline events={entry.defaultProps.events as any[]} /> : null}
 {entry.id === 'commons-delegation-panel' ? <CommonsDelegationPanel delegations={entry.defaultProps.delegations as any[]} /> : null}
 {entry.id === 'commons-steward-decision-panel' ? <CommonsStewardDecisionPanel proposalId={entry.defaultProps.proposalId as string} action={entry.defaultProps.action as string} /> : null}
-{entry.id === 'book-list' ? <BookList items={bookItems} /> : null}
+{entry.id === 'book-list' || entry.id === 'book-list-public-entrypoint' ? <BookList items={bookItems} /> : null}
 {entry.id === 'knowledge-project-collection' ? <KnowledgeProjectCollection projects={[{ id: 'project-1', name: 'Platform guide', description: 'Repository-native product knowledge.', repositoryReady: true, bookCount: 3, draftCount: 1 }, { id: 'project-2', name: 'Operations handbook', repositoryReady: false }]} /> : null}
 {entry.id === 'knowledge-authoring-form' ? <KnowledgeAuthoringForm action="/v1/knowledge/workspaces/workspace-preview/content" csrfToken="sandbox-csrf" workspaceId="workspace-preview" version={1} values={{ kind: 'page', id: 'knowledge.preview', bookId: 'book.preview', slug: 'getting-started', title: 'Getting started', summary: 'A safe authoring preview.', visibility: 'team', status: 'draft', tags: 'guidance, authoring', bodyMarkdown: '## Start here\n\nWrite and review repository-native knowledge.' }} /> : null}
 {entry.id === 'knowledge-relation-picker' ? <KnowledgeRelationPicker client:load initialIds={['account.identity']} searchEndpoint="/api/catalog/knowledge-search" /> : null}

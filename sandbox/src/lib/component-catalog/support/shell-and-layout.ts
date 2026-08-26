@@ -96,6 +96,9 @@ export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
   display('book-list', 'BookList', 'Knowledge', 'astro', 'Searchable, filterable book-library results for public and authenticated knowledge collections.', 'large', { items: 3 }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/site/content/BookList.astro'),
+  display('book-list-public-entrypoint', 'BookList', 'Knowledge', 'astro', 'Stable flattened entrypoint for public and authenticated book-library results.', 'large', { items: 3 }, [
+      { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
+    ], undefined, '@treeseed/ui/components/astro/site/BookList.astro'),
   display('ctasection', 'CTASection', 'Site', 'astro', 'Reusable CTASection component copied into the TreeSeed UI library.', 'medium', { source: 'Site' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/site/CTASection.astro'),
