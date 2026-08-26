@@ -4,11 +4,12 @@ import TextInput from '../forms/fields/TextInput.astro';
 import Button from '../forms/actions/Button.astro';
 import FormActions from '../forms/actions/FormActions.astro';
 import { AvailabilityIsland } from '../../react/progressive/index.ts';
-interface Props { csrfToken: string; value?: string; endpoint?: string; id?: string; }
-const { csrfToken, value = '', endpoint = '/v1/auth/availability/username', id = 'username-claim-form' } = Astro.props as Props;
+interface Props { csrfToken: string; value?: string; endpoint?: string; id?: string; expectedUpdatedAt?: string; }
+const { csrfToken, value = '', endpoint = '/v1/auth/availability/username', id = 'username-claim-form', expectedUpdatedAt } = Astro.props as Props;
 ---
 <form id={id} method="post" class="auth-form" data-username-claim data-scene="username-claim" data-ts-submit="enhanced">
 	<input type="hidden" name="csrfToken" value={csrfToken} />
+	{expectedUpdatedAt ? <input type="hidden" name="expectedUpdatedAt" value={expectedUpdatedAt} /> : null}
 	<Field label="Username" name="username" help="Your username is public and cannot be changed after you continue." required>
 		<TextInput name="username" value={value} autocomplete="username" required maxlength={39} data-claim-input />
 		<span class="auth-field-help" data-claim-status>Enter a username to check availability.</span>

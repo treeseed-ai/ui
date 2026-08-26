@@ -8,10 +8,11 @@ import { supportedTimeZones, timeZoneLabel } from '../../timestamps.ts';
 
 interface Props {
 	timeZone: string;
+	expectedUpdatedAt?: string;
 	csrfToken: string;
 }
 
-const { timeZone, csrfToken } = Astro.props as Props;
+const { timeZone, expectedUpdatedAt, csrfToken } = Astro.props as Props;
 const options = supportedTimeZones().map((value) => ({ value, label: timeZoneLabel(value) }));
 ---
 
@@ -19,6 +20,7 @@ const options = supportedTimeZones().map((value) => ({ value, label: timeZoneLab
 	<form method="post" class="account-form" data-scene="account-time-zone" data-time-zone={timeZone} data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-time-zone']">
 		<input type="hidden" name="csrfToken" value={csrfToken} />
 		<input type="hidden" name="intent" value="time-zone" />
+		{expectedUpdatedAt ? <input type="hidden" name="expectedUpdatedAt" value={expectedUpdatedAt} /> : null}
 		<Field label="Display time zone" name="timeZone" help="Timestamps retain their original instant and are converted only for display.">
 			<Select id="timeZone" name="timeZone" value={timeZone} options={options} required autocomplete="off" />
 		</Field>

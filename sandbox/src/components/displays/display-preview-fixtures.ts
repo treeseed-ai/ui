@@ -33,6 +33,7 @@ export const personalThemes = [{
   schemeId: 'personal-preview',
   name: 'Forest notebook',
   baseScheme: 'fern',
+  updatedAt: '2026-08-26T20:00:00.000Z',
   palette: {
     light: { canvas: '#f7faf7', surface: '#ffffff', text: '#17241d', accent: '#276749' },
     dark: { canvas: '#101713', surface: '#18221c', text: '#edf7f0', accent: '#65c18c' },
