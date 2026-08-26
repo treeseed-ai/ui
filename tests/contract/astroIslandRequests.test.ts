@@ -21,14 +21,16 @@ describe('Astro island request ownership', () => {
 		expect(violations, 'post-load requests belong to lifecycle-managed client islands').toEqual([]);
 	});
 
-	it('hydrates request controllers only where their server-rendered UI needs them', () => {
+	it('hydrates request controllers client-only while Astro owns their server-rendered UI', () => {
 		for (const [path, directive] of [
-			['src/astro/auth/RegistrationForm.astro', 'client:load'],
-			['src/astro/auth/UsernameClaimForm.astro', 'client:load'],
-			['src/astro/site/content/BookList.astro', 'client:visible'],
-			['src/astro/workflow/WorkflowExecutionPanel.astro', 'client:visible'],
-			['src/astro/forms/fields/MarkdownField.astro', 'client:visible'],
-			['src/astro/layouts/AppLayout.astro', 'client:load'],
+			['src/astro/auth/RegistrationForm.astro', 'client:only="react"'],
+			['src/astro/auth/UsernameClaimForm.astro', 'client:only="react"'],
+			['src/astro/site/content/BookList.astro', 'client:only="react"'],
+			['src/astro/workflow/WorkflowExecutionPanel.astro', 'client:only="react"'],
+			['src/astro/forms/fields/MarkdownField.astro', 'client:only="react"'],
+			['src/astro/app/controls/content/MarkdownField.astro', 'client:only="react"'],
+			['src/astro/layouts/AppLayout.astro', 'client:only="react"'],
+			['src/astro/shell/layout/ShellFrame.astro', 'client:only="react"'],
 			['src/astro/shell/layout/ShellFrame.astro', 'transition:persist="session-connection"'],
 		] as const) expect(readFileSync(path, 'utf8'), path).toContain(directive);
 	});

@@ -81,4 +81,4 @@ const teams = [...new Set(items.map((item) => item.teamSlug))].sort();
 		<p>Try a broader search or clear the topic filter.</p>
 	</div>
 </section>
-<BookLibraryIsland rootId={id} searchEndpoint={searchEndpoint} client:visible />
+<BookLibraryIsland rootId={id} searchEndpoint={searchEndpoint} client:only="react" />

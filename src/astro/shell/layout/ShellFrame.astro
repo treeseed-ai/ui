@@ -76,7 +76,7 @@ const {
 			{feedbackContext ? <FeedbackPanel id={feedbackDialogId} context={feedbackContext} /> : null}
 			{discussionContext ? <DiscussionPanel id={discussionDialogId} context={discussionContext} /> : null}
 		</div>
-		{discussionContext?.realtime ? <SessionConnectionIsland teamId={discussionContext.teamId} endpoint={discussionContext.realtime.endpoint} enabled={discussionContext.realtime.enabled} client:load transition:persist="session-connection" /> : null}
+		{discussionContext?.realtime ? <SessionConnectionIsland teamId={discussionContext.teamId} endpoint={discussionContext.realtime.endpoint} enabled={discussionContext.realtime.enabled} client:only="react" transition:persist="session-connection" /> : null}
 		{helpContext ? <HelpDialog id={helpDrawerId} context={helpContext} feedbackTargetId={feedbackContext ? feedbackDialogId : undefined} feedbackContext={feedbackContext} /> : null}
 		<ToastRegion />
 		<slot name="bodyEnd" />

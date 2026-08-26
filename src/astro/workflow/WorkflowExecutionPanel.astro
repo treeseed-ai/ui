@@ -89,7 +89,7 @@ const rootId = `workflow-operation-${String(definition.id).replace(/[^a-zA-Z0-9_
 		</section>
 	</Panel>
 </div>
-{runs.some((run) => activeStatuses.has(run.status)) ? <WorkflowPollingIsland rootId={rootId} operationId={definition.id} client:visible /> : null}
+{runs.some((run) => activeStatuses.has(run.status)) ? <WorkflowPollingIsland rootId={rootId} operationId={definition.id} client:only="react" /> : null}
 
 <style>
 	.ts-workflow-operation__summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--ts-border); }
