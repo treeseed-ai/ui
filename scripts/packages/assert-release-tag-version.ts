@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const semverTagPattern = /^\d+\.\d+\.\d+$/;
+const semverTagPattern = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const packageJsonPath = resolve(process.cwd(), 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const packageVersion = packageJson.version;
@@ -14,7 +14,7 @@ if (!tagName) {
 }
 
 if (!semverTagPattern.test(tagName)) {
-  console.error(`Release tag "${tagName}" must use "{MAJOR}.{MINOR}.{PATCH}", for example "${packageVersion}".`);
+  console.error(`Release tag "${tagName}" must use semantic version syntax, for example "${packageVersion}".`);
   process.exit(1);
 }
 
