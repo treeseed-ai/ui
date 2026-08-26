@@ -2,6 +2,8 @@ import type { ComponentCatalogEntry } from './component-kind.ts';
 import { display } from './component-kind.ts';
 
 export const themeAndChartsComponents: ComponentCatalogEntry[] = [
+  display('capability-unavailable', 'CapabilityUnavailable', 'Surface', 'astro', 'Truthful degraded state for unsupported capabilities.', 'medium', { title: 'Advanced monitoring unavailable' }, [{ name: 'reason', type: 'string', defaultValue: 'Unavailable', description: 'Truthful unavailability reason.' }], undefined, '@treeseed/ui/components/astro/surface/CapabilityUnavailable.astro'),
+  display('local-companion-link', 'LocalCompanionLink', 'Surface', 'astro', 'Capability-aware handoff to a configured loopback companion.', 'inline', { href: 'http://127.0.0.1:4173' }, [{ name: 'href', type: 'string | undefined', defaultValue: undefined, description: 'Configured loopback companion URL.' }], undefined, '@treeseed/ui/components/astro/surface/LocalCompanionLink.astro'),
   display('card', 'Card', 'Surface', 'astro', 'Reusable content or link card.', 'medium', { tone: 'default', interactive: true }, [
       { name: 'href', type: 'string', defaultValue: undefined, description: 'Turns card into a link.' },
       { name: 'tone', type: 'Tone', defaultValue: 'default', description: 'Semantic color tone.' },

@@ -1,0 +1,5 @@
+---
+interface Props { title: string; reason?: string; }
+const { title, reason = 'This capability is not available in the current composition.' } = Astro.props as Props;
+---
+<section class="ts-panel" data-tone="muted" aria-labelledby="capability-unavailable-title"><h2 id="capability-unavailable-title">{title}</h2><p>{reason}</p><slot /></section>

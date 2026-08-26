@@ -1,0 +1,5 @@
+---
+interface Props { state: 'authenticated' | 'anonymous' | 'refreshing' | 'expired'; label?: string; }
+const { state, label = state } = Astro.props as Props;
+---
+<p class="ts-session-state" data-state={state} role="status"><span aria-hidden="true">●</span> {label}</p>

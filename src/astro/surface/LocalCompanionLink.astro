@@ -1,0 +1,5 @@
+---
+interface Props { href?: string; label?: string; }
+const { href, label = 'Open local Reviewer' } = Astro.props as Props;
+---
+{href ? <a class="ts-button" data-variant="secondary" href={href} rel="noopener noreferrer">{label}</a> : <span class="ts-badge" data-tone="muted">Local companion unavailable</span>}

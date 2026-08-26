@@ -20,6 +20,18 @@ artifacts:
     name: "@treeseed/ui"
 releaseGate:
   workflow: verify.yml
+standards:
+  schemaVersion: 1
+  workflow: { enabled: true }
+  acceptedBaseline: { packageName: "@treeseed/ui", packageVersion: "0.12.17" }
+  produced:
+    - { id: "@treeseed/ui/typescript-public-api", family: typescript, version: "1.0.0", semanticRange: "^1.0.0", source: dist, artifact: .treeseed/standards/typescript-public-api.json, verifier: scripts/packages/release-verify.ts }
+    - { id: "@treeseed/ui/presentation-catalog", family: behavioral, version: "1.0.0", semanticRange: "^1.0.0", source: src/astro, artifact: .treeseed/standards/presentation-catalog.json, verifier: scripts/packages/release-verify.ts }
+  consumed: []
+  guarantees: [accessible-presentation-only, deterministic-contract-bundle, semantic-version-sufficiency]
+  deprecations: []
+  runtimes: [browser, astro>=5]
+  rollbackOperations: [remove-prerelease-dist-tag, restore-accepted-composition]
 projectArchitecture:
   topology: split_site_content
   rootPath: .

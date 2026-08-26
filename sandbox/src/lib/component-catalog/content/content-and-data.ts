@@ -92,6 +92,10 @@ export const contentAndDataComponents: ComponentCatalogEntry[] = [
       { name: 'metrics', type: 'MetricItem[]', defaultValue: 3, description: 'Metric cards to render.' },
       { name: 'min', type: 'string', defaultValue: '12rem', description: 'Minimum grid column width.' },
     ], undefined, '@treeseed/ui/components/astro/data/metrics/MetricGrid.astro'),
+  display('metric-grid-public-entrypoint', 'MetricGrid', 'Data', 'astro', 'Stable flattened entrypoint for the responsive metric-card grid.', 'large', { metrics: 3, min: '12rem' }, [
+      { name: 'metrics', type: 'MetricItem[]', defaultValue: 3, description: 'Metric cards to render.' },
+      { name: 'min', type: 'string', defaultValue: '12rem', description: 'Minimum grid column width.' },
+    ], undefined, '@treeseed/ui/components/astro/data/MetricGrid.astro'),
   display('status-pill', 'StatusPill', 'Data', 'astro', 'Inline status with dot indicator.', 'inline', { tone: 'success', label: 'Healthy' }, [
       { name: 'tone', type: 'Tone', defaultValue: 'success', description: 'Semantic color tone.' },
       { name: 'label', type: 'string', defaultValue: 'Healthy', description: 'Status text.' },
