@@ -1,0 +1,6 @@
+---
+interface Props { userCode?: string; approved?: boolean; }
+const { userCode = '', approved = false } = Astro.props as Props;
+---
+<section class="ts-panel" aria-labelledby="device-approval-title"><h1 id="device-approval-title">{approved ? 'Device approved' : 'Approve CLI login'}</h1>
+	{approved ? <p role="status">Return to your terminal to finish signing in.</p> : <><p>Confirm the code shown by the TreeSeed CLI.</p><output aria-label="Device code">{userCode}</output><slot /></>}</section>

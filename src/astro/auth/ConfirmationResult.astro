@@ -1,0 +1,5 @@
+---
+interface Props { status: 'pending' | 'confirmed' | 'expired' | 'failed'; message: string; }
+const { status, message } = Astro.props as Props;
+---
+<section class="ts-panel" data-status={status} aria-labelledby="confirmation-result-title"><h1 id="confirmation-result-title">Email confirmation</h1><p role={status === 'failed' || status === 'expired' ? 'alert' : 'status'}>{message}</p><slot /></section>

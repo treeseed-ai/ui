@@ -103,6 +103,12 @@ import PersonalThemeManager from '../../../../src/astro/account/PersonalThemeMan
 import SessionManager from '../../../../src/astro/account/SessionManager.astro';
 import AuthCard from '../../../../src/astro/auth/AuthCard.astro';
 import AuthDivider from '../../../../src/astro/auth/AuthDivider.astro';
+import OAuthConsent from '../../../../src/astro/auth/OAuthConsent.astro';
+import DeviceApproval from '../../../../src/astro/auth/DeviceApproval.astro';
+import ConfirmationResult from '../../../../src/astro/auth/ConfirmationResult.astro';
+import SessionState from '../../../../src/astro/auth/SessionState.astro';
+import CapabilityUnavailable from '../../../../src/astro/surface/CapabilityUnavailable.astro';
+import LocalCompanionLink from '../../../../src/astro/surface/LocalCompanionLink.astro';
 import ProviderButtonList from '../../../../src/astro/auth/ProviderButtonList.astro';
 import ContentStatusLegend from '../../../../src/astro/content/ContentStatusLegend.astro';
 import ContentStatusBadge from '../../../../src/astro/content/StatusBadge.astro';
@@ -200,6 +206,12 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'disclosure-list' ? <DisclosureList title="Project lead" description="Leads projects and non-owner membership." items={[{ label: 'Create projects', description: 'Create and configure team projects.' }, { label: 'Manage workstreams', description: 'Organize and advance project work.' }]} open /> : null}
 {entry.id === 'empty-state' ? <EmptyState eyebrow="Empty state" title="No pending approvals" description="Reusable quiet state." actions={[{ label: 'Create approval', href: '/displays/empty-state', variant: 'secondary' }]} /> : null}
 {entry.id === 'inline-confirmation' ? <InlineConfirmation label="Remove member" tone="danger"><p>This member will immediately lose access.</p><button class="ts-button" type="button">Confirm removal</button></InlineConfirmation> : null}
+{entry.id === 'oauth-consent' ? <OAuthConsent clientName="TreeSeed Admin" redirectOrigin="https://admin.treeseed.localhost" scopes={['treeseed:read']}><button class="ts-button">Approve</button></OAuthConsent> : null}
+{entry.id === 'device-approval' ? <DeviceApproval userCode="ABCD-EFGH"><button class="ts-button">Approve login</button></DeviceApproval> : null}
+{entry.id === 'confirmation-result' ? <ConfirmationResult status="confirmed" message="Email confirmed. Sign in to continue." /> : null}
+{entry.id === 'session-state' ? <SessionState state="authenticated" label="Signed in" /> : null}
+{entry.id === 'capability-unavailable' ? <CapabilityUnavailable title="Advanced monitoring unavailable" /> : null}
+{entry.id === 'local-companion-link' ? <LocalCompanionLink href="http://127.0.0.1:4173" /> : null}
 {entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
 {entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" href="/displays/metric-card" /> : null}
 {entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
