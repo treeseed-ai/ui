@@ -2,10 +2,10 @@ import type { ComponentCatalogEntry } from '../support/component-kind.ts';
 import { display } from '../support/component-kind.ts';
 
 export const authAndSensitiveDataComponents: ComponentCatalogEntry[] = [
-  display('oauth-consent', 'OAuthConsent', 'Auth', 'astro', 'Validated OAuth client, redirect, and scope review surface.', 'medium', { clientName: 'TreeSeed Admin', scopes: ['treeseed:read'] }, [], undefined, '@treeseed/ui/components/astro/auth/OAuthConsent.astro'),
-  display('device-approval', 'DeviceApproval', 'Auth', 'astro', 'Authenticated CLI device-code approval state.', 'medium', { userCode: 'ABCD-EFGH', approved: false }, [], undefined, '@treeseed/ui/components/astro/auth/DeviceApproval.astro'),
-  display('confirmation-result', 'ConfirmationResult', 'Auth', 'astro', 'One-use email confirmation result state.', 'medium', { status: 'confirmed', message: 'Email confirmed.' }, [], undefined, '@treeseed/ui/components/astro/auth/ConfirmationResult.astro'),
-  display('session-state', 'SessionState', 'Auth', 'astro', 'Accessible browser session status.', 'inline', { state: 'authenticated' }, [], undefined, '@treeseed/ui/components/astro/auth/SessionState.astro'),
+  display('oauth-consent', 'OAuthConsent', 'Auth', 'astro', 'Validated OAuth client, redirect, and scope review surface.', 'medium', { clientName: 'TreeSeed Admin', scopes: ['treeseed:read'] }, [{ name: 'scopes', type: 'string[]', defaultValue: [], description: 'Validated requested scopes.' }], undefined, '@treeseed/ui/components/astro/auth/OAuthConsent.astro'),
+  display('device-approval', 'DeviceApproval', 'Auth', 'astro', 'Authenticated CLI device-code approval state.', 'medium', { userCode: 'ABCD-EFGH', approved: false }, [{ name: 'approved', type: 'boolean', defaultValue: false, description: 'Approval result state.' }], undefined, '@treeseed/ui/components/astro/auth/DeviceApproval.astro'),
+  display('confirmation-result', 'ConfirmationResult', 'Auth', 'astro', 'One-use email confirmation result state.', 'medium', { status: 'confirmed', message: 'Email confirmed.' }, [{ name: 'status', type: 'ConfirmationStatus', defaultValue: 'pending', description: 'Confirmation lifecycle state.' }], undefined, '@treeseed/ui/components/astro/auth/ConfirmationResult.astro'),
+  display('session-state', 'SessionState', 'Auth', 'astro', 'Accessible browser session status.', 'inline', { state: 'authenticated' }, [{ name: 'state', type: 'SessionStatus', defaultValue: 'anonymous', description: 'Browser session state.' }], undefined, '@treeseed/ui/components/astro/auth/SessionState.astro'),
   display('auth-card', 'AuthCard', 'Auth', 'astro', 'Reusable AuthCard component copied into the TreeSeed UI library.', 'medium', { source: 'Auth' }, [
       { name: 'props', type: 'object', defaultValue: {}, description: 'Component-specific props.' },
     ], undefined, '@treeseed/ui/components/astro/auth/AuthCard.astro'),
