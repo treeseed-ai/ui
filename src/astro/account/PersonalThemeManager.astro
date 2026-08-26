@@ -9,7 +9,7 @@ import AccessibleDialog from '../overlays/AccessibleDialog.astro';
 import ThemePreviewSwatch from '../theme/ThemePreviewSwatch.astro';
 import { guidedThemePaletteForScheme, loadColorSchemes } from '../../theme/index.ts';
 
-interface PersonalThemeItem { id: string; schemeId: string; name: string; baseScheme: string; palette: { light: Record<'canvas' | 'surface' | 'text' | 'accent', string>; dark: Record<'canvas' | 'surface' | 'text' | 'accent', string> }; }
+interface PersonalThemeItem { id: string; schemeId: string; name: string; baseScheme: string; palette: { light: Record<'canvas' | 'surface' | 'text' | 'accent', string>; dark: Record<'canvas' | 'surface' | 'text' | 'accent', string> }; updatedAt: string; }
 interface Props { themes: PersonalThemeItem[]; activeScheme: string; workspaceScheme?: string; csrfToken: string; }
 const { themes, activeScheme, workspaceScheme, csrfToken } = Astro.props as Props;
 const definitions = loadColorSchemes();
@@ -40,7 +40,7 @@ const defaults = basePalettes.fern;
 			<details class="account-disclosure" data-active-personal-theme-name={activeScheme === theme.schemeId ? theme.name : undefined}>
 				<summary><ThemePreviewSwatch swatches={[theme.palette.light.accent, theme.palette.light.surface, theme.palette.dark.accent, theme.palette.dark.canvas]} label={`${theme.name} preview`} /> <strong>{theme.name}</strong>{activeScheme === theme.schemeId ? ' · application' : workspaceScheme === theme.schemeId ? ' · content overlay' : ''}</summary>
 				<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-appearance']">
-					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="themeId" value={theme.id} /><input type="hidden" name="intent" value="update-theme" />
+					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="themeId" value={theme.id} /><input type="hidden" name="intent" value="update-theme" /><input type="hidden" name="expectedUpdatedAt" value={theme.updatedAt} />
 					<div class="account-field-row">
 						<Field label="Theme name" name={`name-${theme.id}`}><TextInput id={`name-${theme.id}`} name="name" value={theme.name} required /></Field>
 						<Field label="Base theme" name={`base-${theme.id}`}><Select id={`base-${theme.id}`} name="baseScheme" options={schemes} value={theme.baseScheme} /></Field>

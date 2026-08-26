@@ -67,4 +67,18 @@ describe('account form layout', () => {
 		expect(css).toMatch(/\.account-notification-choice\s*\{[^}]*grid-template-columns: auto minmax\(0, 1fr\);/su);
 		expect(css).toMatch(/\.account-notification-project\[open\]\s*\{[^}]*border-color: var\(--ts-color-accent\);/su);
 	});
+
+	it('carries inspected revisions through every concurrent account form', () => {
+		for (const path of [
+			'src/astro/account/AccountIdentitySettings.astro',
+			'src/astro/account/AccountTimeZoneSettings.astro',
+			'src/astro/account/NotificationPreferencePanel.astro',
+			'src/astro/account/PersonalThemeManager.astro',
+			'src/astro/account/RealtimeExperienceSettings.astro',
+			'src/astro/account/AccountDeletionPanel.astro',
+			'src/astro/auth/UsernameClaimForm.astro',
+		]) {
+			expect(read(path), path).toContain('name="expectedUpdatedAt"');
+		}
+	});
 });

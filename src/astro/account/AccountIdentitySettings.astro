@@ -20,6 +20,7 @@ interface AccountIdentity {
 	hasCredential: boolean;
 	emails: Array<{ id: string; email: string; status: string; isPrimary: boolean }>;
 	providers: Array<{ id: string; provider: string; email?: string | null; canUnlink: boolean }>;
+	updatedAt?: string;
 }
 interface AuthProviderCapability { id: string; label: string; }
 
@@ -45,6 +46,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 		<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
 			<input type="hidden" name="csrfToken" value={csrfToken} />
 			<input type="hidden" name="intent" value="profile" />
+			{identity.updatedAt ? <input type="hidden" name="expectedUpdatedAt" value={identity.updatedAt} /> : null}
 			<div class="account-field-row" data-account-field-group="name">
 				<Field label="First name" name="firstName"><TextInput id="firstName" name="firstName" value={identity.firstName ?? ''} autocomplete="given-name" /></Field>
 				<Field label="Last name" name="lastName"><TextInput id="lastName" name="lastName" value={identity.lastName ?? ''} autocomplete="family-name" /></Field>
@@ -91,6 +93,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 				>
 					<input type="hidden" name="csrfToken" value={csrfToken} />
 					<input type="hidden" name="emailId" value={email.id} />
+					{identity.updatedAt ? <input type="hidden" name="expectedUpdatedAt" value={identity.updatedAt} /> : null}
 					<div class="account-list-heading">
 						<strong>{email.email}</strong>
 						<span>{email.status}{email.isPrimary ? ' · primary' : ''}</span>
