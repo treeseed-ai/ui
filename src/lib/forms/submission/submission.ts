@@ -215,7 +215,9 @@ export async function submitForm(form: HTMLFormElement, submitter: HTMLElement |
 		if (result.redirect) {
 			const redirect = safeRedirect(result.redirect);
 			if (!redirect) throw new Error('The server returned an unsafe redirect.');
-			followRedirect(redirect);
+			const target = new URL(redirect);
+			target.searchParams.set('tsToastSuccess', result.message);
+			followRedirect(target.href);
 			return result;
 		}
 		if (result.reset ?? form.dataset.tsResetOnSuccess === 'true') form.reset();

@@ -224,7 +224,7 @@ describe('enhanced form controller', () => {
 
 		expect(click).toHaveBeenCalledOnce();
 		const link = click.mock.instances[0] as HTMLAnchorElement;
-		expect(link.href).toBe('http://localhost:3000/account/complete');
+		expect(link.href).toBe('http://localhost:3000/account/complete?tsToastSuccess=Continuing.');
 		expect(link).toHaveAttribute('data-astro-reload');
 	});
 
