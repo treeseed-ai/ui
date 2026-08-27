@@ -27,7 +27,10 @@ describe('AppearancePersistenceIsland', () => {
 			url: '/v1/auth/web/preferences',
 			init: expect.objectContaining({
 				method: 'PATCH',
-				headers: expect.objectContaining({ 'x-treeseed-csrf': 'appearance-token' }),
+				headers: expect.objectContaining({
+					'idempotency-key': expect.any(String),
+					'x-treeseed-csrf': 'appearance-token',
+				}),
 				body: JSON.stringify({
 					colorScheme: 'fern',
 					themeMode: 'dark',
