@@ -12,7 +12,7 @@ describe('AppearancePersistenceIsland', () => {
 	});
 
 	it('persists only explicit theme changes and removes its listener when unmounted', async () => {
-		const view = render(<AppearancePersistenceIsland endpoint="/v1/auth/web/appearance" />);
+		const view = render(<AppearancePersistenceIsland endpoint="/v1/auth/web/preferences" expectedUpdatedAt="preference-v1" />);
 		window.dispatchEvent(new CustomEvent('treeseed:theme-change', { detail: { scheme: 'fern', mode: 'dark' } }));
 		expect(sendFormRequest).not.toHaveBeenCalled();
 
@@ -24,13 +24,14 @@ describe('AppearancePersistenceIsland', () => {
 		} }));
 		await waitFor(() => expect(sendFormRequest).toHaveBeenCalledOnce());
 		expect(sendFormRequest).toHaveBeenCalledWith(expect.objectContaining({
-			url: '/v1/auth/web/appearance',
+			url: '/v1/auth/web/preferences',
 			init: expect.objectContaining({
 				method: 'PATCH',
 				headers: expect.objectContaining({ 'x-treeseed-csrf': 'appearance-token' }),
 				body: JSON.stringify({
 					colorScheme: 'fern',
 					themeMode: 'dark',
+					expectedUpdatedAt: 'preference-v1',
 					contentThemeOverlayEnabled: true,
 					contentThemeOverlayScheme: 'tidepool',
 					contentThemeOverlayMode: 'light',

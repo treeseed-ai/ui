@@ -14,6 +14,7 @@ interface ThemeChangeDetail {
 
 export interface AppearancePersistenceIslandProps {
 	endpoint: string;
+	expectedUpdatedAt?: string;
 	reloadOnSuccessPath?: string;
 }
 
@@ -21,7 +22,7 @@ function normalizedPath(path: string) {
 	return path.replace(/\/+$/u, '') || '/';
 }
 
-export function AppearancePersistenceIsland({ endpoint, reloadOnSuccessPath }: AppearancePersistenceIslandProps) {
+export function AppearancePersistenceIsland({ endpoint, expectedUpdatedAt, reloadOnSuccessPath }: AppearancePersistenceIslandProps) {
 	useEffect(() => {
 		let controller: AbortController | undefined;
 		const persistAppearance = (event: Event) => {
@@ -41,6 +42,7 @@ export function AppearancePersistenceIsland({ endpoint, reloadOnSuccessPath }: A
 					body: JSON.stringify({
 						colorScheme: detail.scheme,
 						themeMode: detail.mode,
+						expectedUpdatedAt,
 						contentThemeOverlayEnabled: detail.workspace?.enabled === true,
 						contentThemeOverlayScheme: detail.workspace?.scheme,
 						contentThemeOverlayMode: detail.workspace?.mode,
@@ -61,6 +63,6 @@ export function AppearancePersistenceIsland({ endpoint, reloadOnSuccessPath }: A
 			controller?.abort();
 			window.removeEventListener('treeseed:theme-change', persistAppearance);
 		};
-	}, [endpoint, reloadOnSuccessPath]);
+	}, [endpoint, expectedUpdatedAt, reloadOnSuccessPath]);
 	return null;
 }
