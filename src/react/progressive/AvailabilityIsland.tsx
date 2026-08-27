@@ -16,6 +16,8 @@ export function AvailabilityIsland({ rootId, endpoints, mode }: AvailabilityIsla
 		const timers = new Map<AvailabilityKind, number>();
 		const states: Partial<Record<AvailabilityKind, boolean>> = {};
 		const kinds: AvailabilityKind[] = mode === 'registration' ? ['username', 'email'] : ['username'];
+		// Only configured, authoritative preflights may gate a server-validated submission.
+		const checkedKinds = kinds.filter((kind) => Boolean(endpoints[kind]));
 		const submit = form.querySelector<HTMLButtonElement>(mode === 'registration' ? '[data-registration-submit]' : '[data-claim-submit]');
 		const syncTheme = (event?: Event) => {
 			if (mode !== 'registration') return;
@@ -27,14 +29,14 @@ export function AvailabilityIsland({ rootId, endpoints, mode }: AvailabilityIsla
 		};
 		const validateSubmit = (event: SubmitEvent) => {
 			syncTheme();
-			if (kinds.some((kind) => states[kind] !== true) || !form.checkValidity()) {
+			if (checkedKinds.some((kind) => states[kind] !== true) || !form.checkValidity()) {
 				event.preventDefault();
 				form.reportValidity();
 			}
 		};
 
 		const updateSubmit = () => {
-			if (submit) submit.disabled = kinds.some((kind) => states[kind] !== true);
+			if (submit) submit.disabled = checkedKinds.some((kind) => states[kind] !== true);
 		};
 		const check = async (kind: AvailabilityKind) => {
 			const input = form.querySelector<HTMLInputElement>(mode === 'registration' ? `[data-availability-input="${kind}"]` : '[data-claim-input]');
@@ -93,6 +95,7 @@ export function AvailabilityIsland({ rootId, endpoints, mode }: AvailabilityIsla
 			if (input?.value) void check(kind);
 			return () => { input?.removeEventListener('input', schedule); input?.removeEventListener('change', schedule); };
 		});
+		updateSubmit();
 		window.addEventListener('treeseed:theme-change', syncTheme);
 		form.addEventListener('submit', validateSubmit);
 		return () => {

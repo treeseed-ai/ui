@@ -253,7 +253,10 @@ describe('UI foundation', () => {
 		expect(registration).toContain('<PasswordSetupFields passwordId="registerPassword"');
 		expect(registration).toContain('aria-live="polite"');
 		expect(availability).toContain('payload.available === true');
-		expect(availability).toContain("kinds.some((kind) => states[kind] !== true)");
+		expect(availability).toContain("checkedKinds.some((kind) => states[kind] !== true)");
+		expect(availability).toContain('const checkedKinds = kinds.filter');
+		expect(registration).not.toContain("'/v1/auth/availability/username'");
+		expect(registration).not.toContain("'/v1/auth/availability/email'");
 		expect(registration).toContain('client:only="react"');
 		expect(passwordSetup).toContain('Passwords do not match.');
 		expect(passwordSetup).toContain('Passwords match.');

@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
 
 const copies = [
@@ -67,3 +67,8 @@ for (const filePath of walkFiles(resolve('dist'))) {
     unlinkSync(filePath);
   }
 }
+
+const completionMarker = resolve('dist/.treeseed-build-complete.json');
+const temporaryMarker = `${completionMarker}.new`;
+writeFileSync(temporaryMarker, `${JSON.stringify({ completedAt: new Date().toISOString() })}\n`, 'utf8');
+renameSync(temporaryMarker, completionMarker);
