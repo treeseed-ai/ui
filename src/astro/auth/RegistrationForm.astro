@@ -15,7 +15,8 @@ interface Props {
 	emailAvailabilityEndpoint?: string;
 	id?: string;
 }
-const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly = false, usernameAvailabilityEndpoint = '/v1/auth/availability/username', emailAvailabilityEndpoint = '/v1/auth/availability/email', id = 'registration-form' } = Astro.props as Props;
+const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly = false, usernameAvailabilityEndpoint, emailAvailabilityEndpoint, id = 'registration-form' } = Astro.props as Props;
+const requiresAvailability = Boolean(usernameAvailabilityEndpoint || emailAvailabilityEndpoint);
 ---
 
 <form id={id} class="auth-form" method="post" action={action} data-registration-form data-scene="registration-form" data-ts-submit="enhanced">
@@ -35,6 +36,6 @@ const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly 
 		<span id="email-availability" class="auth-field-help" data-availability-status="email" aria-live="polite"></span>
 	</Field>
 	<PasswordSetupFields passwordId="registerPassword" confirmId="registerPasswordConfirmation" />
-	<FormActions><Button type="submit" disabled data-registration-submit>Create account</Button></FormActions>
+	<FormActions><Button type="submit" disabled={requiresAvailability} data-registration-submit>Create account</Button></FormActions>
 </form>
 <AvailabilityIsland rootId={id} mode="registration" endpoints={{ username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint }} client:only="react" />
