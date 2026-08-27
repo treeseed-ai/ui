@@ -37,6 +37,7 @@ export function AppearancePersistenceIsland({ endpoint, expectedUpdatedAt, reloa
 					headers: {
 						accept: 'application/json',
 						'content-type': 'application/json',
+						'idempotency-key': globalThis.crypto?.randomUUID?.() ?? `appearance-${Date.now()}`,
 						'x-treeseed-csrf': document.cookie.split('; ').find((entry) => entry.startsWith('ts_csrf='))?.split('=').slice(1).join('=') || '',
 					},
 					body: JSON.stringify({
