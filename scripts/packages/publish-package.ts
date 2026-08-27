@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { resolve } from 'node:path';
 
 const packageName = '@treeseed/ui';
 const extraArgs = process.argv.slice(2);
@@ -16,7 +17,7 @@ if (extraArgs.some((argument) => argument === '--tag' || argument.startsWith('--
 }
 
 const npmDistTag = tagName?.includes('-') ? 'next' : 'latest';
-const publishTarget = extraArgs.shift() ?? '.';
+const publishTarget = extraArgs.length > 0 ? resolve(process.cwd(), extraArgs.shift()!) : '.';
 const npmArgs = ['publish', publishTarget, '--access', 'public', '--tag', npmDistTag];
 
 if (process.env.GITHUB_ACTIONS === 'true') {
