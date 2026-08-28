@@ -3,6 +3,7 @@ import { dirname, extname, resolve } from 'node:path';
 
 const copies = [
   ['src/site-brand.ts', 'dist/site-brand.ts', true],
+  ['src/assets', 'dist/assets', true],
   ['src/astro', 'dist/astro', false],
   ['src/lib', 'dist/lib', false],
   ['src/styles', 'dist/styles', true],

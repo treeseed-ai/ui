@@ -104,6 +104,7 @@ function assertTarballContents(packResult) {
     'dist/theme/index.js',
     'dist/theme/index.d.ts',
     'dist/styles/tokens.css',
+    'dist/assets/treeseed-logo.svg',
     'dist/styles/theme.css',
     'dist/styles/ui.css',
     'dist/styles/forms.css',
