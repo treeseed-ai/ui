@@ -30,6 +30,7 @@ describe('package exports', () => {
     expect(packageJson.exports['./site-brand']).toBeDefined();
     expect(packageJson.exports['./theme']).toBeDefined();
     expect(packageJson.exports['./styles/theme.css']).toBeDefined();
+    expect(packageJson.exports['./assets/treeseed-logo.svg']).toBe('./dist/assets/treeseed-logo.svg');
     expect(packageJson.exports['./styles/auth.css']).toBeDefined();
     expect(packageJson.exports['./styles/account/forms.css']).toBeDefined();
     expect(packageJson.exports['./styles/app-controls.css']).toBeDefined();
