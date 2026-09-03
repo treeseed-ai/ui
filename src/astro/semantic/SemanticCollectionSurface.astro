@@ -1,0 +1,58 @@
+---
+import { coreUiRegistry } from '../../lib/foundation/contracts.ts';
+import type { Tone } from '../types.ts';
+import ResourceCard from '../surface/ResourceCard.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import SemanticRegionSurface from './SemanticRegionSurface.astro';
+
+export interface SemanticCollectionItem {
+	id: string;
+	title: string;
+	description?: string;
+	status?: string;
+	meta?: string;
+	href?: string;
+	tone?: Tone;
+}
+
+interface Props {
+	viewId: string;
+	regionId: string;
+	items?: SemanticCollectionItem[];
+	emptyTitle?: string;
+	emptyDescription?: string;
+	presentation?: string;
+	class?: string;
+}
+
+const {
+	viewId,
+	regionId,
+	items = [],
+	emptyTitle = 'Nothing to show',
+	emptyDescription = 'This collection has no visible items.',
+	presentation,
+	class: className,
+} = Astro.props as Props;
+const view = coreUiRegistry.view(viewId);
+const region = view.regions.find((candidate) => candidate.id === regionId);
+if (!region) throw new Error(`Unknown semantic region ${viewId}.${regionId}`);
+if (region.type !== 'collection') throw new Error(`Semantic region ${viewId}.${regionId} is not a collection`);
+---
+
+<SemanticRegionSurface viewId={view.id} regionId={region.id} presentation={presentation} class:list={['ts-semantic-collection-surface', className]}>
+	{Astro.slots.has('default') ? <slot /> : items.length ? (
+		<div class="ts-resource-grid">
+			{items.map((item) => (
+				<ResourceCard
+					title={item.title}
+					description={item.description}
+					status={item.status}
+					meta={item.meta}
+					href={item.href}
+					tone={item.tone}
+				/>
+			))}
+		</div>
+	) : <EmptyState title={emptyTitle} description={emptyDescription} />}
+</SemanticRegionSurface>

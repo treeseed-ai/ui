@@ -1,0 +1,20 @@
+---
+import { ROOT_WORKSPACES, coreUiRegistry, type WorkspaceId } from '../../lib/foundation/contracts.ts';
+
+interface Props { current: WorkspaceId; teamHref?: string; }
+const { current, teamHref } = Astro.props as Props;
+const routes: Record<WorkspaceId, string> = {
+	team: teamHref ?? coreUiRegistry.view('team').route ?? '/app/work',
+	chat: coreUiRegistry.view('chat').route ?? '/app/chat',
+	inbox: coreUiRegistry.view('inbox').route ?? '/app/work/inbox',
+	discover: coreUiRegistry.view('discover').route ?? '/app/work/find',
+};
+---
+
+<nav class="ts-core-workspaces" aria-label="Core workspaces" data-scene="workspace.navigation">
+	{ROOT_WORKSPACES.map((id) => <a href={routes[id]} aria-current={id === current ? 'page' : undefined}><span>{coreUiRegistry.view(id).label}</span><small>{id === 'team' ? 'What is happening' : id === 'chat' ? 'Interact' : id === 'inbox' ? 'What needs me' : 'What is true'}</small></a>)}
+</nav>
+
+<style>
+	.ts-core-workspaces{display:grid;gap:.5rem;grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:1rem}.ts-core-workspaces a{background:var(--ts-color-surface);border:1px solid var(--ts-color-border);border-radius:var(--ts-radius-md);color:var(--ts-color-text);display:grid;gap:.12rem;padding:.65rem .75rem;text-decoration:none}.ts-core-workspaces a:hover{border-color:var(--ts-color-accent)}.ts-core-workspaces a[aria-current=page]{background:color-mix(in srgb,var(--ts-color-accent) 9%,var(--ts-color-surface));border-color:color-mix(in srgb,var(--ts-color-accent) 55%,var(--ts-color-border))}.ts-core-workspaces span{font-family:var(--ts-font-family-heading);font-size:.8rem;font-weight:800}.ts-core-workspaces small{color:var(--ts-color-text-muted);font-size:.62rem}@media(max-width:44rem){.ts-core-workspaces{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:25rem){.ts-core-workspaces{display:flex;overflow-x:auto}.ts-core-workspaces a{flex:0 0 8rem}}
+</style>

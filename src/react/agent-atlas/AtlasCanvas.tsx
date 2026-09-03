@@ -251,7 +251,16 @@ export function AtlasCanvas({
                     tabIndex={0}
                     role="button"
                     aria-label={`Signal ${edge.contractId}`}
-                    onClick={() => onInspect("signal", edge.id)}
+                    onClick={(event) => {
+                      event.currentTarget.focus({ preventScroll: true });
+                      onInspect("signal", edge.id);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onInspect("signal", edge.id);
+                      }
+                    }}
                   >
                     <path className="ts-atlas-trace-hit" d={path(edge)} />
                     <path d={path(edge)} markerEnd="url(#ts-atlas-arrow)" />
@@ -275,7 +284,10 @@ export function AtlasCanvas({
                   tabIndex={0}
                   role="button"
                   aria-label={`${node.name}, ${node.activityProfile}, ${observed?.status ?? "idle"}`}
-                  onClick={() => onInspect("agent", node.id, node)}
+                  onClick={(event) => {
+                    event.currentTarget.focus({ preventScroll: true });
+                    onInspect("agent", node.id, node);
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();

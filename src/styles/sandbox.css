@@ -337,6 +337,7 @@
   border: 1px solid var(--ts-color-border);
   border-radius: var(--ts-radius-lg);
   overflow: hidden;
+  min-width: 0;
 }
 
 .catalog-debug h2 {

@@ -1710,6 +1710,57 @@
 	min-width: 0;
 }
 
+.ts-shell-workspace {
+	--ts-utility-dock-inline-size: clamp(24rem, 34vw, 36rem);
+	--ts-utility-dock-block-size: clamp(16rem, 45dvh, 32rem);
+}
+
+.ts-side-sheet__resize {
+	background: transparent;
+	cursor: ns-resize;
+	height: .7rem;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: -.35rem;
+	z-index: 2;
+}
+
+.ts-side-sheet__resize::after {
+	background: var(--ts-color-border-strong);
+	border-radius: 999px;
+	content: '';
+	height: 3px;
+	left: 50%;
+	position: absolute;
+	top: calc(50% - 1px);
+	transform: translateX(-50%);
+	width: 3.5rem;
+}
+
+@media (max-width: 47.999rem) {
+	.ts-shell-workspace:has(> [data-ts-utility-placement='dock-bottom']:not([hidden])) {
+		display: grid;
+		grid-template-rows: minmax(12rem, 1fr) minmax(15rem, var(--ts-utility-dock-block-size));
+		height: 100dvh;
+		overflow: hidden;
+	}
+
+	.ts-shell-workspace:has(> [data-ts-utility-placement='dock-bottom']:not([hidden])) > .ts-shell-workspace__content {
+		min-height: 0;
+		overflow: auto;
+	}
+
+	.ts-side-sheet[data-ts-utility-placement='dock-bottom'] {
+		box-shadow: 0 -1rem 3rem color-mix(in srgb, var(--ts-color-text) 12%, transparent);
+		height: 100%;
+		inset: auto;
+		max-height: none;
+		position: relative;
+		width: 100%;
+	}
+}
+
 .ts-side-sheet__header,
 .ts-side-sheet__footer {
 	align-items: flex-start;
@@ -1724,7 +1775,7 @@
 .ts-side-sheet__footer { border-top: 1px solid var(--ts-color-border); }
 .ts-side-sheet__body { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: var(--ts-space-4); }
 
-@media (min-width: 64rem) {
+@media (min-width: 48rem) {
 	.ts-shell-workspace {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
@@ -1732,7 +1783,7 @@
 	}
 
 	.ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden])) {
-		grid-template-columns: minmax(0, 1fr) minmax(24rem, 31rem);
+		grid-template-columns: minmax(0, 1fr) minmax(24rem, var(--ts-utility-dock-inline-size));
 	}
 
 	.ts-side-sheet {
@@ -1755,6 +1806,42 @@
 		top: 0;
 		width: 100%;
 		z-index: 20;
+	}
+
+	.ts-shell-workspace:has(> [data-ts-utility-placement='dock-end']:not([hidden])) {
+		grid-template-columns: minmax(0, 1fr) minmax(24rem, var(--ts-utility-dock-inline-size));
+	}
+
+	.ts-side-sheet[data-ts-utility-placement='dock-end'] {
+		align-self: start;
+		box-shadow: none;
+		display: grid;
+		height: 100dvh;
+		inset: auto;
+		max-height: 100dvh;
+		position: sticky;
+		top: 0;
+		width: 100%;
+		z-index: 20;
+	}
+
+	.ts-side-sheet[data-ts-utility-placement='dock-end'] .ts-side-sheet__resize {
+		bottom: 0;
+		cursor: ew-resize;
+		height: auto;
+		left: -.35rem;
+		right: auto;
+		top: 0;
+		width: .7rem;
+	}
+
+	.ts-side-sheet[data-ts-utility-placement='dock-end'] .ts-side-sheet__resize::after {
+		bottom: auto;
+		height: 3.5rem;
+		left: calc(50% - 1px);
+		top: 50%;
+		transform: translateY(-50%);
+		width: 3px;
 	}
 }
 

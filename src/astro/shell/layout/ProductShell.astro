@@ -8,6 +8,7 @@ import ControlSurface from './ControlSurface.astro';
 import type { ButtonAction, ShellBrand, ShellNavItem, SiteUserControlItem } from '../../types.ts';
 import type { DiscussionContext, FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
 import { normalizeWorkspaceThemePreference, type AppearancePreference, type ThemePreference, type ThemeConfig } from '../../../theme/index.ts';
+import type { DevelopmentSceneDefinition } from '../../../lib/foundation/contracts.ts';
 
 // Feedback and contextual help are composed once through SiteUserControls and ShellFrame.
 
@@ -28,6 +29,7 @@ interface Props {
 	discussionContext?: DiscussionContext;
 	contentOwnsPageHeader?: boolean;
 	timeZone?: string;
+	developmentScene?: DevelopmentSceneDefinition;
 }
 
 const {
@@ -49,6 +51,7 @@ const {
 	discussionContext,
 	contentOwnsPageHeader = false,
 	timeZone = 'UTC',
+	developmentScene,
 } = Astro.props as Props;
 const feedbackDialogId = 'product-shell-feedback';
 const discussionDialogId = 'product-shell-discussion';
@@ -98,7 +101,9 @@ const workspaceTheme = normalizeWorkspaceThemePreference('workspace' in appearan
 			}
 		})();
 	</script>
-	<div class="ts-product-shell" data-scene="app-shell" data-page-header-owner={contentOwnsPageHeader ? 'content' : 'shell'}>
+	<div class="ts-product-shell" data-scene="app-shell" data-page-header-owner={contentOwnsPageHeader ? 'content' : 'shell'}
+		data-development-scene={developmentScene?.id} data-development-state={developmentScene?.state}
+		data-development-viewport={developmentScene?.viewport} data-development-utility={developmentScene?.utilityApplication}>
 		<div class="ts-product-shell__header">
 			<ShellHeader brand={brand} showMenuButton menuTargetId={drawerId}>
 				<Fragment slot="actions">

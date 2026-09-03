@@ -131,7 +131,7 @@ describe('package exports', () => {
 
   it('catalogs every standalone public component page', () => {
     const catalogNames = new Set(componentCatalog.map((entry) => entry.name));
-    const nonStandaloneComponents = new Set(['KnowledgeOutlineBranch', 'MobileSidebarToggle', 'ThemeScript']);
+    const nonStandaloneComponents = new Set(['DiscussionBody', 'KnowledgeOutlineBranch', 'MobileSidebarToggle', 'ThemeScript']);
     const sourceComponents = [
       ...walkFiles('src/astro').filter((file) => extname(file) === '.astro' && isPublicComponentEntry(file)),
       ...walkFiles('src/react').filter((file) => extname(file) === '.tsx' && isPublicComponentEntry(file)),

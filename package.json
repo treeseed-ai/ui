@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-rc.11",
+  "version": "0.12.18-rc.12",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -53,13 +53,15 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "unified": "^11.0.5",
+    "string-width": "^8.2.2",
     "yaml": "^2.8.1"
   },
   "peerDependencies": {
     "astro": "^5.0.0 || ^6.0.0",
     "react": "^18.3.0 || ^19.0.0",
     "react-dom": "^18.3.0 || ^19.0.0",
-    "recharts": "^3.0.0"
+    "recharts": "^3.0.0",
+    "ink": "^7.1.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
@@ -68,7 +70,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@treeseed/sdk": "0.13.0-rc.59",
+    "@treeseed/sdk": "^0.13.0-rc.82",
     "@types/node": "^24.6.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
@@ -77,6 +79,7 @@
     "jsdom": "^29.1.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "ink": "^7.1.1",
     "recharts": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
@@ -92,6 +95,10 @@
     "./site-brand": {
       "types": "./dist/site-brand.d.ts",
       "default": "./dist/site-brand.js"
+    },
+    "./ink": {
+      "types": "./dist/ink/index.d.ts",
+      "default": "./dist/ink/index.js"
     },
     "./assets/treeseed-logo.svg": "./dist/assets/treeseed-logo.svg",
     "./timestamps": {
@@ -156,6 +163,8 @@
     "./components/astro/knowledge/KnowledgePackWorkbench.astro": "./dist/astro/knowledge/KnowledgePackWorkbench.astro",
     "./components/astro/knowledge/KnowledgeLifecyclePanel.astro": "./dist/astro/knowledge/KnowledgeLifecyclePanel.astro",
     "./components/astro/knowledge/KnowledgePublicationStatus.astro": "./dist/astro/knowledge/KnowledgePublicationStatus.astro",
+    "./components/astro/knowledge/KnowledgeLibrarySurface.astro": "./dist/astro/knowledge/KnowledgeLibrarySurface.astro",
+    "./components/astro/knowledge/KnowledgeWorkbenchSurface.astro": "./dist/astro/knowledge/KnowledgeWorkbenchSurface.astro",
     "./components/astro/auth/AuthCard.astro": "./dist/astro/auth/AuthCard.astro",
     "./components/astro/auth/AuthDivider.astro": "./dist/astro/auth/AuthDivider.astro",
     "./components/astro/auth/AuthShell.astro": "./dist/astro/auth/AuthShell.astro",
@@ -175,6 +184,14 @@
     "./components/astro/account/RealtimeExperienceSettings.astro": "./dist/astro/account/RealtimeExperienceSettings.astro",
     "./components/astro/capacity/*": "./dist/astro/capacity/*",
     "./components/astro/capacity/CapacityControlRoom.astro": "./dist/astro/capacity/CapacityControlRoom.astro",
+    "./components/astro/capacity/CapacityWorkspace.astro": "./dist/astro/capacity/CapacityWorkspace.astro",
+    "./components/astro/agent-lab/AgentLabMonitor.astro": "./dist/astro/agent-lab/AgentLabMonitor.astro",
+    "./components/astro/agent-lab/AgentLabChrome.astro": "./dist/astro/agent-lab/AgentLabChrome.astro",
+    "./components/astro/agent-lab/AgentLabCommandSurface.astro": "./dist/astro/agent-lab/AgentLabCommandSurface.astro",
+    "./components/astro/agent-lab/AgentLabEntitySurface.astro": "./dist/astro/agent-lab/AgentLabEntitySurface.astro",
+    "./components/astro/agent-lab/AgentLabHomeSurface.astro": "./dist/astro/agent-lab/AgentLabHomeSurface.astro",
+    "./components/astro/agent-lab/WorkdayCollectionSurface.astro": "./dist/astro/agent-lab/WorkdayCollectionSurface.astro",
+    "./components/astro/agent-lab/WorkdayDetailSurface.astro": "./dist/astro/agent-lab/WorkdayDetailSurface.astro",
     "./components/astro/capacity/CapacityMeter.astro": "./dist/astro/capacity/CapacityMeter.astro",
     "./components/astro/capacity/ProviderBatteryCard.astro": "./dist/astro/capacity/ProviderBatteryCard.astro",
     "./components/astro/overlays/AccessibleDialog.astro": "./dist/astro/overlays/AccessibleDialog.astro",
@@ -203,7 +220,13 @@
     "./components/astro/patterns/DataBoundary.astro": "./dist/astro/patterns/DataBoundary.astro",
     "./components/astro/patterns/SetupProgress.astro": "./dist/astro/patterns/SetupProgress.astro",
     "./components/astro/activity/ActivityFeed.astro": "./dist/astro/activity/ActivityFeed.astro",
+    "./components/astro/team/TeamViewer.astro": "./dist/astro/team/TeamViewer.astro",
+    "./components/astro/navigation/CoreWorkspaceNavigation.astro": "./dist/astro/navigation/CoreWorkspaceNavigation.astro",
+    "./components/astro/discussion/DiscussionWorkspace.astro": "./dist/astro/discussion/DiscussionWorkspace.astro",
+    "./components/astro/discussion/DiscussionBody.astro": "./dist/astro/discussion/DiscussionBody.astro",
+    "./components/astro/discussion/TeamChatWorkspace.astro": "./dist/astro/discussion/TeamChatWorkspace.astro",
     "./components/astro/shell/navigation/Pagination.astro": "./dist/astro/shell/navigation/Pagination.astro",
+    "./components/astro/shell/navigation/ModeNavigation.astro": "./dist/astro/shell/navigation/ModeNavigation.astro",
     "./components/astro/surface/InlineConfirmation.astro": "./dist/astro/surface/InlineConfirmation.astro",
     "./components/astro/surface/CapabilityUnavailable.astro": "./dist/astro/surface/CapabilityUnavailable.astro",
     "./components/astro/surface/LocalCompanionLink.astro": "./dist/astro/surface/LocalCompanionLink.astro",
@@ -275,8 +298,14 @@
     "./components/astro/service/PermissionChecklist.astro": "./dist/astro/service/PermissionChecklist.astro",
     "./components/astro/service/OperationAuthorizationDialog.astro": "./dist/astro/service/OperationAuthorizationDialog.astro",
     "./components/astro/project/RepositoryConnectionPanel.astro": "./dist/astro/project/RepositoryConnectionPanel.astro",
+    "./components/astro/project/ProjectPortfolioSurface.astro": "./dist/astro/project/ProjectPortfolioSurface.astro",
+    "./components/astro/project/ProjectCommandSurface.astro": "./dist/astro/project/ProjectCommandSurface.astro",
+    "./components/astro/project/ProjectAgentsSurface.astro": "./dist/astro/project/ProjectAgentsSurface.astro",
+    "./components/astro/project/AgentStudioSurface.astro": "./dist/astro/project/AgentStudioSurface.astro",
     "./components/astro/service/ExplicitCredentialAuthorityPanel.astro": "./dist/astro/service/ExplicitCredentialAuthorityPanel.astro",
     "./components/astro/service/ProviderAuthorityPanel.astro": "./dist/astro/service/ProviderAuthorityPanel.astro",
+    "./components/astro/service/workspace/ServiceConnectionWorkspace.astro": "./dist/astro/service/workspace/ServiceConnectionWorkspace.astro",
+    "./components/astro/service/workspace/ServiceConnectionCreateSurface.astro": "./dist/astro/service/workspace/ServiceConnectionCreateSurface.astro",
     "./components/astro/workflow/WorkflowConfigurationPanel.astro": "./dist/astro/workflow/WorkflowConfigurationPanel.astro",
     "./components/astro/workflow/WorkflowDefinitionPanel.astro": "./dist/astro/workflow/WorkflowDefinitionPanel.astro",
     "./components/astro/workflow/WorkflowExecutionPanel.astro": "./dist/astro/workflow/WorkflowExecutionPanel.astro",
@@ -324,6 +353,8 @@
     "./components/astro/surface/EmptyState.astro": "./dist/astro/surface/EmptyState.astro",
     "./components/astro/surface/Panel.astro": "./dist/astro/surface/Panel.astro",
     "./components/astro/surface/ResourceCard.astro": "./dist/astro/surface/ResourceCard.astro",
+    "./components/astro/semantic/SemanticCollectionSurface.astro": "./dist/astro/semantic/SemanticCollectionSurface.astro",
+    "./components/astro/semantic/SemanticRegionSurface.astro": "./dist/astro/semantic/SemanticRegionSurface.astro",
     "./components/astro/patterns/PermissionBoundary.astro": "./dist/astro/patterns/PermissionBoundary.astro",
     "./components/astro/templates/CollectionTemplate.astro": "./dist/astro/templates/CollectionTemplate.astro",
     "./components/astro/templates/DashboardTemplate.astro": "./dist/astro/templates/DashboardTemplate.astro",
@@ -359,6 +390,10 @@
     "./components/react/WorkspaceSurfaces": {
       "types": "./dist/react/workspace-surfaces/index.d.ts",
       "default": "./dist/react/workspace-surfaces/index.js"
+    },
+    "./components/react/SemanticWorkspace": {
+      "types": "./dist/react/semantic/index.d.ts",
+      "default": "./dist/react/semantic/index.js"
     },
     "./components/react/CommandCenter": {
       "types": "./dist/react/command-center/index.d.ts",
@@ -408,7 +443,7 @@
       "types": "./dist/lib/charts/index.d.ts",
       "default": "./dist/lib/charts/index.js"
     },
-    "./lib/foundation": {
+    "./foundation": {
       "types": "./dist/lib/foundation/contracts.d.ts",
       "default": "./dist/lib/foundation/contracts.js"
     },
@@ -427,6 +462,7 @@
     "./styles/charts.css": "./dist/styles/charts.css",
     "./styles/operations-monitor.css": "./dist/styles/operations-monitor.css",
     "./styles/workspace-surfaces.css": "./dist/styles/workspace-surfaces.css",
+    "./styles/semantic-workspace.css": "./dist/styles/semantic-workspace.css",
     "./styles/command-center.css": "./dist/styles/command-center.css",
     "./styles/agent-atlas.css": "./dist/styles/agent-atlas.css",
     "./styles/forms.css": "./dist/styles/forms.css",

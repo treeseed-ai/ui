@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
+import { createWorkspaceState, workspaceReducer, type SurfaceRoute } from '../../lib/foundation/contracts.ts';
 import type { WorkspaceFocusState, WorkspaceOverlayReference, WorkspaceSurfaceMode } from './types.ts';
 import { closeWorkspaceOverlay, openWorkspaceOverlay, readWorkspaceNavigation, setWorkspaceFocus } from './workspace-navigation.ts';
 
@@ -12,16 +13,22 @@ interface WorkspaceOverlayCoordinatorValue extends WorkspaceFocusState {
 
 const WorkspaceOverlayContext = createContext<WorkspaceOverlayCoordinatorValue | null>(null);
 function presentationReference(reference: { kind: string; id: string }): WorkspaceOverlayReference {
-	const known = ['detail', 'designer', 'simulation', 'editor', 'diagnostic', 'help', 'confirmation'];
-	const kind = known.includes(reference.kind) ? reference.kind : reference.kind === 'agent' ? 'designer' : reference.kind === 'assignment-graph' ? 'diagnostic' : 'detail';
-	return { kind: kind as WorkspaceOverlayReference['kind'], id: reference.id };
+	return { kind: reference.kind, id: reference.id };
+}
+
+function restoredState() {
+	const initial = createWorkspaceState();
+	if (typeof window === 'undefined') return initial;
+	const navigation = readWorkspaceNavigation();
+	return workspaceReducer(initial, { type: 'restore.stack', workspace: 'team', routes: navigation.overlays as SurfaceRoute[] });
 }
 
 export function WorkspaceOverlayCoordinator({ children }: { children: ReactNode }) {
 	const initial = typeof window === 'undefined' ? { focusedSurfaceId: null, overlays: [] } : readWorkspaceNavigation();
 	const [surfaceId, setSurfaceId] = useState<string | null>(initial.focusedSurfaceId);
-	const [overlayStack, setOverlayStack] = useState<WorkspaceOverlayReference[]>(initial.overlays.map(presentationReference));
-	useEffect(() => { const update = () => { const navigation = readWorkspaceNavigation(); setSurfaceId(navigation.focusedSurfaceId); setOverlayStack(navigation.overlays.map(presentationReference)); }; addEventListener('popstate', update); return () => removeEventListener('popstate', update); }, []);
+	const [workspaceState, dispatch] = useReducer(workspaceReducer, undefined, restoredState);
+	const overlayStack = workspaceState.workspaces.team.stack.slice(1).map((frame) => presentationReference({ kind: frame.route.kind, id: frame.route.id ?? frame.route.kind }));
+	useEffect(() => { const update = () => { const navigation = readWorkspaceNavigation(); setSurfaceId(navigation.focusedSurfaceId); dispatch({ type: 'restore.stack', workspace: 'team', routes: navigation.overlays as SurfaceRoute[] }); }; addEventListener('popstate', update); return () => removeEventListener('popstate', update); }, []);
 	const focusSurface = useCallback((id: string) => setWorkspaceFocus(id), []);
 	const shrinkSurface = useCallback((id: string) => { if (readWorkspaceNavigation().focusedSurfaceId === id) setWorkspaceFocus(null, 'replace'); }, []);
 	const openOverlay = useCallback((reference: WorkspaceOverlayReference) => openWorkspaceOverlay(reference), []);

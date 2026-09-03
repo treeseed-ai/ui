@@ -6,10 +6,31 @@ export const helpAndFeedbackComponents: ComponentCatalogEntry[] = [
       { name: 'targetId', type: 'string', defaultValue: 'catalog-discussion', description: 'Discussion panel id to open.' },
       { name: 'title', type: 'string', defaultValue: 'Open Discussions', description: 'Accessible action title.' },
     ], undefined, '@treeseed/ui/components/astro/discussion/DiscussionTrigger.astro'),
+  display('discussion-body', 'DiscussionBody', 'Discussion', 'astro', 'Internal renderer-neutral discussion composition shared by the panel and full-page workspace.', 'large', { id: 'catalog-discussion-body', teamId: 'team-demo' }, [
+      { name: 'id', type: 'string', defaultValue: 'catalog-discussion-body', description: 'Stable editor and region identity.' },
+      { name: 'context', type: 'DiscussionContext', defaultValue: { teamId: 'team-demo' }, description: 'Authorized discussion context.' },
+    ], undefined, '@treeseed/ui/components/astro/discussion/DiscussionBody.astro'),
   display('discussion-panel', 'DiscussionPanel', 'Discussion', 'astro', 'Durable TreeDX-backed agent conversation panel with assignment traces and a Markdown composer.', 'large', { id: 'catalog-discussion', teamId: 'team-demo', projectId: 'project-demo' }, [
       { name: 'id', type: 'string', defaultValue: 'catalog-discussion', description: 'Unique panel and trigger target id.' },
       { name: 'context', type: 'DiscussionContext', defaultValue: { teamId: 'team-demo', projectId: 'project-demo' }, description: 'Authorized team, project, endpoint, identity, and agent context.' },
     ], undefined, '@treeseed/ui/components/astro/discussion/DiscussionPanel.astro'),
+  display('discussion-workspace', 'DiscussionWorkspace', 'Discussion', 'astro', 'Full-page durable team conversation workspace backed by the same discussion contract as the persistent shell panel.', 'full-page', { id: 'catalog-discussion-workspace', teamId: 'team-demo', projectId: 'project-demo' }, [
+      { name: 'context', type: 'DiscussionContext', defaultValue: { teamId: 'team-demo', projectId: 'project-demo' }, description: 'Authorized team and project discussion context.' },
+      { name: 'title', type: 'string', defaultValue: 'Chat', description: 'Workspace heading.' },
+    ], undefined, '@treeseed/ui/components/astro/discussion/DiscussionWorkspace.astro'),
+  display('team-chat-workspace', 'TeamChatWorkspace', 'Discussion', 'astro', 'Complete shared Chat surface with project context selection, semantic history region, and durable discussion workspace.', 'full-page', { teamId: 'team-demo', projects: 2 }, [
+      { name: 'context', type: 'DiscussionContext', defaultValue: { teamId: 'team-demo' }, description: 'Authorized team discussion context.' },
+      { name: 'projects', type: 'ProjectOption[]', defaultValue: 2, description: 'Available project contexts.' },
+    ], undefined, '@treeseed/ui/components/astro/discussion/TeamChatWorkspace.astro'),
+  display('core-workspace-navigation', 'CoreWorkspaceNavigation', 'Navigation', 'astro', 'Canonical Team, Chat, Inbox, and Discover root navigation.', 'large', { current: 'team' }, [
+      { name: 'current', type: 'WorkspaceId', defaultValue: 'team', description: 'Current root workspace.' },
+      { name: 'teamHref', type: 'string', defaultValue: '/app/teams/team-demo', description: 'Active-team viewer route.' },
+    ], undefined, '@treeseed/ui/components/astro/navigation/CoreWorkspaceNavigation.astro'),
+  display('team-viewer', 'TeamViewer', 'Team', 'astro', 'Shared operational and public team viewer composed from profile, project, resource, signal, activity, and action regions.', 'full-page', { name: 'TreeSeed', handle: 'treeseed', projects: 2 }, [
+      { name: 'name', type: 'string', defaultValue: 'TreeSeed', description: 'Team display name.' },
+      { name: 'projects', type: 'ViewerItem[]', defaultValue: [], description: 'Visible team projects.' },
+      { name: 'publicView', type: 'boolean', defaultValue: false, description: 'Applies public profile semantics.' },
+    ], undefined, '@treeseed/ui/components/astro/team/TeamViewer.astro'),
   display('feedback-trigger', 'FeedbackTrigger', 'Feedback', 'astro', 'Shell feedback trigger bound to the shared non-modal panel.', 'inline', { targetId: 'catalog-feedback' }, [
       { name: 'targetId', type: 'string', defaultValue: 'catalog-feedback', description: 'Dialog id to open.' },
       { name: 'label', type: 'string', defaultValue: 'Feedback', description: 'Visible button text.' },

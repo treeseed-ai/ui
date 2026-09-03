@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
+import type { SurfaceKind } from '../../lib/foundation/contracts.ts';
 
 export type WorkspaceSurfaceMode = 'inline' | 'focused';
 export type WorkspaceSurfaceBoundary = 'control-surface' | 'workspace-content';
 
-export type WorkspaceOverlayKind =
+export type WorkspaceOverlayPresentationKind =
 	| 'detail'
 	| 'designer'
 	| 'simulation'
@@ -11,6 +12,8 @@ export type WorkspaceOverlayKind =
 	| 'diagnostic'
 	| 'help'
 	| 'confirmation';
+
+export type WorkspaceOverlayKind = WorkspaceOverlayPresentationKind | SurfaceKind;
 
 export interface WorkspaceOverlayReference {
 	kind: WorkspaceOverlayKind;

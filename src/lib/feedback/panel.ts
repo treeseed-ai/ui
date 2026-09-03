@@ -1,13 +1,13 @@
 import type { FeedbackContext, FeedbackSubmission, FeedbackSubmissionType } from '../foundation/contracts.ts';
 import { formActionUrl, registerFormAdapter, setFieldError } from '../../forms-client.ts';
+import { dismissUtilityApplication, initializeUtilityDock, presentUtilityApplication, rememberUtilityApplicationOpener } from '../shell/utility-dock.ts';
+import { setUtilityApplicationState } from '../shell/utility-state.ts';
 
 const initialized = new WeakSet<Document>();
 const screenshotByForm = new WeakMap<HTMLFormElement, FeedbackSubmission['screenshot']>();
 const contextPatchByPanel = new WeakMap<HTMLElement, Partial<FeedbackContext>>();
-const openerByPanel = new WeakMap<HTMLElement, HTMLElement>();
 const idempotencyByForm = new WeakMap<HTMLFormElement, string>();
 const homeByPanel = new WeakMap<HTMLElement, { parent: Node; nextSibling: Node | null }>();
-const desktopDock = '(min-width: 64rem)';
 
 function csrfToken() {
 	return document.cookie.split('; ').find((entry) => entry.startsWith('ts_csrf='))?.split('=').slice(1).join('=') ?? '';
@@ -31,9 +31,9 @@ function setStatus(form: HTMLFormElement, message: string, tone: 'neutral' | 'da
 }
 
 function presentPanel(panel: HTMLElement) {
-	const docked = matchMedia(desktopDock).matches && !homeByPanel.has(panel);
-	panel.dataset.tsFeedbackPresentation = docked ? 'docked' : 'overlay';
-	if (docked) {
+	const placement = presentUtilityApplication(panel, 'feedback', homeByPanel.has(panel));
+	panel.dataset.tsFeedbackPresentation = placement === 'dock-end' ? 'docked' : placement === 'dock-bottom' ? 'bottom' : 'overlay';
+	if (placement !== 'full-screen') {
 		if (typeof panel.hidePopover === 'function' && panel.matches(':popover-open')) panel.hidePopover();
 		panel.removeAttribute('popover');
 		return;
@@ -43,7 +43,7 @@ function presentPanel(panel: HTMLElement) {
 }
 
 function openPanel(panel: HTMLElement, opener: HTMLElement) {
-	openerByPanel.set(panel, opener);
+	rememberUtilityApplicationOpener(panel, opener);
 	const openDialog = opener.closest<HTMLDialogElement>('dialog[open]');
 	if (openDialog && !openDialog.contains(panel) && panel.parentNode) {
 		homeByPanel.set(panel, { parent: panel.parentNode, nextSibling: panel.nextSibling });
@@ -56,8 +56,7 @@ function openPanel(panel: HTMLElement, opener: HTMLElement) {
 
 function closePanel(panel: HTMLElement) {
 	if (typeof panel.hidePopover === 'function' && panel.matches(':popover-open')) panel.hidePopover();
-	panel.hidden = true;
-	const opener = openerByPanel.get(panel);
+	dismissUtilityApplication(panel);
 	const home = homeByPanel.get(panel);
 	if (home) {
 		home.parent.insertBefore(panel, home.nextSibling);
@@ -65,7 +64,6 @@ function closePanel(panel: HTMLElement) {
 	}
 	panel.setAttribute('popover', 'manual');
 	delete panel.dataset.tsFeedbackPresentation;
-	opener?.focus();
 }
 
 function applyOpenerContext(panel: HTMLElement, opener: HTMLElement) {
@@ -137,9 +135,7 @@ registerFormAdapter('feedback', {
 
 export function initializeFeedbackPanels(root: Document = document) {
 	if (initialized.has(root)) return; initialized.add(root);
-	matchMedia(desktopDock).addEventListener('change', () => {
-		for (const panel of root.querySelectorAll<HTMLElement>('[data-ts-feedback-panel]:not([hidden])')) presentPanel(panel);
-	});
+	initializeUtilityDock(root);
 	root.addEventListener('click', (event) => {
 		const target = event.target instanceof Element ? event.target : null; if (!target) return;
 		const opener = target.closest<HTMLElement>('[data-ts-feedback-open]');
@@ -151,4 +147,8 @@ export function initializeFeedbackPanels(root: Document = document) {
 		if (target.closest('[data-ts-feedback-remove]')) removeScreenshot(form);
 	});
 	root.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !(event.target instanceof Element && event.target.closest('dialog[open]'))) { const panel = root.querySelector<HTMLElement>('[data-ts-feedback-panel]:popover-open, [data-ts-feedback-panel]:not([hidden])'); if (panel) { event.stopPropagation(); closePanel(panel); } } });
+	root.addEventListener('treeseed:form-start', (event) => { const form = event.target instanceof HTMLFormElement ? event.target : null; if (form?.matches('[data-ts-feedback-form]')) setUtilityApplicationState(form, 'loading', 'Sending feedback…'); });
+	root.addEventListener('treeseed:form-error', (event) => { const form = event.target instanceof HTMLFormElement ? event.target : null; if (!form?.matches('[data-ts-feedback-form]')) return; const detail = event instanceof CustomEvent ? event.detail as Record<string, unknown> : {}; const code = String(detail.code ?? ''); const state = !navigator.onLine || code === 'network_error' ? 'offline' : /(?:401|403|denied)/u.test(code) ? 'denied' : /(?:409|stale|conflict)/u.test(code) ? 'stale' : 'failed'; setUtilityApplicationState(form, state, String(detail.message ?? 'Feedback could not be sent. You can retry without losing this draft.')); });
+	window.addEventListener('offline', () => root.querySelectorAll<HTMLFormElement>('[data-ts-feedback-form]').forEach((form) => setUtilityApplicationState(form, 'offline')));
+	window.addEventListener('online', () => root.querySelectorAll<HTMLFormElement>('[data-ts-feedback-form]').forEach((form) => setUtilityApplicationState(form, 'ready', 'Back online. Your draft is ready to send.')));
 }

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { requestJson } from "../../forms-client.ts";
 import { WorkspaceFocusSurface } from "../workspace-surfaces/WorkspaceFocusSurface.tsx";
-import { closeTopWorkspaceOverlay, openWorkspaceOverlay, readWorkspaceNavigation, safeWorkspaceReturnPath, setWorkspaceFocus } from "../workspace-surfaces/workspace-navigation.ts";
+import { SemanticActionLauncher, type SemanticActionLink } from "../semantic/SemanticActionLauncher.tsx";
+import { WorkspaceOverlayCoordinator, useWorkspaceOverlayCoordinator } from "../workspace-surfaces/WorkspaceOverlayCoordinator.tsx";
+import { readWorkspaceNavigation, safeWorkspaceReturnPath, setWorkspaceFocus } from "../workspace-surfaces/workspace-navigation.ts";
 import type { WorkspaceSurfaceMode } from "../workspace-surfaces/types.ts";
 import { AtlasCanvas } from "./AtlasCanvas.tsx";
 import { AtlasDocks } from "./AtlasDocks.tsx";
@@ -59,7 +61,11 @@ export function atlasDesignerReturnPath(search: string) {
   return safeWorkspaceReturnPath(new URLSearchParams(search).get("returnTo")) ?? "";
 }
 
-export function AgentAtlasWorkspace({
+export function AgentAtlasWorkspace(props: Props) {
+  return <WorkspaceOverlayCoordinator><AgentAtlasApplication {...props} /></WorkspaceOverlayCoordinator>;
+}
+
+function AgentAtlasApplication({
   initialProjection,
   endpoints,
   canManage = false,
@@ -78,23 +84,25 @@ export function AgentAtlasWorkspace({
   );
   const [surfaceMode, setSurfaceMode] = useState(initialSurfaceMode);
   const [newEvents, setNewEvents] = useState(0);
-  const [overlays, setOverlays] = useState<Array<{ kind: string; id: string }>>([]);
+  const { overlays, openOverlay, closeTop } = useWorkspaceOverlayCoordinator();
   const [viewReady, setViewReady] = useState(!endpoints.viewState);
   const unavailableSelection = typeof location !== "undefined"
     && selectedWorkdayUnavailable(projection, location.search);
   const returnFocus = useRef<{ focus: () => void } | null>(null);
+  const teamActions = useMemo<SemanticActionLink[]>(() => canManage ? [
+    endpoints.createAgent && { id: "agent.create", href: endpoints.createAgent },
+    endpoints.createGroup && { id: "agent-group.create", href: endpoints.createGroup },
+    endpoints.createProject && { id: "project.create", href: endpoints.createProject },
+    endpoints.connectService && { id: "service.connect", href: endpoints.connectService },
+    endpoints.configureCapacity && { id: "capacity.configure", href: endpoints.configureCapacity },
+  ].filter((action): action is SemanticActionLink => Boolean(action)) : [], [canManage, endpoints.configureCapacity, endpoints.connectService, endpoints.createAgent, endpoints.createGroup, endpoints.createProject]);
   useEffect(() => {
     const pop = () => {
       const url = new URL(location.href);
       const navigation = readWorkspaceNavigation(url.search);
       setSurfaceMode(url.searchParams.get("focus") === "atlas" ? "focused" : "inline");
       setInterfaceMode(canDiagnose && url.searchParams.get("mode") === "diagnostic" ? "diagnostic" : "easy");
-      if (!navigation.overlays.length) {
-        setOverlays([]);
-        requestAnimationFrame(() => returnFocus.current?.focus());
-        return;
-      }
-      setOverlays(navigation.overlays);
+      if (!navigation.overlays.length) requestAnimationFrame(() => returnFocus.current?.focus());
     };
     pop();
     addEventListener("popstate", pop);
@@ -206,7 +214,7 @@ export function AgentAtlasWorkspace({
     const canonicalId = ["agent", "group", "project", "signal"].includes(kind)
       ? id.replace(/@[a-f0-9]{8}$/u, "")
       : id;
-    openWorkspaceOverlay({ kind, id: canonicalId });
+    openOverlay({ kind, id: canonicalId });
     const event = projection.activity.find((item) => item.id === id);
     const assignment = projection.assignments.find((item) => item.id === id);
     const topology = projection.topologies.find(
@@ -248,7 +256,7 @@ export function AgentAtlasWorkspace({
     setNewEvents(0);
     void load({});
   };
-  const openDag = () => openWorkspaceOverlay({ kind: "assignment-graph", id: "scope" });
+  const openDag = () => openOverlay({ kind: "assignment-graph", id: "scope" });
   const title = useMemo(
     () =>
       projection.scope.workdayIds.length === 1
@@ -347,12 +355,7 @@ export function AgentAtlasWorkspace({
             <button onClick={() => setSeed((value) => value + 1)}>
               Redraw
             </button>
-            {canManage && (
-              <>
-                <a href={endpoints.createAgent}>New agent</a>
-                <a href={endpoints.createGroup}>New group</a>
-              </>
-            )}
+            <SemanticActionLauncher label="Team actions" actions={teamActions} />
           </div>
           <span className="ts-atlas-freshness">
             <i />
@@ -428,13 +431,13 @@ export function AgentAtlasWorkspace({
             selection={overlay}
             endpoints={endpoints}
             observedAt={projection.playback.cursor.observedAt}
-            onClose={closeTopWorkspaceOverlay}
+            onClose={closeTop}
             onDiscuss={() =>
               document.dispatchEvent(
                 new CustomEvent("treeseed:discussion-open"),
               )
             }
-            onInspect={(kind, id) => openWorkspaceOverlay({ kind, id })}
+            onInspect={(kind, id) => openOverlay({ kind, id })}
             interfaceMode={interfaceMode}
             definitionRevision={selectedDefinitionRevision(projection, overlay)}
             historical={projection.playback.mode === "historical"}

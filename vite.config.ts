@@ -20,6 +20,7 @@ export default defineConfig({
         forms: 'src/forms.ts',
         'forms-client': 'src/forms-client.ts',
         react: 'src/react.ts',
+		'ink/index': 'src/ink/index.ts',
         'theme/index': 'src/theme/index.ts',
         'lib/foundation/contracts': 'src/lib/foundation/contracts.ts',
         'lib/charts/index': 'src/lib/charts/index.ts',
@@ -34,6 +35,7 @@ export default defineConfig({
 		'react/agent-atlas/index': 'src/react/agent-atlas/index.ts',
 		'react/agent-designer/index': 'src/react/agent-designer/index.ts',
 		'react/progressive/index': 'src/react/progressive/index.ts',
+		'react/semantic/index': 'src/react/semantic/index.ts',
         'react/editors/RichMarkdownEditor': 'src/react/editors/RichMarkdownEditor.tsx',
         'react/editors/KnowledgeRelationPicker': 'src/react/editors/KnowledgeRelationPicker.tsx',
         'lib/app/platform-operation-status': 'src/lib/app/platform-operation-status.ts',
@@ -46,7 +48,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: [/^node:/, /^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/, 'astro', 'recharts', 'yaml', '@mdxeditor/editor'],
+      external: [/^node:/, /^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/, /^ink(?:\/.*)?$/, 'astro', 'recharts', 'yaml', '@mdxeditor/editor'],
       output: {
         preserveModules: false,
       },

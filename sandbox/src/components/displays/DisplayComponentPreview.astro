@@ -17,6 +17,11 @@ import FeedbackTrigger from '../../../../src/astro/feedback/FeedbackTrigger.astr
 import FeedbackPanel from '../../../../src/astro/feedback/FeedbackPanel.astro';
 import DiscussionTrigger from '../../../../src/astro/discussion/DiscussionTrigger.astro';
 import DiscussionPanel from '../../../../src/astro/discussion/DiscussionPanel.astro';
+import DiscussionBody from '../../../../src/astro/discussion/DiscussionBody.astro';
+import DiscussionWorkspace from '../../../../src/astro/discussion/DiscussionWorkspace.astro';
+import TeamChatWorkspace from '../../../../src/astro/discussion/TeamChatWorkspace.astro';
+import CoreWorkspaceNavigation from '../../../../src/astro/navigation/CoreWorkspaceNavigation.astro';
+import TeamViewer from '../../../../src/astro/team/TeamViewer.astro';
 import FeedbackRedactionBoundary from '../../../../src/astro/feedback/FeedbackRedactionBoundary.astro';
 import ToastRegion from '../../../../src/astro/feedback/ToastRegion.astro';
 import HelpArticle from '../../../../src/astro/help/HelpArticle.astro';
@@ -42,7 +47,14 @@ import PermissionChecklist from '../../../../src/astro/service/PermissionCheckli
 import OperationAuthorizationDialog from '../../../../src/astro/service/OperationAuthorizationDialog.astro';
 import ExplicitCredentialAuthorityPanel from '../../../../src/astro/service/ExplicitCredentialAuthorityPanel.astro';
 import ProviderAuthorityPanel from '../../../../src/astro/service/ProviderAuthorityPanel.astro';
+import ServiceConnectionWorkspace from '../../../../src/astro/service/workspace/ServiceConnectionWorkspace.astro';
+import ServiceConnectionCreateSurface from '../../../../src/astro/service/workspace/ServiceConnectionCreateSurface.astro';
 import RepositoryConnectionPanel from '../../../../src/astro/project/RepositoryConnectionPanel.astro';
+import ProjectPortfolioSurface from '../../../../src/astro/project/ProjectPortfolioSurface.astro';
+import ProjectCommandSurface from '../../../../src/astro/project/ProjectCommandSurface.astro';
+import ProjectAgentsSurface from '../../../../src/astro/project/ProjectAgentsSurface.astro';
+import AgentStudioSurface from '../../../../src/astro/project/AgentStudioSurface.astro';
+import CapacityWorkspace from '../../../../src/astro/capacity/CapacityWorkspace.astro';
 import WorkflowConfigurationPanel from '../../../../src/astro/workflow/WorkflowConfigurationPanel.astro';
 import WorkflowDefinitionPanel from '../../../../src/astro/workflow/WorkflowDefinitionPanel.astro';
 import WorkflowExecutionPanel from '../../../../src/astro/workflow/WorkflowExecutionPanel.astro';
@@ -52,10 +64,20 @@ import RailNav from '../../../../src/astro/shell/navigation/RailNav.astro';
 import ShellIconLink from '../../../../src/astro/shell/navigation/ShellIconLink.astro';
 import ShellIcon from '../../../../src/astro/shell/navigation/ShellIcon.astro';
 import TopBar from '../../../../src/astro/shell/navigation/TopBar.astro';
+import ModeNavigation from '../../../../src/astro/shell/navigation/ModeNavigation.astro';
+import AgentLabMonitor from '../../../../src/astro/agent-lab/AgentLabMonitor.astro';
+import AgentLabChrome from '../../../../src/astro/agent-lab/AgentLabChrome.astro';
+import AgentLabHomeSurface from '../../../../src/astro/agent-lab/AgentLabHomeSurface.astro';
+import AgentLabCommandSurface from '../../../../src/astro/agent-lab/AgentLabCommandSurface.astro';
+import AgentLabEntitySurface from '../../../../src/astro/agent-lab/AgentLabEntitySurface.astro';
+import WorkdayCollectionSurface from '../../../../src/astro/agent-lab/WorkdayCollectionSurface.astro';
+import WorkdayDetailSurface from '../../../../src/astro/agent-lab/WorkdayDetailSurface.astro';
 import Card from '../../../../src/astro/surface/Card.astro';
 import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
 import Panel from '../../../../src/astro/surface/Panel.astro';
 import ResourceCard from '../../../../src/astro/surface/ResourceCard.astro';
+import SemanticCollectionSurface from '../../../../src/astro/semantic/SemanticCollectionSurface.astro';
+import SemanticRegionSurface from '../../../../src/astro/semantic/SemanticRegionSurface.astro';
 import InlineConfirmation from '../../../../src/astro/surface/InlineConfirmation.astro';
 import PermissionBoundary from '../../../../src/astro/patterns/PermissionBoundary.astro';
 import CollectionTemplate from '../../../../src/astro/templates/CollectionTemplate.astro';
@@ -86,6 +108,8 @@ import KnowledgeOutlineBranch from '../../../../src/astro/knowledge/outline/Know
 import KnowledgePackWorkbench from '../../../../src/astro/knowledge/KnowledgePackWorkbench.astro';
 import KnowledgeLifecyclePanel from '../../../../src/astro/knowledge/KnowledgeLifecyclePanel.astro';
 import KnowledgePublicationStatus from '../../../../src/astro/knowledge/KnowledgePublicationStatus.astro';
+import KnowledgeLibrarySurface from '../../../../src/astro/knowledge/KnowledgeLibrarySurface.astro';
+import KnowledgeWorkbenchSurface from '../../../../src/astro/knowledge/KnowledgeWorkbenchSurface.astro';
 import KnowledgeRelationPicker from '../../../../src/react/editors/KnowledgeRelationPicker';
 import OperationalTimeline from '../../../../src/astro/app/operations/OperationalTimeline.astro';
 import RepositoryContextPanel from '../../../../src/astro/app/operations/RepositoryContextPanel.astro';
@@ -166,18 +190,36 @@ import StageBanner from '../../../../src/astro/site/marketing/StageBanner.astro'
 import TrustCallout from '../../../../src/astro/site/marketing/TrustCallout.astro';
 import MonitoringChartHarness from './MonitoringChartHarness.tsx';
 import ProjectActivityChartHarness from './ProjectActivityChartHarness.tsx';
+import AgentAtlasHarness from './AgentAtlasHarness.tsx';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
 import { accountIdentity, accountProjects, accountSessions, notificationCapabilities, notificationPreferences, personalThemes, navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
+import { agentLabCommandEndpoints, agentLabCommandPage, agentLabFrame, agentLabMetricDestinations } from './agent-lab-fixtures.ts';
 const labTabs = ['Inbox', 'Decisions', 'Build', 'Direction', 'Results', 'Find'].map((label) => ({ id: label.toLowerCase(), label, href: '#' }));
 const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running', startedAt: '2026-08-04T13:00:00.000Z', finishedAt: null, href: '#' }, { id: 'prior', title: 'Research cycle', status: 'completed', startedAt: '2026-08-04T10:00:00.000Z', finishedAt: '2026-08-04T12:00:00.000Z', href: '#' }];
+const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 'platform', path: `knowledge/${book.slug}/book.yaml`, teamSlug: 'treeseed' } }));
 ---
 
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
 {entry.id === 'badge' ? <div class="primitive-inline"><Badge>Default</Badge><Badge tone="success">Success</Badge><Badge tone="warning">Warning</Badge><Badge tone="danger">Danger</Badge></div> : null}
 {entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
 {entry.id === 'resource-card' ? <ResourceCard title="Question record" description="What should the launch team clarify before agent work starts?" href="/displays/resource-card" status="recorded" meta="Project direction" /> : null}
+{entry.id === 'semantic-collection-surface' ? <SemanticCollectionSurface viewId="projects" regionId="projects" presentation="project-operating-cards" items={[{ id: 'platform', title: 'TreeSeed Platform', description: 'Unified control plane and interface foundation.', status: 'active', meta: '2 active agents', href: '/displays/semantic-collection-surface', tone: 'success' }, { id: 'library', title: 'Platform Library', description: 'Repository-native books and knowledge.', status: 'ready', meta: '3 books', tone: 'info' }]} /> : null}
+{entry.id === 'semantic-region-surface' ? <SemanticRegionSurface viewId="agent-builder" regionId="identity" presentation="agent-identity-form"><Panel eyebrow="Identity" title="Architect" description="A rich Agent Builder presentation embedded in a shell-free semantic region." /></SemanticRegionSurface> : null}
+{entry.id === 'agent-atlas-workspace' ? <AgentAtlasHarness client:load /> : null}
+{entry.id === 'agent-lab-monitor' ? <AgentLabMonitor frame={agentLabFrame} csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'agent-lab-chrome' ? <AgentLabChrome frame={agentLabFrame} csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} current="inbox" inboxCount={1} /> : null}
+{entry.id === 'agent-lab-home-surface' ? <AgentLabHomeSurface frame={agentLabFrame} canManage canDiagnose csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'agent-lab-command-surface' ? <AgentLabCommandSurface activeTeam frame={agentLabFrame} surface={agentLabCommandPage} endpoints={agentLabCommandEndpoints} query="" current="inbox" preferences={{ timeZone: 'UTC', realTimeUpdates: false, realTimePollingIntervalSeconds: 5 }} csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'agent-lab-entity-surface' ? <AgentLabEntitySurface activeTeam monitor={agentLabFrame} label="Agents" description="Configured agent classes and their current operating state." items={[{ id: 'agent-demo', title: 'Interface architect', status: 'active' }]} query="" action="#" csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'workday-collection-surface' ? <WorkdayCollectionSurface activeTeam monitor={agentLabFrame} canManage csrfToken="sandbox-csrf" action="#" items={[{ id: 'workday-demo', title: 'Interface parity', status: 'running' }]} query="" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'workday-detail-surface' ? <WorkdayDetailSurface activeTeam run={{ id: 'workday-demo', scenarioId: 'interface-parity', status: 'running', startedAt: '2026-09-02T12:00:00.000Z', durationSeconds: 3600 }} events={[]} eventTotal={0} eventHasMore={false} monitor={agentLabFrame} canManage csrfToken="sandbox-csrf" timeZone="UTC" transitionAction="#" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'project-command-surface' ? <ProjectCommandSurface activeTeam projectId="platform" project={{ id: 'platform', name: 'TreeSeed Platform', status: 'active', description: 'Unified control plane and interface foundation.' }} summary={{}} agents={{ count: 1 }} capacity={{ status: 'ready', summary: 'Local Codex capacity is available.' }} releases={{ status: 'staging' }} repository={{ owner: 'treeseed-ai', name: 'platform' }} approvals={[]} /> : null}
+{entry.id === 'project-agents-surface' ? <ProjectAgentsSurface projectId="platform" project={{ id: 'platform', name: 'TreeSeed Platform' }} agents={[{ id: 'interface-architect', displayName: 'Interface architect', description: 'Maintains cross-renderer parity.', status: 'active' }]} runs={[{ agentClassId: 'interface-architect', status: 'succeeded' }]} /> : null}
+{entry.id === 'agent-studio-surface' ? <AgentStudioSurface projectId="platform" agent={{ id: 'interface-architect', name: 'Interface architect', slug: 'interface-architect', handler: 'codex', activityProfile: 'implementation', planningEnabled: true, actingEnabled: true }} runs={[]} fallbacks={[]} audits={[]} timeZone="UTC" /> : null}
+{entry.id === 'knowledge-workbench-surface' ? <KnowledgeWorkbenchSurface team={{ id: 'team-demo', name: 'TreeSeed' }} sections={[{ id: 'library', label: 'Library', href: '#', active: true }]} view="library" retryHref="#" accessUnavailable={false} canRead requestedUnauthorizedControl={false} reviewsUnavailable={false} reviews={[]} packsUnavailable={false} books={knowledgeBooks} collections={[]} builds={[]} selectedProjectId="" sourcePath="" sourceSha="" formValues={{}} canManageBooks lifecycleUnavailable={false} projects={[]} projectItems={[]} libraryCatalog={{ books: knowledgeBooks, pages: [] }} libraryUnavailable={false} csrfToken="catalog" timeZone="UTC" /> : null}
+{entry.id === 'service-connection-create-surface' ? <ServiceConnectionCreateSurface team={{ id: 'team-demo' }} canManage provider={undefined} providers={[{ id: 'github', label: 'GitHub', description: 'Repository and workflow provider.', capabilities: [{ label: 'Repositories', status: 'available' }] }]} permissions={[]} csrfToken="catalog" sections={[{ id: 'connections', label: 'Connections', href: '#', active: true }]} /> : null}
 {entry.id === 'readiness-summary' ? <ReadinessSummary viewModel={readinessViewModel} /> : null}
 {entry.id === 'repository-connection-panel' ? <RepositoryConnectionPanel topology={{ contentRepository: { local: { path: '.' } } }} candidates={[{ value: 'connection|binding|authority', label: 'GitHub · TreeSeed', status: 'ready' }]} csrfToken="catalog" action="#" /> : null}
 {entry.id === 'provider-authority-panel' ? <ProviderAuthorityPanel kind="repository" teamId="team_demo" connectionId="connection_demo" csrfToken="catalog" status="ready" accountLogin="treeseed-ai" installationId="installation_demo" permissions={['Metadata: read', 'Contents: read and write']} /> : null}
@@ -219,7 +261,12 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
 {entry.id === 'action-bar' ? <ActionBar actions={resolvedActions} /> : null}
 {entry.id === 'discussion-trigger' ? <div class="primitive-inline"><DiscussionTrigger targetId="catalog-discussion-trigger" /><DiscussionPanel id="catalog-discussion-trigger" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /></div> : null}
+{entry.id === 'discussion-body' ? <div data-ts-discussion-container><DiscussionBody id="catalog-discussion-body" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions' }} /></div> : null}
 {entry.id === 'discussion-panel' ? <div><DiscussionTrigger targetId="catalog-discussion-panel" /><DiscussionPanel id="catalog-discussion-panel" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /></div> : null}
+{entry.id === 'discussion-workspace' ? <DiscussionWorkspace id="catalog-discussion-workspace" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /> : null}
+{entry.id === 'team-chat-workspace' ? <TeamChatWorkspace context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions' }} projects={[{ id: 'project-demo', label: 'Platform' }, { id: 'project-ui', label: 'UI' }]} activeProjectId="project-demo" /> : null}
+{entry.id === 'core-workspace-navigation' ? <CoreWorkspaceNavigation current="team" teamHref="/displays/team-viewer" /> : null}
+{entry.id === 'team-viewer' ? <TeamViewer name="TreeSeed" handle="treeseed" description="Platform, packages, products, and agent operations." metrics={[{ label: 'Projects', value: 2 }, { label: 'Open decisions', value: 3 }]} projects={[{ id: 'platform', title: 'Platform', description: 'Public installer and portfolio integration workspace.', status: 'active' }, { id: 'ui', title: 'UI', description: 'Renderer-neutral semantics and reusable presentation.', status: 'active' }]} resources={[{ title: 'Knowledge', description: 'Published team knowledge.', status: 'Available' }]} activity={[]} actions={[{ label: 'Open projects', href: '/displays/team-viewer', variant: 'primary' }]} /> : null}
 {entry.id === 'feedback-trigger' ? <div class="primitive-inline"><FeedbackTrigger targetId="catalog-feedback" /><FeedbackPanel id="catalog-feedback" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-panel' ? <div><FeedbackTrigger targetId="catalog-feedback-panel" /><FeedbackPanel id="catalog-feedback-panel" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-redaction-boundary' ? <p>Public value <FeedbackRedactionBoundary reason="secret">secret-token-preview</FeedbackRedactionBoundary></p> : null}
@@ -260,6 +307,7 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
 {entry.id === 'shell-icon' ? <div class="primitive-inline"><ShellIcon name="start" /><ShellIcon name="teams" /><ShellIcon name="projects" /><ShellIcon name="capacity" /><ShellIcon name="work" /><ShellIcon name="knowledge" /><ShellIcon name="account" /><ShellIcon name="sign-out" /></div> : null}
 {entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
+{entry.id === 'mode-navigation' ? <ModeNavigation mode="command" current="projects" /> : null}
 {entry.id === 'collection-template' ? <CollectionTemplate viewModel={collectionViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'dashboard-template' ? <DashboardTemplate viewModel={dashboardViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'detail-template' ? <DetailTemplate title="Question detail" description="Detail template preview." actions={resolvedActions} metadata={[{ key: 'Status', value: 'Open' }, { key: 'Type', value: 'Research' }]}><Panel title="Question body"><p>What should the launch team clarify before agent work starts?</p></Panel></DetailTemplate> : null}
@@ -278,6 +326,8 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'capacity-meter' ? <CapacityMeter label="Tokens" used={3200} reserved={800} total={10000} unit=" tok" /> : null}
 {entry.id === 'provider-battery-card' ? <ProviderBatteryCard id="provider-demo" name="Local provider" status="available" owner="Seed Cooperative" capabilities={['planning', 'reviewing']} assignments={2} updatedAt="2026-08-07T18:00:00.000Z" timeZone="America/New_York" meters={[{ label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }, { label: 'Concurrency', used: 2, total: 8 }]} /> : null}
 {entry.id === 'capacity-control-room' ? <CapacityControlRoom timeZone="America/New_York" providers={[{ id: 'provider-local', name: 'Local provider', status: 'available', owner: 'Seed Cooperative', capabilities: ['planning', 'reviewing'], assignments: 2, updatedAt: '2026-08-07T18:00:00.000Z', meters: [{ label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }] }, { id: 'provider-burst', name: 'Burst provider', status: 'offline', owner: 'External capacity', capabilities: ['acting'], assignments: 0, updatedAt: '2026-08-07T17:45:00.000Z', meters: [{ label: 'Concurrency', used: 0, total: 12, tone: 'violet' }] }]} /> : null}
+{entry.id === 'capacity-workspace' ? <CapacityWorkspace teamId="team-demo" timeZone="America/New_York" fleet={[]} providers={[]} providerAlerts={[]} providerRequests={[]} memberships={[]} reservations={[]} usageCount={0} ledgerCount={0} registrationKey={{ status: 'enabled' }} canManage csrfToken="sandbox-csrf" /> : null}
+{entry.id === 'project-portfolio-surface' ? <ProjectPortfolioSurface activeTeam items={[{ id: 'platform', title: 'Platform', description: 'Unified TreeSeed services and interfaces.', status: 'active', tone: 'success', meta: '2 approvals · 4 active agents', href: '#' }]} /> : null}
 {entry.id === 'governance-decision-panel' ? <GovernanceDecisionPanel approval={approval} /> : null}
 {entry.id === 'governance-policy-summary' ? <GovernancePolicySummary policies={policies} constraints={constraints} /> : null}
 {entry.id === 'knowledge-artifact-card' ? <KnowledgeArtifactCard artifact={artifact} /> : null}
@@ -323,6 +373,8 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 {entry.id === 'commons-steward-decision-panel' ? <CommonsStewardDecisionPanel proposalId={entry.defaultProps.proposalId as string} action={entry.defaultProps.action as string} /> : null}
 {entry.id === 'book-list' || entry.id === 'book-list-public-entrypoint' ? <BookList items={bookItems} /> : null}
 {entry.id === 'knowledge-project-collection' ? <KnowledgeProjectCollection projects={[{ id: 'project-1', name: 'Platform guide', description: 'Repository-native product knowledge.', repositoryReady: true, bookCount: 3, draftCount: 1 }, { id: 'project-2', name: 'Operations handbook', repositoryReady: false }]} /> : null}
+{entry.id === 'knowledge-library-surface' ? <KnowledgeLibrarySurface teamId="team-demo" books={[{ id: 'book-preview', slug: 'platform-guide', title: 'Platform guide', summary: 'Shared operational knowledge.', status: 'published', visibility: 'public', topics: ['platform'], audience: ['operators'], source: { projectId: 'project-preview', path: 'knowledge/platform-guide/book.yaml', teamSlug: 'treeseed' } }]} pages={[{ id: 'page-start', bookId: 'book-preview', slug: 'start', title: 'Start here', summary: 'Understand the platform.', status: 'published', visibility: 'public', order: 1, source: { projectId: 'project-preview', path: 'knowledge/platform-guide/start.yaml' } }]} projects={[{ id: 'project-preview', name: 'Platform', repositoryReady: true, bookCount: 1, draftCount: 0 }]} /> : null}
+{entry.id === 'service-connection-workspace' ? <ServiceConnectionWorkspace teamName="TreeSeed" services={[{ id: 'service-demo', providerId: 'github', displayName: 'TreeSeed GitHub', status: 'active', capabilities: [{ capabilityType: 'repository', status: 'configured' }], credentialProfiles: [{ custodyMode: 'client_encrypted_vault' }], lastValidatedAt: '2026-09-01T12:00:00.000Z' }]} providerCatalog={[{ id: 'github', label: 'GitHub', capabilities: [{ type: 'repository', label: 'Repositories' }] }]} sections={[{ id: 'connections', label: 'Connections', href: '#', active: true }]} canManage vault={{ activeKeyVersion: 2 }} /> : null}
 {entry.id === 'knowledge-authoring-form' ? <KnowledgeAuthoringForm action="/v1/knowledge/workspaces/workspace-preview/content" csrfToken="sandbox-csrf" workspaceId="workspace-preview" version={1} values={{ kind: 'page', id: 'knowledge.preview', bookId: 'book.preview', slug: 'getting-started', title: 'Getting started', summary: 'A safe authoring preview.', visibility: 'team', status: 'draft', tags: 'guidance, authoring', bodyMarkdown: '## Start here\n\nWrite and review repository-native knowledge.' }} /> : null}
 {entry.id === 'knowledge-relation-picker' ? <KnowledgeRelationPicker client:load initialIds={['account.identity']} searchEndpoint="/api/catalog/knowledge-search" /> : null}
 {entry.id === 'knowledge-review-collection' ? <KnowledgeReviewCollection action="/v1/knowledge/reviews" csrfToken="sandbox-csrf" timeZone="America/New_York" reviews={[{ id: 'review-1', workspaceId: 'workspace-preview', status: 'open', branchName: 'knowledge/operation-preview', commitSha: '7f2c4d9b18a0', createdAt: '2026-07-31T14:00:00.000Z' }]} /> : null}

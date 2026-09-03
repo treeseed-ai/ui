@@ -1,0 +1,15 @@
+---
+import EntityCollection from '../data/entities/EntityCollection.astro';
+import OperationsDisplayContainer from '../operating/navigation/OperationsDisplayContainer.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import AgentLabChrome from './AgentLabChrome.astro';
+
+interface Props { activeTeam: boolean; monitor: any | null; label: string; description: string; items: any[]; query: string; status?: string; action: string; nextHref?: string | null; csrfToken: string; metricDestinations: Record<string, string> }
+const { activeTeam, monitor, label, description, items, query, status, action, nextHref, csrfToken, metricDestinations } = Astro.props as Props;
+---
+<section class="ts-agent-lab-page" data-scene={`agent-lab.${label.toLowerCase().replaceAll(' ', '-')}`}>
+	{monitor ? <AgentLabChrome frame={monitor} {csrfToken} {metricDestinations} /> : null}
+	{!activeTeam ? <EmptyState title="Choose an active team" description="Agent Lab records are team-scoped." /> : <OperationsDisplayContainer title={label} {description}>
+		<EntityCollection {items} {query} {status} {action} emptyTitle={`No ${label.toLowerCase()} found`} nextHref={nextHref ?? undefined} />
+	</OperationsDisplayContainer>}
+</section>

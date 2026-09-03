@@ -27,7 +27,7 @@ describe('feedback panel interaction', () => {
 
 		desktop.matches = false;
 		desktop.addEventListener.mock.calls[0]?.[1]();
-		expect(panel?.dataset.tsFeedbackPresentation).toBe('overlay');
-		expect(panel?.getAttribute('popover')).toBe('manual');
+		expect(panel?.dataset.tsFeedbackPresentation).toBe('bottom');
+		expect(panel?.hasAttribute('popover')).toBe(false);
 	});
 });

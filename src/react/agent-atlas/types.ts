@@ -161,6 +161,9 @@ export interface AtlasEndpoints {
   viewState?: string;
   createAgent?: string;
   createGroup?: string;
+  createProject?: string;
+  connectService?: string;
+  configureCapacity?: string;
 }
 export type AgentLabInterfaceMode = "easy" | "diagnostic";
 export interface AtlasContextReference {

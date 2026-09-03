@@ -2,6 +2,10 @@ import type { ComponentCatalogEntry } from '../support/component-kind.ts';
 import { display } from '../support/component-kind.ts';
 
 export const contentAndDataComponents: ComponentCatalogEntry[] = [
+  display('agent-atlas-workspace', 'AgentAtlasWorkspace', 'Agent Atlas', 'react', 'Dynamic Follow application with topology, playback, nested semantic resource overlays, activity, assignments, and recoverable failure states.', 'full-page', { projects: 1, agents: 1, assignments: 1 }, [
+      { name: 'initialProjection', type: 'AtlasProjection', defaultValue: { projects: 1 }, description: 'Deterministic topology and operating-state projection.' },
+      { name: 'endpoints', type: 'AtlasEndpoints', defaultValue: {}, description: 'Live delta, detail, and assignment-graph endpoints.' },
+    ], undefined, '@treeseed/ui/react/agent-atlas'),
   display('entity-collection', 'EntityCollection', 'Data', 'astro', 'Responsive filterable card collection for operational entities.', 'large', { items: 2 }, [
       { name: 'items', type: 'EntityCollectionItem[]', defaultValue: 2, description: 'Server-authorized entity summaries.' },
       { name: 'nextHref', type: 'string', defaultValue: undefined, description: 'Cursor-backed next-page destination.' },
@@ -13,6 +17,11 @@ export const contentAndDataComponents: ComponentCatalogEntry[] = [
   display('knowledge-project-collection', 'KnowledgeProjectCollection', 'Knowledge', 'astro', 'Responsive project collection for repository-native books and authoring entry points.', 'large', { projects: 2 }, [
       { name: 'projects', type: 'ProjectItem[]', defaultValue: 2, description: 'Authorized projects with TreeDX readiness and knowledge counts.' },
     ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeProjectCollection.astro'),
+  display('knowledge-library-surface', 'KnowledgeLibrarySurface', 'Knowledge', 'astro', 'Complete shared Books surface with federated search, ordered outlines, semantic regions, and repository entry points.', 'full-page', { books: 1, pages: 2, projects: 1 }, [
+      { name: 'teamId', type: 'string', defaultValue: 'team-demo', description: 'Active team used for federated search.' },
+      { name: 'books', type: 'BookItem[]', defaultValue: 1, description: 'Authorized repository-native books.' },
+      { name: 'pages', type: 'PageItem[]', defaultValue: 2, description: 'Authorized ordered book pages.' },
+    ], undefined, '@treeseed/ui/components/astro/knowledge/KnowledgeLibrarySurface.astro'),
   display('knowledge-authoring-form', 'KnowledgeAuthoringForm', 'Knowledge', 'astro', 'Schema-driven book and page metadata with the canonical rich Markdown editor.', 'large', { kind: 'page' }, [
       { name: 'workspaceId', type: 'string', defaultValue: 'workspace-preview', description: 'TreeDX authoring workspace correlation.' },
       { name: 'values', type: 'Record<string, unknown>', defaultValue: { kind: 'page' }, description: 'Validated draft metadata and Markdown body.' },

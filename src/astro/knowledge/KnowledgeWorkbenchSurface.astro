@@ -1,0 +1,50 @@
+---
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import Select from '../forms/fields/Select.astro';
+import SemanticCollectionSurface from '../semantic/SemanticCollectionSurface.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import SettingsTemplate from '../templates/SettingsTemplate.astro';
+import KnowledgeAuthoringForm from './KnowledgeAuthoringForm.astro';
+import KnowledgeLibrarySurface from './KnowledgeLibrarySurface.astro';
+import KnowledgePackWorkbench from './KnowledgePackWorkbench.astro';
+import KnowledgeReviewCollection from './KnowledgeReviewCollection.astro';
+import KnowledgeLifecyclePanel from './KnowledgeLifecyclePanel.astro';
+
+interface Props {
+	team?: any; sections: any[]; view?: string | null; retryHref: string; accessUnavailable: boolean;
+	canRead: boolean; requestedUnauthorizedControl: boolean; reviewsUnavailable: boolean; reviews: any[];
+	packsUnavailable: boolean; books: any[]; collections: any[]; builds: any[]; workspace?: any;
+	selectedProjectId: string; sourcePath: string; sourceSha: string; formValues: Record<string, any>;
+	canManageBooks: boolean; lifecycleUnavailable: boolean; lifecycle?: any; projects: any[]; projectItems: any[];
+	libraryCatalog?: any; libraryUnavailable: boolean; csrfToken: string; timeZone: string;
+}
+const { team, sections, view, retryHref, accessUnavailable, canRead, requestedUnauthorizedControl, reviewsUnavailable, reviews, packsUnavailable, books, collections, builds, workspace, selectedProjectId, sourcePath, sourceSha, formValues, canManageBooks, lifecycleUnavailable, lifecycle, projects, projectItems, libraryCatalog, libraryUnavailable, csrfToken, timeZone } = Astro.props as Props;
+---
+<SettingsTemplate title="Knowledge workbench" description={team ? `Federated books and knowledge for ${team.displayName ?? team.name}.` : 'Select an active team to work with knowledge.'} {sections} knowledgePageId="knowledge.authoring">
+	{!team ? (
+		<EmptyState title="Choose an active team" description="Knowledge permissions and project repositories are scoped to the active team." actions={[{ label: 'Manage teams', href: '/app/teams' }]} />
+	) : accessUnavailable ? (
+		<EmptyState title="Knowledge access is unavailable" description="Permissions could not be verified. Authoring, review, publication, lifecycle, and pack controls remain unavailable until access can be confirmed." actions={[{ label: 'Retry', href: retryHref }]} />
+	) : !canRead || requestedUnauthorizedControl ? (
+		<EmptyState title="Knowledge controls unavailable" description="Your role does not permit this knowledge operation. No mutation controls have been rendered." actions={[{ label: 'Open accessible knowledge', href: '/app/knowledge' }]} />
+	) : view === 'reviews' ? (
+		<SemanticCollectionSurface viewId="releases" regionId="queue" presentation="knowledge-release-queue"><Panel title="Knowledge reviews" description="Review committed TreeDX diffs before publication." data-knowledge-review-list>
+			{reviewsUnavailable ? <EmptyState title="Knowledge reviews are unavailable" description="The review store did not respond. No empty queue has been inferred." actions={[{ label: 'Retry', href: '/app/knowledge?view=reviews' }]} /> : <KnowledgeReviewCollection {reviews} action="/app/knowledge?view=reviews" {csrfToken} {timeZone} />}
+		</Panel></SemanticCollectionSurface>
+	) : view === 'packs' ? (
+		<Panel title="Collections and knowledge packs" description="Build immutable artifacts from exact TreeDX repository snapshots." data-knowledge-pack-panel>
+			{packsUnavailable ? <EmptyState title="Knowledge packs are unavailable" description="The catalog or pack store did not respond. No empty library has been inferred." actions={[{ label: 'Retry', href: '/app/knowledge?view=packs' }]} /> : <KnowledgePackWorkbench action="/app/knowledge?view=packs" {csrfToken} {books} {collections} {builds} {timeZone} />}
+		</Panel>
+	) : workspace ? (
+		<Panel title="Knowledge draft" description={`TreeDX workspace ${workspace.branchName}`} data-knowledge-editor-panel><KnowledgeAuthoringForm action="/app/knowledge" {csrfToken} workspaceId={workspace.id} version={workspace.version} {sourcePath} expectedSha={sourceSha} values={formValues} /></Panel>
+	) : selectedProjectId ? (
+		<Panel title="Start an authoring workspace" description="A private, recoverable TreeDX workspace will be created from the repository publication ref.">
+			<form method="post" action="/app/knowledge" class="ts-form-stack" data-ts-submit="enhanced" data-scene="knowledge.workspace.start"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="start" /><input type="hidden" name="requestId" value="" data-ts-request-id /><input type="hidden" name="projectId" value={selectedProjectId} />{sourcePath ? <input type="hidden" name="sourcePath" value={sourcePath} /> : null}<p>The workspace is restricted to books, knowledge pages, and approved knowledge assets. Saving does not publish changes.</p><FormActions align="start"><Button type="submit">Create draft workspace</Button><Button href="/app/knowledge" variant="secondary">Cancel</Button></FormActions></form>
+			{!canManageBooks ? null : lifecycleUnavailable ? <EmptyState title="Knowledge lifecycle is unavailable" description="The repository or dependency graph did not respond. Archive and restore remain unavailable until the complete dependency check succeeds." actions={[{ label: 'Retry', href: retryHref }]} /> : lifecycle ? <KnowledgeLifecyclePanel action="/app/knowledge" {csrfToken} projectId={selectedProjectId} path={sourcePath} expectedSha={lifecycle.expectedSha} kind={lifecycle.kind} status={lifecycle.definition.status} dependencies={lifecycle.dependencies} /> : null}
+		</Panel>
+	) : view === 'author' ? (
+		<Panel title="Choose a knowledge repository" description="A draft workspace is isolated to one project repository and its approved content paths.">{projects.length ? <form method="get" action="/app/knowledge" class="ts-action-bar"><Select name="project" options={projects.map((project: any) => ({ label: project.name, value: project.id }))} /><Button type="submit">Continue</Button></form> : <EmptyState title="No authorable projects" description="You do not have an accessible project repository in this team." />}</Panel>
+	) : <KnowledgeLibrarySurface teamId={team.id} books={libraryCatalog?.books ?? []} pages={libraryCatalog?.pages ?? []} projects={projectItems} unavailable={libraryUnavailable} />}
+</SettingsTemplate>

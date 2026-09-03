@@ -42,6 +42,10 @@ export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
       { name: 'items', type: 'SurfaceTabItem[]', defaultValue: 3, description: 'Tabs to render.' },
       { name: 'mode', type: "'links' | 'panels'", defaultValue: 'links', description: 'Navigation or panel behavior.' },
     ], undefined, '@treeseed/ui/components/astro/shell/SurfaceTabs.astro'),
+  display('mode-navigation', 'ModeNavigation', 'Shells', 'astro', 'Canonical Focus and Command section navigation shared by application surfaces.', 'large', { mode: 'command', current: 'projects' }, [
+      { name: 'mode', type: "'focus' | 'command'", defaultValue: 'command', description: 'Application mode whose sections are rendered.' },
+      { name: 'current', type: 'string', defaultValue: 'projects', description: 'Active section identity.' },
+    ], undefined, '@treeseed/ui/components/astro/shell/navigation/ModeNavigation.astro'),
   display('pagination', 'Pagination', 'Shells', 'astro', 'Canonical previous and next page navigation.', 'inline', { current: 2, total: 5 }, [
       { name: 'current', type: 'number', defaultValue: 2, description: 'Current page number.' },
       { name: 'total', type: 'number', defaultValue: 5, description: 'Total page count.' },
