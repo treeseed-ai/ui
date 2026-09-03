@@ -218,7 +218,7 @@ test('new shell registry previews expose responsive shell primitives', async ({ 
 
   await page.goto('/displays/team-operations-drawer');
   await page.getByRole('button', { name: 'Open drawer' }).click();
-  await expect(page.getByRole('dialog', { name: 'Team operations' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Team and identity' })).toBeVisible();
 
   await page.goto('/displays/surface-tabs');
   const panelTabs = page.getByRole('tablist', { name: 'Panel tabs' });
@@ -226,6 +226,28 @@ test('new shell registry previews expose responsive shell primitives', async ({ 
   await panelTabs.getByRole('tab', { name: /Overview/ }).press('ArrowRight');
   await expect(panelTabs.getByRole('tab', { name: /Activity/ })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('Activity content.')).toBeVisible();
+});
+
+test('utility applications dock outside content across responsive layouts', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/displays/product-shell');
+  await page.getByRole('button', { name: /Send feedback/ }).click();
+  const desktopPanel = page.locator('[data-ts-utility-application="feedback"]');
+  await expect(desktopPanel).toHaveAttribute('data-ts-utility-placement', 'dock-end');
+  const desktopContentBox = await page.locator('.ts-shell-workspace__content').boundingBox();
+  const desktopPanelBox = await desktopPanel.boundingBox();
+  expect(desktopContentBox).not.toBeNull();
+  expect(desktopPanelBox).not.toBeNull();
+  expect(desktopContentBox!.x + desktopContentBox!.width).toBeLessThanOrEqual(desktopPanelBox!.x + 1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(desktopPanel).toHaveAttribute('data-ts-utility-placement', 'dock-bottom');
+  const mobileContentBox = await page.locator('.ts-shell-workspace__content').boundingBox();
+  const mobilePanelBox = await desktopPanel.boundingBox();
+  expect(mobileContentBox).not.toBeNull();
+  expect(mobilePanelBox).not.toBeNull();
+  expect(mobileContentBox!.y + mobileContentBox!.height).toBeLessThanOrEqual(mobilePanelBox!.y + 1);
+  await expect(desktopPanel.getByRole('separator', { name: 'Resize utility application' })).toHaveAttribute('aria-orientation', 'horizontal');
 });
 
 test('settings template places routed tabs above active content on desktop', async ({ page }) => {
@@ -421,7 +443,7 @@ test('app layout has one heading and a stable collapsible icon rail', async ({ p
   await expect(page.locator('.ts-product-shell__desktop-operations')).toBeHidden();
   await expect(page.locator('.ts-shell-menu-button')).toBeVisible();
   await page.locator('.ts-shell-menu-button').click();
-  const drawer = page.getByRole('dialog', { name: 'Team operations' });
+  const drawer = page.getByRole('dialog', { name: 'Team and identity' });
   await expect(drawer.getByRole('combobox', { name: 'Active team' })).toBeVisible();
   await expect(drawer.getByRole('link', { name: 'Start' })).toContainText('Start');
   const mobileSiteControls = drawer.locator('.ts-site-user-controls');

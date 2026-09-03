@@ -1,4 +1,6 @@
 import { sendFormRequest } from '../../forms-client.ts';
+import { dismissUtilityApplication, initializeUtilityDock, presentUtilityApplication, rememberUtilityApplicationOpener } from '../shell/utility-dock.ts';
+import { setUtilityApplicationState } from '../shell/utility-state.ts';
 
 type Item = { id?: string; path?: string; frontmatter?: Record<string, unknown>; body?: string };
 type DiscussionEnvelope = { discussion?: { id?: string; topic?: string }; message?: { id?: string; authorLabel?: string; body?: string }; assignments?: Array<{ id?: string; agentSlug?: string; status?: string }> };
@@ -17,12 +19,19 @@ export function discussionErrorMessage(envelope: DiscussionErrorEnvelope | null,
 }
 
 function togglePanel(panel: HTMLElement, open: boolean) {
-	panel.hidden = !open;
 	if (open) {
 		panel.setAttribute('popover', 'manual');
-		panel.dataset.tsDiscussionPresentation = matchMedia('(min-width: 64rem)').matches ? 'docked' : 'overlay';
+		const placement = presentUtilityApplication(panel, 'chat');
+		panel.dataset.tsDiscussionPresentation = placement === 'dock-end' ? 'docked' : 'bottom';
 		panel.querySelector<HTMLElement>('[data-markdown-editor-host]')?.focus();
-	} else delete panel.dataset.tsDiscussionPresentation;
+	} else {
+		dismissUtilityApplication(panel);
+		delete panel.dataset.tsDiscussionPresentation;
+	}
+}
+
+function discussionContainer(element: Element | null) {
+	return element?.closest<HTMLElement>('[data-ts-discussion-container]') ?? element?.closest<HTMLElement>('[data-ts-side-sheet]') ?? null;
 }
 
 async function renderMarkdown(element: HTMLElement, body: string) {
@@ -99,32 +108,42 @@ async function send(panel: HTMLElement, form: HTMLFormElement) {
 
 async function loadDiscussion(panel: HTMLElement, discussionId?: string, query = '') {
 	const root = panel.querySelector<HTMLElement>('[data-ts-discussion]'); if (!root?.dataset.projectId) return;
+	if (!navigator.onLine) { setUtilityApplicationState(panel, 'offline'); return; }
 	const url = new URL(root.dataset.endpoint ?? '/v1/discussions', location.origin); url.searchParams.set('projectId', root.dataset.projectId); if (discussionId) url.searchParams.set('discussionId', discussionId); if (query) url.searchParams.set('query', query);
-	const response = await fetch(url, { credentials: 'same-origin', headers: { accept: 'application/json' } }); const envelope = await response.json().catch(() => null);
+	setUtilityApplicationState(panel, panel.dataset.tsDiscussionLoaded === 'true' ? 'reconnecting' : 'loading');
+	let response: Response;
+	try { response = await fetch(url, { credentials: 'same-origin', headers: { accept: 'application/json' } }); }
+	catch { setUtilityApplicationState(panel, navigator.onLine ? 'failed' : 'offline'); return; }
+	const envelope = await response.json().catch(() => null);
 	if (!response.ok || !envelope?.ok) {
-		const state = panel.querySelector('[data-ts-discussion-state]'); if (state) state.textContent = 'Content invalid';
+		const state = response.status === 401 || response.status === 403 ? 'denied' : response.status === 409 ? 'stale' : 'failed';
+		setUtilityApplicationState(panel, state, discussionErrorMessage(envelope, response.status));
 		appendMessage(panel, 'Platform', discussionErrorMessage(envelope, response.status), 'error'); return;
 	}
+	panel.dataset.tsDiscussionLoaded = 'true';
 	const payload = envelope.payload as { discussions: Item[]; messages: Item[]; events: Item[] };
 	if (!discussionId) {
 		const list = panel.querySelector('[data-ts-discussion-list]'); if (!list) return; list.replaceChildren();
 		for (const entry of payload.discussions) { const data = entry.frontmatter ?? {}; const button = document.createElement('button'); button.type = 'button'; button.className = 'ts-discussion__thread'; button.textContent = String(data.topic ?? data.title ?? entry.id); button.addEventListener('click', () => void loadDiscussion(panel, entry.id)); list.append(button); }
-		if (!payload.discussions.length) { const empty = document.createElement('p'); empty.className = 'ts-discussion__empty'; empty.textContent = 'Start a discussion with one or more Market agents.'; list.append(empty); }
+		if (!payload.discussions.length) { const empty = document.createElement('p'); empty.className = 'ts-discussion__empty'; empty.textContent = 'Start a discussion with one or more team agents.'; list.append(empty); setUtilityApplicationState(panel, 'empty'); }
+		else setUtilityApplicationState(panel, 'ready');
 		return;
 	}
 	root.dataset.discussionId = discussionId; const timeline = panel.querySelector('[data-ts-discussion-timeline]'); timeline?.replaceChildren();
 	for (const entry of payload.messages) { const data = entry.frontmatter ?? {}; appendMessage(panel, String(data.authorId ?? data.authorType ?? 'Participant'), entry.body ?? '', String(data.intent ?? 'committed'), Array.isArray(data.fileRefs) ? data.fileRefs : []); }
 	const last = payload.events.at(-1)?.frontmatter ?? {}; const state = panel.querySelector('[data-ts-discussion-state]'); if (state && last.phase) state.textContent = String(last.phase).replace(/[._]/gu, ' ');
 	const title = payload.discussions[0]?.frontmatter ?? {}; const topic = panel.querySelector('[data-ts-discussion-topic]'); if (topic) topic.textContent = String(title.topic ?? title.title ?? discussionId);
+	setUtilityApplicationState(panel, payload.messages.length ? 'ready' : 'empty', payload.messages.length ? undefined : 'This discussion has no messages yet.');
 }
 
 export function initializeDiscussionPanels(root: Document = document) {
 	if (root.documentElement.dataset.tsDiscussionBound === 'true') return;
 	root.documentElement.dataset.tsDiscussionBound = 'true';
+	initializeUtilityDock(root);
 	root.addEventListener('treeseed:session-event', (event) => {
 		const detail = event instanceof CustomEvent ? event.detail as Record<string, unknown> : {};
 		if (detail.eventType !== 'discussion.updated' && detail.eventType !== 'session.ready') return;
-		for (const panel of root.querySelectorAll<HTMLElement>('[data-ts-side-sheet]:has([data-ts-discussion])')) {
+		for (const panel of root.querySelectorAll<HTMLElement>('[data-ts-discussion-container]')) {
 			const shell = panel.querySelector<HTMLElement>('[data-ts-discussion]');
 			if (!shell || shell.dataset.teamId !== detail.teamId) continue;
 			if (detail.eventType === 'session.ready') { if (!panel.hidden) void loadDiscussion(panel, shell.dataset.discussionId); continue; }
@@ -134,17 +153,19 @@ export function initializeDiscussionPanels(root: Document = document) {
 			else void loadDiscussion(panel, discussionId);
 		}
 	});
+	window.addEventListener('offline', () => root.querySelectorAll<HTMLElement>('[data-ts-discussion-container]').forEach((panel) => setUtilityApplicationState(panel, 'offline')));
+	window.addEventListener('online', () => root.querySelectorAll<HTMLElement>('[data-ts-discussion-container]').forEach((panel) => { setUtilityApplicationState(panel, 'reconnecting'); void loadDiscussion(panel, panel.querySelector<HTMLElement>('[data-ts-discussion]')?.dataset.discussionId); }));
 	root.addEventListener('click', (event) => {
 		const target = event.target instanceof Element ? event.target : null;
 		const opener = target?.closest<HTMLElement>('[data-ts-discussion-open]');
-		if (opener) { const panel = root.getElementById(opener.dataset.tsDiscussionOpen ?? ''); if (panel) { togglePanel(panel, true); void loadDiscussion(panel); } }
+		if (opener) { const panel = root.getElementById(opener.dataset.tsDiscussionOpen ?? ''); if (panel) { rememberUtilityApplicationOpener(panel, opener); togglePanel(panel, true); void loadDiscussion(panel); } }
 		const closer = target?.closest('[data-ts-discussion-close]');
 		if (closer) { const panel = closer.closest<HTMLElement>('[data-ts-side-sheet]'); if (panel) togglePanel(panel, false); }
 	});
-	root.querySelectorAll<HTMLElement>('[data-ts-discussion-new]').forEach((button) => button.addEventListener('click', () => { const panel = button.closest<HTMLElement>('[data-ts-side-sheet]'); const shell = panel?.querySelector<HTMLElement>('[data-ts-discussion]'); if (shell) delete shell.dataset.discussionId; panel?.querySelector('[data-ts-discussion-timeline]')?.replaceChildren(); const topic = panel?.querySelector('[data-ts-discussion-topic]'); if (topic) topic.textContent = 'New discussion'; }));
-	root.querySelectorAll<HTMLInputElement>('[data-ts-discussion-search]').forEach((search) => search.addEventListener('input', () => { const panel = search.closest<HTMLElement>('[data-ts-side-sheet]'); if (panel) void loadDiscussion(panel, undefined, search.value.trim()); }));
-	root.querySelectorAll<HTMLElement>('[data-ts-discussion-file]').forEach((button) => button.addEventListener('click', () => { const panel = button.closest<HTMLElement>('[data-ts-side-sheet]'); const shell = panel?.querySelector<HTMLElement>('[data-ts-discussion]'); if (!shell) return; const path = window.prompt('Repository-relative file path to reference'); if (!path?.trim()) return; const context = JSON.parse(panel?.querySelector('[data-ts-discussion-context]')?.textContent ?? '{}'); const refs = [{ repository: context.projectSlug ?? shell.dataset.projectId ?? 'project', path: path.trim(), ref: context.trackedBranch ?? 'tracked' }]; shell.dataset.fileRefs = JSON.stringify(refs); const label = panel?.querySelector<HTMLElement>('[data-ts-discussion-file-ref]'); if (label) { label.hidden = false; label.textContent = path.trim(); } }));
-	root.querySelectorAll<HTMLFormElement>('[data-ts-discussion-composer]').forEach((form) => form.addEventListener('submit', (event) => { event.preventDefault(); const panel = form.closest<HTMLElement>('[data-ts-side-sheet]'); if (panel) void send(panel, form); }));
+	root.querySelectorAll<HTMLElement>('[data-ts-discussion-new]').forEach((button) => button.addEventListener('click', () => { const panel = discussionContainer(button); const shell = panel?.querySelector<HTMLElement>('[data-ts-discussion]'); if (shell) delete shell.dataset.discussionId; panel?.querySelector('[data-ts-discussion-timeline]')?.replaceChildren(); const topic = panel?.querySelector('[data-ts-discussion-topic]'); if (topic) topic.textContent = 'New discussion'; }));
+	root.querySelectorAll<HTMLInputElement>('[data-ts-discussion-search]').forEach((search) => search.addEventListener('input', () => { const panel = discussionContainer(search); if (panel) void loadDiscussion(panel, undefined, search.value.trim()); }));
+	root.querySelectorAll<HTMLElement>('[data-ts-discussion-file]').forEach((button) => button.addEventListener('click', () => { const panel = discussionContainer(button); const shell = panel?.querySelector<HTMLElement>('[data-ts-discussion]'); if (!shell) return; const path = window.prompt('Repository-relative file path to reference'); if (!path?.trim()) return; const context = JSON.parse(panel?.querySelector('[data-ts-discussion-context]')?.textContent ?? '{}'); const refs = [{ repository: context.projectSlug ?? shell.dataset.projectId ?? 'project', path: path.trim(), ref: context.trackedBranch ?? 'tracked' }]; shell.dataset.fileRefs = JSON.stringify(refs); const label = panel?.querySelector<HTMLElement>('[data-ts-discussion-file-ref]'); if (label) { label.hidden = false; label.textContent = path.trim(); } }));
+	root.querySelectorAll<HTMLFormElement>('[data-ts-discussion-composer]').forEach((form) => form.addEventListener('submit', (event) => { event.preventDefault(); const panel = discussionContainer(form); if (panel) void send(panel, form); }));
 	root.querySelectorAll<HTMLElement>('[data-ts-discussion-resize]').forEach((handle) => handle.addEventListener('pointerdown', (event) => {
 		const composer = handle.closest<HTMLElement>('.ts-discussion__composer'); if (!composer) return;
 		const startY = event.clientY; const start = composer.getBoundingClientRect().height;
@@ -152,7 +173,8 @@ export function initializeDiscussionPanels(root: Document = document) {
 		const stop = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', stop); };
 		window.addEventListener('pointermove', move); window.addEventListener('pointerup', stop);
 	}));
-	const activePanel = () => root.querySelector<HTMLElement>('[data-ts-discussion]')?.closest<HTMLElement>('[data-ts-side-sheet]') ?? null;
+	root.querySelectorAll<HTMLElement>('[data-ts-discussion-workspace]').forEach((panel) => void loadDiscussion(panel));
+	const activePanel = () => discussionContainer(root.querySelector<HTMLElement>('[data-ts-discussion]'));
 	const renderContext = (panel: HTMLElement, references: unknown[]) => {
 		const shell = panel.querySelector<HTMLElement>('[data-ts-discussion]'); const host = panel.querySelector<HTMLElement>('[data-ts-discussion-context-refs]'); if (!shell || !host) return;
 		shell.dataset.contextRefs = JSON.stringify(references); host.replaceChildren(); host.hidden = references.length === 0;

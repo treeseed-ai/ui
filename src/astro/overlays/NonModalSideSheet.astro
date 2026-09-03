@@ -5,9 +5,10 @@ interface Props {
 	describedBy?: string;
 	class?: string;
 	scene?: string;
+	applicationId?: string;
 }
 
-const { id, labelledBy, describedBy, class: className, scene } = Astro.props as Props;
+const { id, labelledBy, describedBy, class: className, scene, applicationId } = Astro.props as Props;
 ---
 
 <aside
@@ -19,10 +20,12 @@ const { id, labelledBy, describedBy, class: className, scene } = Astro.props as 
 	aria-describedby={describedBy}
 	data-ts-side-sheet
 	data-ts-feedback-panel={scene === 'feedback.panel' ? '' : undefined}
+	data-ts-utility-application={applicationId}
 	data-scene={scene}
 	popover="manual"
 	hidden
 >
+	<div class="ts-side-sheet__resize" role="separator" aria-label="Resize utility application" aria-orientation="vertical" tabindex="0" data-ts-utility-resize></div>
 	<header class="ts-side-sheet__header"><slot name="header" /></header>
 	<div class="ts-side-sheet__body"><slot /></div>
 	{Astro.slots.has('footer') ? <footer class="ts-side-sheet__footer"><slot name="footer" /></footer> : null}

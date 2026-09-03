@@ -22,6 +22,10 @@ const serviceEntry = (
 );
 
 export const serviceManagementComponents: ComponentCatalogEntry[] = [
+	display('service-connection-workspace', 'ServiceConnectionWorkspace', 'Service', 'astro', 'Complete shared Services surface with filters, credential-custody status, and provider connection cards.', 'full-page', {
+		teamName: 'TreeSeed', services: 1, providers: 2,
+	}, [{ name: 'services', type: 'ServiceItem[]', defaultValue: 1, description: 'Authorized provider connections.' }], undefined,
+	'@treeseed/ui/components/astro/service/workspace/ServiceConnectionWorkspace.astro'),
 	display('repository-connection-panel', 'RepositoryConnectionPanel', 'Service', 'astro', 'Verified remote repository authority and publication-ref binding.', 'large', {
 		topology: { contentRepository: { local: { path: '.' } } }, remote: null, candidates: [], csrfToken: 'catalog', action: '#',
 	}, [{ name: 'props', type: 'object', defaultValue: {}, description: 'Repository topology, eligible authorities, and form context.' }], undefined,

@@ -1,0 +1,37 @@
+---
+import type { DiscussionContext } from '../../lib/foundation/contracts.ts';
+import SemanticRegionSurface from '../semantic/SemanticRegionSurface.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import DiscussionWorkspace from './DiscussionWorkspace.astro';
+
+interface ProjectOption { id: string; label: string; }
+interface Props {
+	context?: DiscussionContext | null;
+	projects?: ProjectOption[];
+	activeProjectId?: string;
+	manageTeamsHref?: string;
+}
+const {
+	context,
+	projects = [],
+	activeProjectId,
+	manageTeamsHref = '/app/teams',
+} = Astro.props as Props;
+---
+
+{context ? <div class="ts-team-chat-workspace" data-ts-team-chat-workspace>
+	{projects.length > 1 ? <form class="ts-team-chat-workspace__context" method="get">
+		<label>Project context<select class="ts-control" name="project" onchange="this.form?.submit()">
+			{projects.map((project) => <option value={project.id} selected={project.id === activeProjectId}>{project.label}</option>)}
+		</select></label>
+	</form> : null}
+	<SemanticRegionSurface viewId="chat" regionId="history" presentation="discussion-workspace">
+		<DiscussionWorkspace id="team-chat" {context} title="Chat" description="Talk with the team, route work to agents, and follow committed assignment traces." />
+	</SemanticRegionSurface>
+</div> : <EmptyState title="Choose an active team" description="Chat is a persistent team capability and needs an active team context." actions={[{ label: 'Manage teams', href: manageTeamsHref }]} />}
+
+<style>
+	.ts-team-chat-workspace__context{display:flex;justify-content:flex-end;margin:-.35rem 0 .75rem}
+	.ts-team-chat-workspace__context label{color:var(--ts-color-text-muted);font-size:.68rem;font-weight:750}
+	.ts-team-chat-workspace__context select{margin-left:.5rem;min-width:12rem}
+</style>

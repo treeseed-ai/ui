@@ -23,3 +23,4 @@ export * from './react/agent-atlas/index.ts';
 export * from './react/agent-designer/index.ts';
 export * from './react/progressive/index.ts';
 export * from './react/workspace-surfaces/index.ts';
+export * from './react/semantic/index.ts';

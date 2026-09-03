@@ -1,0 +1,30 @@
+---
+import { coreUiRegistry } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	viewId: string;
+	regionId: string;
+	presentation?: string;
+	class?: string;
+	as?: 'article' | 'div' | 'section';
+}
+
+const { viewId, regionId, presentation, class: className, as: Element = 'section' } = Astro.props as Props;
+const view = coreUiRegistry.view(viewId);
+const region = view.regions.find((candidate) => candidate.id === regionId);
+if (!region) throw new Error(`Unknown semantic region ${viewId}.${regionId}`);
+const resource = region.resource ? coreUiRegistry.resource(region.resource) : undefined;
+---
+
+<Element
+	class:list={['ts-semantic-region-surface', className]}
+	data-semantic-view={view.id}
+	data-semantic-region={region.id}
+	data-semantic-region-type={region.type}
+	data-semantic-resource={resource?.id}
+	data-semantic-relationship={region.relationship}
+	data-semantic-presentation={presentation ?? region.presentation}
+	aria-label={region.label ?? resource?.pluralLabel ?? view.label}
+>
+	<slot />
+</Element>

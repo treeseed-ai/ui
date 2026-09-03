@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { WorkspaceOverlay } from "../workspace-surfaces/WorkspaceOverlay.tsx";
 import type { AtlasEndpoints } from "./types.ts";
 import type { AgentLabInterfaceMode } from "./types.ts";
+import { AtlasResourceDetail } from "./AtlasResourceDetail.tsx";
 
 type Selection = { kind: string; id: string };
 function record(value: unknown): Record<string, unknown> {
@@ -44,11 +45,14 @@ export function AtlasOverlay({
   depth: number;
 }) {
   const [detail, setDetail] = useState<unknown>(null);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "failed">("loading");
+  const [retry, setRetry] = useState(0);
   const [mode, setMode] = useState<"designed" | "assigned" | "observed">(
     "observed",
   );
   useEffect(() => {
     const controller = new AbortController();
+    setLoadState("loading");
     const path =
       selection.kind === "assignment-graph"
         ? endpoints.assignmentGraphs
@@ -65,9 +69,19 @@ export function AtlasOverlay({
       signal: controller.signal,
       headers: { accept: "application/json" },
     })
-      .then((response) => response.json())
-      .then((envelope) => setDetail(envelope.payload ?? envelope))
-      .catch(() => setDetail(null));
+      .then((response) => {
+        if (!response.ok) throw new Error(`Atlas detail failed with ${response.status}.`);
+        return response.json();
+      })
+      .then((envelope) => {
+        setDetail(envelope.payload ?? envelope);
+        setLoadState("ready");
+      })
+      .catch((error) => {
+        if ((error as Error).name === "AbortError") return;
+        setDetail(null);
+        setLoadState("failed");
+      });
     return () => controller.abort();
   }, [
     endpoints.assignmentGraphs,
@@ -76,6 +90,7 @@ export function AtlasOverlay({
     selection.id,
     selection.kind,
     interfaceMode,
+    retry,
   ]);
   const data = record(detail);
   return (
@@ -117,70 +132,14 @@ export function AtlasOverlay({
             graphs={Array.isArray(detail) ? detail : []}
             onInspect={onInspect}
           />
-        ) : detail ? (
-          <RecordDetail data={data} mode={interfaceMode === "diagnostic" ? mode : "easy"} />
-        ) : (
-          <p>Loading canonical detail…</p>
-        )}
+        ) : loadState === "ready" && detail ? (
+          <AtlasResourceDetail kind={selection.kind} data={data} mode={interfaceMode === "diagnostic" ? mode : "easy"} onInspect={onInspect} />
+        ) : loadState === "failed" ? (
+          <div role="alert"><p>Canonical detail could not be loaded. The Atlas selection remains open.</p><button type="button" onClick={() => setRetry((value) => value + 1)}>Retry</button></div>
+        ) : <p role="status" aria-live="polite">Loading canonical detail…</p>}
       </div>
     </section>
     </WorkspaceOverlay>
-  );
-}
-
-function RecordDetail({
-  data,
-  mode,
-}: {
-  data: Record<string, unknown>;
-  mode: string;
-}) {
-  const source = record(data.data);
-  const primary = record(data.primary);
-  const fields =
-    mode === "easy"
-      ? record(data.summary)
-      : data.kind === "agent"
-      ? mode === "designed"
-        ? record(source.definition)
-        : mode === "assigned"
-          ? { assignments: source.assignments ?? data.related }
-          : {
-              events: source.observed,
-              evidence: data.evidence,
-              status: data.status,
-            }
-      : source;
-  return (
-    <div className="ts-atlas-record-detail">
-      <section>
-        <small>{String(data.status ?? mode)}</small>
-        <h3>{String(data.title ?? "Operational record")}</h3>
-        <p>
-          {String(
-            data.description ??
-              record(primary.content).body ??
-              "No summary was reported.",
-          )}
-        </p>
-      </section>
-      <dl>
-        {Object.entries(fields)
-          .slice(0, 18)
-          .map(([key, value]) => (
-            <div key={key}>
-              <dt>{key.replace(/([A-Z])/gu, " $1")}</dt>
-              <dd>
-                {typeof value === "object" ? (
-                  <pre>{JSON.stringify(value, null, 2)}</pre>
-                ) : (
-                  String(value ?? "—")
-                )}
-              </dd>
-            </div>
-          ))}
-      </dl>
-    </div>
   );
 }
 

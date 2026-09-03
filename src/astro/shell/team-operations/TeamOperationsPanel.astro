@@ -19,7 +19,7 @@ const {
 	currentPath,
 	quickActions = [],
 	accountActions = [],
-	label = 'Team operations',
+	label = 'Team links',
 	class: className,
 	id,
 	collapsible = false,
@@ -60,9 +60,9 @@ function isCurrentPath(href: string) {
 		</nav>
 	</div>
 	<div class="ts-team-operations__footer">
+		{quickActions.length > 0 || accountActions.length > 0 ? <p class="ts-team-operations__eyebrow">Identity</p> : null}
 		{quickActions.length > 0 ? (
 			<div class="ts-team-operations__actions">
-				<p class="ts-team-operations__eyebrow">Team actions</p>
 				{quickActions.map((action) => (
 					<Button
 						href={action.href}

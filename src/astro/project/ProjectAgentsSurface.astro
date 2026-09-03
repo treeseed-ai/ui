@@ -1,0 +1,15 @@
+---
+import Button from '../forms/actions/Button.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import ResourceCard from '../surface/ResourceCard.astro';
+import ModeNavigation from '../shell/navigation/ModeNavigation.astro';
+import type { Tone } from '../types.ts';
+interface Props { projectId: string; project: any; agents: any[]; runs: any[] }
+const { projectId, project, agents, runs } = Astro.props as Props;
+const text = (...values: unknown[]) => String(values.find((value) => typeof value === 'string' && value.trim()) ?? '');
+const tone = (value: unknown): Tone => ['failed', 'blocked'].includes(String(value)) ? 'danger' : ['ready', 'active', 'succeeded'].includes(String(value)) ? 'success' : 'default';
+---
+<section class="ts-template" aria-label="Project agents" data-scene="command.project.agents"><PageHeader eyebrow="Command · Project agents" title={text(project?.displayName, project?.name, 'Project unavailable')} description="Inspection-only roster. Canonical TreeDX authoring remains in the synchronized content workflow."><Button slot="actions" href={`/app/projects/${encodeURIComponent(projectId)}`} variant="secondary">Project overview</Button></PageHeader><ModeNavigation mode="command" current="projects" />
+	{!project ? <EmptyState title="Project not found" description="The project is unavailable or outside your authorized scope." /> : !agents.length ? <EmptyState title="No synchronized agent classes" description="This surface does not invent agent definitions when the control plane has no projection." /> : <div class="ts-resource-grid">{agents.map((agent) => { const activity = runs.filter((run) => String(run.agentClassId ?? run.agent_class_id) === String(agent.id)); const latest = activity[0]; return <ResourceCard title={text(agent.displayName, agent.name, agent.slug, String(agent.id))} description={`${text(agent.description, agent.handler, 'Configured project agent')} · ${activity.length} recent runs`} status={String(latest?.status ?? agent.status ?? 'configured')} tone={tone(latest?.status ?? agent.status)} href={`/app/projects/${encodeURIComponent(projectId)}/agents/${encodeURIComponent(String(agent.id))}`} />; })}</div>}
+</section>

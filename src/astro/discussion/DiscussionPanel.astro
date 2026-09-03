@@ -1,13 +1,12 @@
 ---
 import NonModalSideSheet from '../overlays/NonModalSideSheet.astro';
-import MarkdownField from '../app/controls/content/MarkdownField.astro';
 import type { DiscussionContext } from '../../lib/foundation/contracts.ts';
+import DiscussionBody from './DiscussionBody.astro';
 interface Props { id: string; context: DiscussionContext; }
 const { id, context } = Astro.props as Props;
-const endpoint = context.endpoint ?? '/v1/discussions';
 ---
 
-<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-discussion-panel" scene="discussion.panel" transition:persist="shell-discussion">
+<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-discussion-panel" scene="discussion.panel" applicationId="chat" transition:persist="shell-discussion">
 	<Fragment slot="header">
 		<div>
 			<p class="ts-section__eyebrow">Agent correspondence</p>
@@ -16,44 +15,7 @@ const endpoint = context.endpoint ?? '/v1/discussions';
 		</div>
 		<button class="ts-icon-button" type="button" aria-label="Close Discussion" data-ts-discussion-close>×</button>
 	</Fragment>
-	<div class="ts-discussion" data-ts-discussion data-endpoint={endpoint} data-team-id={context.teamId} data-project-id={context.projectId}>
-		<script is:inline type="application/json" data-ts-discussion-context set:html={JSON.stringify(context)} />
-		<div class="ts-discussion__context-refs" data-ts-discussion-context-refs hidden aria-label="Attached Atlas context"></div>
-		<div class="ts-discussion__toolbar">
-			<label><span>Find a conversation</span><input class="ts-control" type="search" placeholder="Topic, agent, or file…" data-ts-discussion-search /></label>
-			<button class="ts-button" data-variant="secondary" data-size="sm" type="button" data-ts-discussion-new>New</button>
-		</div>
-		<nav class="ts-discussion__threads" aria-label="Discussions" data-ts-discussion-list>
-			<p class="ts-discussion__empty">Start a discussion with one or more Market agents.</p>
-		</nav>
-		<section class="ts-discussion__conversation" aria-live="polite">
-			<header class="ts-discussion__topic">
-				<div><span class="ts-discussion__kicker">Current topic</span><strong data-ts-discussion-topic>{context.initialTopic ?? 'New discussion'}</strong></div>
-				<span class="ts-discussion__state" data-ts-discussion-state>Ready</span>
-			</header>
-			<ol class="ts-discussion__timeline" data-ts-discussion-timeline>
-				<li class="ts-discussion__welcome"><strong>Invite an agent with @agent-name</strong><p>Discuss for analysis, Propose for a governed change, or Act from an approved decision.</p></li>
-			</ol>
-			<div class="ts-discussion__trace" hidden data-ts-discussion-trace>
-				<div><span>Assignment</span><strong data-trace-assignment>queued</strong></div>
-				<div><span>Provider</span><strong data-trace-provider>waiting</strong></div>
-				<div><span>Time</span><strong data-trace-time>—</strong></div>
-				<div><span>Tokens / cost</span><strong data-trace-budget>—</strong></div>
-			</div>
-		</section>
-		<form class="ts-discussion__composer" data-ts-discussion-composer>
-			<div class="ts-discussion__resize" title="Drag to resize composer" data-ts-discussion-resize></div>
-			<div class="ts-discussion__intent" role="radiogroup" aria-label="Assignment intent">
-				{['discuss', 'propose', 'act'].map((intent) => <label><input type="radio" name="intent" value={intent} checked={intent === 'discuss'} /><span>{intent}</span></label>)}
-			</div>
-			<div class="ts-discussion__editor"><MarkdownField label="Markdown message" name="body" id={`${id}-message`} rows={5} required placeholder={`Ask ${context.agents?.[0] ? `@${context.agents[0].slug}` : '@agent-name'}…`} /></div>
-			<div class="ts-discussion__composer-actions">
-				<button class="ts-button" data-variant="ghost" data-size="sm" type="button" data-ts-discussion-file>Reference file</button>
-				<span data-ts-discussion-hint>Messages are committed before dispatch.</span><span class="ts-discussion__file-ref" hidden data-ts-discussion-file-ref></span>
-				<button class="ts-button" data-variant="primary" type="submit">Send assignment</button>
-			</div>
-		</form>
-	</div>
+	<div data-ts-discussion-container><DiscussionBody {id} {context} /></div>
 </NonModalSideSheet>
 
 <script>

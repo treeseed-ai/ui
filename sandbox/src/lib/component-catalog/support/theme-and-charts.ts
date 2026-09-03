@@ -12,6 +12,17 @@ export const themeAndChartsComponents: ComponentCatalogEntry[] = [
       { name: 'title', type: 'string', defaultValue: 'Question record', description: 'Resource title.' },
       { name: 'status', type: 'string', defaultValue: 'recorded', description: 'Optional status badge.' },
     ], undefined, '@treeseed/ui/components/astro/surface/ResourceCard.astro'),
+  display('semantic-collection-surface', 'SemanticCollectionSurface', 'Semantic surfaces', 'astro', 'Shell-free collection adapter that binds rich web cards to the shared renderer-neutral view and resource registry.', 'large', { viewId: 'projects', regionId: 'projects', items: 2 }, [
+      { name: 'viewId', type: 'string', defaultValue: 'projects', description: 'Shared registry view identity.' },
+      { name: 'regionId', type: 'string', defaultValue: 'projects', description: 'Collection region within the shared view.' },
+      { name: 'items', type: 'SemanticCollectionItem[]', defaultValue: 2, description: 'Renderer-ready items supplied by the host application.' },
+      { name: 'presentation', type: 'string', defaultValue: undefined, description: 'Optional rich renderer presentation identity.' },
+    ], undefined, '@treeseed/ui/components/astro/semantic/SemanticCollectionSurface.astro'),
+  display('semantic-region-surface', 'SemanticRegionSurface', 'Semantic surfaces', 'astro', 'Shell-free host for any registered semantic region and an optional rich renderer presentation.', 'large', { viewId: 'agent-builder', regionId: 'identity', presentation: 'agent-identity-form' }, [
+      { name: 'viewId', type: 'string', defaultValue: 'agent-builder', description: 'Shared registry view identity.' },
+      { name: 'regionId', type: 'string', defaultValue: 'identity', description: 'Region within the registered view.' },
+      { name: 'presentation', type: 'string', defaultValue: 'agent-identity-form', description: 'Optional rich renderer presentation identity.' },
+    ], undefined, '@treeseed/ui/components/astro/semantic/SemanticRegionSurface.astro'),
   display('empty-state', 'EmptyState', 'Surface', 'astro', 'Quiet empty state with optional actions.', 'medium', { title: 'No pending approvals', actions: 1 }, [
       { name: 'title', type: 'string', defaultValue: 'No pending approvals', description: 'Primary empty-state text.' },
       { name: 'actions', type: 'ButtonAction[]', defaultValue: 1, description: 'Optional action buttons.' },

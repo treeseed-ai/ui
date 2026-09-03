@@ -1,0 +1,15 @@
+---
+import { AgentAtlasWorkspace } from '../../react/agent-atlas/index.ts';
+import '../../styles/agent-atlas.css';
+import EmptyState from '../surface/EmptyState.astro';
+import SemanticRegionSurface from '../semantic/SemanticRegionSurface.astro';
+import AgentLabChrome from './AgentLabChrome.astro';
+
+interface Props { frame: any | null; canManage: boolean; canDiagnose: boolean; initialSurfaceMode?: 'inline' | 'focused'; csrfToken: string; metricDestinations: Record<string, string> }
+const { frame, canManage, canDiagnose, initialSurfaceMode = 'inline', csrfToken, metricDestinations } = Astro.props as Props;
+---
+<section class="ts-agent-lab-page" aria-label="Agent Lab" data-scene="agent-lab.home">
+	{frame ? <><AgentLabChrome {frame} {csrfToken} {metricDestinations} /><SemanticRegionSurface viewId="team" regionId="signals" presentation="agent-atlas">
+		<AgentAtlasWorkspace client:load initialProjection={frame.atlas} endpoints={frame.atlasEndpoints} {canManage} {canDiagnose} {initialSurfaceMode} />
+	</SemanticRegionSurface></> : <EmptyState title="Choose an active team" description="Agent Lab operations are team-scoped." />}
+</section>

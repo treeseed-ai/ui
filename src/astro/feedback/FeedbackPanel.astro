@@ -10,7 +10,7 @@ const screenshotEnabled = context.screenshotPolicy !== 'disabled';
 const screenshotDialogId = `${id}-screenshot-preview`;
 ---
 
-<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-feedback-panel" scene="feedback.panel">
+<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-feedback-panel" scene="feedback.panel" applicationId="feedback">
 	<Fragment slot="header">
 		<div>
 			<p class="ts-section__eyebrow">Product feedback</p>
@@ -53,7 +53,7 @@ const screenshotDialogId = `${id}-screenshot-preview`;
 				<ImageLightbox id={screenshotDialogId} title="Complete screenshot preview" description="Review the complete full-page capture. Sensitive form values and marked private content are masked." alt="Expanded redacted full-page feedback screenshot" />
 			</section>
 		) : null}
-		<p class="ts-feedback-panel__status" role="status" data-ts-feedback-status></p>
+		<p class="ts-feedback-panel__status" role="status" aria-live="polite" data-ts-feedback-status data-ts-utility-state data-state="ready"></p>
 		<div class="ts-form-actions">
 			<button class="ts-button" data-variant="secondary" type="button" data-ts-feedback-close>Cancel</button>
 			<button class="ts-button" data-variant="primary" type="submit">Send feedback</button>

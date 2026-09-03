@@ -32,10 +32,11 @@ function walkFiles(root: string): string[] {
 }
 
 function rewriteDeclarationSpecifiers(contents: string, filePath: string): string {
-  return contents.replace(/(['"])(\.{1,2}\/[^'"]+)\.ts\1/g, (match, quote: string, specifier: string) => {
+  return contents.replace(/(['"])(\.{1,2}\/[^'"]+)\.d\.ts\1/g, (_match, quote: string, specifier: string) => `${quote}${specifier}${quote}`)
+  .replace(/(['"])(\.{1,2}\/[^'"]+)\.tsx?\1/g, (match, quote: string, specifier: string) => {
     const targetBase = resolve(dirname(filePath), specifier);
     if (existsSync(`${targetBase}.js`)) return `${quote}${specifier}.js${quote}`;
-    if (existsSync(`${targetBase}.d.ts`)) return `${quote}${specifier}.d.ts${quote}`;
+    if (existsSync(`${targetBase}.d.ts`)) return `${quote}${specifier}${quote}`;
     return `${quote}${specifier}${quote}`;
   });
 }

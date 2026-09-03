@@ -12,11 +12,9 @@ const { reviews, action, csrfToken, timeZone } = Astro.props as Props;
 const reviewCriteria = {
 	technical: [['truth-provenance', 'Truth and provenance'], ['guarantee-status', 'Guarantee status'], ['command-configuration', 'Commands and configuration'], ['safety-recovery', 'Safety and recovery']],
 	audience: [['community', 'Community'], ['developer', 'Developer'], ['operator', 'Operator'], ['ai-agent', 'AI agent']],
-	graph: [['parent-child', 'Parent and child'], ['related-ids', 'Related IDs'], ['navigation', 'Navigation'], ['retrieval', 'Machine retrieval']],
 } as const;
 type ReviewKind = keyof typeof reviewCriteria;
-const editorialReviewKinds = (requiresGraphReview: boolean): readonly ReviewKind[] =>
-	requiresGraphReview ? ['technical', 'audience', 'graph'] : ['technical', 'audience'];
+const editorialReviewKinds: readonly ReviewKind[] = ['technical', 'audience'];
 ---
 
 {reviews.length ? <div class="ts-knowledge-reviews">
@@ -43,8 +41,8 @@ const editorialReviewKinds = (requiresGraphReview: boolean): readonly ReviewKind
 			<Button type="submit" variant="secondary" size="sm">Add review comment</Button>
 		</form> : null}
 		{review.status === 'open' && review.requiresEditorialReview && review.workspaceAvailable && review.changedPaths?.length && review.canDecide ? <div class="ts-form-stack" data-scene="knowledge.review.editorial">
-			<p class="ts-subtle">Context <code>{review.contextDigest?.slice(0, 12)}</code>. Technical and audience review are required{review.requiresGraphReview ? '; this structural change also requires graph review' : ''}.</p>
-			{editorialReviewKinds(review.requiresGraphReview).map((kind) => {
+			<p class="ts-subtle">Context <code>{review.contextDigest?.slice(0, 12)}</code>. Technical and audience release evidence is required.</p>
+			{editorialReviewKinds.map((kind) => {
 				const prior = review[`${kind}Review`];
 				return <form class="ts-form-stack" method="post" action={action} data-ts-submit="enhanced" data-ts-refresh-target="[data-knowledge-review-list]">
 					<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="editorial-review" />

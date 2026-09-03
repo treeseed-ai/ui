@@ -331,6 +331,7 @@ describe('UI foundation', () => {
 		const panel = readFileSync('src/astro/feedback/FeedbackPanel.astro', 'utf8');
 		const sideSheet = readFileSync('src/astro/overlays/NonModalSideSheet.astro', 'utf8');
 		const controller = readFileSync('src/lib/feedback/panel.ts', 'utf8');
+		const utilityDock = readFileSync('src/lib/shell/utility-dock.ts', 'utf8');
 		const styles = readFileSync('src/styles/ui.css', 'utf8');
 		expect(sideSheet).toContain('aria-modal="false"');
 		expect(sideSheet).toContain('popover="manual"');
@@ -340,11 +341,14 @@ describe('UI foundation', () => {
 		expect(controller).toContain("'x-idempotency-key'");
 		expect(controller).toContain("opener.closest<HTMLDialogElement>('dialog[open]')");
 		expect(controller).toContain('home.parent.insertBefore(panel, home.nextSibling)');
-		expect(controller).toContain("docked ? 'docked' : 'overlay'");
+		expect(controller).toContain("presentUtilityApplication(panel, 'feedback'");
 		expect(controller).toContain("panel.removeAttribute('popover')");
+		expect(utilityDock).toContain("'dock-end' | 'dock-bottom' | 'full-screen'");
+		expect(utilityDock).toContain('treeseed.utility-dock.${applicationId}.${placement}.size');
 		expect(styles).toContain(".ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden]))");
-		expect(styles).toContain(".ts-side-sheet[data-ts-feedback-presentation='docked']");
-		expect(styles).toMatch(/@media \(min-width: 64rem\)[\s\S]*\.ts-side-sheet/u);
+		expect(styles).toContain(".ts-side-sheet[data-ts-utility-placement='dock-bottom']");
+		expect(styles).toContain(".ts-side-sheet[data-ts-utility-placement='dock-end']");
+		expect(styles).toMatch(/@media \(min-width: 48rem\)[\s\S]*\.ts-side-sheet/u);
 	});
 
 	it('keeps contextual help shell-level and search lazy', () => {

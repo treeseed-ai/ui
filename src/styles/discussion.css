@@ -1,4 +1,9 @@
 .ts-discussion-panel .ts-side-sheet__body { padding: 0; }
+.ts-discussion-workspace { background: var(--ts-color-surface); border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-lg); box-shadow: var(--ts-shadow-sm); display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: min(48rem, calc(100vh - 8rem)); overflow: hidden; }
+.ts-discussion-workspace__header { align-items: center; border-bottom: 1px solid var(--ts-color-border); display: flex; gap: 1rem; justify-content: space-between; padding: 1rem 1.15rem; }
+.ts-discussion-workspace__header h1,.ts-discussion-workspace__header p { margin: 0; }
+.ts-discussion-workspace__header>div>p:last-child { color: var(--ts-color-text-muted); font-size: .8rem; margin-top: .2rem; }
+.ts-discussion-workspace__persistence { border: 1px solid var(--ts-color-border); border-radius: 999px; color: var(--ts-color-text-muted); font-size: .65rem; font-weight: 750; padding: .3rem .55rem; }
 .ts-discussion { display: grid; grid-template-rows: auto auto minmax(12rem, 1fr) auto; height: 100%; min-height: 0; }
 .ts-discussion__toolbar { align-items: end; background: color-mix(in srgb, var(--ts-color-surface) 88%, var(--ts-color-canvas)); border-bottom: 1px solid var(--ts-color-border); display: grid; gap: .65rem; grid-template-columns: 1fr auto; padding: .8rem 1rem; }
 .ts-discussion__toolbar label span,.ts-discussion__editor>span,.ts-discussion__kicker { color: var(--ts-color-text-muted); display: block; font-size: .63rem; font-weight: 800; letter-spacing: .08em; margin-bottom: .3rem; text-transform: uppercase; }
@@ -37,11 +42,12 @@
 .ts-discussion__editor .ts-markdown-field__editor,.ts-discussion__editor .ts-markdown-field__codemirror,.ts-discussion__editor .cm-editor { min-height: 4rem; }
 .ts-discussion__composer-actions { align-items: center; display: grid; gap: .55rem; grid-template-columns: auto minmax(0, 1fr) auto auto; padding-top: .65rem; }
 .ts-discussion__composer-actions span { color: var(--ts-color-text-muted); font-size: .62rem; }
-@media (min-width: 64rem) {
-	.ts-shell-workspace:has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(27rem, 36rem); }
+@media (min-width: 48rem) {
+	.ts-shell-workspace:has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(24rem, var(--ts-utility-dock-inline-size)); }
 	.ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden])):has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(24rem, 31rem); }
 	.ts-shell-workspace:has(> .ts-feedback-panel[data-ts-feedback-presentation='docked']:not([hidden])):has(> .ts-discussion-panel[data-ts-discussion-presentation='docked']:not([hidden]))>.ts-feedback-panel { display: none; }
 	.ts-side-sheet[data-ts-discussion-presentation='docked'] { align-self: start; box-shadow: none; display: grid; height: 100vh; inset: auto; max-height: 100vh; position: sticky; top: 0; width: 100%; z-index: 20; }
 }
 @media (max-width: 40rem) { .ts-discussion__composer-actions { grid-template-columns: 1fr auto; }.ts-discussion__composer-actions>span { display: none; } }
+@media (max-width: 40rem) { .ts-discussion-workspace { border-radius: 0; min-height: calc(100vh - 5rem); }.ts-discussion-workspace__header { align-items: flex-start; flex-direction: column; }.ts-discussion-workspace__persistence { display: none; } }
 .ts-discussion__context-refs{border-bottom:1px solid var(--ts-color-border);display:flex;flex-wrap:wrap;gap:.35rem;padding:.45rem .7rem}.ts-discussion__context-refs[hidden]{display:none}.ts-discussion__context-refs>span{align-items:center;background:var(--ts-color-canvas);border:1px solid var(--ts-color-border-strong);color:var(--ts-color-text-muted);display:flex;font-size:.6rem;gap:.35rem;padding:.28rem .4rem}.ts-discussion__context-refs button{background:transparent;border:0;color:var(--ts-color-text);cursor:pointer;padding:0}

@@ -1,0 +1,23 @@
+---
+import Button from '../forms/actions/Button.astro';
+import EntityCollection from '../data/entities/EntityCollection.astro';
+import OperationsDisplayContainer from '../operating/navigation/OperationsDisplayContainer.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import AgentLabChrome from './AgentLabChrome.astro';
+
+interface Props { activeTeam: boolean; monitor: any | null; canManage: boolean; csrfToken: string; action: string; items: any[]; query: string; status?: string; nextHref?: string | null; metricDestinations: Record<string, string> }
+const { activeTeam, monitor, canManage, csrfToken, action, items, query, status, nextHref, metricDestinations } = Astro.props as Props;
+---
+<section class="ts-agent-lab-page" data-scene="agent-lab.workdays">
+	{monitor ? <AgentLabChrome frame={monitor} {csrfToken} {metricDestinations} /> : null}
+	{!activeTeam ? <EmptyState title="Choose an active team" description="Workdays are team-scoped." /> : <OperationsDisplayContainer title="Workdays" description="Create a bounded operating window or inspect a recorded workday.">
+		{canManage ? <details class="ts-agent-lab-create"><summary>Open a new workday</summary><form class="ts-form-stack" method="post" {action} data-ts-submit="enhanced" data-ts-form-adapter="json" data-ts-reset-on-success="true" data-ts-success-message="Workday created and ready for its authorized start transition.">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="status" value="queued" />
+			<label class="ts-field"><span class="ts-field__label">Scenario</span><input class="ts-control" name="scenarioId" required /></label>
+			<label class="ts-field"><span class="ts-field__label">Environment</span><select class="ts-control" name="environment"><option value="local">Local</option><option value="staging">Staging</option></select></label>
+			<label class="ts-field"><span class="ts-field__label">Duration in seconds</span><input class="ts-control" name="durationSeconds" type="number" min="60" value="3600" required /></label>
+			<Button type="submit">Create workday</Button>
+		</form></details> : null}
+		<EntityCollection {items} {query} {status} {action} emptyTitle="No workdays found" nextHref={nextHref ?? undefined} />
+	</OperationsDisplayContainer>}
+</section>
