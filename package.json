@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-rc.12",
+  "version": "0.12.18-rc.13",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -294,15 +294,12 @@
     "./components/astro/service/ProviderCard.astro": "./dist/astro/service/ProviderCard.astro",
     "./components/astro/service/CapabilitySelector.astro": "./dist/astro/service/CapabilitySelector.astro",
     "./components/astro/service/CredentialField.astro": "./dist/astro/service/CredentialField.astro",
-    "./components/astro/service/SecretCustodyBadge.astro": "./dist/astro/service/SecretCustodyBadge.astro",
     "./components/astro/service/PermissionChecklist.astro": "./dist/astro/service/PermissionChecklist.astro",
-    "./components/astro/service/OperationAuthorizationDialog.astro": "./dist/astro/service/OperationAuthorizationDialog.astro",
     "./components/astro/project/RepositoryConnectionPanel.astro": "./dist/astro/project/RepositoryConnectionPanel.astro",
     "./components/astro/project/ProjectPortfolioSurface.astro": "./dist/astro/project/ProjectPortfolioSurface.astro",
     "./components/astro/project/ProjectCommandSurface.astro": "./dist/astro/project/ProjectCommandSurface.astro",
     "./components/astro/project/ProjectAgentsSurface.astro": "./dist/astro/project/ProjectAgentsSurface.astro",
     "./components/astro/project/AgentStudioSurface.astro": "./dist/astro/project/AgentStudioSurface.astro",
-    "./components/astro/service/ExplicitCredentialAuthorityPanel.astro": "./dist/astro/service/ExplicitCredentialAuthorityPanel.astro",
     "./components/astro/service/ProviderAuthorityPanel.astro": "./dist/astro/service/ProviderAuthorityPanel.astro",
     "./components/astro/service/workspace/ServiceConnectionWorkspace.astro": "./dist/astro/service/workspace/ServiceConnectionWorkspace.astro",
     "./components/astro/service/workspace/ServiceConnectionCreateSurface.astro": "./dist/astro/service/workspace/ServiceConnectionCreateSurface.astro",

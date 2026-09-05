@@ -175,6 +175,16 @@ describe('enhanced form controller', () => {
 		expect(second.requestId).toBe(first.requestId);
 	});
 
+	it('shows problem+json diagnostics instead of the unexpected-response toast', async () => {
+		const form = mountForm();
+		(form.elements.namedItem('email') as HTMLInputElement).value = 'person@example.test';
+		vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
+			title: 'Credential custody unavailable', detail: 'Core OpenBao is not ready.', status: 503,
+		}), { status: 503, headers: { 'content-type': 'application/problem+json; charset=utf-8' } })));
+		const result = await submitForm(form);
+		expect(result).toMatchObject({ok:false,message:'Core OpenBao is not ready.'});
+	});
+
 	it('preserves multipart FormData while attaching CSRF to the request', async () => {
 		const form = mountForm();
 		const email = form.elements.namedItem('email') as HTMLInputElement;
