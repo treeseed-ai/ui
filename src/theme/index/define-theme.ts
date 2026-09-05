@@ -176,7 +176,7 @@ const workspaceStructureTokens = new Set<keyof SemanticColorTokens>([
 ]);
 
 function buildWorkspaceTokenDeclarations(tokens: SemanticColorTokens) {
-  return Object.entries(tokens).map(([tokenName, value]) => {
+  const declarations = Object.entries(tokens).map(([tokenName, value]) => {
     const key = tokenName as keyof SemanticColorTokens;
     const variable = cssVariableName(tokenName);
     const shellVariable = `--ts-shell-color-${tokenName.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`)}`;
@@ -184,6 +184,8 @@ function buildWorkspaceTokenDeclarations(tokens: SemanticColorTokens) {
     if (workspaceStructureTokens.has(key)) return `\t${variable}: color-mix(in srgb, ${value} 55%, var(${shellVariable}) 45%);`;
     return `\t${variable}: ${value};`;
   }).join('\n');
+  // Derived properties otherwise inherit their already-resolved shell values.
+  return declarations + '\n\t--ts-color-card-surface: color-mix(in srgb, var(--ts-color-accent-soft) 65%, var(--ts-color-surface));\n\t--ts-control-background: var(--ts-color-surface);';
 }
 
 function workspaceSelectors(schemeId: string, mode: 'light' | 'dark') {
