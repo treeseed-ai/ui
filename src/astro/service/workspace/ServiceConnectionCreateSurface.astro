@@ -1,7 +1,6 @@
 ---
-import Button from '../../forms/actions/Button.astro';
 import EmptyState from '../../surface/EmptyState.astro';
-import Panel from '../../surface/Panel.astro';
+import ServiceWizard from '../ServiceWizard.astro';
 import SettingsTemplate from '../../templates/SettingsTemplate.astro';
 import CapabilitySelector from '../CapabilitySelector.astro';
 import ConnectionFields from '../ConnectionFields.astro';
@@ -10,20 +9,19 @@ interface Props { team?: any; canManage: boolean; provider?: any; providers: any
 const { team, canManage, provider, providers, csrfToken, sections } = Astro.props as Props;
 const descriptions: Record<string, string> = {github: 'Connect repositories and automate work.', cloudflare: 'Publish websites, manage domains and store files.', railway: 'Run services and databases.'};
 ---
-<SettingsTemplate title={provider ? 'Connect ' + provider.label : 'Choose a service'} description={provider ? 'First choose what you need. Next, connect your account.' : 'Which service would you like your team to use?'} {sections} knowledgePageId="services.connect" class="ts-service-workspace">
+<SettingsTemplate title={provider ? 'Connect ' + provider.label : 'Choose a service'} description={provider ? 'Connect your team in three short steps.' : 'Which service would you like your team to use?'} {sections} knowledgePageId="services.connect" class="ts-service-workspace">
   <section class="ts-stack" data-scene="service.create">
     {!team ? <EmptyState title="Choose a team first" description="Select the team that will use this connection." />
     : !canManage ? <EmptyState title="Ask a team administrator" description="Your role can view connections but cannot change them." />
     : !provider ? <div class="ts-resource-grid">{providers.map(item => <ProviderCard provider={item.id} label={item.label} description={descriptions[item.id] ?? item.label} href={'/app/services/new?provider=' + encodeURIComponent(item.id)} />)}</div>
-    : <div style="max-width: 48rem; width: 100%">
-      <Panel title="1. Choose what you need" knowledgePageId={provider.knowledgePageIds[0]}>
-        <form method="post" action={'/v1/teams/' + encodeURIComponent(team.id) + '/services'} class="ts-form-stack" data-ts-submit="enhanced" data-ts-form-adapter="service-connection" data-ts-success-message="Settings saved. Connect your account next." data-scene="service.create.submit">
+    : <ServiceWizard>
+        <form method="post" action={'/v1/teams/' + encodeURIComponent(team.id) + '/services'} class="ts-form-stack" data-ts-submit="enhanced" data-ts-form-adapter="service-connection" data-ts-success-message="Settings saved. Connect your account next." data-scene="service.create.submit" data-service-settings>
+          <section data-service-step="0"><h2 tabindex="-1">Choose your tasks</h2><p>Select what this connection will be used for.</p>
           <input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="providerId" value={provider.id} />
-          <ConnectionFields {provider} />
           <CapabilitySelector capabilities={provider.capabilities.map((item: any) => ({ ...item, credentialProfileId: item.credentialProfileIds[0], credentialProfiles: item.credentialProfileIds.map((id: string) => ({id, label: provider.credentialProfiles.find((profile: any) => profile.id === id)?.label ?? id})) }))} />
-          <div class="ts-form-actions"><Button type="submit">Continue to connect account</Button><Button href="/app/services/new" variant="ghost">Back</Button></div>
+          </section>
+          <section data-service-step="1" hidden><h2 tabindex="-1">Name your connection</h2><p>Add the account details for your team.</p><ConnectionFields {provider} /></section>
         </form>
-      </Panel>
-    </div>}
+    </ServiceWizard>}
   </section>
 </SettingsTemplate>

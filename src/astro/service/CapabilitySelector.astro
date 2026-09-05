@@ -7,52 +7,46 @@ interface Capability {
 }
 interface Props { capabilities: Capability[]; name?: string; readonly?: boolean }
 const { capabilities, name = 'capabilities', readonly = false } = Astro.props as Props;
+const github = capabilities.some(item => item.credentialProfiles?.some(profile => profile.id.startsWith('github-')));
+const paired = capabilities.some(item => item.type === 'workflow-configuration') && capabilities.some(item => item.type === 'secret-enclave');
+const tasks = capabilities.filter(item => (item.status !== 'planned' || item.checked) && !(paired && item.type === 'secret-enclave'));
 const labels: Record<string, string> = {
   'repository-hosting': 'Read and update repositories', 'workflow-execution': 'Run GitHub Actions',
-  'workflow-configuration': 'Manage workflow variables', 'secret-enclave': 'Manage workflow secrets',
-  'frontend-hosting': 'Publish websites and apps', 'dns-management': 'Manage domain records',
-  'object-storage': 'Store files', 'state-encryption': 'Encrypt deployment state',
-  'backend-hosting': 'Run backend services', 'database-hosting': 'Host databases',
-  'private-knowledge-index-hosting': 'Host team knowledge',
+  'workflow-configuration': paired ? 'Manage workflow variables and secrets' : 'Manage workflow variables',
+  'secret-enclave': 'Manage workflow secrets', 'frontend-hosting': 'Publish websites and apps',
+  'dns-management': 'Manage domain records', 'object-storage': 'Store files',
+  'state-encryption': 'Encrypt deployment state', 'backend-hosting': 'Run backend services',
+  'database-hosting': 'Host databases', 'private-knowledge-index-hosting': 'Host team knowledge',
 };
-const methodLabel = (id: string, fallback: string) => id.startsWith('github-')
-  ? id.endsWith('-app') ? 'Connect with GitHub App' : 'Use a personal access token'
-  : id === 'cloudflare-storage' ? 'Cloudflare API token (manage storage)'
-  : id === 's3-state-session' ? 'R2 access keys (deployment state)' : fallback;
+const selectedMethods = new Set(capabilities.filter(item => item.checked && item.credentialProfileId).map(item => item.credentialProfileId?.endsWith('-token') ? 'token' : 'app'));
+const method = selectedMethods.size > 1 ? '' : [...selectedMethods][0] ?? 'app';
 ---
 <fieldset class="ts-capability-selector" data-service-tasks>
   <legend>What should TreeSeed do? <HelpTrigger knowledgePageId="services.capabilities" label="Help choosing tasks" /></legend>
-  {readonly ? <ul>{capabilities.filter(item => item.checked).map(item => <li>{labels[item.type] ?? item.label}</li>)}</ul>
-  : <div class="ts-capability-selector__items">
-    {capabilities.filter(item => item.status !== 'planned' || item.checked).map(item => (
-      <div class="ts-capability-option" data-service-task>
-        <input id={name + '-' + item.type} type="checkbox" name={name} value={item.type} checked={item.checked} />
+  {readonly ? <ul>{tasks.filter(item => item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked).map(item => <li>{labels[item.type] ?? item.label}</li>)}</ul>
+  : <>
+    <div class="ts-capability-selector__items">
+      {tasks.map(item => <div class="ts-capability-option" data-service-task>
+        <input id={name + '-' + item.type} type="checkbox" name={name} value={item.type} checked={item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked} />
         <label for={name + '-' + item.type}><strong>{labels[item.type] ?? item.label}</strong></label>
-        {item.credentialProfiles?.length === 1 ? <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />
-        : item.credentialProfiles?.length ? <label data-service-method hidden={!item.checked}>
-          <span>Connect using</span>
-          <select class="ts-control ts-control--select" name={'capabilityProfile.' + item.type} aria-label={'How to connect for ' + (labels[item.type] ?? item.label)} disabled={!item.checked}>
-            {item.credentialProfiles.map(profile => <option value={profile.id} selected={profile.id === item.credentialProfileId}>{methodLabel(profile.id, profile.label)}</option>)}
+        {!github && item.credentialProfiles?.length === 1 && <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />}
+        {!github && (item.credentialProfiles?.length ?? 0) > 1 && <label class="ts-service-method">
+          <span>Account access for {labels[item.type] ?? item.label}</span>
+          <select class="ts-control" name={'capabilityProfile.' + item.type}>
+            {item.credentialProfiles?.map(profile => <option value={profile.id} selected={profile.id === item.credentialProfileId}>{profile.id === 'cloudflare-storage' ? 'Cloudflare API token' : profile.id === 's3-state-session' ? 'R2 access keys' : profile.label}</option>)}
           </select>
-        </label> : null}
-      </div>
-    ))}
-  </div>}
+        </label>}
+      </div>)}
+    </div>
+    {paired && <input type="hidden" name="combinedWorkflowEnvironment" value="true" />}
+    {github && <div class="ts-service-method">
+      <label for="github-auth-method">How do you want to connect to GitHub? <HelpTrigger knowledgePageId="provider.github" label="Help choosing GitHub access" /></label>
+      {selectedMethods.size > 1 && <p>Your saved tasks use different methods. Choose one method for this connection before saving.</p>}
+      <select id="github-auth-method" name="githubAuthMethod" class="ts-control" required>
+        {method === '' && <option value="">Choose a connection method</option>}
+        <option value="app" selected={method === 'app'}>GitHub App</option>
+        <option value="token" selected={method === 'token'}>API token</option>
+      </select>
+    </div>}
+  </>}
 </fieldset>
-<script>
-  function setupServiceTasks() {
-    document.querySelectorAll<HTMLElement>('[data-service-tasks]').forEach(root => {
-      if (root.dataset.initialized) return;
-      root.dataset.initialized = 'true';
-      root.addEventListener('change', () => root.querySelectorAll<HTMLElement>('[data-service-task]').forEach(row => {
-        const checked = row.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked;
-        const method = row.querySelector<HTMLElement>('[data-service-method]');
-        const select = row.querySelector<HTMLSelectElement>('select');
-        if (method) method.hidden = !checked;
-        if (select) select.disabled = !checked;
-      }));
-    });
-  }
-  setupServiceTasks();
-  document.addEventListener('astro:page-load', setupServiceTasks);
-</script>
