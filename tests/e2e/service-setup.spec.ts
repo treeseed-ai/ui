@@ -1,46 +1,58 @@
 import {test, expect} from '@playwright/test';
 
 for (const provider of ['github', 'cloudflare', 'railway']) {
-  test(provider + ' has one task-first setup form', async ({page}) => {
+  test(provider + ' shows only one step, validates and preserves inputs when going back', async ({page}) => {
     await page.goto('/service-setup/' + provider);
-    await expect(page.getByRole('heading', {name: '1. Choose what you need'})).toBeVisible();
-    await expect(page.locator('input[name="displayName"]')).toHaveCount(1);
-    await expect(page.locator('[data-service-tasks]')).toHaveCount(1);
+    await expect(page.locator('[data-service-step]:visible')).toHaveCount(1);
+    await expect(page.getByRole('heading', {name: 'Choose your tasks'})).toBeVisible();
+    await expect(page.locator('input[name="displayName"]')).toBeHidden();
+    await page.getByRole('button', {name: 'Continue', exact: true}).click();
+    await expect(page.getByRole('alert')).toContainText('Choose at least one task');
+    await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
+    await page.getByRole('button', {name: 'Continue', exact: true}).click();
+    await expect(page.getByRole('heading', {name: 'Name your connection'})).toBeFocused();
+    await expect(page.locator('[data-service-step]:visible')).toHaveCount(1);
+    await expect(page.locator('[data-service-tasks]')).toBeHidden();
+    await page.getByRole('button', {name: 'Save and connect account'}).click();
+    await expect(page.locator('input[name="displayName"]')).toBeFocused();
+    await page.locator('input[name="displayName"]').fill('My connection');
+    await page.getByRole('button', {name: 'Back', exact: true}).click();
+    await expect(page.locator('[data-service-tasks] input[type=checkbox]').first()).toBeChecked();
+    await page.getByRole('button', {name: 'Continue', exact: true}).click();
+    await expect(page.locator('input[name="displayName"]')).toHaveValue('My connection');
     await expect(page.getByText('Managed OpenBao')).toHaveCount(0);
-    await expect(page.locator('input[type="password"]')).toHaveCount(0);
-    await expect(page.getByRole('button', {name: 'Continue to connect account'})).toBeVisible();
-    await expect(page.getByRole('button', {name: 'Help choosing tasks'})).toHaveAttribute('data-ts-help-knowledge-page-id', 'services.capabilities');
-    if (provider !== 'github') {
-      await expect(page.getByText('Advanced settings (optional)')).toBeVisible();
-      await expect(page.locator('select[name="config.deploymentEnvironment"] option')).toHaveCount(3);
-    }
   });
 }
-test('authentication choices follow selected tasks and retain the chosen method', async ({page}) => {
+test('GitHub has one method and a single variables-and-secrets task', async ({page}) => {
   await page.goto('/service-setup/github');
-  const task = page.getByRole('checkbox', {name: 'Read and update repositories'});
-  const method = page.locator('select[name="capabilityProfile.repository-hosting"]');
-  await expect(method).toBeHidden();
-  await task.check();
-  await expect(method).toBeVisible();
-  await method.selectOption('github-repository-token');
-  await task.uncheck();
-  await expect(method).toBeHidden();
-  await expect(method).toBeDisabled();
-  await task.check();
-  await expect(method).toHaveValue('github-repository-token');
+  await expect(page.locator('[data-service-wizard] select')).toHaveCount(1);
+  await expect(page.getByRole('checkbox')).toHaveCount(3);
+  await page.getByRole('checkbox', {name: 'Manage workflow variables and secrets'}).check();
+  await page.locator('select[name="githubAuthMethod"]').selectOption('token');
+  await expect(page.locator('select[name^="capabilityProfile."]')).toHaveCount(0);
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
+  await page.getByRole('button', {name: 'Back', exact: true}).click();
+  await expect(page.locator('select[name="githubAuthMethod"]')).toHaveValue('token');
+  await expect(page.getByRole('button', {name: 'Help choosing GitHub access'})).toHaveAttribute('data-ts-help-knowledge-page-id', 'provider.github');
 });
-test('setup fits on a phone and retains a readable desktop layout', async ({page}, testInfo) => {
+test('full-width desktop wizard and phone layout', async ({page}, testInfo) => {
+  await page.setViewportSize({width: 1440, height: 1000});
   await page.goto('/service-setup/github');
   await page.getByRole('checkbox', {name: 'Read and update repositories'}).check();
-  await page.screenshot({path: testInfo.outputPath('github-setup-desktop.png'), fullPage: true});
+  const box = await page.locator('[data-service-wizard]').boundingBox();
+  expect(box!.width).toBeGreaterThan(1200);
+  await page.screenshot({path: testInfo.outputPath('github-wizard-desktop.png'), fullPage: true});
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
+  await page.screenshot({path: testInfo.outputPath('github-details-desktop.png'), fullPage: true});
   await page.setViewportSize({width: 390, height: 844});
-  await expect(page.getByRole('button', {name: 'Continue to connect account'})).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({path: testInfo.outputPath('github-setup-mobile.png'), fullPage: true});
+  await page.screenshot({path: testInfo.outputPath('github-details-mobile.png'), fullPage: true});
 });
-test('optional Cloudflare settings expand without blocking basic setup', async ({page}) => {
+test('Cloudflare has one deliberate advanced disclosure only on its details step', async ({page}) => {
   await page.goto('/service-setup/cloudflare');
+  await expect(page.locator('[data-service-wizard] details')).toBeHidden();
+  await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
   const bucket = page.locator('input[name="config.stateBucket"]');
   await expect(bucket).toBeHidden();
   await page.getByText('Advanced settings (optional)').click();

@@ -1,6 +1,7 @@
 ---
 import ActionList from '../../../../src/astro/data/ActionList.astro';
 import ConnectionFields from '../../../../src/astro/service/ConnectionFields.astro';
+import ServiceWizard from '../../../../src/astro/service/ServiceWizard.astro';
 import Badge from '../../../../src/astro/data/Badge.astro';
 import DataTable from '../../../../src/astro/data/DataTable.astro';
 import DisclosureList from '../../../../src/astro/data/DisclosureList.astro';
@@ -199,6 +200,7 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 'platform', path: `knowledge/${book.slug}/book.yaml`, teamSlug: 'treeseed' } }));
 ---
 
+{entry.id === 'service-wizard' ? <ServiceWizard><section data-service-step="0"><h2 tabindex="-1">Choose your tasks</h2><p>Choose what your team needs.</p></section></ServiceWizard> : null}
 {entry.id === 'connection-fields' ? <ConnectionFields provider={{id: 'github', knowledgePageIds: ['provider.github'], connectionFields: [{key: 'organization', label: 'Organization', required: true}]}} /> : null}
 
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}

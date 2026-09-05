@@ -1,0 +1,66 @@
+---
+import Button from '../forms/actions/Button.astro';
+interface Props { initialStep?: number; accountReady?: boolean }
+const {initialStep = 0, accountReady = false} = Astro.props;
+---
+<div class="ts-service-wizard" data-service-wizard data-initial-step={initialStep} data-account-ready={String(accountReady)}>
+  <ol class="ts-service-wizard__progress" aria-label="Connection setup progress">
+    {['Choose tasks', 'Connection details', 'Connect account'].map((label, index) => <li aria-current={index === initialStep ? 'step' : undefined} data-wizard-progress={index}><span>{index + 1}</span>{label}</li>)}
+  </ol>
+  <div class="ts-service-wizard__body"><slot /></div>
+  <p data-wizard-error role="alert" hidden></p>
+  <footer class="ts-service-wizard__actions">
+    <Button variant="secondary" data-wizard-back hidden={initialStep === 0}>Back</Button>
+    <Button href="/app/services" variant="ghost">Cancel</Button>
+    <Button data-wizard-next hidden={initialStep === 2}>Continue</Button>
+    <Button href="/app/services" data-wizard-finish hidden={initialStep !== 2 || !accountReady}>Done</Button>
+  </footer>
+</div>
+<script>
+  function initializeWizards() {
+    document.querySelectorAll<HTMLElement>('[data-service-wizard]').forEach(root => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = 'true';
+      let step = Number(root.dataset.initialStep ?? 0);
+      const panels = [...root.querySelectorAll<HTMLElement>('[data-service-step]')];
+      const error = root.querySelector<HTMLElement>('[data-wizard-error]')!;
+      const back = root.querySelector<HTMLButtonElement>('[data-wizard-back]')!;
+      const next = root.querySelector<HTMLButtonElement>('[data-wizard-next]')!;
+      const finish = root.querySelector<HTMLElement>('[data-wizard-finish]')!;
+      const show = (focus = true) => {
+        panels.forEach(panel => { panel.hidden = Number(panel.dataset.serviceStep) !== step; });
+        root.querySelectorAll<HTMLElement>('[data-wizard-progress]').forEach(item => {
+          if (Number(item.dataset.wizardProgress) === step) item.setAttribute('aria-current', 'step');
+          else item.removeAttribute('aria-current');
+        });
+        back.hidden = step === 0; next.hidden = step === 2;
+        next.textContent = step === 1 ? 'Save and connect account' : 'Continue';
+        finish.hidden = step !== 2 || root.dataset.accountReady !== 'true';
+        error.hidden = true;
+        if (focus) panels.find(panel => !panel.hidden)?.querySelector<HTMLElement>('h2')?.focus();
+      };
+      const advance = () => {
+        if (step === 0 && !root.querySelector('[data-service-tasks] input[type="checkbox"]:checked')) {
+          error.textContent = 'Choose at least one task to continue.'; error.hidden = false; return;
+        }
+        const active = panels.find(panel => !panel.hidden);
+        const invalid = [...(active?.querySelectorAll<HTMLInputElement>('input, select, textarea') ?? [])].find(input => !input.disabled && !input.checkValidity());
+        if (invalid) { invalid.reportValidity(); return; }
+        if (step === 1) { root.querySelector<HTMLFormElement>('[data-service-settings]')?.requestSubmit(); return; }
+        step++; show();
+      };
+      back.addEventListener('click', () => {step--; show();});
+      next.addEventListener('click', advance);
+      root.addEventListener('treeseed:form-start', () => {next.disabled = true; back.disabled = true; root.setAttribute('aria-busy', 'true');});
+      root.addEventListener('treeseed:form-error', event => {
+        next.disabled = false; back.disabled = false; root.removeAttribute('aria-busy');
+        error.textContent = (event as CustomEvent).detail?.message ?? 'Could not save. Please try again.'; error.hidden = false;
+      });
+      root.addEventListener('keydown', event => {
+        if (event.key === 'Enter' && event.target instanceof HTMLInputElement && event.target.type !== 'checkbox' && step < 2) {event.preventDefault(); advance();}
+      });
+      show(false);
+    });
+  }
+  initializeWizards(); document.addEventListener('astro:page-load', initializeWizards);
+</script>

@@ -17,7 +17,7 @@ const optional = fields.filter(field => !field.required);
       {['staging', 'production'].map(value => <option value={value} selected={connection?.nonSecretConfig?.[field.key] === value}>{value === 'staging' ? 'Staging — testing' : 'Production — live'}</option>)}
     </select> : <TextInput name={'config.' + field.key} value={connection?.nonSecretConfig?.[field.key] ?? ''} placeholder={field.placeholder} required />}
   </Field>)}
-  {optional.length > 0 && <details>
+  {optional.length > 0 && <details class="ts-service-disclosure">
     <summary>Advanced settings (optional)</summary>
     <HelpTrigger knowledgePageId={provider.knowledgePageIds[0]} label={'Help with ' + provider.label + ' settings'} />
     <div class="ts-form-stack">{optional.map(field => <Field label={field.label} name={'config.' + field.key}>

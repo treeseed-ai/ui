@@ -22,6 +22,9 @@ const serviceEntry = (
 );
 
 export const serviceManagementComponents: ComponentCatalogEntry[] = [
+  serviceEntry('service-wizard', 'ServiceWizard', 'Full-width accessible single-step service setup navigation.', 'full-page', {initialStep: 0, accountReady: false},
+    [{name: 'initialStep', type: 'number', defaultValue: 0, description: 'Current step: tasks, details, or account access.'},
+     {name: 'accountReady', type: 'boolean', defaultValue: false, description: 'Show Done only after saved account access is ready.'}]),
   serviceEntry('connection-fields', 'ConnectionFields', 'Account settings with optional infrastructure details collapsed.', 'medium',
     {provider: {id: 'github', knowledgePageIds: ['provider.github'], connectionFields: [{key: 'organization', label: 'Organization', required: true}]}},
     [{name: 'provider', type: 'ServiceProviderDefinition', defaultValue: 'github', description: 'Provider account field contract.'}]),
