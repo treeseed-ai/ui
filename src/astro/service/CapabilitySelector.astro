@@ -1,50 +1,58 @@
 ---
+import HelpTrigger from '../help/HelpTrigger.astro';
 interface Capability {
-	type: string;
-	label: string;
-	description: string;
-	status?: 'available' | 'planned';
-	checked?: boolean;
-	credentialProfileId?: string | null;
-	credentialProfiles?: Array<{ id: string; label: string }>;
+  type: string; label: string; description: string; status?: 'available' | 'planned';
+  checked?: boolean; credentialProfileId?: string | null;
+  credentialProfiles?: Array<{ id: string; label: string }>;
 }
-
-interface Props {
-	capabilities: Capability[];
-	name?: string;
-	readonly?: boolean;
-}
-
+interface Props { capabilities: Capability[]; name?: string; readonly?: boolean }
 const { capabilities, name = 'capabilities', readonly = false } = Astro.props as Props;
+const labels: Record<string, string> = {
+  'repository-hosting': 'Read and update repositories', 'workflow-execution': 'Run GitHub Actions',
+  'workflow-configuration': 'Manage workflow variables', 'secret-enclave': 'Manage workflow secrets',
+  'frontend-hosting': 'Publish websites and apps', 'dns-management': 'Manage domain records',
+  'object-storage': 'Store files', 'state-encryption': 'Encrypt deployment state',
+  'backend-hosting': 'Run backend services', 'database-hosting': 'Host databases',
+  'private-knowledge-index-hosting': 'Host team knowledge',
+};
+const methodLabel = (id: string, fallback: string) => id.startsWith('github-')
+  ? id.endsWith('-app') ? 'Connect with GitHub App' : 'Use a personal access token'
+  : id === 'cloudflare-storage' ? 'Cloudflare API token (manage storage)'
+  : id === 's3-state-session' ? 'R2 access keys (deployment state)' : fallback;
 ---
-
-<fieldset class="ts-capability-selector">
-	<legend>Service capabilities</legend>
-	<div class="ts-capability-selector__items">
-		{capabilities.map((capability) => (
-			<div class="ts-capability-option" data-status={capability.status ?? 'available'}>
-				<input
-					id={`${name}-${capability.type}`}
-					type="checkbox"
-					name={name}
-					value={capability.type}
-					checked={capability.checked}
-					disabled={readonly || capability.status === 'planned'}
-				/>
-				<label for={`${name}-${capability.type}`}>
-					<strong>{capability.label}</strong>
-					<small>{capability.description}</small>
-				</label>
-				{capability.credentialProfiles?.length ? (
-					<select class="ts-control ts-control--select" name={`capabilityProfile.${capability.type}`}
-						aria-label={`${capability.label} credential authority`} disabled={readonly || capability.status === 'planned'}>
-						{capability.credentialProfiles.map((profile) => (
-							<option value={profile.id} selected={profile.id === capability.credentialProfileId}>{profile.label}</option>
-						))}
-					</select>
-				) : null}
-				{capability.status === 'planned' ? <em>Planned</em> : null}
-			</div>
-		))}
-	</div>
+<fieldset class="ts-capability-selector" data-service-tasks>
+  <legend>What should TreeSeed do? <HelpTrigger knowledgePageId="services.capabilities" label="Help choosing tasks" /></legend>
+  {readonly ? <ul>{capabilities.filter(item => item.checked).map(item => <li>{labels[item.type] ?? item.label}</li>)}</ul>
+  : <div class="ts-capability-selector__items">
+    {capabilities.filter(item => item.status !== 'planned' || item.checked).map(item => (
+      <div class="ts-capability-option" data-service-task>
+        <input id={name + '-' + item.type} type="checkbox" name={name} value={item.type} checked={item.checked} />
+        <label for={name + '-' + item.type}><strong>{labels[item.type] ?? item.label}</strong></label>
+        {item.credentialProfiles?.length === 1 ? <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />
+        : item.credentialProfiles?.length ? <label data-service-method hidden={!item.checked}>
+          <span>Connect using</span>
+          <select class="ts-control ts-control--select" name={'capabilityProfile.' + item.type} aria-label={'How to connect for ' + (labels[item.type] ?? item.label)} disabled={!item.checked}>
+            {item.credentialProfiles.map(profile => <option value={profile.id} selected={profile.id === item.credentialProfileId}>{methodLabel(profile.id, profile.label)}</option>)}
+          </select>
+        </label> : null}
+      </div>
+    ))}
+  </div>}
 </fieldset>
+<script>
+  function setupServiceTasks() {
+    document.querySelectorAll<HTMLElement>('[data-service-tasks]').forEach(root => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = 'true';
+      root.addEventListener('change', () => root.querySelectorAll<HTMLElement>('[data-service-task]').forEach(row => {
+        const checked = row.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked;
+        const method = row.querySelector<HTMLElement>('[data-service-method]');
+        const select = row.querySelector<HTMLSelectElement>('select');
+        if (method) method.hidden = !checked;
+        if (select) select.disabled = !checked;
+      }));
+    });
+  }
+  setupServiceTasks();
+  document.addEventListener('astro:page-load', setupServiceTasks);
+</script>

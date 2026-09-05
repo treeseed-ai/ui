@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SERVICE_PROVIDER_CATALOG } from '@treeseed/sdk/secrets-capability';
+import ServiceConnectionCreateSurface from '../../../../src/astro/service/workspace/ServiceConnectionCreateSurface.astro';
+export const prerender = true;
+export function getStaticPaths() {
+  return SERVICE_PROVIDER_CATALOG.map(provider => ({params: {provider: provider.id}, props: {provider}}));
+}
+const {provider} = Astro.props;
+---
+<BaseLayout title="Service setup">
+  <main style="padding: 2rem">
+    <ServiceConnectionCreateSurface team={{id: 'fixture-team'}} canManage provider={provider} providers={[...SERVICE_PROVIDER_CATALOG]} csrfToken="fixture-only" sections={[]} />
+  </main>
+</BaseLayout>
