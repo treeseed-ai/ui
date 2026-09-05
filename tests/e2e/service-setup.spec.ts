@@ -1,5 +1,45 @@
 import {test, expect} from '@playwright/test';
 
+test('service surfaces follow the site palette and independent content overlay', async ({page}, testInfo) => {
+  await page.goto('/service-setup/github');
+  await page.locator('.ts-theme-menu > summary').click();
+  await page.getByLabel('Theme mode', {exact: true}).selectOption('dark');
+  const colors = () => page.evaluate(() => {
+    const scope = document.querySelector<HTMLElement>('[data-ts-workspace-content]')!;
+    const probe = document.createElement('div'); scope.append(probe);
+    probe.style.background = 'color-mix(in srgb, var(--ts-color-accent-soft) 65%, var(--ts-color-surface))';
+    const cardExpected = getComputedStyle(probe).backgroundColor;
+    probe.style.background = 'var(--ts-color-surface)';
+    const inputExpected = getComputedStyle(probe).backgroundColor;
+    probe.style.color = 'var(--ts-color-text)';
+    const textExpected = getComputedStyle(probe).color;
+    probe.remove();
+    return {cardExpected, inputExpected, textExpected,
+      heading: getComputedStyle(document.querySelector('[data-service-wizard] h2')!).color,
+      card: getComputedStyle(document.querySelector('[data-service-wizard]')!).backgroundColor,
+      input: getComputedStyle(document.querySelector('input[name="displayName"]')!).backgroundColor,
+      shell: getComputedStyle(document.documentElement).getPropertyValue('--ts-color-surface')};
+  });
+  const shell = await colors();
+  expect(shell.card).toBe(shell.cardExpected); expect(shell.input).toBe(shell.inputExpected);
+  await page.locator('[data-ts-workspace-enabled]').check();
+  await page.getByLabel('Content color scheme', {exact: true}).selectOption('tidepool');
+  await page.getByLabel('Content theme mode', {exact: true}).selectOption('light');
+  const overlay = await colors();
+  expect(overlay.card).toBe(overlay.cardExpected); expect(overlay.input).toBe(overlay.inputExpected);
+  await expect.poll(async () => (await colors()).heading).toBe(overlay.textExpected);
+  expect(overlay.card).not.toBe(shell.card); expect(overlay.shell).toBe(shell.shell);
+  await page.locator('.ts-theme-menu > summary').click();
+  await page.screenshot({path: testInfo.outputPath('service-content-overlay.png'), fullPage: true});
+  await page.locator('.ts-theme-menu > summary').click();
+  await page.locator('[data-ts-workspace-enabled]').uncheck();
+  expect((await colors()).card).toBe(shell.card);
+  await page.getByLabel('Theme mode', {exact: true}).selectOption('light');
+  const light = await colors();
+  expect(light.card).toBe(light.cardExpected); expect(light.input).toBe(light.inputExpected);
+  expect(light.heading).toBe(light.textExpected); expect(light.card).not.toBe(shell.card);
+});
+
 for (const provider of ['github', 'cloudflare', 'railway']) {
   test(provider + ' shows only one step, validates and preserves inputs when going back', async ({page}) => {
     await page.goto('/service-setup/' + provider);

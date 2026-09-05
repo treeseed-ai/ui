@@ -765,6 +765,7 @@ html[data-ts-app-sidebar='collapsed'] .ts-product-shell__desktop-operations .ts-
 
 .ts-control-surface {
 	align-content: start;
+	color: var(--ts-color-text);
 	display: grid;
 	gap: var(--ts-space-3);
 	min-width: 0;
@@ -785,6 +786,7 @@ html[data-ts-app-sidebar='collapsed'] .ts-product-shell__desktop-operations .ts-
 }
 
 .ts-workspace-overlay-scope {
+	color: var(--ts-color-text);
 	display: contents;
 }
 
