@@ -85,7 +85,7 @@ function normalized(payload: any, response: Response): FormSubmissionResponse {
 	return {
 		ok,
 		code: String(source?.code ?? (ok ? 'success' : `http_${response.status}`)),
-		message: String(source?.message ?? source?.error?.message ?? source?.error ?? (ok ? 'Saved.' : 'The request could not be completed.')),
+		message: String(source?.message ?? source?.detail ?? source?.title ?? source?.error?.message ?? source?.error ?? (ok ? 'Saved.' : 'The request could not be completed.')),
 		fieldErrors: source?.fieldErrors ?? source?.details?.fields,
 		redirect: source?.redirect,
 		payload: source?.payload ?? payload?.payload,
@@ -96,7 +96,7 @@ function normalized(payload: any, response: Response): FormSubmissionResponse {
 
 async function defaultParse(response: Response) {
 	const contentType = response.headers.get('content-type') ?? '';
-	if (contentType.includes('application/json')) return normalized(await response.json().catch(() => null), response);
+	if (/^application\/(?:json|[a-z0-9.+-]+\+json)(?:\s*;|$)/iu.test(contentType)) return normalized(await response.json().catch(() => null), response);
 	if (response.redirected) {
 		return { ok: true, code: 'redirect', message: 'Continuing…', redirect: response.url };
 	}

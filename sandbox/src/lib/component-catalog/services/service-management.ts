@@ -34,11 +34,6 @@ export const serviceManagementComponents: ComponentCatalogEntry[] = [
 		kind: 'repository', teamId: 'team_demo', connectionId: 'connection_demo', csrfToken: 'catalog', permissions: ['Metadata: read', 'Contents: read and write'],
 	}, [{ name: 'props', type: 'object', defaultValue: {}, description: 'Connector kind, connection identity, authorization state, and permissions.' }], undefined,
 	'@treeseed/ui/components/astro/service/ProviderAuthorityPanel.astro'),
-	display('explicit-credential-authority-panel', 'ExplicitCredentialAuthorityPanel', 'Service', 'astro', 'Explicit environment-reference authority configuration without credential persistence.', 'large', {
-		teamId: 'team_demo', connectionId: 'connection_demo', profileId: 'profile_demo', title: 'Repository token authority',
-		description: 'Use a repository-scoped operator credential.', permissions: ['Contents: read and write'], csrfToken: 'catalog', suggestedEnvironmentReference: 'TREESEED_GITHUB_TOKEN_OWNER_REPOSITORY',
-	}, [{ name: 'props', type: 'object', defaultValue: {}, description: 'Credential profile, reference, readiness, and minimum permissions.' }], undefined,
-	'@treeseed/ui/components/astro/service/ExplicitCredentialAuthorityPanel.astro'),
 	display('workflow-definition-panel', 'WorkflowDefinitionPanel', 'Service', 'astro', 'Allowlisted workflow, ref, and configuration-requirement editor.', 'large', {
 		action: '#', csrfToken: 'catalog', repositoryBindingId: 'repository_demo', workflowBindingId: 'workflow_demo',
 	}, [{ name: 'props', type: 'object', defaultValue: {}, description: 'Workflow definition and enhanced-form context.' }], undefined,
@@ -85,12 +80,7 @@ export const serviceManagementComponents: ComponentCatalogEntry[] = [
     { name: 'name', type: 'string', defaultValue: 'installationToken', description: 'Credential field name.' },
     { name: 'label', type: 'string', defaultValue: 'Installation token', description: 'Visible field label.' },
     { name: 'description', type: 'string', defaultValue: 'Used for read-only validation.', description: 'Purpose and usage guidance.' },
-    { name: 'sensitive', type: 'boolean', defaultValue: true, description: 'Marks values for local encryption.' },
-  ]),
-  serviceEntry('secret-custody-badge', 'SecretCustodyBadge', 'Canonical custody-mode label for encrypted and external credential storage.', 'inline', {
-    mode: 'client_encrypted_vault',
-  }, [
-    { name: 'mode', type: 'string', defaultValue: 'client_encrypted_vault', description: 'Credential custody mode.' },
+    { name: 'sensitive', type: 'boolean', defaultValue: true, description: 'Marks secret input; never prepopulate stored values.' },
   ]),
   serviceEntry('permission-checklist', 'PermissionChecklist', 'Expandable minimum-provider-permission guidance.', 'medium', {
     permissions: 3,
@@ -99,14 +89,5 @@ export const serviceManagementComponents: ComponentCatalogEntry[] = [
     { name: 'title', type: 'string', defaultValue: 'Required provider permissions', description: 'Checklist heading.' },
     { name: 'permissions', type: 'string[]', defaultValue: 3, description: 'Human-readable minimum permissions.' },
     { name: 'open', type: 'boolean', defaultValue: false, description: 'Initial disclosure state.' },
-  ]),
-  serviceEntry('operation-authorization-dialog', 'OperationAuthorizationDialog', 'Explicit single-use credential lease authorization disclosure.', 'large', {
-    operation: 'Validate connection',
-    requiredFields: 1,
-  }, [
-    { name: 'operation', type: 'string', defaultValue: 'Validate connection', description: 'Security-sensitive operation being authorized.' },
-    { name: 'destination', type: 'string', defaultValue: 'Operations runner', description: 'Recipient of sealed credentials.' },
-    { name: 'requiredFields', type: 'string[]', defaultValue: 1, description: 'Exact credential fields requested.' },
-    { name: 'duration', type: 'string', defaultValue: 'Up to five minutes', description: 'Lease validity description.' },
   ]),
 ];
