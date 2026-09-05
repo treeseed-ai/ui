@@ -27,7 +27,7 @@ test('service surfaces follow the site palette and independent content overlay',
   await page.getByLabel('Content theme mode', {exact: true}).selectOption('light');
   const overlay = await colors();
   expect(overlay.card).toBe(overlay.cardExpected); expect(overlay.input).toBe(overlay.inputExpected);
-  expect(overlay.heading).toBe(overlay.textExpected);
+  await expect.poll(async () => (await colors()).heading).toBe(overlay.textExpected);
   expect(overlay.card).not.toBe(shell.card); expect(overlay.shell).toBe(shell.shell);
   await page.locator('.ts-theme-menu > summary').click();
   await page.screenshot({path: testInfo.outputPath('service-content-overlay.png'), fullPage: true});
