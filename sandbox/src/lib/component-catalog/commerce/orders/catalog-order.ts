@@ -54,6 +54,7 @@ export const componentCatalogOrder = [
   'provider-mark',
   'provider-card',
   'service-connection-workspace',
+  'connection-fields',
   'service-connection-create-surface',
   'capability-selector',
   'credential-field',

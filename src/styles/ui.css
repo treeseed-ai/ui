@@ -332,6 +332,10 @@
 	text-transform: uppercase;
 }
 
+.ts-capability-option [data-service-method] { grid-column: 2 / -1; min-width: 0; }
+.ts-capability-option [data-service-method][hidden] { display: none; }
+.ts-capability-option [data-service-method] select { max-width: 100%; width: 100%; }
+
 .ts-credential-field__control {
 	align-items: center;
 	display: grid;

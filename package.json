@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-rc.13",
+  "version": "0.12.18-rc.14",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -293,6 +293,7 @@
     "./components/astro/service/ProviderMark.astro": "./dist/astro/service/ProviderMark.astro",
     "./components/astro/service/ProviderCard.astro": "./dist/astro/service/ProviderCard.astro",
     "./components/astro/service/CapabilitySelector.astro": "./dist/astro/service/CapabilitySelector.astro",
+    "./components/astro/service/ConnectionFields.astro": "./dist/astro/service/ConnectionFields.astro",
     "./components/astro/service/CredentialField.astro": "./dist/astro/service/CredentialField.astro",
     "./components/astro/service/PermissionChecklist.astro": "./dist/astro/service/PermissionChecklist.astro",
     "./components/astro/project/RepositoryConnectionPanel.astro": "./dist/astro/project/RepositoryConnectionPanel.astro",

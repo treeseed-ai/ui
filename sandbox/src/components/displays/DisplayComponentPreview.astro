@@ -1,5 +1,6 @@
 ---
 import ActionList from '../../../../src/astro/data/ActionList.astro';
+import ConnectionFields from '../../../../src/astro/service/ConnectionFields.astro';
 import Badge from '../../../../src/astro/data/Badge.astro';
 import DataTable from '../../../../src/astro/data/DataTable.astro';
 import DisclosureList from '../../../../src/astro/data/DisclosureList.astro';
@@ -198,6 +199,8 @@ const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running
 const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 'platform', path: `knowledge/${book.slug}/book.yaml`, teamSlug: 'treeseed' } }));
 ---
 
+{entry.id === 'connection-fields' ? <ConnectionFields provider={{id: 'github', knowledgePageIds: ['provider.github'], connectionFields: [{key: 'organization', label: 'Organization', required: true}]}} /> : null}
+
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
 {entry.id === 'badge' ? <div class="primitive-inline"><Badge>Default</Badge><Badge tone="success">Success</Badge><Badge tone="warning">Warning</Badge><Badge tone="danger">Danger</Badge></div> : null}
 {entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
@@ -216,7 +219,7 @@ const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 
 {entry.id === 'project-agents-surface' ? <ProjectAgentsSurface projectId="platform" project={{ id: 'platform', name: 'TreeSeed Platform' }} agents={[{ id: 'interface-architect', displayName: 'Interface architect', description: 'Maintains cross-renderer parity.', status: 'active' }]} runs={[{ agentClassId: 'interface-architect', status: 'succeeded' }]} /> : null}
 {entry.id === 'agent-studio-surface' ? <AgentStudioSurface projectId="platform" agent={{ id: 'interface-architect', name: 'Interface architect', slug: 'interface-architect', handler: 'codex', activityProfile: 'implementation', planningEnabled: true, actingEnabled: true }} runs={[]} fallbacks={[]} audits={[]} timeZone="UTC" /> : null}
 {entry.id === 'knowledge-workbench-surface' ? <KnowledgeWorkbenchSurface team={{ id: 'team-demo', name: 'TreeSeed' }} sections={[{ id: 'library', label: 'Library', href: '#', active: true }]} view="library" retryHref="#" accessUnavailable={false} canRead requestedUnauthorizedControl={false} reviewsUnavailable={false} reviews={[]} packsUnavailable={false} books={knowledgeBooks} collections={[]} builds={[]} selectedProjectId="" sourcePath="" sourceSha="" formValues={{}} canManageBooks lifecycleUnavailable={false} projects={[]} projectItems={[]} libraryCatalog={{ books: knowledgeBooks, pages: [] }} libraryUnavailable={false} csrfToken="catalog" timeZone="UTC" /> : null}
-{entry.id === 'service-connection-create-surface' ? <ServiceConnectionCreateSurface team={{ id: 'team-demo' }} canManage provider={undefined} providers={[{ id: 'github', label: 'GitHub', description: 'Repository and workflow provider.', capabilities: [{ label: 'Repositories', status: 'available' }] }]} permissions={[]} csrfToken="catalog" sections={[{ id: 'connections', label: 'Connections', href: '#', active: true }]} /> : null}
+{entry.id === 'service-connection-create-surface' ? <ServiceConnectionCreateSurface team={{ id: 'team-demo' }} canManage provider={undefined} providers={[{ id: 'github', label: 'GitHub', description: 'Repository and workflow provider.', capabilities: [{ label: 'Repositories', status: 'available' }] }]} csrfToken="catalog" sections={[{ id: 'connections', label: 'Connections', href: '#', active: true }]} /> : null}
 {entry.id === 'readiness-summary' ? <ReadinessSummary viewModel={readinessViewModel} /> : null}
 {entry.id === 'repository-connection-panel' ? <RepositoryConnectionPanel topology={{ contentRepository: { local: { path: '.' } } }} candidates={[{ value: 'connection|binding|authority', label: 'GitHub · TreeSeed', status: 'ready' }]} csrfToken="catalog" action="#" /> : null}
 {entry.id === 'provider-authority-panel' ? <ProviderAuthorityPanel kind="repository" teamId="team_demo" connectionId="connection_demo" csrfToken="catalog" status="ready" accountLogin="treeseed-ai" installationId="installation_demo" permissions={['Metadata: read', 'Contents: read and write']} /> : null}

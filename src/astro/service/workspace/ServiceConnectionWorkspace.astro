@@ -4,7 +4,6 @@ import Timestamp from '../../data/Timestamp.astro';
 import Button from '../../forms/actions/Button.astro';
 import SemanticCollectionSurface from '../../semantic/SemanticCollectionSurface.astro';
 import EmptyState from '../../surface/EmptyState.astro';
-import Panel from '../../surface/Panel.astro';
 import SettingsTemplate from '../../templates/SettingsTemplate.astro';
 import ProviderCard from '../ProviderCard.astro';
 
@@ -32,11 +31,10 @@ const provider = (id: string) => providerCatalog.find((item) => item.id === id);
 ---
 
 <SettingsTemplate title="Services" description={teamName ? `Connect and manage provider accounts for ${teamName}.` : 'Select an active team to manage its provider services.'} {sections} knowledgePageId="services.connections" actions={teamName && canManage ? [{ id: 'services.connection.create', label: 'Add connection', href: '/app/services/new', state: 'allowed', auditSensitivity: 'normal' }] : []} class="ts-service-workspace">
-	<section class="ts-stack" data-scene="service.collection" data-secret-custody="openbao">
+	<section class="ts-stack" data-scene="service.collection">
 	{!teamName ? <EmptyState title="Select an active team" description="Service connections are isolated by team. Choose a team from the sidebar first." actions={[{ label: 'Manage teams', href: '/app/teams' }]} />
 	: unavailable ? <EmptyState title="Services are temporarily unavailable" description="The service API did not respond. No empty state has been inferred."><div slot="actions"><Button href="/app/services" variant="secondary" reload>Retry</Button></div></EmptyState>
 	: <>
-		{canManage ? <Panel eyebrow="Credential custody" title="Managed OpenBao" description="Save and rotate credentials on each connection. Team authorization controls every use; secret values are never returned to this workspace." /> : null}
 		<form class="ts-template__filters" method="get" aria-label="Filter services">
 			<label class="ts-field"><span class="ts-field__label">Provider</span><select class="ts-control" name="provider"><option value="">All providers</option>{providerCatalog.map((item) => <option value={item.id} selected={providerFilter === item.id}>{item.label}</option>)}</select></label>
 			<label class="ts-field"><span class="ts-field__label">Capability</span><select class="ts-control" name="capability"><option value="">All capabilities</option>{capabilityOptions.map((item) => <option value={item.type} selected={capabilityFilter === item.type}>{item.label}</option>)}</select></label>

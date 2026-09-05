@@ -1,0 +1,27 @@
+---
+import Field from '../forms/fields/Field.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import HelpTrigger from '../help/HelpTrigger.astro';
+interface Props { provider: any; connection?: any }
+const { provider, connection } = Astro.props as Props;
+const fields = provider.connectionFields as Array<{key: string; label: string; required: boolean; placeholder?: string}>;
+const optional = fields.filter(field => !field.required);
+---
+<div class="ts-form-stack">
+  <Field label="Connection name" name="displayName" help="A short name your team can recognize. Keep it unchanged if a deployment already uses it." required>
+    <TextInput name="displayName" value={connection?.displayName ?? ''} placeholder={provider.id + '-staging'} maxlength={80} required />
+  </Field>
+  {fields.filter(field => field.required).map(field => <Field label={field.label} name={'config.' + field.key} required>
+    {field.key === 'deploymentEnvironment' ? <select class="ts-control" name={'config.' + field.key} required>
+      <option value="">Choose an environment</option>
+      {['staging', 'production'].map(value => <option value={value} selected={connection?.nonSecretConfig?.[field.key] === value}>{value === 'staging' ? 'Staging — testing' : 'Production — live'}</option>)}
+    </select> : <TextInput name={'config.' + field.key} value={connection?.nonSecretConfig?.[field.key] ?? ''} placeholder={field.placeholder} required />}
+  </Field>)}
+  {optional.length > 0 && <details>
+    <summary>Advanced settings (optional)</summary>
+    <HelpTrigger knowledgePageId={provider.knowledgePageIds[0]} label={'Help with ' + provider.label + ' settings'} />
+    <div class="ts-form-stack">{optional.map(field => <Field label={field.label} name={'config.' + field.key}>
+      <TextInput name={'config.' + field.key} value={connection?.nonSecretConfig?.[field.key] ?? ''} placeholder={field.placeholder} />
+    </Field>)}</div>
+  </details>}
+</div>

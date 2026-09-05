@@ -22,6 +22,9 @@ const serviceEntry = (
 );
 
 export const serviceManagementComponents: ComponentCatalogEntry[] = [
+  serviceEntry('connection-fields', 'ConnectionFields', 'Account settings with optional infrastructure details collapsed.', 'medium',
+    {provider: {id: 'github', knowledgePageIds: ['provider.github'], connectionFields: [{key: 'organization', label: 'Organization', required: true}]}},
+    [{name: 'provider', type: 'ServiceProviderDefinition', defaultValue: 'github', description: 'Provider account field contract.'}]),
 	display('service-connection-workspace', 'ServiceConnectionWorkspace', 'Service', 'astro', 'Complete shared Services surface with filters, credential-custody status, and provider connection cards.', 'full-page', {
 		teamName: 'TreeSeed', services: 1, providers: 2,
 	}, [{ name: 'services', type: 'ServiceItem[]', defaultValue: 1, description: 'Authorized provider connections.' }], undefined,
