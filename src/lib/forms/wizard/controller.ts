@@ -61,7 +61,7 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
         const validation = step.validate?.();
         if (validation === false || typeof validation === 'string') { report(validation || ''); return; }
         const invalid = [...step.panel.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea')]
-          .find(field => !field.disabled && !field.checkValidity());
+          .find(field => !field.matches(':disabled') && !field.checkValidity());
         if (invalid) { invalid.reportValidity(); return; }
         if (step.save) {
           setBusy(true);

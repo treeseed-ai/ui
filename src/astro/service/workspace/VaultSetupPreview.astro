@@ -1,0 +1,95 @@
+---
+import SettingsTemplate from '../../templates/SettingsTemplate.astro';
+import StepNavigation from '../../navigation/StepNavigation.astro';
+import Button from '../../forms/actions/Button.astro';
+import Field from '../../forms/fields/Field.astro';
+import TextInput from '../../forms/fields/TextInput.astro';
+import HelpTrigger from '../../help/HelpTrigger.astro';
+interface Props { sections: any[]; teamName: string; canManage: boolean }
+const {sections,teamName,canManage} = Astro.props;
+---
+<SettingsTemplate title="Vaults" description="Choose where your team keeps service credentials. Connections use a vault; sharing a connection never shares its secrets." {sections} knowledgePageId="services.vaults" class="ts-service-workspace">
+  <aside class="ts-vault-notice" role="status"><strong>Live development preview</strong><p>Review the setup flow for {teamName}. Nothing is saved or connected yet. Credential entry stays disabled until the vault API and migration are ready.</p></aside>
+  {canManage ? <div data-vault-preview class="ts-vault-setup ts-service-wizard">
+    <StepNavigation steps={['Choose storage','Vault details','Review access']} label="Vault setup progress" />
+    <div class="ts-service-wizard__body">
+    <section data-vault-step="0" class="ts-form-stack">
+      <h2 tabindex="-1">Where should credentials be stored?</h2>
+      <p>Use the vault managed with TreeSeed, or connect one your organization already operates.</p>
+      <Field label="Credential storage" name="vaultBackend">
+        <select class="ts-control" name="vaultBackend" data-vault-backend>
+          <option value="managed">TreeSeed-managed vault</option><option value="openbao">Your OpenBao vault</option><option value="hashicorp">Your HashiCorp Vault</option>
+        </select>
+      </Field>
+      <p data-vault-description>TreeSeed manages the infrastructure. Your team's credentials use an isolated storage allocation.</p>
+      <HelpTrigger knowledgePageId="services.vaults.trust" label="How vault access works" />
+    </section>
+    <section data-vault-step="1" class="ts-form-stack" hidden>
+      <h2 tabindex="-1">Name your vault</h2>
+      <Field label="Vault name" name="vaultName" help="A name teammates can recognize when choosing credential storage." required>
+        <TextInput name="vaultName" value="Team vault" maxlength={160} required />
+      </Field>
+      <fieldset data-vault-external hidden disabled class="ts-form-stack">
+        <legend>Existing vault connection</legend>
+        <p>TreeSeed must be able to reach this vault over a verified, approved network route.</p>
+        <Field label="Vault address" name="vaultEndpoint" help="HTTPS address only. Never include a token, password, or secret in this address." required>
+          <TextInput name="vaultEndpoint" type="url" placeholder="https://vault.example.com" required />
+        </Field>
+        <Field label="Secrets mount" name="vaultMount" help="The KV v2 secrets engine configured by your vault administrator." required>
+          <TextInput name="vaultMount" placeholder="secret" required />
+        </Field>
+        <p>Your vault administrator will provide scoped AppRole access during verification. No root token is needed.</p>
+        <HelpTrigger knowledgePageId="services.vaults.external" label="Help connecting an existing vault" />
+      </fieldset>
+      <p data-vault-managed>Managed storage does not require an endpoint, authentication mount, or infrastructure credentials.</p>
+    </section>
+    <section data-vault-step="2" class="ts-form-stack" hidden>
+      <h2 tabindex="-1">Review access</h2>
+      <dl class="ts-vault-summary"><dt>Name</dt><dd data-vault-name-summary></dd><dt>Storage</dt><dd data-vault-backend-summary></dd><dt>Access</dt><dd>Private to your team</dd></dl>
+      <p>Sharing will let selected teams store and use their own credentials in separate allocations. It will not let them browse your secrets.</p>
+      <HelpTrigger knowledgePageId="services.sharing" label="Help with sharing and team isolation" />
+      <p>Verification and saving are not available in this preview. No credential values are requested, and no existing vault will be changed.</p>
+      <Button disabled>Verify and save — not available yet</Button>
+    </section>
+    <p data-wizard-status aria-live="polite"></p><p data-wizard-error role="alert" hidden></p>
+    </div>
+    <footer class="ts-service-wizard__actions"><Button variant="secondary" data-wizard-back hidden>Back</Button><Button href="/app/services" variant="ghost">Back to connections</Button><Button data-wizard-next>Continue</Button></footer>
+  </div> : <p>A team owner or service administrator can configure vault access.</p>}
+</SettingsTemplate>
+<style>
+  .ts-vault-notice { padding: 1.25rem; border: 1px solid currentColor; border-radius: .75rem; margin-bottom: 2rem; }
+  .ts-vault-notice p { margin-bottom: 0; }
+  .ts-vault-setup { padding-bottom: 3rem; }
+  .ts-vault-setup section { margin: 2rem 0; }
+  .ts-vault-setup fieldset { border: 1px solid currentColor; border-radius: .75rem; padding: 1.5rem; margin-top: 1.5rem; }
+  .ts-vault-summary { display: grid; grid-template-columns: minmax(6rem, 1fr) 3fr; gap: 1rem; padding: 1.5rem 0; }
+  .ts-vault-summary dd { margin: 0; overflow-wrap: anywhere; }
+</style>
+<script>
+  import {mountWizard} from '../../../lib/forms/wizard/controller';
+  function initialize() {
+    document.querySelectorAll<HTMLElement>('[data-vault-preview]').forEach(root => {
+      if(root.dataset.initialized) return; root.dataset.initialized='true';
+      const backend=root.querySelector<HTMLSelectElement>('[data-vault-backend]')!;
+      const external=root.querySelector<HTMLFieldSetElement>('[data-vault-external]')!;
+      const update=() => {
+        const managed=backend.value==='managed'; external.hidden=managed; external.disabled=managed;
+        root.querySelector<HTMLElement>('[data-vault-managed]')!.hidden=!managed;
+        root.querySelector('[data-vault-description]')!.textContent=managed
+          ? "TreeSeed manages the infrastructure. Your team's credentials use an isolated storage allocation."
+          : 'Your organization manages this vault. Authorized TreeSeed operations can access the records you permit; this is not customer-local-only execution.';
+        root.querySelector('[data-vault-name-summary]')!.textContent=root.querySelector<HTMLInputElement>('[name="vaultName"]')!.value;
+        root.querySelector('[data-vault-backend-summary]')!.textContent=backend.selectedOptions[0].textContent;
+      };
+      backend.addEventListener('change',update); root.addEventListener('input',update); update();
+      mountWizard(root,['storage','details','review'].map((id,index) => ({id,label:['Choose storage','Vault details','Review access'][index],
+        panel:root.querySelector<HTMLElement>(`[data-vault-step="${index}"]`)!,validate:() => {
+          if(index!==1 || backend.value==='managed') return;
+          try { const url=new URL(root.querySelector<HTMLInputElement>('[name="vaultEndpoint"]')!.value);
+            if(url.protocol!=='https:' || url.username || url.password || url.search || url.hash || url.pathname!=='/') return 'Use an HTTPS origin without credentials, paths, or query parameters.';
+          } catch { return 'Enter a valid HTTPS vault address.'; }
+        }})));
+    });
+  }
+  initialize(); document.addEventListener('astro:page-load',initialize);
+</script>

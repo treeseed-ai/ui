@@ -11,6 +11,12 @@ function setup() {
   return {root, steps};
 }
 describe('shared wizard controller', () => {
+  it('ignores required controls inside a disabled conditional fieldset', async () => {
+    const {root,steps}=setup();
+    steps[0].panel.innerHTML='<h2>Storage</h2><fieldset disabled><input required></fieldset>';
+    const wizard=mountWizard(root,steps); await wizard.go(1);
+    expect(wizard.current).toBe(1);
+  });
   it('opens independent management steps without saving or validating other drafts', async () => {
     const {root, steps} = setup();
     steps[0].validate = vi.fn(() => 'Not ready'); steps[0].save = vi.fn(() => true);
