@@ -3,6 +3,9 @@ export interface WizardStep {
   label: string;
   panel: HTMLElement;
   nextLabel?: string;
+  /** Separate management action; entering it must not save preceding drafts. */
+  independent?: boolean;
+  hideNext?: boolean;
   validate?: () => string | false | void;
   /** Return true only after the save boundary has completed successfully. */
   save?: () => Promise<boolean> | boolean;
@@ -39,7 +42,7 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
       else button.removeAttribute('aria-current');
     });
     if (back) back.hidden = current === 0;
-    if (next) { next.hidden = current === steps.length - 1; next.textContent = steps[current].nextLabel ?? 'Continue'; }
+    if (next) { next.hidden = current === steps.length - 1 || Boolean(steps[current].hideNext); next.textContent = steps[current].nextLabel ?? 'Continue'; }
     if (status) status.textContent = `Step ${current + 1} of ${steps.length}: ${steps[current].label}`;
     report('');
     if (focus) {
@@ -52,7 +55,7 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
     if (signal.aborted || busy || navigating || !Number.isInteger(target) || target < 0 || target >= steps.length) return;
     navigating = true;
     try {
-      if (target <= current) { current = target; show(); return; }
+      if (target <= current || steps[target].independent) { current = target; show(); return; }
       while (current < target) {
         const step = steps[current];
         const validation = step.validate?.();

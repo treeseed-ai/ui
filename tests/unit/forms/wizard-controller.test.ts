@@ -11,6 +11,15 @@ function setup() {
   return {root, steps};
 }
 describe('shared wizard controller', () => {
+  it('opens independent management steps without saving or validating other drafts', async () => {
+    const {root, steps} = setup();
+    steps[0].validate = vi.fn(() => 'Not ready'); steps[0].save = vi.fn(() => true);
+    steps[2].independent = true;
+    const wizard = mountWizard(root, steps); await wizard.go(2);
+    expect(wizard.current).toBe(2);
+    expect(steps[0].validate).not.toHaveBeenCalled(); expect(steps[0].save).not.toHaveBeenCalled();
+    expect(root.querySelector('input')).toHaveValue('draft');
+  });
   it('validates skipped steps, preserves drafts, focuses and announces the active step', async () => {
     const {root, steps} = setup(); steps[1].validate = () => 'Not ready';
     const wizard = mountWizard(root, steps);

@@ -1,11 +1,11 @@
 ---
 import Button from '../forms/actions/Button.astro';
 import StepNavigation from '../navigation/StepNavigation.astro';
-interface Props { initialStep?: number; accountReady?: boolean }
-const {initialStep = 0, accountReady = false} = Astro.props;
+interface Props { initialStep?: number; accountReady?: boolean; existing?: boolean }
+const {initialStep = 0, accountReady = false, existing = false} = Astro.props;
 ---
-<div class="ts-service-wizard" data-service-wizard data-initial-step={initialStep} data-account-ready={String(accountReady)}>
-  <StepNavigation steps={['Choose tasks', 'Connection details', 'Connect account']} current={initialStep} label="Connection setup progress" />
+<div class="ts-service-wizard" data-service-wizard data-initial-step={initialStep} data-account-ready={String(accountReady)} data-existing={String(existing)}>
+  <StepNavigation steps={['Choose tasks', 'Connection details', 'Connect account', ...(existing ? ['Disconnect'] : [])]} current={initialStep} label="Connection setup progress" />
   <div class="ts-service-wizard__body"><slot /></div>
   <p data-wizard-status aria-live="polite" class="ts-service-wizard__status"></p>
   <p data-wizard-error role="alert" hidden></p>
@@ -50,7 +50,8 @@ const {initialStep = 0, accountReady = false} = Astro.props;
           });
         }},
         // Creation redirects to the persisted connection before rendering account controls.
-        {id: 'account', label: 'Connect account', panel: panel(2) ?? document.createElement('section')},
+        {id: 'account', label: 'Connect account', panel: panel(2) ?? document.createElement('section'), hideNext: true},
+        ...(root.dataset.existing === 'true' ? [{id: 'disconnect', label: 'Disconnect', panel: panel(3), independent: true}] : []),
       ], Number(root.dataset.initialStep ?? 0));
       root.addEventListener('treeseed:form-start', () => wizard.setBusy(true));
       root.addEventListener('treeseed:form-error', event => {

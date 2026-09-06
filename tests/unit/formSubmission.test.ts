@@ -27,6 +27,16 @@ function mountForm(attributes = '') {
 }
 
 describe('form response negotiation', () => {
+	it('never submits a generic request when a named adapter is missing', async () => {
+		const form = mountForm('data-ts-form-adapter="missing-test-adapter"');
+		form.querySelector<HTMLInputElement>('[name=email]')!.value = 'test@example.test';
+		const request = vi.spyOn(globalThis, 'fetch');
+		try {
+			const result = await submitForm(form);
+			expect(request).not.toHaveBeenCalled();
+			expect(result).toMatchObject({ok: false, message: 'This form is not ready. Reload the page before trying again.'});
+		} finally { request.mockRestore(); }
+	});
 	it('returns structured JSON and meaningful validation status for enhanced requests', async () => {
 		const response = formSubmissionResponse(
 			new Request('https://example.test/account', {
