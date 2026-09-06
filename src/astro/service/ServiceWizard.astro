@@ -53,7 +53,7 @@ const {initialStep = 0, accountReady = false, existing = false} = Astro.props;
         // Creation redirects to the persisted connection before rendering account controls.
         {id: 'account', label: 'Connect account', panel: panel(2) ?? document.createElement('section'), hideNext: true},
         ...(root.dataset.existing === 'true' ? [{id: 'disconnect', label: 'Disconnect', panel: panel(3), independent: true}] : []),
-      ], Number(root.dataset.initialStep ?? 0));
+      ], Number(root.dataset.initialStep ?? 0), {directStepNavigation:root.dataset.existing==='true'});
       root.addEventListener('treeseed:form-start', () => wizard.setBusy(true));
       root.addEventListener('treeseed:form-error', event => {
         wizard.setBusy(false);

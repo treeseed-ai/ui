@@ -13,7 +13,7 @@ export interface WizardStep {
 }
 
 /** Shared DOM controller. Draft fields stay mounted; persistence belongs to the caller. */
-export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep = 0) {
+export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep = 0, options: {directStepNavigation?: boolean} = {}) {
   if (!steps.length || steps.some(step => !step.id.trim() || !step.label.trim()) || new Set(steps.map(step => step.id)).size !== steps.length)
     throw new Error('Wizard requires unique named steps.');
   if (!Number.isInteger(initialStep) || initialStep < 0 || initialStep >= steps.length)
@@ -52,11 +52,11 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
     }
     root.dispatchEvent(new CustomEvent('treeseed:wizard-change', {bubbles: true, detail: {index: current, id: steps[current].id}}));
   };
-  const go = async (target: number) => {
+  const go = async (target: number, direct = false) => {
     if (signal.aborted || busy || navigating || !Number.isInteger(target) || target < 0 || target >= steps.length) return;
     navigating = true;
     try {
-      if (target <= current || steps[target].independent) { current = target; show(); return; }
+      if (target <= current || steps[target].independent || direct && options.directStepNavigation) { current = target; show(); return; }
       while (current < target) {
         const step = steps[current];
         if (!validateForm(step.panel)) return;
@@ -80,7 +80,7 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
   root.addEventListener('input',clearChangedField,{signal});
   root.addEventListener('change',clearChangedField,{signal});
   next?.addEventListener('click', () => { void go(current + 1); }, {signal});
-  root.addEventListener('treeseed:step-request', event => { void go((event as CustomEvent).detail?.index); }, {signal});
+  root.addEventListener('treeseed:step-request', event => { void go((event as CustomEvent).detail?.index,true); }, {signal});
   root.addEventListener('keydown', event => {
     if (event.key === 'Enter' && !event.isComposing && event.target instanceof HTMLInputElement &&
       !['checkbox', 'radio', 'submit', 'button'].includes(event.target.type) && current < steps.length - 1) {

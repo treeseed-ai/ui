@@ -11,6 +11,13 @@ function setup() {
   return {root, steps};
 }
 describe('shared wizard controller', () => {
+  it('lets existing editors change steps without saving, while Continue still validates',async()=>{
+    const {root,steps}=setup();steps[0].validate=vi.fn(()=> 'Required');steps[0].save=vi.fn(()=>true);
+    const wizard=mountWizard(root,steps,0,{directStepNavigation:true});
+    root.dispatchEvent(new CustomEvent('treeseed:step-request',{detail:{index:2}}));
+    expect(wizard.current).toBe(2);expect(steps[0].save).not.toHaveBeenCalled();expect(steps[0].validate).not.toHaveBeenCalled();
+    await wizard.go(0);await wizard.go(1);expect(wizard.current).toBe(0);expect(steps[0].validate).toHaveBeenCalled();
+  });
   it('renders required and custom errors next to fields, focusing and clearing on edit',async()=>{
     const {root,steps}=setup();
     steps[0].panel.innerHTML='<h2>Details</h2><div data-ts-field><input name="address" required></div>';
