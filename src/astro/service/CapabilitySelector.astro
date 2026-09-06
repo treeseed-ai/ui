@@ -27,8 +27,9 @@ const method = selectedMethods.size > 1 ? '' : [...selectedMethods][0] ?? 'app';
   : <>
     <div class="ts-capability-selector__items">
       {tasks.map(item => <div class="ts-capability-option" data-service-task>
-        <input id={name + '-' + item.type} type="checkbox" name={name} value={item.type} checked={item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked} />
+        <input id={name + '-' + item.type} aria-describedby={name + '-' + item.type + '-description'} type="checkbox" name={name} value={item.type} checked={item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked} />
         <label for={name + '-' + item.type}><strong>{labels[item.type] ?? item.label}</strong></label>
+        <small id={name + '-' + item.type + '-description'} class="ts-task-description">{item.description}</small>
         {!github && item.credentialProfiles?.length === 1 && <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />}
         {!github && (item.credentialProfiles?.length ?? 0) > 1 && <label class="ts-service-method">
           <span>Account access for {labels[item.type] ?? item.label}</span>

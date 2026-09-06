@@ -1,12 +1,11 @@
 ---
 import Button from '../forms/actions/Button.astro';
+import StepNavigation from '../navigation/StepNavigation.astro';
 interface Props { initialStep?: number; accountReady?: boolean }
 const {initialStep = 0, accountReady = false} = Astro.props;
 ---
 <div class="ts-service-wizard" data-service-wizard data-initial-step={initialStep} data-account-ready={String(accountReady)}>
-  <ol class="ts-service-wizard__progress" aria-label="Connection setup progress">
-    {['Choose tasks', 'Connection details', 'Connect account'].map((label, index) => <li aria-current={index === initialStep ? 'step' : undefined} data-wizard-progress={index}><span>{index + 1}</span>{label}</li>)}
-  </ol>
+  <StepNavigation steps={['Choose tasks', 'Connection details', 'Connect account']} current={initialStep} label="Connection setup progress" />
   <div class="ts-service-wizard__body"><slot /></div>
   <p data-wizard-error role="alert" hidden></p>
   <footer class="ts-service-wizard__actions">
@@ -29,8 +28,8 @@ const {initialStep = 0, accountReady = false} = Astro.props;
       const finish = root.querySelector<HTMLElement>('[data-wizard-finish]')!;
       const show = (focus = true) => {
         panels.forEach(panel => { panel.hidden = Number(panel.dataset.serviceStep) !== step; });
-        root.querySelectorAll<HTMLElement>('[data-wizard-progress]').forEach(item => {
-          if (Number(item.dataset.wizardProgress) === step) item.setAttribute('aria-current', 'step');
+        root.querySelectorAll<HTMLElement>('[data-step-target]').forEach(item => {
+          if (Number(item.dataset.stepTarget) === step) item.setAttribute('aria-current', 'step');
           else item.removeAttribute('aria-current');
         });
         back.hidden = step === 0; next.hidden = step === 2;
@@ -51,9 +50,18 @@ const {initialStep = 0, accountReady = false} = Astro.props;
       };
       back.addEventListener('click', () => {step--; show();});
       next.addEventListener('click', advance);
-      root.addEventListener('treeseed:form-start', () => {next.disabled = true; back.disabled = true; root.setAttribute('aria-busy', 'true');});
+      root.addEventListener('treeseed:step-request', event => {
+        if (root.getAttribute('aria-busy') === 'true') return;
+        const target = (event as CustomEvent<{index: number}>).detail.index;
+        if (!Number.isInteger(target) || target < 0 || target > 2) return;
+        if (target <= step) { step = target; show(); return; }
+        if (step === 0) advance();
+        if (target === 2 && step === 1) advance();
+      });
+      const disableNavigation = (disabled: boolean) => root.querySelectorAll<HTMLButtonElement>('[data-step-target]').forEach(button => {button.disabled = disabled;});
+      root.addEventListener('treeseed:form-start', () => {next.disabled = true; back.disabled = true; disableNavigation(true); root.setAttribute('aria-busy', 'true');});
       root.addEventListener('treeseed:form-error', event => {
-        next.disabled = false; back.disabled = false; root.removeAttribute('aria-busy');
+        next.disabled = false; back.disabled = false; disableNavigation(false); root.removeAttribute('aria-busy');
         error.textContent = (event as CustomEvent).detail?.message ?? 'Could not save. Please try again.'; error.hidden = false;
       });
       root.addEventListener('keydown', event => {

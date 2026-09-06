@@ -293,13 +293,19 @@
 }
 
 .ts-service-workspace, .ts-service-workspace .ts-template__main, .ts-service-workspace .ts-template__body { width: 100%; min-width: 0; max-width: none; }
+.ts-service-workspace { padding-block-end: clamp(2rem, 5vh, 4rem); }
+.ts-step-navigation button { width: 100%; padding: .5rem; background: transparent; border: 0; text-align: start; font: inherit; cursor: pointer; border-radius: .5rem; }
+.ts-step-navigation button:hover:not(:disabled) { background: var(--ts-color-accent-soft); }
+.ts-step-navigation button:focus-visible { outline: 2px solid var(--ts-color-accent); outline-offset: 2px; }
+.ts-step-navigation button:disabled { cursor: wait; opacity: .6; }
+.ts-task-description { display: block; grid-column: 2; margin-block-start: .5rem; color: var(--ts-color-text-muted); font-size: .875rem; line-height: 1.5; font-weight: 400; }
 .ts-service-wizard { width: 100%; border: 1px solid var(--ts-color-border); background: var(--ts-color-card-surface); border-radius: .75rem; overflow: hidden; }
 .ts-service-wizard [hidden] { display: none !important; }
-.ts-service-wizard__progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 1.5rem 2rem; list-style: none; border-bottom: 1px solid var(--ts-color-border); }
-.ts-service-wizard__progress li { display: flex; gap: .75rem; align-items: center; color: var(--ts-color-text-muted); font-weight: 650; }
-.ts-service-wizard__progress li span { display: grid; place-items: center; width: 2rem; height: 2rem; flex: 0 0 2rem; border: 1px solid var(--ts-color-border); border-radius: 50%; }
-.ts-service-wizard__progress [aria-current=step] { color: var(--ts-color-text); }
-.ts-service-wizard__progress [aria-current=step] span { background: var(--ts-color-accent); color: var(--ts-color-card-surface); border-color: var(--ts-color-accent); }
+.ts-step-navigation { display: grid; grid-template-columns: repeat(var(--ts-step-count, 3), minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 1.5rem 2rem; list-style: none; border-bottom: 1px solid var(--ts-color-border); }
+.ts-step-navigation button { display: flex; gap: .75rem; align-items: center; color: var(--ts-color-text-muted); font-weight: 650; }
+.ts-step-navigation li span { display: grid; place-items: center; width: 2rem; height: 2rem; flex: 0 0 2rem; border: 1px solid var(--ts-color-border); border-radius: 50%; }
+.ts-step-navigation [aria-current=step] { color: var(--ts-color-text); }
+.ts-step-navigation [aria-current=step] span { background: var(--ts-color-accent); color: var(--ts-color-card-surface); border-color: var(--ts-color-accent); }
 .ts-service-wizard__body { padding: 2rem; }
 .ts-service-wizard h2 { margin: 0 0 .75rem; }
 .ts-service-wizard h2:focus { outline: none; }
@@ -317,8 +323,8 @@
 .ts-service-disclosure > summary { cursor: pointer; font-weight: 700; padding-block: .25rem; }
 .ts-service-disclosure[open] > summary { border-bottom: 1px solid var(--ts-color-border); padding-bottom: 1rem; margin-bottom: 1.25rem; }
 @media (max-width: 600px) {
-  .ts-service-wizard__progress { padding: 1rem; gap: .5rem; }
-  .ts-service-wizard__progress li { flex-direction: column; text-align: center; font-size: .8rem; gap: .5rem; }
+  .ts-step-navigation { padding: 1rem; gap: .5rem; }
+  .ts-step-navigation button { flex-direction: column; text-align: center; font-size: .8rem; gap: .5rem; }
   .ts-service-wizard__body { padding: 1.25rem; }
   .ts-service-wizard__actions { padding: 1rem; gap: .5rem; flex-wrap: wrap; }
 }

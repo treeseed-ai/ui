@@ -58,6 +58,7 @@ export const componentCatalogOrder = [
   'service-connection-workspace',
   'connection-fields',
   'service-wizard',
+  'step-navigation',
   'service-connection-create-surface',
   'capability-selector',
   'credential-field',
