@@ -1,16 +1,19 @@
 ---
-import Badge from '../../data/Badge.astro';
 import Timestamp from '../../data/Timestamp.astro';
 import Button from '../../forms/actions/Button.astro';
 import SemanticCollectionSurface from '../../semantic/SemanticCollectionSurface.astro';
 import EmptyState from '../../surface/EmptyState.astro';
 import SettingsTemplate from '../../templates/SettingsTemplate.astro';
 import ProviderCard from '../ProviderCard.astro';
+import ProviderMark from '../ProviderMark.astro';
+import ItemPicker from '../../forms/fields/ItemPicker.astro';
+import CollapsibleMultiSelect from '../../forms/fields/CollapsibleMultiSelect.astro';
+import {providerDescription, capabilityDescription} from './service-guidance';
 
-interface CapabilityDefinition { type: string; label: string; }
-interface ProviderDefinition { id: string; label: string; capabilities: readonly CapabilityDefinition[]; }
+interface CapabilityDefinition { type: string; label: string; description?: string; }
+interface ProviderDefinition { id: string; label: string; description?: string; capabilities: readonly CapabilityDefinition[]; }
 interface ServiceCapability { capabilityType: string; status: string; }
-interface ServiceItem { id: string; providerId: string; displayName: string; status: string; capabilities?: ServiceCapability[]; lastValidatedAt?: string | null; }
+interface ServiceItem { id: string; providerId: string; displayName: string; status: string; capabilities?: ServiceCapability[]; lastValidatedAt?: string | null; updatedAt?: string; }
 interface SectionItem { id: string; label: string; href: string; active?: boolean; }
 interface Props {
 	teamName?: string;
@@ -18,16 +21,17 @@ interface Props {
 	providerCatalog: readonly ProviderDefinition[];
 	sections: SectionItem[];
 	providerFilter?: string;
-	capabilityFilter?: string;
+	capabilityFilters?: string[];
 	unavailable?: boolean;
 	canManage?: boolean;
 	timeZone?: string;
 }
-const { teamName, services = [], providerCatalog, sections, providerFilter = '', capabilityFilter = '', unavailable = false, canManage = false, timeZone = 'UTC' } = Astro.props as Props;
+const { teamName, services = [], providerCatalog, sections, providerFilter = '', capabilityFilters = [], unavailable = false, canManage = false, timeZone = 'UTC' } = Astro.props as Props;
 const filtered = services.filter((service) => (!providerFilter || service.providerId === providerFilter)
-	&& (!capabilityFilter || service.capabilities?.some((item) => item.capabilityType === capabilityFilter)));
-const capabilityOptions = [...new Map(providerCatalog.flatMap((item) => item.capabilities).map((item) => [item.type, item])).values()];
+	&& capabilityFilters.every(capability => service.capabilities?.some((item) => item.capabilityType === capability && item.status === 'configured')));
+const capabilityOptions = [...new Map(providerCatalog.flatMap((item) => item.capabilities).map((item) => [item.type, {...item, description: capabilityDescription(item.type, item.description)}])).values()];
 const provider = (id: string) => providerCatalog.find((item) => item.id === id);
+const capability = (id: string) => capabilityOptions.find(item => item.type === id);
 ---
 
 <SettingsTemplate title="Services" description={teamName ? `Connect and manage provider accounts for ${teamName}.` : 'Select an active team to manage its provider services.'} {sections} knowledgePageId="services.connections" actions={teamName && canManage ? [{ id: 'services.connection.create', label: 'Add connection', href: '/app/services/new', state: 'allowed', auditSensitivity: 'normal' }] : []} class="ts-service-workspace">
@@ -35,18 +39,45 @@ const provider = (id: string) => providerCatalog.find((item) => item.id === id);
 	{!teamName ? <EmptyState title="Select an active team" description="Service connections are isolated by team. Choose a team from the sidebar first." actions={[{ label: 'Manage teams', href: '/app/teams' }]} />
 	: unavailable ? <EmptyState title="Services are temporarily unavailable" description="The service API did not respond. No empty state has been inferred."><div slot="actions"><Button href="/app/services" variant="secondary" reload>Retry</Button></div></EmptyState>
 	: <>
-		<form class="ts-template__filters" method="get" aria-label="Filter services">
-			<label class="ts-field"><span class="ts-field__label">Provider</span><select class="ts-control" name="provider"><option value="">All providers</option>{providerCatalog.map((item) => <option value={item.id} selected={providerFilter === item.id}>{item.label}</option>)}</select></label>
-			<label class="ts-field"><span class="ts-field__label">Capability</span><select class="ts-control" name="capability"><option value="">All capabilities</option>{capabilityOptions.map((item) => <option value={item.type} selected={capabilityFilter === item.type}>{item.label}</option>)}</select></label>
-			<div class="ts-template__filter-actions"><Button type="submit" variant="secondary" size="sm">Apply</Button><Button href="/app/services" variant="ghost" size="sm">Reset</Button></div>
+		<form class="ts-service-filters" method="get" aria-label="Filter services" data-service-filter>
+      <div class="ts-service-filters__controls">
+        <ItemPicker name="provider" label="Provider" value={providerFilter} Icon={ProviderMark} options={[{value: '', label: 'All providers'}, ...providerCatalog.map(item => ({value: item.id, label: item.label, iconProps: {provider: item.id, label: item.label, size: 'lg'}}))]} />
+        <CollapsibleMultiSelect name="capability" label="Capabilities" values={capabilityFilters} options={capabilityOptions.map(item => ({value: item.type, label: item.label, description: item.description}))} />
+        <p class="ts-muted">Match all selected capabilities. Leave the selection empty to show every connection.</p>
+			  <div class="ts-template__filter-actions"><Button type="submit" variant="secondary" size="sm">Apply filters</Button><Button href="/app/services" variant="ghost" size="sm">Reset</Button></div>
+      </div>
+      <aside class="ts-service-provider-detail" aria-label="Provider information" aria-live="polite">
+        <section data-provider-detail="" hidden={Boolean(providerFilter)}><h2>Your connected providers</h2><p>Choose a logo to explore what that provider can do. Then filter your team's connections by the capabilities you need.</p><p>Provider capabilities describe what is supported. Each connection card shows only the capabilities enabled for that connection.</p></section>
+        {providerCatalog.map(item => <section data-provider-detail={item.id} hidden={providerFilter !== item.id}><h2>{item.label}</h2><p>{providerDescription(item.id, item.description)}</p><h3>Supported capabilities</h3><ul>{item.capabilities.map(cap => <li><strong>{cap.label}</strong><span>{capabilityDescription(cap.type, cap.description)}</span></li>)}</ul></section>)}
+      </aside>
 		</form>
+		<p role="status">{filtered.length} {filtered.length === 1 ? 'connection' : 'connections'}</p>
 		<SemanticCollectionSurface viewId="services" regionId="services" presentation="provider-connection-cards">
-		{filtered.length ? <div class="ts-resource-grid" data-spacing="roomy">{filtered.map((service) => <ProviderCard provider={service.providerId} label={service.displayName} description={provider(service.providerId)?.label ?? service.providerId} href={`/app/services/${encodeURIComponent(service.id)}`} status={service.status} statusTone={service.status === 'active' ? 'success' : service.status === 'degraded' ? 'warning' : 'muted'}>
-			<div class="ts-badge-list">{service.capabilities?.map((item) => <Badge tone={item.status === 'configured' ? 'info' : 'muted'} size="sm">{item.capabilityType.replaceAll('-', ' ')}</Badge>)}</div>
-			<p>{service.lastValidatedAt ? <>Last validated <Timestamp value={service.lastValidatedAt} {timeZone} /></> : 'Not yet validated'}</p>
+		{filtered.length ? <div class="ts-connection-grid">{filtered.map((service) => <ProviderCard provider={service.providerId} label={service.displayName} description={provider(service.providerId)?.label ?? service.providerId} href={`/app/services/${encodeURIComponent(service.id)}`} status={service.status} statusTone={service.status === 'active' ? 'success' : service.status === 'degraded' ? 'warning' : 'muted'}>
+      <h4>Enabled capabilities</h4>
+      <ul class="ts-connection-capabilities">{service.capabilities?.filter(item => item.status === 'configured').map(item => <li><strong>{capability(item.capabilityType)?.label ?? item.capabilityType}</strong><small>{capability(item.capabilityType)?.description}</small></li>)}</ul>
+      {!service.capabilities?.some(item => item.status === 'configured') && <p>No capabilities enabled. Manage this connection to finish setup.</p>}
+      <dl class="ts-connection-metrics"><div><dt>Enabled capabilities</dt><dd>{service.capabilities?.filter(item => item.status === 'configured').length ?? 0}</dd></div><div><dt>Last verified</dt><dd>{service.lastValidatedAt ? <Timestamp value={service.lastValidatedAt} {timeZone} /> : 'Not yet verified'}</dd></div><div><dt>Last updated</dt><dd>{service.updatedAt ? <Timestamp value={service.updatedAt} {timeZone} /> : 'Unavailable'}</dd></div><div><dt>Project usage</dt><dd>Not available</dd></div></dl>
+      <span slot="actions">Manage connection →</span>
 		</ProviderCard>)}</div>
 		: <EmptyState title={services.length ? 'No services match these filters' : 'No services connected'} description={services.length ? 'Change or reset the provider and capability filters.' : 'Connect GitHub, Cloudflare, or Railway for this team.'} actions={[]} />}
 		</SemanticCollectionSurface>
 	</>}
 	</section>
 </SettingsTemplate>
+<script>
+  function initializeProviderDetails() {
+    document.querySelectorAll<HTMLFormElement>('[data-service-filter]').forEach(form => {
+      if (form.dataset.ready) return;
+      form.dataset.ready = 'true';
+      const update = () => {
+        const selected = String(new FormData(form).get('provider') ?? '');
+        form.querySelectorAll<HTMLElement>('[data-provider-detail]').forEach(panel => {panel.hidden = panel.dataset.providerDetail !== selected;});
+      };
+      form.addEventListener('change', update);
+      form.addEventListener('reset', () => setTimeout(update, 0));
+      update();
+    });
+  }
+  initializeProviderDetails(); document.addEventListener('astro:page-load', initializeProviderDetails);
+</script>

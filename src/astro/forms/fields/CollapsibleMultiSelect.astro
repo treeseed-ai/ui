@@ -1,0 +1,33 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  values?: string[];
+  open?: boolean;
+  options: Array<{value: string; label: string; description?: string; disabled?: boolean}>;
+}
+const {name, label, values = [], options, open = false} = Astro.props as Props;
+const id = `multiselect-${crypto.randomUUID()}`;
+---
+<details class="ts-multi-select" open={open} data-multi-select>
+  <summary>{label}<span data-selection-count>{values.length} selected</span></summary>
+  <fieldset><legend class="ts-item-picker__name">{label}</legend>
+    {options.map((item, index) => <label class="ts-multi-select__option" for={`${id}-${index}`}>
+      <input type="checkbox" id={`${id}-${index}`} name={name} value={item.value} checked={values.includes(item.value)} disabled={item.disabled} aria-describedby={item.description ? `${id}-${index}-description` : undefined} />
+      <span><strong>{item.label}</strong>{item.description && <span id={`${id}-${index}-description`}>{item.description}</span>}</span>
+    </label>)}
+  </fieldset>
+</details>
+<script>
+  function initializeMultiSelects() {
+    document.querySelectorAll<HTMLElement>('[data-multi-select]').forEach(root => {
+      if (root.dataset.ready) return;
+      root.dataset.ready = 'true';
+      const update = () => {root.querySelector('[data-selection-count]')!.textContent = `${root.querySelectorAll('input:checked').length} selected`;};
+      root.addEventListener('change', update);
+      root.closest('form')?.addEventListener('reset', () => setTimeout(update, 0));
+      update();
+    });
+  }
+  initializeMultiSelects(); document.addEventListener('astro:page-load', initializeMultiSelects);
+</script>
