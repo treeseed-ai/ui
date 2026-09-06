@@ -9,18 +9,17 @@ interface Capability {
 interface Props { capabilities: Capability[]; name?: string; readonly?: boolean }
 const { capabilities, name = 'capabilities', readonly = false } = Astro.props as Props;
 const github = capabilities.some(item => item.credentialProfiles?.some(profile => profile.id.startsWith('github-')));
-const paired = capabilities.some(item => item.type === 'workflow-configuration') && capabilities.some(item => item.type === 'secret-enclave');
 const tasks = serviceTasks(capabilities);
 const selectedMethods = new Set(capabilities.filter(item => item.checked && item.credentialProfileId).map(item => item.credentialProfileId?.endsWith('-token') ? 'token' : 'app'));
 const method = selectedMethods.size > 1 ? '' : [...selectedMethods][0] ?? 'app';
 ---
 <fieldset class="ts-capability-selector" data-service-tasks>
   <legend>What should TreeSeed do? <HelpTrigger knowledgePageId="services.capabilities" label="Help choosing tasks" /></legend>
-  {readonly ? <ul>{tasks.filter(item => item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked).map(item => <li>{item.label}</li>)}</ul>
+  {readonly ? <ul>{tasks.filter(item => item.checked).map(item => <li>{item.label}</li>)}</ul>
   : <>
     <div class="ts-capability-selector__items">
       {tasks.map(item => <div class="ts-capability-option" data-service-task>
-        <input id={name + '-' + item.type} aria-describedby={name + '-' + item.type + '-description'} type="checkbox" name={name} value={item.type} checked={item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked} />
+        <input id={name + '-' + item.type} aria-describedby={name + '-' + item.type + '-description'} type="checkbox" name={name} value={item.type} checked={item.checked} />
         <label for={name + '-' + item.type}><strong>{item.label}</strong></label>
         <small id={name + '-' + item.type + '-description'} class="ts-task-description">{item.description}</small>
         {!github && item.credentialProfiles?.length === 1 && <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />}
@@ -32,7 +31,6 @@ const method = selectedMethods.size > 1 ? '' : [...selectedMethods][0] ?? 'app';
         </label>}
       </div>)}
     </div>
-    {paired && <input type="hidden" name="combinedWorkflowEnvironment" value="true" />}
     {github && <div class="ts-service-method">
       <label for="github-auth-method">How do you want to connect to GitHub? <HelpTrigger knowledgePageId="provider.github" label="Help choosing GitHub access" /></label>
       {selectedMethods.size > 1 && <p>Your saved tasks use different methods. Choose one method for this connection before saving.</p>}

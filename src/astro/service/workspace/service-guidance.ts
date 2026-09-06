@@ -6,9 +6,7 @@ const providers: Record<string, string> = {
 };
 const capabilities: Record<string, string> = {
   'repository-hosting': 'Connect project source and library repositories so TreeSeed can read code and publish authorized changes.',
-  'workflow-execution': 'Start approved workflows for project checks, builds, and releases, and retrieve their results.',
-  'workflow-configuration': 'Supply non-secret configuration variables to approved project workflows.',
-  'secret-enclave': 'Supply encrypted secrets to approved workflows without exposing stored values.',
+  'workflow-execution': 'Run project workflows and supply their required configuration securely. Secrets come from your team vault; writes are limited to each workflow’s declared names and resources.',
   'frontend-hosting': 'Publish web interfaces through the provider using a reviewed deployment configuration.',
   'backend-hosting': 'Deploy APIs and background services from your project’s reviewed hosting configuration.',
   'database-hosting': 'Provision the databases required by a reviewed project deployment.',
