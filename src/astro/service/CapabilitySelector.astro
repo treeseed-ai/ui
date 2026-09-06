@@ -1,6 +1,6 @@
 ---
 import HelpTrigger from '../help/HelpTrigger.astro';
-import { capabilityDescription } from './workspace/service-guidance';
+import { serviceTasks } from './workspace/service-tasks';
 interface Capability {
   type: string; label: string; description: string; status?: 'available' | 'planned';
   checked?: boolean; credentialProfileId?: string | null;
@@ -10,30 +10,22 @@ interface Props { capabilities: Capability[]; name?: string; readonly?: boolean 
 const { capabilities, name = 'capabilities', readonly = false } = Astro.props as Props;
 const github = capabilities.some(item => item.credentialProfiles?.some(profile => profile.id.startsWith('github-')));
 const paired = capabilities.some(item => item.type === 'workflow-configuration') && capabilities.some(item => item.type === 'secret-enclave');
-const tasks = capabilities.filter(item => (item.status !== 'planned' || item.checked) && !(paired && item.type === 'secret-enclave'));
-const labels: Record<string, string> = {
-  'repository-hosting': 'Read and update repositories', 'workflow-execution': 'Run GitHub Actions',
-  'workflow-configuration': paired ? 'Manage workflow variables and secrets' : 'Manage workflow variables',
-  'secret-enclave': 'Manage workflow secrets', 'frontend-hosting': 'Publish websites and apps',
-  'dns-management': 'Manage domain records', 'object-storage': 'Store files',
-  'state-encryption': 'Encrypt deployment state', 'backend-hosting': 'Run backend services',
-  'database-hosting': 'Host databases', 'private-knowledge-index-hosting': 'Host team knowledge',
-};
+const tasks = serviceTasks(capabilities);
 const selectedMethods = new Set(capabilities.filter(item => item.checked && item.credentialProfileId).map(item => item.credentialProfileId?.endsWith('-token') ? 'token' : 'app'));
 const method = selectedMethods.size > 1 ? '' : [...selectedMethods][0] ?? 'app';
 ---
 <fieldset class="ts-capability-selector" data-service-tasks>
   <legend>What should TreeSeed do? <HelpTrigger knowledgePageId="services.capabilities" label="Help choosing tasks" /></legend>
-  {readonly ? <ul>{tasks.filter(item => item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked).map(item => <li>{labels[item.type] ?? item.label}</li>)}</ul>
+  {readonly ? <ul>{tasks.filter(item => item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked).map(item => <li>{item.label}</li>)}</ul>
   : <>
     <div class="ts-capability-selector__items">
       {tasks.map(item => <div class="ts-capability-option" data-service-task>
         <input id={name + '-' + item.type} aria-describedby={name + '-' + item.type + '-description'} type="checkbox" name={name} value={item.type} checked={item.checked || paired && item.type === 'workflow-configuration' && capabilities.find(task => task.type === 'secret-enclave')?.checked} />
-        <label for={name + '-' + item.type}><strong>{labels[item.type] ?? item.label}</strong></label>
-        <small id={name + '-' + item.type + '-description'} class="ts-task-description">{paired && item.type === 'workflow-configuration' ? 'Supply configuration variables and encrypted secrets to your project’s GitHub Actions workflows.' : capabilityDescription(item.type, item.description)}</small>
+        <label for={name + '-' + item.type}><strong>{item.label}</strong></label>
+        <small id={name + '-' + item.type + '-description'} class="ts-task-description">{item.description}</small>
         {!github && item.credentialProfiles?.length === 1 && <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />}
         {!github && (item.credentialProfiles?.length ?? 0) > 1 && <label class="ts-service-method">
-          <span>Account access for {labels[item.type] ?? item.label}</span>
+          <span>Account access for {item.label}</span>
           <select class="ts-control" name={'capabilityProfile.' + item.type}>
             {item.credentialProfiles?.map(profile => <option value={profile.id} selected={profile.id === item.credentialProfileId}>{profile.id === 'cloudflare-storage' ? 'Cloudflare API token' : profile.id === 's3-state-session' ? 'R2 access keys' : profile.label}</option>)}
           </select>
