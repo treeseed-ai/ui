@@ -6,6 +6,22 @@
 .ts-connection-grid h4 { margin: 0; }
 .ts-service-provider-detail { padding: 1.25rem; background: var(--ts-color-surface-muted); border-radius: .5rem; align-self: start; }
 .ts-service-provider-detail [hidden] { display: none; }
+.ts-vault-workspace [hidden] { display: none !important; }
+.ts-vault-workspace { display: grid; gap: 1.25rem; justify-items: stretch; }
+.ts-vault-workspace > button { justify-self: start; }
+.ts-vault-default { display: flex; align-items: start; gap: 1rem; padding: 1.25rem; border: 1px solid var(--ts-color-border); background: var(--ts-color-card-surface); border-radius: .75rem; }
+.ts-vault-default > div { flex: 1; }
+.ts-vault-workspace h2 { margin: 0 0 .5rem; font-size: 1.125rem; }
+.ts-vault-default p, .ts-vault-protection p { margin: .5rem 0 0; color: var(--ts-color-text-muted); }
+.ts-vault-badge { display: inline-block; margin-inline-start: .5rem; padding: .15rem .5rem; font-size: .75rem; color: var(--ts-color-text-muted); border: 1px solid var(--ts-color-border); border-radius: .3rem; vertical-align: middle; }
+.ts-vault-setup .ts-service-wizard__body { padding: 1.25rem; }
+.ts-vault-workspace .ts-vault-setup .ts-form-stack { gap: 1rem; }
+.ts-vault-setup .ts-form-stack > h2, .ts-vault-setup .ts-form-stack > p { margin: 0; }
+.ts-vault-setup .ts-step-navigation { padding: 1rem 1.25rem; }
+.ts-vault-setup .ts-service-wizard__actions { padding: 1rem 1.25rem; }
+.ts-vault-summary { display: grid; grid-template-columns: minmax(5rem,1fr) 3fr; gap: .5rem 1rem; margin: 0; }
+.ts-vault-summary dd { margin: 0; overflow-wrap: anywhere; }
+.ts-vault-announcement { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .ts-service-provider-detail h2 { margin: 0 0 .75rem; font-size: 1.2rem; }
 .ts-service-provider-detail ul { padding-left: 1.2rem; display: grid; gap: .75rem; }
 .ts-service-provider-detail p, .ts-service-provider-detail li span { color: var(--ts-color-text-muted); }
