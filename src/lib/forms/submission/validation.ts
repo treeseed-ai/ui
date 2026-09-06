@@ -34,7 +34,8 @@ function errorNode(control: FormControl) {
 		error.className = 'ts-field__error';
 		error.dataset.tsFieldError = '';
 		error.hidden = true;
-		if (root) root.append(error); else control.insertAdjacentElement('afterend',error);
+		const group=root?.querySelector('.ts-field__control');
+		if (group) group.append(error); else control.insertAdjacentElement('afterend',error);
 	}
 	if (!error.id) error.id = `${control.id || control.name || 'field'}-dynamic-error`;
 	return error;

@@ -13,7 +13,7 @@ const {sections,teamName,canManage} = Astro.props;
   <div class="ts-vault-workspace" data-vault-workspace>
     <section class="ts-vault-default" aria-label="Default credential storage">
       <div><h2>TreeSeed-managed vault <span class="ts-vault-badge">Default</span></h2>
-      <p>Provided for {teamName}. No setup required—your service connections use managed storage unless you choose your own vault.</p></div>
+      <p>Provided for {teamName}. No setup required. You can replace managed storage with one custom vault for your team.</p></div>
       <HelpTrigger knowledgePageId="services.vaults.trust" label="How managed storage protects credentials" />
     </section>
     <Panel title="How your credentials are protected" class="ts-vault-protection" knowledgePageId="services.vaults.trust">
@@ -31,13 +31,13 @@ const {sections,teamName,canManage} = Astro.props;
             <HelpTrigger knowledgePageId="services.vaults.external" label="Help connecting your vault" />
           </div></Panel></section>
           <section data-vault-step="1" class="ts-form-stack" hidden><Panel title="Connection details"><div class="ts-form-stack">
-            <Field label="Vault name" name="vaultName" help="A name your teammates will recognize." required><TextInput name="vaultName" placeholder="Organization vault" maxlength={160} required /></Field>
             <Field label="Vault address" name="vaultEndpoint" help="HTTPS address only. Do not include a token or password." required><TextInput name="vaultEndpoint" type="url" placeholder="https://vault.example.com" required /></Field>
             <Field label="Secrets mount" name="vaultMount" help="The KV v2 secrets engine configured by your vault administrator." required><TextInput name="vaultMount" placeholder="secret" required /></Field>
           </div></Panel></section>
           <section data-vault-step="2" class="ts-form-stack" hidden><Panel title="Review access"><div class="ts-form-stack">
-            <dl class="ts-vault-summary"><dt>Name</dt><dd data-vault-name-summary></dd><dt>Provider</dt><dd data-vault-backend-summary></dd><dt>Access</dt><dd>Private to your team</dd></dl>
-            <p>Connection verification will check TLS trust, network reachability, and scoped AppRole access. Do not provide a root token. Connecting your vault will not move existing credentials automatically.</p>
+            <dl class="ts-vault-summary"><dt>Provider</dt><dd data-vault-backend-summary></dd><dt>Applies to</dt><dd>All of your team's service connections</dd></dl>
+            <p>Your custom vault will replace managed storage after verification and a safe transition of existing credentials. There is no per-connection vault selection. If verification fails, your current vault stays in use.</p>
+            <p>Verification checks TLS trust, network reachability, and scoped AppRole access. Do not provide a root token.</p>
             <HelpTrigger knowledgePageId="services.vaults.trust" label="About vault authentication and trust" />
             <p>Connection verification is currently unavailable.</p>
             <Button disabled>Verify and connect</Button>
@@ -57,7 +57,6 @@ const {sections,teamName,canManage} = Astro.props;
       const root=workspace.querySelector<HTMLElement>('[data-vault-preview]'); if(!root) return;
       const backend=root.querySelector<HTMLSelectElement>('[data-vault-backend]')!;
       const update=() => {
-        root.querySelector('[data-vault-name-summary]')!.textContent=root.querySelector<HTMLInputElement>('[name="vaultName"]')!.value;
         root.querySelector('[data-vault-backend-summary]')!.textContent=backend.selectedOptions[0].textContent;
       };
       root.addEventListener('input',update); backend.addEventListener('change',update); update();
