@@ -2,6 +2,19 @@ import type { ComponentCatalogEntry } from './component-kind.ts';
 import { form, display } from './component-kind.ts';
 
 export const formsComponents: ComponentCatalogEntry[] = [
+  form('item-picker', 'ItemPicker', 'Choices', 'astro', 'Wrapping native single-choice items with optional icons.', 'medium', {
+    name: 'workspace', label: 'Workspace', value: 'design', options: [{ value: 'design', label: 'Design' }, { value: 'engineering', label: 'Engineering' }],
+  }, [
+    { name: 'options', type: 'Array<{value:string;label:string;disabled?:boolean;iconProps?:object}>', defaultValue: [], description: 'Choices; optional icon props are rendered by the supplied Icon component.' },
+    { name: 'value', type: 'string', defaultValue: '', description: 'Initially selected native radio value.' },
+  ], { workspace: 'design', submitted: null }, '@treeseed/ui/components/astro/forms/fields/ItemPicker.astro'),
+  form('collapsible-multi-select', 'CollapsibleMultiSelect', 'Choices', 'astro', 'Expandable native multiple selection with helpful descriptions.', 'medium', {
+    name: 'notifications', label: 'Notifications', values: [], options: [{ value: 'releases', label: 'Releases', description: 'Updates when a release is published.' }, { value: 'reviews', label: 'Reviews', description: 'Updates when a review needs attention.' }],
+  }, [
+    { name: 'options', type: 'Array<{value:string;label:string;description?:string;disabled?:boolean}>', defaultValue: [], description: 'Choices with optional explanatory text.' },
+    { name: 'values', type: 'string[]', defaultValue: [], description: 'Initially selected native checkbox values.' },
+    { name: 'open', type: 'boolean', defaultValue: false, description: 'Expand the choices initially.' },
+  ], { notifications: [], submitted: null }, '@treeseed/ui/components/astro/forms/fields/CollapsibleMultiSelect.astro'),
   form('button', 'Button', 'Actions', 'astro', 'Command and link button variants.', 'inline', {
       variant: 'primary',
       size: 'md',

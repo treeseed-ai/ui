@@ -1,6 +1,6 @@
 {
   "name": "@treeseed/ui",
-  "version": "0.12.18-rc.16",
+  "version": "0.12.18-rc.17",
   "description": "Reusable TreeSeed UI components, themes, and component sandbox.",
   "license": "Apache-2.0",
   "repository": {
@@ -118,6 +118,8 @@
     "./components/astro/forms/actions/*": "./dist/astro/forms/actions/*",
     "./components/astro/forms/composition/*": "./dist/astro/forms/composition/*",
     "./components/astro/forms/fields/*": "./dist/astro/forms/fields/*",
+    "./components/astro/forms/fields/ItemPicker.astro": "./dist/astro/forms/fields/ItemPicker.astro",
+    "./components/astro/forms/fields/CollapsibleMultiSelect.astro": "./dist/astro/forms/fields/CollapsibleMultiSelect.astro",
     "./components/astro/forms/fields/PasswordSetupFields.astro": "./dist/astro/forms/fields/PasswordSetupFields.astro",
     "./components/astro/forms/search/*": "./dist/astro/forms/search/*",
     "./components/astro/forms/submission/*": "./dist/astro/forms/submission/*",

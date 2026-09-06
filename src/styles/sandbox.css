@@ -259,7 +259,7 @@
 
 .catalog-preview {
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--ts-color-surface-raised) 88%, transparent), var(--ts-color-surface));
+    color-mix(in srgb, var(--ts-color-surface-raised) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--ts-color-border-strong) 78%, var(--ts-color-accent));
   border-radius: calc(var(--ts-radius-lg) + 2px);
   box-shadow:
@@ -290,7 +290,7 @@
 
 .catalog-preview__stage {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--ts-color-canvas) 95%, var(--ts-color-surface-raised)), var(--ts-color-canvas));
+    color-mix(in srgb, var(--ts-color-canvas) 95%, var(--ts-color-surface-raised));
   border: 1px solid var(--ts-color-border);
   border-radius: var(--ts-radius-lg);
   display: grid;

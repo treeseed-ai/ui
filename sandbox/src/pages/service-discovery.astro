@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../../../src/styles/app-shell.css';
+import ControlSurface from '../../../src/astro/shell/layout/ControlSurface.astro';
+import ServiceConnectionWorkspace from '../../../src/astro/service/workspace/ServiceConnectionWorkspace.astro';
+import {SERVICE_PROVIDER_CATALOG} from '@treeseed/sdk/secrets-capability';
+const services = [{id: 'example', providerId: 'github', displayName: 'Engineering repositories', status: 'active', capabilities: [{capabilityType: 'repository-hosting', status: 'configured'}], lastValidatedAt: '2026-01-02T12:00:00Z', updatedAt: '2026-01-02T12:00:00Z'}];
+---
+<BaseLayout title="Service discovery"><ControlSurface><ServiceConnectionWorkspace teamName="Example team" {services} providerCatalog={SERVICE_PROVIDER_CATALOG} sections={[]} canManage /></ControlSurface></BaseLayout>
