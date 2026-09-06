@@ -16,6 +16,8 @@ export const componentCatalogOrder = [
   'password-meter',
   'password-setup-fields',
   'radio-group',
+  'item-picker',
+  'collapsible-multi-select',
   'rich-markdown-editor',
   'select-field',
   'select',
