@@ -13,8 +13,8 @@ const id = `multiselect-${crypto.randomUUID()}`;
   <summary>{label}<span data-selection-count>{values.length} selected</span></summary>
   <fieldset><legend class="ts-choice-picker__name">{label}</legend>
     {options.map((item, index) => <label class="ts-multi-select__option" for={`${id}-${index}`}>
-      <input type="checkbox" id={`${id}-${index}`} name={name} value={item.value} checked={values.includes(item.value)} disabled={item.disabled} aria-describedby={item.description ? `${id}-${index}-description` : undefined} />
-      <span><strong>{item.label}</strong>{item.description && <span id={`${id}-${index}-description`}>{item.description}</span>}</span>
+      <input type="checkbox" id={`${id}-${index}`} name={name} value={item.value} checked={values.includes(item.value)} disabled={item.disabled} aria-labelledby={`${id}-${index}-label`} aria-describedby={item.description ? `${id}-${index}-description` : undefined} />
+      <span><strong id={`${id}-${index}-label`}>{item.label}</strong>{item.description && <span id={`${id}-${index}-description`}>{item.description}</span>}</span>
     </label>)}
   </fieldset>
 </details>

@@ -8,9 +8,10 @@ import ProviderCard from '../ProviderCard.astro';
 import ProviderMark from '../ProviderMark.astro';
 import ItemPicker from '../../forms/fields/ItemPicker.astro';
 import CollapsibleMultiSelect from '../../forms/fields/CollapsibleMultiSelect.astro';
-import {providerDescription, capabilityDescription} from './service-guidance';
+import {providerDescription} from './service-guidance';
+import {serviceTasks, matchesServiceTask} from './service-tasks';
 
-interface CapabilityDefinition { type: string; label: string; description?: string; }
+interface CapabilityDefinition { type: string; label: string; description?: string; status?: string; }
 interface ProviderDefinition { id: string; label: string; description?: string; capabilities: readonly CapabilityDefinition[]; }
 interface ServiceCapability { capabilityType: string; status: string; }
 interface ServiceItem { id: string; providerId: string; displayName: string; status: string; capabilities?: ServiceCapability[]; lastValidatedAt?: string | null; updatedAt?: string; }
@@ -27,11 +28,18 @@ interface Props {
 	timeZone?: string;
 }
 const { teamName, services = [], providerCatalog, sections, providerFilter = '', capabilityFilters = [], unavailable = false, canManage = false, timeZone = 'UTC' } = Astro.props as Props;
-const filtered = services.filter((service) => (!providerFilter || service.providerId === providerFilter)
-	&& capabilityFilters.every(capability => service.capabilities?.some((item) => item.capabilityType === capability && item.status === 'configured')));
-const capabilityOptions = [...new Map(providerCatalog.flatMap((item) => item.capabilities).map((item) => [item.type, {...item, description: capabilityDescription(item.type, item.description)}])).values()];
-const provider = (id: string) => providerCatalog.find((item) => item.id === id);
-const capability = (id: string) => capabilityOptions.find(item => item.type === id);
+const capabilityOptions = serviceTasks(providerCatalog.flatMap(item => item.capabilities));
+const filtered = services.filter(service => (!providerFilter || service.providerId === providerFilter)
+  && capabilityFilters.every(id => {
+    const task = capabilityOptions.find(item => item.type === id);
+    return task ? matchesServiceTask(task, service.capabilities) : false;
+  }));
+const provider = (id: string) => providerCatalog.find(item => item.id === id);
+const enabledTasks = (service: ServiceItem) => serviceTasks((service.capabilities ?? [])
+  .filter(item => item.status === 'configured')
+  .map(item => provider(service.providerId)?.capabilities.find(cap => cap.type === item.capabilityType)
+    ? {...provider(service.providerId)!.capabilities.find(cap => cap.type === item.capabilityType)!, checked: true}
+    : {type: item.capabilityType, label: item.capabilityType}));
 ---
 
 <SettingsTemplate title="Services" description={teamName ? `Connect and manage provider accounts for ${teamName}.` : 'Select an active team to manage its provider services.'} {sections} knowledgePageId="services.connections" actions={teamName && canManage ? [{ id: 'services.connection.create', label: 'Add connection', href: '/app/services/new', state: 'allowed', auditSensitivity: 'normal' }] : []} class="ts-service-workspace">
@@ -48,16 +56,16 @@ const capability = (id: string) => capabilityOptions.find(item => item.type === 
       </div>
       <aside class="ts-service-provider-detail" aria-label="Provider information" aria-live="polite">
         <section data-provider-detail="" hidden={Boolean(providerFilter)}><h2>Your connected providers</h2><p>Choose a logo to explore what that provider can do. Then filter your team's connections by the capabilities you need.</p><p>Provider capabilities describe what is supported. Each connection card shows only the capabilities enabled for that connection.</p></section>
-        {providerCatalog.map(item => <section data-provider-detail={item.id} hidden={providerFilter !== item.id}><h2>{item.label}</h2><p>{providerDescription(item.id, item.description)}</p><h3>Supported capabilities</h3><ul>{item.capabilities.map(cap => <li><strong>{cap.label}</strong><span>{capabilityDescription(cap.type, cap.description)}</span></li>)}</ul></section>)}
+        {providerCatalog.map(item => <section data-provider-detail={item.id} hidden={providerFilter !== item.id}><h2>{item.label}</h2><p>{providerDescription(item.id, item.description)}</p><h3>Supported capabilities</h3><ul>{serviceTasks(item.capabilities).map(cap => <li><strong>{cap.label}</strong><span>{cap.description}</span></li>)}</ul></section>)}
       </aside>
 		</form>
 		<p role="status">{filtered.length} {filtered.length === 1 ? 'connection' : 'connections'}</p>
 		<SemanticCollectionSurface viewId="services" regionId="services" presentation="provider-connection-cards">
 		{filtered.length ? <div class="ts-connection-grid">{filtered.map((service) => <ProviderCard provider={service.providerId} label={service.displayName} description={provider(service.providerId)?.label ?? service.providerId} href={`/app/services/${encodeURIComponent(service.id)}`} status={service.status} statusTone={service.status === 'active' ? 'success' : service.status === 'degraded' ? 'warning' : 'muted'}>
       <h4>Enabled capabilities</h4>
-      <ul class="ts-connection-capabilities">{service.capabilities?.filter(item => item.status === 'configured').map(item => <li><strong>{capability(item.capabilityType)?.label ?? item.capabilityType}</strong><small>{capability(item.capabilityType)?.description}</small></li>)}</ul>
+      <ul class="ts-connection-capabilities">{enabledTasks(service).map(item => <li><strong>{item.label}</strong><small>{item.description}</small></li>)}</ul>
       {!service.capabilities?.some(item => item.status === 'configured') && <p>No capabilities enabled. Manage this connection to finish setup.</p>}
-      <dl class="ts-connection-metrics"><div><dt>Enabled capabilities</dt><dd>{service.capabilities?.filter(item => item.status === 'configured').length ?? 0}</dd></div><div><dt>Last verified</dt><dd>{service.lastValidatedAt ? <Timestamp value={service.lastValidatedAt} {timeZone} /> : 'Not yet verified'}</dd></div><div><dt>Last updated</dt><dd>{service.updatedAt ? <Timestamp value={service.updatedAt} {timeZone} /> : 'Unavailable'}</dd></div><div><dt>Project usage</dt><dd>Not available</dd></div></dl>
+      <dl class="ts-connection-metrics"><div><dt>Enabled capabilities</dt><dd>{enabledTasks(service).length}</dd></div><div><dt>Last verified</dt><dd>{service.lastValidatedAt ? <Timestamp value={service.lastValidatedAt} {timeZone} /> : 'Not yet verified'}</dd></div><div><dt>Last updated</dt><dd>{service.updatedAt ? <Timestamp value={service.updatedAt} {timeZone} /> : 'Unavailable'}</dd></div><div><dt>Project usage</dt><dd>Not available</dd></div></dl>
       <span slot="actions">Manage connection →</span>
 		</ProviderCard>)}</div>
 		: <EmptyState title={services.length ? 'No services match these filters' : 'No services connected'} description={services.length ? 'Change or reset the provider and capability filters.' : 'Connect GitHub, Cloudflare, or Railway for this team.'} actions={[]} />}
