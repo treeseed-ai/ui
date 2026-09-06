@@ -18,6 +18,7 @@ test('managed storage needs no setup and the external wizard is compact',async (
   const field=page.locator('[name="vaultEndpoint"]').locator('xpath=ancestor::*[@data-ts-field]');
   const inputBox=await field.locator('input').boundingBox();
   const errorBox=await field.locator('[data-ts-field-error]').boundingBox();
+  await expect(field.locator('[data-ts-field-error]')).toHaveCSS('font-size','14px');
   const helpBox=await field.locator('.ts-field__help').boundingBox();
   expect(Math.abs(errorBox!.y-inputBox!.y-inputBox!.height)).toBeLessThanOrEqual(2);
   expect(errorBox!.height).toBeLessThan(25);
