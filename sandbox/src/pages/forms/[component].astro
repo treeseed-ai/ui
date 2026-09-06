@@ -69,6 +69,7 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
           <div class="catalog-preview__stage">
             {entry.id === 'item-picker' && <ItemPicker name="workspace" label="Workspace" value="design" options={[{ value: 'design', label: 'Design' }, { value: 'engineering', label: 'Engineering' }]} />}
             {entry.id === 'collapsible-multi-select' && <CollapsibleMultiSelect name="notifications" label="Notifications" options={[{ value: 'releases', label: 'Releases', description: 'Updates when a release is published.' }, { value: 'reviews', label: 'Reviews', description: 'Updates when a review needs attention.' }]} />}
+            {['item-picker', 'collapsible-multi-select'].includes(entry.id) && <FormActions><Button type="submit">Submit selection</Button></FormActions>}
             {entry.id === 'button' ? (
               <div class="primitive-inline">
                 <Button type="submit">Submit primary</Button>
