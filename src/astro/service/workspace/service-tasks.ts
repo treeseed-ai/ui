@@ -16,7 +16,6 @@ const labels: Record<string, string> = {
   'frontend-hosting': 'Publish websites and apps',
   'dns-management': 'Manage domain records',
   'object-storage': 'Store files',
-  'state-encryption': 'Encrypt deployment state',
   'backend-hosting': 'Run backend services',
   'database-hosting': 'Host databases',
   'private-knowledge-index-hosting': 'Host team knowledge',

@@ -1,6 +1,6 @@
 const providers: Record<string, string> = {
   github: 'Connect source repositories and automate project work with a GitHub App or API token.',
-  cloudflare: 'Publish applications, manage domains, and store project content or deployment state.',
+  cloudflare: 'Publish applications, manage domains, and store project content.',
   railway: 'Run your project services and databases in a hosted environment.',
 };
 const capabilities: Record<string, string> = {
@@ -13,7 +13,6 @@ const capabilities: Record<string, string> = {
   'database-hosting': 'Provision the databases required by a reviewed project deployment.',
   'object-storage': 'Store and mirror project files and published library content in configured buckets.',
   'dns-management': 'Connect application domains by reconciling the DNS records required by your deployment.',
-  'state-encryption': 'Protect deployment state used to plan and reconcile infrastructure changes.',
   'private-knowledge-index-hosting': 'Host private search and knowledge services for your team’s projects.',
 };
 export const providerDescription = (id: string, fallback?: string) => providers[id] ?? fallback;

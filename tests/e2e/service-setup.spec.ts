@@ -108,14 +108,16 @@ test('full-width desktop wizard and phone layout', async ({page}, testInfo) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({path: testInfo.outputPath('github-details-mobile.png'), fullPage: true});
 });
-test('Cloudflare has one deliberate advanced disclosure only on its details step', async ({page}) => {
+test('Cloudflare advanced settings contain account details, not state-backend settings', async ({page}) => {
   await page.goto('/service-setup/cloudflare');
   await expect(page.locator('[data-service-wizard] details')).toBeHidden();
   await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
   await page.getByRole('button', {name: 'Continue', exact: true}).click();
-  const bucket = page.locator('input[name="config.stateBucket"]');
-  await expect(bucket).toBeHidden();
+  const zone = page.locator('input[name="config.zoneId"]');
+  await expect(zone).toBeHidden();
   await page.getByText('Advanced settings (optional)').click();
-  await expect(bucket).toBeVisible();
-  await expect(bucket).not.toHaveAttribute('required');
+  await expect(zone).toBeVisible();
+  await expect(zone).not.toHaveAttribute('required');
+  for (const field of ['stateBucket', 'stateEndpoint', 'stateRegion', 'stateEncryptionKeyRef'])
+    await expect(page.locator('input[name="config.' + field + '"]')).toHaveCount(0);
 });
