@@ -12,8 +12,8 @@ const validityMessages: Array<[keyof ValidityState, string]> = [
 
 type FormControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-function controlFor(form: HTMLFormElement, name: string) {
-	const candidate = form.elements.namedItem(name);
+function controlFor(form: ParentNode, name: string) {
+ const candidate = form instanceof HTMLFormElement ? form.elements.namedItem(name) : [...form.querySelectorAll('input,select,textarea')].find(control => control.getAttribute('name')===name);
 	if (candidate instanceof RadioNodeList) return [...candidate].find((entry) => entry instanceof HTMLElement) as FormControl | undefined;
 	return candidate instanceof HTMLInputElement || candidate instanceof HTMLSelectElement || candidate instanceof HTMLTextAreaElement
 		? candidate
@@ -28,14 +28,13 @@ function fieldRoot(control: FormControl) {
 
 function errorNode(control: FormControl) {
 	const root = fieldRoot(control);
-	if (!root) return null;
-	let error = root.querySelector<HTMLElement>('[data-ts-field-error]');
+	let error = root?.querySelector<HTMLElement>('[data-ts-field-error]') ?? (control.nextElementSibling?.hasAttribute('data-ts-field-error') ? control.nextElementSibling as HTMLElement : null);
 	if (!error) {
 		error = document.createElement('p');
 		error.className = 'ts-field__error';
 		error.dataset.tsFieldError = '';
 		error.hidden = true;
-		root.append(error);
+		if (root) root.append(error); else control.insertAdjacentElement('afterend',error);
 	}
 	if (!error.id) error.id = `${control.id || control.name || 'field'}-dynamic-error`;
 	return error;
@@ -73,9 +72,17 @@ function nativeMessage(control: FormControl) {
 	return control.validationMessage || 'Check this field.';
 }
 
-export function validateForm(form: HTMLFormElement) {
+export function handleNativeInvalid(event: Event) {
+  const control=event.target;
+  if (!(control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement)) return;
+  event.preventDefault(); setFieldError(control,nativeMessage(control));
+  const first=control.form?.querySelector('[aria-invalid="true"]');
+  if (!first || first===control) control.focus();
+}
+
+export function validateForm(form: ParentNode) {
 	let firstInvalid: FormControl | null = null;
-	for (const element of form.elements) {
+	for (const element of form.querySelectorAll('input,select,textarea')) {
 		if (!(element instanceof HTMLInputElement || element instanceof HTMLSelectElement || element instanceof HTMLTextAreaElement)) continue;
 		clearFieldError(element);
 		if (!element.willValidate || element.validity.valid) continue;
@@ -89,7 +96,7 @@ export function validateForm(form: HTMLFormElement) {
 	return true;
 }
 
-export function applyFieldErrors(form: HTMLFormElement, errors: Record<string, string> = {}) {
+export function applyFieldErrors(form: ParentNode, errors: Record<string, string> = {}) {
 	let firstInvalid: FormControl | null = null;
 	for (const [name, message] of Object.entries(errors)) {
 		const control = controlFor(form, name);

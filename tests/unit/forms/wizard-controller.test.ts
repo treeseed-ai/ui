@@ -11,6 +11,19 @@ function setup() {
   return {root, steps};
 }
 describe('shared wizard controller', () => {
+  it('renders required and custom errors next to fields, focusing and clearing on edit',async()=>{
+    const {root,steps}=setup();
+    steps[0].panel.innerHTML='<h2>Details</h2><div data-ts-field><input name="address" required></div>';
+    const input=steps[0].panel.querySelector('input')!;
+    steps[0].validate=()=>({fieldErrors:{address:'HTTPS required.'}});
+    const wizard=mountWizard(root,steps);await wizard.go(1);
+    expect(input).toHaveAttribute('aria-invalid','true');expect(document.activeElement).toBe(input);
+    expect(steps[0].panel.querySelector('[data-ts-field-error]')).toHaveTextContent('This field is required.');
+    input.value='http://example.com';input.dispatchEvent(new Event('input',{bubbles:true}));
+    expect(input).not.toHaveAttribute('aria-invalid');await wizard.go(1);
+    expect(steps[0].panel.querySelector('[data-ts-field-error]')).toHaveTextContent('HTTPS required.');
+    expect(root.querySelector('[data-wizard-error]')).not.toHaveTextContent('HTTPS required.');
+  });
   it('ignores required controls inside a disabled conditional fieldset', async () => {
     const {root,steps}=setup();
     steps[0].panel.innerHTML='<h2>Storage</h2><fieldset disabled><input required></fieldset>';

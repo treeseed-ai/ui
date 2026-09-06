@@ -21,6 +21,7 @@ const {initialStep = 0, accountReady = false, existing = false} = Astro.props;
 </style>
 <script>
   import {mountWizard} from '../../lib/forms/wizard/controller';
+  import {validateForm} from '../../lib/forms/submission/validation';
   function initializeWizards() {
     document.querySelectorAll<HTMLElement>('[data-service-wizard]').forEach(root => {
       if (root.dataset.initialized) return;
@@ -32,11 +33,11 @@ const {initialStep = 0, accountReady = false, existing = false} = Astro.props;
       });
       const wizard = mountWizard(root, [
         {id: 'tasks', label: 'Choose tasks', panel: panel(0), validate: () => {
-          if (!root.querySelector('[data-service-tasks] input[type="checkbox"]:checked')) return 'Choose at least one task to continue.';
+          if (!root.querySelector('[data-service-tasks] input[type="checkbox"]:checked')) return {fieldErrors:{capabilities:'Choose at least one task to continue.'}};
         }},
         {id: 'details', label: 'Connection details', panel: panel(1), nextLabel: 'Save and connect account', save: () => {
           const form = root.querySelector<HTMLFormElement>('[data-service-settings]');
-          if (!form || !form.reportValidity()) return false;
+          if (!form || !validateForm(form)) return false;
           // The form adapter owns navigation after saving the record.
           return new Promise<boolean>((resolve, reject) => {
             const done = () => {

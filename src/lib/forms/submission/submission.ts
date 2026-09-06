@@ -1,4 +1,4 @@
-import { applyFieldErrors, clearChangedField, validateForm } from './validation.js';
+import { applyFieldErrors, clearChangedField, validateForm, handleNativeInvalid } from './validation.js';
 import { showToast } from './toast.js';
 import type {
 	FormRequest,
@@ -249,6 +249,7 @@ function enableEnhancedValidation(root: ParentNode) {
 export function initializeFormSubmissions(root: Document = document) {
 	if (initialized.has(root)) return;
 	initialized.add(root);
+	root.addEventListener('invalid',handleNativeInvalid,{capture:true});
 	enableEnhancedValidation(root);
 	root.addEventListener('click', (event) => {
 		const target = event.target instanceof Element ? event.target : null;

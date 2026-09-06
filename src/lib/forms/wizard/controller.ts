@@ -1,3 +1,4 @@
+import {applyFieldErrors,clearChangedField,validateForm} from '../submission/validation';
 export interface WizardStep {
   id: string;
   label: string;
@@ -6,7 +7,7 @@ export interface WizardStep {
   /** Separate management action; entering it must not save preceding drafts. */
   independent?: boolean;
   hideNext?: boolean;
-  validate?: () => string | false | void;
+  validate?: () => string | false | void | {fieldErrors: Record<string,string>};
   /** Return true only after the save boundary has completed successfully. */
   save?: () => Promise<boolean> | boolean;
 }
@@ -58,11 +59,10 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
       if (target <= current || steps[target].independent) { current = target; show(); return; }
       while (current < target) {
         const step = steps[current];
+        if (!validateForm(step.panel)) return;
         const validation = step.validate?.();
+        if (validation && typeof validation==='object') { applyFieldErrors(step.panel,validation.fieldErrors); return; }
         if (validation === false || typeof validation === 'string') { report(validation || ''); return; }
-        const invalid = [...step.panel.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea')]
-          .find(field => !field.matches(':disabled') && !field.checkValidity());
-        if (invalid) { invalid.reportValidity(); return; }
         if (step.save) {
           setBusy(true);
           let saved = false;
@@ -77,6 +77,8 @@ export function mountWizard(root: HTMLElement, steps: WizardStep[], initialStep 
     } finally { navigating = false; }
   };
   back?.addEventListener('click', () => { void go(current - 1); }, {signal});
+  root.addEventListener('input',clearChangedField,{signal});
+  root.addEventListener('change',clearChangedField,{signal});
   next?.addEventListener('click', () => { void go(current + 1); }, {signal});
   root.addEventListener('treeseed:step-request', event => { void go((event as CustomEvent).detail?.index); }, {signal});
   root.addEventListener('keydown', event => {

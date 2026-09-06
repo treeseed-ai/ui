@@ -1,4 +1,5 @@
 ---
+import Panel from '../../surface/Panel.astro';
 import SettingsTemplate from '../../templates/SettingsTemplate.astro';
 import StepNavigation from '../../navigation/StepNavigation.astro';
 import Button from '../../forms/actions/Button.astro';
@@ -15,36 +16,32 @@ const {sections,teamName,canManage} = Astro.props;
       <p>Provided for {teamName}. No setup required—your service connections use managed storage unless you choose your own vault.</p></div>
       <HelpTrigger knowledgePageId="services.vaults.trust" label="How managed storage protects credentials" />
     </section>
-    <section class="ts-vault-protection" aria-labelledby="vault-protection-heading">
-      <h2 id="vault-protection-heading">How your credentials are protected</h2>
+    <Panel title="How your credentials are protected" class="ts-vault-protection" knowledgePageId="services.vaults.trust">
       <p>Service credentials are kept in the vault, not in project configuration. Authorized operations receive the access they need; sharing a connection does not give another team access to your secrets.</p>
       <p>With your own vault, you control storage and access policy. TreeSeed's authorized control plane and runners still need permission to retrieve credentials for the operations you enable.</p>
-    </section>
+    </Panel>
     {canManage ? <>
       <Button variant="secondary" data-vault-open>Connect your own vault</Button>
       <div data-vault-preview class="ts-vault-setup ts-service-wizard" hidden>
         <StepNavigation steps={['Choose vault','Connection details','Review access']} label="Vault setup progress" />
         <div class="ts-service-wizard__body">
-          <section data-vault-step="0" class="ts-form-stack">
-            <h2 tabindex="-1">Connect an existing vault</h2>
+          <section data-vault-step="0" class="ts-form-stack"><Panel title="Connect an existing vault"><div class="ts-form-stack">
             <p>Use an OpenBao or HashiCorp Vault that your organization already manages.</p>
             <Field label="Vault provider" name="vaultBackend"><select class="ts-control" name="vaultBackend" data-vault-backend><option value="openbao">OpenBao</option><option value="hashicorp">HashiCorp Vault</option></select></Field>
             <HelpTrigger knowledgePageId="services.vaults.external" label="Help connecting your vault" />
-          </section>
-          <section data-vault-step="1" class="ts-form-stack" hidden>
-            <h2 tabindex="-1">Connection details</h2>
+          </div></Panel></section>
+          <section data-vault-step="1" class="ts-form-stack" hidden><Panel title="Connection details"><div class="ts-form-stack">
             <Field label="Vault name" name="vaultName" help="A name your teammates will recognize." required><TextInput name="vaultName" placeholder="Organization vault" maxlength={160} required /></Field>
             <Field label="Vault address" name="vaultEndpoint" help="HTTPS address only. Do not include a token or password." required><TextInput name="vaultEndpoint" type="url" placeholder="https://vault.example.com" required /></Field>
             <Field label="Secrets mount" name="vaultMount" help="The KV v2 secrets engine configured by your vault administrator." required><TextInput name="vaultMount" placeholder="secret" required /></Field>
-          </section>
-          <section data-vault-step="2" class="ts-form-stack" hidden>
-            <h2 tabindex="-1">Review access</h2>
+          </div></Panel></section>
+          <section data-vault-step="2" class="ts-form-stack" hidden><Panel title="Review access"><div class="ts-form-stack">
             <dl class="ts-vault-summary"><dt>Name</dt><dd data-vault-name-summary></dd><dt>Provider</dt><dd data-vault-backend-summary></dd><dt>Access</dt><dd>Private to your team</dd></dl>
             <p>Connection verification will check TLS trust, network reachability, and scoped AppRole access. Do not provide a root token. Connecting your vault will not move existing credentials automatically.</p>
             <HelpTrigger knowledgePageId="services.vaults.trust" label="About vault authentication and trust" />
             <p>Connection verification is currently unavailable.</p>
             <Button disabled>Verify and connect</Button>
-          </section>
+          </div></Panel></section>
           <p data-wizard-status aria-live="polite" class="ts-vault-announcement"></p><p data-wizard-error role="alert" hidden></p>
         </div>
         <footer class="ts-service-wizard__actions"><Button variant="secondary" data-wizard-back hidden>Back</Button><Button data-wizard-next>Continue</Button></footer>
@@ -68,8 +65,8 @@ const {sections,teamName,canManage} = Astro.props;
         panel:root.querySelector<HTMLElement>('[data-vault-step="'+index+'"]')!,validate:() => {
           if(index!==1) return;
           try { const url=new URL(root.querySelector<HTMLInputElement>('[name="vaultEndpoint"]')!.value);
-            if(url.protocol!=='https:' || url.username || url.password || url.search || url.hash || url.pathname!=='/') return 'Use an HTTPS origin without credentials, paths, or query parameters.';
-          } catch { return 'Enter a valid HTTPS vault address.'; }
+            if(url.protocol!=='https:' || url.username || url.password || url.search || url.hash || url.pathname!=='/') return {fieldErrors:{vaultEndpoint:'Use an HTTPS origin without credentials, paths, or query parameters.'}};
+          } catch { return {fieldErrors:{vaultEndpoint:'Enter a valid HTTPS vault address.'}}; }
         }})));
       workspace.querySelector<HTMLButtonElement>('[data-vault-open]')!.addEventListener('click',event => {
         root.hidden=false; (event.currentTarget as HTMLElement).hidden=true; void wizard.go(0);
