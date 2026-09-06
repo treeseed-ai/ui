@@ -81,3 +81,4 @@ export const validateForm = validate;
 export const applyFieldErrors = applyErrors;
 export const setFieldError = setError;
 export const clearFieldError = clearError;
+export {mountWizard, type WizardStep} from './lib/forms/wizard/controller.js';
