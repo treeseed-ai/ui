@@ -1,31 +1,14 @@
 ---
 import PageHeader from '../layout/PageHeader.astro';
-import ModeNavigation from '../shell/navigation/ModeNavigation.astro';
-import Panel from '../surface/Panel.astro';
-import ResourceCard from '../surface/ResourceCard.astro';
-import EmptyState from '../surface/EmptyState.astro';
+import OperationalList from '../surface/OperationalList.astro';
 import Button from '../forms/actions/Button.astro';
-interface Props { teamName?: string; targets: readonly {id:string;engine:string}[]; connections: {id:string;displayName:string;status:string;capabilities?:{capabilityType:string;status:string}[]}[]; unavailable?: boolean; canManage?: boolean }
-const {teamName,targets,connections,unavailable=false,canManage=false} = Astro.props as Props;
-const names: Record<string,string> = {'ai-inference':'Provide AI service','ai-training':'Run training'};
+interface Props {teamName?:string;canManage?:boolean;[key:string]:unknown}
+const {teamName,canManage=false}=Astro.props;
 ---
-<section class="ts-template ts-ai-deployments" data-scene="command.ai-deployments">
-  <PageHeader eyebrow="Command · AI" title="AI deployments" description="Run inference and training on dedicated GPUs. These engines are separate from capacity providers.">
-    {canManage && <Button slot="actions" href="/app/services/new?provider=hyperstack" variant="secondary">Connect Hyperstack</Button>}
-  </PageHeader>
-  <ModeNavigation mode="command" current="ai-deployments" />
-  {!teamName ? <EmptyState title="Choose a team" description="AI hosting connections and storage access belong to the selected team." /> : <>
-    <Panel title="AI engines" description="Choose inference, training, or both on one machine. Deployment owns hardware and scheduling; TreeAI owns the engines." knowledgePageId="ai.deployments">
-      <div class="ts-resource-grid">{targets.map(target => <ResourceCard title={names[target.id]} description={target.id==='ai-inference'?'Serve models through the authenticated TreeAI API backed by vLLM.':'Train with Axolotl, using authorized datasets and durable checkpoints.'} meta={target.engine} />)}</div>
-      <p>When both engines share a GPU, managed admission prevents conflicting use. Models, datasets and checkpoints use separately authorized storage connections such as R2.</p>
-    </Panel>
-    <Panel title="Hosting connections" description={`Provider accounts available to ${teamName}. Credentials are managed in Connections, not in deployment configuration.`} knowledgePageId="provider.hyperstack">
-      {unavailable ? <p role="alert">Hosting connections could not be loaded. Reload to try again.</p> : connections.length ? <div class="ts-resource-grid">{connections.map(connection=><ResourceCard title={connection.displayName} status={connection.status} href={`/app/services/${encodeURIComponent(connection.id)}`} description={(connection.capabilities??[]).filter(item=>item.status==='configured').map(item=>item.capabilityType==='ai-inference-hosting'?'Provide AI service':item.capabilityType==='ai-training-hosting'?'Run training':'').filter(Boolean).join(' · ')} />)}</div> : <EmptyState title="No Hyperstack connections" description="Connect an account to prepare hosting access. Saving a connection does not rent a GPU." />}
-    </Panel>
-    <Panel title="Deployment availability" description="Cloud activation is not enabled yet.">
-      <p>The deployment contract separates hardware, exact engine releases, storage grants and workday schedules from credentials. Live Hyperstack qualification is still required before machines can be rented from here.</p>
-      <p>Schedules use a named time zone and startup lead time. Hibernation must wait for safe draining and durable checkpoints; stopping a VM alone does not stop GPU billing.</p>
-    </Panel>
-  </>}
+<section class="ts-template" style="padding-bottom:2rem" data-scene="command.ai-deployments">
+<PageHeader title="AI instances" description="Manage inference and training on your team's GPUs.">{canManage&&<Button slot="actions" href="/app/ai/new">Set up AI instance</Button>}</PageHeader>
+{!teamName?<p>Choose a team to see its AI instances.</p>:<>
+<OperationalList title="Instances" rows={[]} empty="No instances." unavailable unavailableMessage="AI instance inventory is not connected yet. Review the setup flow to choose your connections; creating or renting a GPU is not enabled."/>
+<p>Hosting accounts are managed in <a href="/app/services">Connections</a>. They are not running AI instances.</p>
+</>}
 </section>
-<style>.ts-ai-deployments{padding-bottom:2rem}.ts-ai-deployments p{line-height:1.6}</style>

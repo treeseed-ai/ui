@@ -1,0 +1,27 @@
+---
+import Panel from './Panel.astro';
+import ResourceCard from './ResourceCard.astro';
+interface Props { title:string; rows:{id:string;name:string;status:string;description:string;href:string;meta?:string}[]; empty:string; unavailable?:boolean; unavailableMessage?:string }
+const {title,rows,empty,unavailable=false,unavailableMessage='This list could not be loaded. Reload to try again. Missing data is not an empty list.'}=Astro.props;
+---
+<section data-operational-list>
+<Panel {title}>
+{unavailable?<p role="status">{unavailableMessage}</p>:<>
+<div class="filters"><label>Search<input type="search" class="ts-control" data-list-search placeholder="Search by name or capability"/></label><label>Status<select class="ts-control" data-list-status><option value="">All statuses</option>{[...new Set(rows.map(row=>row.status))].map(status=><option value={status}>{status}</option>)}</select></label></div>
+<p aria-live="polite" data-list-count>{rows.length} shown</p>
+<div class="ts-resource-grid">{rows.map(row=><div data-list-row data-search={`${row.name} ${row.description}`.toLowerCase()} data-status={row.status}><ResourceCard title={row.name} status={row.status} description={row.description} href={row.href} meta={row.meta}/></div>)}</div>
+<p data-list-empty hidden={rows.length>0}>{empty}</p>
+</>}
+</Panel>
+</section>
+<style>.filters{display:grid;grid-template-columns:minmax(12rem,2fr) minmax(10rem,1fr);gap:1rem}.filters label{display:grid;gap:.4rem}[data-list-row][hidden]{display:none}@media(max-width:40rem){.filters{grid-template-columns:1fr}}</style>
+<script>
+function mountLists(){document.querySelectorAll<HTMLElement>('[data-operational-list]').forEach(root=>{
+if(root.dataset.mounted)return;root.dataset.mounted='true';
+const update=()=>{const query=root.querySelector<HTMLInputElement>('[data-list-search]')?.value.toLowerCase()??'';const status=root.querySelector<HTMLSelectElement>('[data-list-status]')?.value??'';let count=0;
+root.querySelectorAll<HTMLElement>('[data-list-row]').forEach(row=>{row.hidden=!(row.dataset.search?.includes(query)&&(!status||row.dataset.status===status));if(!row.hidden)count++;});
+const output=root.querySelector('[data-list-count]');if(output)output.textContent=`${count} shown`;
+const empty=root.querySelector<HTMLElement>('[data-list-empty]');if(empty){empty.hidden=count>0;if(root.querySelector('[data-list-row]'))empty.textContent='No results match these filters.';}
+};root.addEventListener('input',update);root.addEventListener('change',update);
+});}mountLists();document.addEventListener('astro:page-load',mountLists);
+</script>
