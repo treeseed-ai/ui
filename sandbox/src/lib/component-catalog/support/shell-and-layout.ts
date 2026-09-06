@@ -2,6 +2,11 @@ import type { ComponentCatalogEntry } from './component-kind.ts';
 import { display } from './component-kind.ts';
 
 export const shellAndLayoutComponents: ComponentCatalogEntry[] = [
+  display('step-navigation', 'StepNavigation', 'Shells', 'astro', 'Label-driven keyboard and touch step navigation. Emits treeseed:step-request; the owning workflow validates and commits transitions.', 'medium',
+    { steps: ['Choose', 'Configure', 'Review'], current: 0 },
+    [{ name: 'steps', type: 'string[]', defaultValue: ['Choose', 'Configure', 'Review'], description: 'Ordered workflow labels.' },
+     { name: 'current', type: 'number', defaultValue: 0, description: 'Zero-based current step.' }], undefined,
+    '@treeseed/ui/components/astro/navigation/StepNavigation.astro'),
   display('page-header', 'PageHeader', 'Layout', 'astro', 'Page title, description, and actions.', 'large', { title: 'PageHeader preview', actions: 1 }, [
       { name: 'title', type: 'string', defaultValue: 'PageHeader preview', description: 'Heading text.' },
       { name: 'actions', type: 'ButtonAction[]', defaultValue: 1, description: 'Header actions.' },

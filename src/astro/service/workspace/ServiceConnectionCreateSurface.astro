@@ -16,7 +16,7 @@ const descriptions: Record<string, string> = {github: 'Connect repositories and 
     : !provider ? <div class="ts-resource-grid">{providers.map(item => <ProviderCard provider={item.id} label={item.label} description={descriptions[item.id] ?? item.label} href={'/app/services/new?provider=' + encodeURIComponent(item.id)} />)}</div>
     : <ServiceWizard>
         <form method="post" action={'/v1/teams/' + encodeURIComponent(team.id) + '/services'} class="ts-form-stack" data-ts-submit="enhanced" data-ts-form-adapter="service-connection" data-ts-success-message="Settings saved. Connect your account next." data-scene="service.create.submit" data-service-settings>
-          <section data-service-step="0"><h2 tabindex="-1">Choose your tasks</h2><p>Select what this connection will be used for.</p>
+          <section data-service-step="0"><h2 tabindex="-1">Choose your tasks</h2><p>Choose what your team will use this account for. These tasks determine the access requested in the final step. You can change them later; selecting a task does not deploy anything or grant access by itself.</p>
           <input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="providerId" value={provider.id} />
           <CapabilitySelector capabilities={provider.capabilities.map((item: any) => ({ ...item, credentialProfileId: item.credentialProfileIds[0], credentialProfiles: item.credentialProfileIds.map((id: string) => ({id, label: provider.credentialProfiles.find((profile: any) => profile.id === id)?.label ?? id})) }))} />
           </section>

@@ -1,5 +1,25 @@
 import {test, expect} from '@playwright/test';
 
+test('step buttons preserve progression, drafts and keyboard navigation', async ({page}) => {
+  await page.goto('/service-setup/github');
+  const progress = page.getByRole('list', {name: 'Connection setup progress'});
+  await progress.getByRole('button', {name: 'Connect account'}).click();
+  await expect(page.getByRole('alert')).toContainText('Choose at least one task');
+  await page.getByRole('checkbox', {name: 'Read and update repositories'}).check();
+  await progress.getByRole('button', {name: 'Connect account'}).click();
+  await expect(page.locator('input[name="displayName"]')).toBeFocused();
+  await page.locator('input[name="displayName"]').fill('Preserved draft');
+  await progress.getByRole('button', {name: 'Choose tasks'}).click();
+  await progress.getByRole('button', {name: 'Connection details'}).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('input[name="displayName"]')).toHaveValue('Preserved draft');
+  await expect(progress.getByRole('button', {name: 'Connection details'})).toHaveAttribute('aria-current', 'step');
+  await page.locator('[data-service-wizard]').dispatchEvent('treeseed:form-start');
+  await expect(progress.getByRole('button', {name: 'Choose tasks'})).toBeDisabled();
+  await page.locator('[data-service-wizard]').dispatchEvent('treeseed:form-error', {detail: {message: 'Fixture save failure'}});
+  await expect(progress.getByRole('button', {name: 'Choose tasks'})).toBeEnabled();
+});
+
 test('service surfaces follow the site palette and independent content overlay', async ({page}, testInfo) => {
   await page.goto('/service-setup/github');
   await page.locator('.ts-theme-menu > summary').click();
