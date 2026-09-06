@@ -9,7 +9,7 @@ import HelpTrigger from '../../help/HelpTrigger.astro';
 interface Props { sections: any[]; teamName: string; canManage: boolean }
 const {sections,teamName,canManage} = Astro.props;
 ---
-<SettingsTemplate title="Vaults" description="Secure storage for your team's service credentials." {sections} knowledgePageId="services.vaults" class="ts-service-workspace">
+<SettingsTemplate title="Vault" description="Secure storage for your team's service credentials." {sections} knowledgePageId="services.vaults" class="ts-service-workspace">
   <div class="ts-vault-workspace" data-vault-workspace>
     <section class="ts-vault-default" aria-label="Default credential storage">
       <div><h2>TreeSeed-managed vault <span class="ts-vault-badge">Default</span></h2>

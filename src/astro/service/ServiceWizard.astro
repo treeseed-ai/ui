@@ -22,10 +22,13 @@ const {initialStep = 0, accountReady = false, existing = false} = Astro.props;
 <script>
   import {mountWizard} from '../../lib/forms/wizard/controller';
   import {validateForm} from '../../lib/forms/submission/validation';
+  import {syncTaskFields} from '../../lib/forms/wizard/task-fields';
   function initializeWizards() {
     document.querySelectorAll<HTMLElement>('[data-service-wizard]').forEach(root => {
       if (root.dataset.initialized) return;
       root.dataset.initialized = 'true';
+      syncTaskFields(root);
+      root.addEventListener('change', () => syncTaskFields(root));
       const panel = (index: number) => root.querySelector<HTMLElement>('[data-service-step="' + index + '"]')!;
       const finish = root.querySelector<HTMLElement>('[data-wizard-finish]')!;
       root.addEventListener('treeseed:wizard-change', event => {
