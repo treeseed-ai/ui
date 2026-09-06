@@ -19,6 +19,8 @@ const labels: Record<string, string> = {
   'backend-hosting': 'Run backend services',
   'database-hosting': 'Host databases',
   'private-knowledge-index-hosting': 'Host team knowledge',
+  'ai-inference-hosting': 'Provide AI service',
+  'ai-training-hosting': 'Run training',
 };
 
 /** Shared presentation only: underlying authorization capabilities remain distinct. */
