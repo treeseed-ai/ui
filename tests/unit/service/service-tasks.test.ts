@@ -12,10 +12,12 @@ describe('shared service tasks', () => {
       expect(task.label + ' ' + task.description).not.toMatch(/GitHub|Cloudflare|Railway/);
     }
   });
-  it('combines variables and secrets and requires both when filtering', () => {
-    const task = all.find(item => item.type === 'workflow-configuration')!;
-    expect(task.label).toBe('Manage workflow variables and secrets');
-    expect(all.some(item => item.type === 'secret-enclave')).toBe(false);
+  it('offers one workflow task without implicitly granting configuration writes', () => {
+    const task = all.find(item => item.type === 'workflow-execution')!;
+    expect(task.label).toBe('Run workflows');
+    expect(all.map(item => item.type)).not.toContain('secret-enclave');
+    expect(all.map(item => item.type)).not.toContain('workflow-configuration');
+    expect(task.capabilityTypes).toEqual(['workflow-execution']);
     expect(matchesServiceTask(task, [{capabilityType: 'workflow-configuration', status: 'configured'}])).toBe(false);
     expect(matchesServiceTask(task, task.capabilityTypes.map(capabilityType => ({capabilityType, status: 'configured'})))).toBe(true);
     expect(matchesServiceTask(task)).toBe(false);

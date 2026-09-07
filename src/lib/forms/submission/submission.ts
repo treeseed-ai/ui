@@ -1,4 +1,4 @@
-import { applyFieldErrors, clearChangedField, validateForm } from './validation.js';
+import { applyFieldErrors, clearChangedField, validateForm, handleNativeInvalid } from './validation.js';
 import { showToast } from './toast.js';
 import type {
 	FormRequest,
@@ -201,6 +201,8 @@ export async function submitForm(form: HTMLFormElement, submitter: HTMLElement |
 	setPending(form, true);
 	form.dispatchEvent(new CustomEvent('treeseed:form-start', { bubbles: true, detail: context }));
 	try {
+		if (form.dataset.tsFormAdapter && form.dataset.tsFormAdapter !== 'json' && !adapter)
+			throw new Error('This form is not ready. Reload the page before trying again.');
 		const request = await (adapter?.buildRequest?.(context) ?? (form.dataset.tsFormAdapter === 'json' ? jsonRequest(context) : defaultRequest(context)));
 		const response = await sendFormRequest(request);
 		const result = await (adapter?.parseResponse?.(response, context) ?? defaultParse(response));
@@ -247,6 +249,7 @@ function enableEnhancedValidation(root: ParentNode) {
 export function initializeFormSubmissions(root: Document = document) {
 	if (initialized.has(root)) return;
 	initialized.add(root);
+	root.addEventListener('invalid',handleNativeInvalid,{capture:true});
 	enableEnhancedValidation(root);
 	root.addEventListener('click', (event) => {
 		const target = event.target instanceof Element ? event.target : null;

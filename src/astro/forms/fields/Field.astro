@@ -41,7 +41,7 @@ const slotProps = { helpId, errorId, describedBy: [helpId, errorId].filter(Boole
 	</label>
 	<div class="ts-field__control">
 		<slot {...slotProps} />
+		{errorId ? <p class="ts-field__error" id={errorId} data-ts-field-error hidden={!error}>{error}</p> : null}
 	</div>
 	{help ? <p class="ts-field__help" id={helpId}>{help}</p> : null}
-	{errorId ? <p class="ts-field__error" id={errorId} data-ts-field-error hidden={!error}>{error}</p> : null}
 </div>

@@ -55,6 +55,10 @@ import ProjectCommandSurface from '../../../../src/astro/project/ProjectCommandS
 import ProjectAgentsSurface from '../../../../src/astro/project/ProjectAgentsSurface.astro';
 import AgentStudioSurface from '../../../../src/astro/project/AgentStudioSurface.astro';
 import CapacityWorkspace from '../../../../src/astro/capacity/CapacityWorkspace.astro';
+import AiDeploymentWorkspace from '../../../../src/astro/capacity/AiDeploymentWorkspace.astro';
+import OperationalList from '../../../../src/astro/surface/OperationalList.astro';
+import ManagementWizard from '../../../../src/astro/navigation/ManagementWizard.astro';
+import VaultSetupPreview from '../../../../src/astro/service/workspace/VaultSetupPreview.astro';
 import WorkflowConfigurationPanel from '../../../../src/astro/workflow/WorkflowConfigurationPanel.astro';
 import WorkflowDefinitionPanel from '../../../../src/astro/workflow/WorkflowDefinitionPanel.astro';
 import WorkflowExecutionPanel from '../../../../src/astro/workflow/WorkflowExecutionPanel.astro';
@@ -328,6 +332,10 @@ const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 
 {entry.id === 'provider-battery-card' ? <ProviderBatteryCard id="provider-demo" name="Local provider" status="available" owner="Seed Cooperative" capabilities={['planning', 'reviewing']} assignments={2} updatedAt="2026-08-07T18:00:00.000Z" timeZone="America/New_York" meters={[{ label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }, { label: 'Concurrency', used: 2, total: 8 }]} /> : null}
 {entry.id === 'capacity-control-room' ? <CapacityControlRoom timeZone="America/New_York" providers={[{ id: 'provider-local', name: 'Local provider', status: 'available', owner: 'Seed Cooperative', capabilities: ['planning', 'reviewing'], assignments: 2, updatedAt: '2026-08-07T18:00:00.000Z', meters: [{ label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }] }, { id: 'provider-burst', name: 'Burst provider', status: 'offline', owner: 'External capacity', capabilities: ['acting'], assignments: 0, updatedAt: '2026-08-07T17:45:00.000Z', meters: [{ label: 'Concurrency', used: 0, total: 12, tone: 'violet' }] }]} /> : null}
 {entry.id === 'capacity-workspace' ? <CapacityWorkspace teamId="team-demo" timeZone="America/New_York" fleet={[]} providers={[]} providerAlerts={[]} providerRequests={[]} memberships={[]} reservations={[]} usageCount={0} ledgerCount={0} registrationKey={{ status: 'enabled' }} canManage csrfToken="sandbox-csrf" /> : null}
+{entry.id === 'ai-deployment-workspace' && <AiDeploymentWorkspace teamName="Example team" instances={[]} canManage/>}
+{entry.id === 'vault-setup-preview' && <VaultSetupPreview teamName="Example team" sections={[]} canManage/>}
+{entry.id === 'operational-list' && <OperationalList title="Providers" rows={[{id:'example',name:'Example provider',status:'Offline',description:'Waiting for a fresh availability report',href:'#'}]} empty="No providers yet."/>}
+{entry.id === 'management-wizard' && <ManagementWizard steps={['Details','Review']} direct><section data-management-step="Details"><p>Configure the resource.</p></section><section data-management-step="Review" hidden><p>Review before saving.</p></section></ManagementWizard>}
 {entry.id === 'project-portfolio-surface' ? <ProjectPortfolioSurface activeTeam items={[{ id: 'platform', title: 'Platform', description: 'Unified TreeSeed services and interfaces.', status: 'active', tone: 'success', meta: '2 approvals · 4 active agents', href: '#' }]} /> : null}
 {entry.id === 'governance-decision-panel' ? <GovernanceDecisionPanel approval={approval} /> : null}
 {entry.id === 'governance-policy-summary' ? <GovernancePolicySummary policies={policies} constraints={constraints} /> : null}

@@ -1,0 +1,21 @@
+---
+import StepNavigation from './StepNavigation.astro';
+import Button from '../forms/actions/Button.astro';
+interface Props{steps:string[];direct?:boolean}
+const {steps,direct=false}=Astro.props;
+---
+<div data-management-wizard data-direct={String(direct)}>
+<StepNavigation {steps}/><div class="wizard-body"><slot/></div>
+<p role="alert" data-wizard-error hidden></p>
+<div class="ts-button-row"><Button data-wizard-back variant="secondary" hidden>Back</Button><Button data-wizard-next>Continue</Button></div>
+</div>
+<style>.wizard-body{margin-block:1rem}[data-management-wizard] :global([hidden]){display:none!important}.ts-button-row{display:flex;gap:.75rem;flex-wrap:wrap}</style>
+<script>
+import {mountWizard} from '../../lib/forms/wizard/controller';
+import {validateForm} from '../../lib/forms/submission/validation';
+function mount(){document.querySelectorAll<HTMLElement>('[data-management-wizard]').forEach(root=>{
+if(root.dataset.mounted)return;root.dataset.mounted='true';
+const panels=Array.from(root.querySelectorAll<HTMLElement>('[data-management-step]'));
+mountWizard(root,panels.map((panel,index)=>({id:String(index),label:panel.dataset.managementStep!,panel,validate:()=>{const form=panel.querySelector('form');if(form&&!validateForm(form))return false;}})),0,{directStepNavigation:root.dataset.direct==='true'});
+});}mount();document.addEventListener('astro:page-load',mount);
+</script>

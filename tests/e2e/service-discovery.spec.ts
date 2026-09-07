@@ -8,7 +8,7 @@ test('provider picker exposes persistent details and native multi-value filters'
   await expect(page.locator('[data-provider-detail="cloudflare"]')).toBeHidden();
   await page.locator('.ts-multi-select summary').click();
   await expect(page.getByRole('checkbox', {name: 'Run workflows', exact: true})).toBeVisible();
-  await expect(page.getByRole('checkbox', {name: 'Manage workflow variables and secrets', exact: true})).toBeVisible();
+  await expect(page.getByRole('checkbox', {name: 'Manage workflow variables and secrets', exact: true})).toHaveCount(0);
   await expect(page.locator('input[value="secret-enclave"]')).toHaveCount(0);
   await page.locator('input[value="repository-hosting"]').check();
   await page.locator('input[value="workflow-execution"]').check();
