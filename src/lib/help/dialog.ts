@@ -32,7 +32,7 @@ function configFor(dialog: HTMLDialogElement) {
 function payload<T>(value: unknown): T | null {
 	if (!value || typeof value !== 'object') return null;
 	const record = value as Record<string, unknown>;
-	return (record.payload ?? record) as T;
+	return record.data && typeof record.data === 'object' ? record.data as T : null;
 }
 
 function setArticleState(dialog: HTMLDialogElement, title: string, message: string, retryPageId?: string) {
@@ -168,6 +168,7 @@ async function runSearch(dialog: HTMLDialogElement, input: HTMLInputElement) {
 		const response = await fetch(searchUrl(configFor(dialog), input.value), { headers: { accept: 'application/json' } });
 		const result = payload<{ results?: Array<{ id: string; title: string; summary?: string }> }>(await response.json());
 		if (searchRevisionByDialog.get(dialog) !== revision) return;
+		if (!response.ok || !Array.isArray(result?.results)) throw new Error('Knowledge search unavailable.');
 		for (const page of result?.results ?? []) {
 			const button = document.createElement('button');
 			button.type = 'button';

@@ -164,13 +164,13 @@ test('contextual help preview opens and restores focus', async ({ page }) => {
   await page.route('**/v1/knowledge/search**', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify({ payload: { results: [{ id: 'vault-recovery', title: 'Vault recovery', summary: 'Restore administrator access.' }] } }),
+      body: JSON.stringify({ data: { results: [{ id: 'vault-recovery', title: 'Vault recovery', summary: 'Restore administrator access.' }] } }),
     });
   });
   await page.route('**/v1/knowledge/pages/vault-recovery', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
-      body: JSON.stringify({ payload: { page: { id: 'vault-recovery', title: 'Vault recovery', summary: 'Restore administrator access.' } } }),
+      body: JSON.stringify({ data: { page: { id: 'vault-recovery', title: 'Vault recovery', summary: 'Restore administrator access.' } } }),
     });
   });
   await page.goto('/displays/help-dialog');
