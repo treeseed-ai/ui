@@ -15,8 +15,8 @@ describe('shared service tasks', () => {
   it('offers one workflow task without implicitly granting configuration writes', () => {
     const task = all.find(item => item.type === 'workflow-execution')!;
     expect(task.label).toBe('Run workflows');
-    expect(all.some(item => item.type === 'secret-enclave')).toBe(false);
-    expect(all.some(item => item.type === 'workflow-configuration')).toBe(false);
+    expect(all.map(item => item.type)).not.toContain('secret-enclave');
+    expect(all.map(item => item.type)).not.toContain('workflow-configuration');
     expect(task.capabilityTypes).toEqual(['workflow-execution']);
     expect(matchesServiceTask(task, [{capabilityType: 'workflow-configuration', status: 'configured'}])).toBe(false);
     expect(matchesServiceTask(task, task.capabilityTypes.map(capabilityType => ({capabilityType, status: 'configured'})))).toBe(true);
