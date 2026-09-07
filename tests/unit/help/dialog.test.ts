@@ -20,6 +20,21 @@ describe('published help transport', () => {
 		await vi.waitFor(() => expect(document.querySelector('[data-ts-help-article]')?.textContent).toContain('Instructions'));
 		expect(document.querySelector('[data-ts-help-navigation-items]')?.textContent).toContain('Related guide');
 	});
+	it('retries a failed article request and renders the published data envelope', async () => {
+		const fetch = vi.fn()
+			.mockResolvedValueOnce(new Response('{}', { status: 503 }))
+			.mockResolvedValueOnce(new Response(JSON.stringify({ data: {
+				page: { id: 'guide', title: 'Recovered guide', summary: 'Published content', bodyHtml: '<p>Recovered instructions</p>' },
+				relatedPages: [],
+			} })));
+		vi.stubGlobal('fetch', fetch);
+		document.querySelector<HTMLButtonElement>('button')!.click();
+		await vi.waitFor(() => expect(document.querySelector('[data-ts-help-retry-knowledge-page]')).not.toBeNull());
+		document.querySelector<HTMLButtonElement>('[data-ts-help-retry-knowledge-page]')!.click();
+		await vi.waitFor(() => expect(document.querySelector('[data-ts-help-article]')?.textContent).toContain('Recovered instructions'));
+		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(document.querySelector('[data-ts-help-retry-knowledge-page]')).toBeNull();
+	});
 	it.each([200, 503])('handles search response status %s without hiding failures', async (status) => {
 		vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(status === 200
 			? { data: { results: [{ id: 'guide', title: 'Search result' }] } } : { detail: 'Unavailable' }), { status })));
