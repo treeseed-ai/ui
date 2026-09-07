@@ -4,7 +4,7 @@ test('step buttons preserve progression, drafts and keyboard navigation', async 
   await page.goto('/service-setup/github');
   const progress = page.getByRole('list', {name: 'Connection setup progress'});
   await progress.getByRole('button', {name: 'Connect account'}).click();
-  await expect(page.getByRole('alert')).toContainText('Choose at least one task');
+  await expect(page.getByText('Choose at least one task to continue.', {exact:true})).toBeVisible();
   await page.getByRole('checkbox', {name: 'Read and update repositories'}).check();
   await progress.getByRole('button', {name: 'Connect account'}).click();
   await expect(page.locator('input[name="displayName"]')).toBeFocused();
@@ -67,7 +67,7 @@ for (const provider of ['github', 'cloudflare', 'railway']) {
     await expect(page.getByRole('heading', {name: 'Choose your tasks'})).toBeVisible();
     await expect(page.locator('input[name="displayName"]')).toBeHidden();
     await page.getByRole('button', {name: 'Continue', exact: true}).click();
-    await expect(page.getByRole('alert')).toContainText('Choose at least one task');
+    await expect(page.getByText('Choose at least one task to continue.', {exact:true})).toBeVisible();
     await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
     await page.getByRole('button', {name: 'Continue', exact: true}).click();
     await expect(page.getByRole('heading', {name: 'Name your connection'})).toBeFocused();
@@ -83,11 +83,11 @@ for (const provider of ['github', 'cloudflare', 'railway']) {
     await expect(page.getByText('Managed OpenBao')).toHaveCount(0);
   });
 }
-test('GitHub has one method and a single variables-and-secrets task', async ({page}) => {
+test('GitHub has one method and workflow configuration belongs to Run workflows', async ({page}) => {
   await page.goto('/service-setup/github');
   await expect(page.locator('[data-service-wizard] select')).toHaveCount(1);
-  await expect(page.getByRole('checkbox')).toHaveCount(3);
-  await page.getByRole('checkbox', {name: 'Manage workflow variables and secrets'}).check();
+  await expect(page.locator('[data-service-tasks] input[type=checkbox]')).toHaveCount(2);
+  await page.getByRole('checkbox', {name: 'Run workflows', exact:true}).check();
   await page.locator('select[name="githubAuthMethod"]').selectOption('token');
   await expect(page.locator('select[name^="capabilityProfile."]')).toHaveCount(0);
   await page.getByRole('button', {name: 'Continue', exact: true}).click();
@@ -108,16 +108,19 @@ test('full-width desktop wizard and phone layout', async ({page}, testInfo) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({path: testInfo.outputPath('github-details-mobile.png'), fullPage: true});
 });
-test('Cloudflare advanced settings contain account details, not state-backend settings', async ({page}) => {
+test('Cloudflare asks for a domain only for DNS and has no deployment environment or state settings', async ({page}) => {
   await page.goto('/service-setup/cloudflare');
-  await expect(page.locator('[data-service-wizard] details')).toBeHidden();
   await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
   await page.getByRole('button', {name: 'Continue', exact: true}).click();
-  const zone = page.locator('input[name="config.zoneId"]');
-  await expect(zone).toBeHidden();
-  await page.getByText('Advanced settings (optional)').click();
-  await expect(zone).toBeVisible();
-  await expect(zone).not.toHaveAttribute('required');
+  await expect(page.locator('input[name="config.zoneId"]')).toHaveCount(0);
+  await expect(page.locator('[name="config.deploymentEnvironment"]')).toHaveCount(0);
+  const domain=page.locator('input[name="config.domain"]');
+  await expect(domain).toBeHidden();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('checkbox',{name:'Manage domain records',exact:true}).check();
+  await page.getByRole('button',{name:'Continue',exact:true}).click();
+  await expect(domain).toBeVisible();
+  await expect(domain).toHaveAttribute('required');
   for (const field of ['stateBucket', 'stateEndpoint', 'stateRegion', 'stateEncryptionKeyRef'])
     await expect(page.locator('input[name="config.' + field + '"]')).toHaveCount(0);
 });
