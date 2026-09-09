@@ -269,7 +269,7 @@ test('account forms use aligned intentional groups with spaced panels', async ({
   await page.goto('/displays/account-identity-settings');
 
   const panels = page.locator('[data-scene="account-identity"] > .ts-panel');
-  await expect(panels).toHaveCount(4);
+  await expect(panels).toHaveCount(3);
   const panelGaps = await panels.evaluateAll((elements) => elements.slice(1).map((element, index) => {
     const previous = elements[index].getBoundingClientRect();
     const current = element.getBoundingClientRect();
@@ -311,12 +311,8 @@ test('account forms use aligned intentional groups with spaced panels', async ({
   await expect(page.locator('.account-color-grid').first().locator('.ts-field')).toHaveCount(4);
 
   await page.goto('/displays/account-identity-settings');
-  await page.locator('#accountPassword').fill('TreeSeedReviewPass123!');
-  await expect(page.locator('.account-password-setup [data-ts-password-meter-status]')).toHaveText('Strong');
-  await page.locator('#accountPasswordConfirmation').fill('TreeSeedReviewMismatch123!');
-  await expect(page.locator('.account-password-setup [data-ts-password-match-status]')).toHaveText('Passwords do not match.');
-  await page.locator('#accountPasswordConfirmation').fill('TreeSeedReviewPass123!');
-  await expect(page.locator('.account-password-setup [data-ts-password-match-status]')).toHaveText('Passwords match.');
+  await expect(page.locator('[data-scene="account-identity"] input[type="password"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Manage sign-in and security' })).toHaveAttribute('href', 'https://identity.example.test/realms/example/account');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/displays/account-identity-settings');
