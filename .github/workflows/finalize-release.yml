@@ -1,0 +1,50 @@
+name: Finalize Published Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing immutable version tag awaiting registry read-back
+        required: true
+        type: string
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    permissions: { actions: read, contents: write }
+    environment: ${{ contains(inputs.tag, '-') && 'staging' || 'production' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: { fetch-depth: 0 }
+      - name: Resolve accepted immutable candidate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+          if [[ "$RELEASE_TAG" == *-rc.* ]]; then branch=staging; else branch=main; fi
+          sha="$(git rev-parse --verify "refs/tags/$RELEASE_TAG^{commit}")"
+          git merge-base --is-ancestor "$sha" "origin/$branch"
+          run_id="$(gh run list --workflow verify.yml --branch "$branch" --commit "$sha" --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+          test -n "$run_id"
+          gh run download "$run_id" --name "ui-candidate-$sha" --dir candidate
+          git checkout --detach "$sha"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: { node-version: 24 }
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run release:check-tag
+        env: { GITHUB_REF_NAME: '${{ inputs.tag }}' }
+      - run: npm run release:custody -- verify candidate/release-evidence-v1.json
+      - name: Read back accepted bytes without publishing
+        run: |
+          export EXPECTED_SHA256="$(jq -r '.artifacts[] | select(.kind == "npm-package") | .digest | sub("^sha256:"; "")' candidate/release-evidence-v1.json)"
+          export EXPECTED_LATEST="$(npm view @treeseed/ui dist-tags.latest)"
+          node --import tsx scripts/packages/verify-published-package.ts | tee candidate/registry-readback.json
+      - name: Publish missing release assets without replacing existing releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          flags=()
+          if [[ "$RELEASE_TAG" == *-rc.* ]]; then flags+=(--prerelease); fi
+          gh release create "$RELEASE_TAG" candidate/*.tgz candidate/sbom.cdx.json candidate/release-evidence-v1.json candidate/registry-readback.json --generate-notes --verify-tag "${flags[@]}"
