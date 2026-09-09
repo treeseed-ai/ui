@@ -345,7 +345,7 @@ const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 
 {entry.id === 'seed-operations-panel' ? <SeedOperationsPanel seeds={seeds} /> : null}
 {entry.id === 'worker-queue-panel' ? <WorkerQueuePanel workers={workers} /> : null}
 {entry.id === 'account-deletion-panel' ? <AccountDeletionPanel blockers={[]} csrfToken="preview-csrf" hasCredential /> : null}
-{entry.id === 'account-identity-settings' ? <AccountIdentitySettings identity={accountIdentity} availableProviders={[{ id: 'google', label: 'Google' }]} csrfToken="preview-csrf" /> : null}
+{entry.id === 'account-identity-settings' ? <AccountIdentitySettings identity={accountIdentity} identityManagementUrl="https://identity.example.test/realms/example/account" csrfToken="preview-csrf" /> : null}
 {entry.id === 'account-time-zone-settings' ? <AccountTimeZoneSettings timeZone="America/New_York" csrfToken="preview-csrf" /> : null}
 {entry.id === 'realtime-experience-settings' ? <RealtimeExperienceSettings enabled intervalSeconds={5} csrfToken="preview-csrf" /> : null}
 {entry.id === 'notification-preference-panel' ? <NotificationPreferencePanel preferences={notificationPreferences} capabilities={notificationCapabilities} projects={accountProjects} csrfToken="preview-csrf" /> : null}
