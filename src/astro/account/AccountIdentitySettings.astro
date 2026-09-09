@@ -3,7 +3,6 @@ import Panel from '../surface/Panel.astro';
 import Field from '../forms/fields/Field.astro';
 import TextInput from '../forms/fields/TextInput.astro';
 import Textarea from '../forms/fields/Textarea.astro';
-import PasswordSetupFields from '../forms/fields/PasswordSetupFields.astro';
 import Button from '../forms/actions/Button.astro';
 import FormActions from '../forms/actions/FormActions.astro';
 interface AccountIdentity {
@@ -17,28 +16,19 @@ interface AccountIdentity {
 	location?: string | null;
 	website?: string | null;
 	expertise?: string[];
-	hasCredential: boolean;
 	emails: Array<{ id: string; email: string; status: string; isPrimary: boolean }>;
-	providers: Array<{ id: string; provider: string; email?: string | null; canUnlink: boolean }>;
 	updatedAt?: string;
 }
-interface AuthProviderCapability { id: string; label: string; }
 
 interface Props {
 	identity: AccountIdentity;
-	availableProviders?: AuthProviderCapability[];
-	callbackBaseUrl?: string;
-	passwordGrantId?: string | null;
+	identityManagementUrl: string;
 	csrfToken: string;
 }
-const { identity, availableProviders = [], callbackBaseUrl = '', passwordGrantId = null, csrfToken } = Astro.props as Props;
-const linkedProviderIds = new Set(identity.providers.map((provider) => provider.provider));
-const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'reauthenticate', action?: string) => {
-	const query = new URLSearchParams({ purpose, returnTo: '/app/account' });
-	if (callbackBaseUrl) query.set('callbackUrl', `${callbackBaseUrl}/auth/callback/${provider.id}`);
-	if (action) query.set('action', action);
-	return `/v1/auth/oauth/${provider.id}/start?${query}`;
-};
+const { identity, identityManagementUrl, csrfToken } = Astro.props as Props;
+const management = new URL(identityManagementUrl);
+if (management.protocol !== 'https:' || management.username || management.password || management.hash) throw new Error('Verified identity management URL required.');
+
 ---
 
 <div class="account-stack" data-scene="account-identity">
@@ -80,7 +70,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 		</form>
 	</Panel>
 
-	<Panel eyebrow="Email" title="Email addresses" description="Keep at least one verified address." knowledgePageId="account.emails">
+	<Panel eyebrow="Email" title="Contact email addresses" description="Addresses used for this application’s notifications. Sign-in security is managed separately." knowledgePageId="account.emails">
 		<div class="account-list">
 			{identity.emails.map((email) => (
 				<form
@@ -114,45 +104,7 @@ const providerStartUrl = (provider: AuthProviderCapability, purpose: 'link' | 'r
 		</div>
 	</Panel>
 
-	<Panel eyebrow="Security" title={identity.hasCredential ? 'Change password' : 'Set a password'} knowledgePageId="account.security">
-			<form method="post" class="account-form" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
-			<input type="hidden" name="csrfToken" value={csrfToken} />
-			<input type="hidden" name="intent" value="password" />
-			{passwordGrantId ? <input type="hidden" name="reauthenticationGrantId" value={passwordGrantId} /> : null}
-			{identity.hasCredential ? <Field label="Current password" name="currentPassword"><TextInput id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required /></Field> : null}
-			<PasswordSetupFields
-				passwordId="accountPassword"
-				passwordLabel="New password"
-				confirmId="accountPasswordConfirmation"
-				confirmLabel="Confirm new password"
-				class="account-password-setup"
-			/>
-			<FormActions class="account-form-actions"><Button type="submit" disabled={!identity.hasCredential && !passwordGrantId}>{identity.hasCredential ? 'Change password' : 'Set password'}</Button></FormActions>
-		</form>
-	</Panel>
-
-	<Panel eyebrow="Sign-in" title="Connected identities" knowledgePageId="account.connected-identities">
-		<div class="account-list">
-			{identity.providers.length ? identity.providers.map((provider) => (
-				<form method="post" class="account-list-item account-provider-row" data-ts-submit="enhanced" data-ts-refresh-target="[data-scene='account-identity']">
-					<input type="hidden" name="csrfToken" value={csrfToken} />
-					<input type="hidden" name="intent" value="unlink-provider" />
-					<input type="hidden" name="identityId" value={provider.id} />
-					<div class="account-list-heading"><strong>{provider.provider}</strong><span>{provider.email ?? ''}</span></div>
-					<Button type="submit" variant="danger" size="sm" disabled={!provider.canUnlink}>Unlink</Button>
-				</form>
-			)) : <p>No external providers are connected.</p>}
-			{availableProviders.filter((provider) => !linkedProviderIds.has(provider.id)).map((provider) => (
-				<a class="ts-button ts-button--secondary ts-button--sm" href={providerStartUrl(provider, 'link')}>Connect {provider.label}</a>
-			))}
-			{!identity.hasCredential && identity.providers.length ? (
-				<div class="account-stack">
-					<p>Reauthenticate with a connected provider before setting a password.</p>
-					{availableProviders.filter((provider) => linkedProviderIds.has(provider.id)).map((provider) => (
-						<a class="ts-button ts-button--secondary ts-button--sm" href={providerStartUrl(provider, 'reauthenticate', 'password_change')}>Verify with {provider.label}</a>
-					))}
-				</div>
-			) : null}
-		</div>
+	<Panel eyebrow="Sign-in security" title="Manage your identity" description="Your identity provider manages passwords, multi-factor authentication, recovery and connected sign-in accounts." knowledgePageId="identity.account-security">
+		<a class="ts-button ts-button--secondary" href={management.href} data-astro-reload>Manage sign-in and security</a>
 	</Panel>
 </div>
