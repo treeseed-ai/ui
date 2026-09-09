@@ -17,8 +17,12 @@ describe('account form layout', () => {
 		}
 		expect(identity).toContain('data-account-field-group="name"');
 		expect(identity).toContain('data-account-field-group="public-profile"');
-		expect(identity).toContain('<PasswordSetupFields');
-		expect(identity).toContain('class="account-password-setup"');
+		expect(identity).toContain('identityManagementUrl');
+		expect(identity).toContain('knowledgePageId="identity.account-security"');
+		expect(identity).not.toContain('<PasswordSetupFields');
+		expect(identity).not.toContain('type="password"');
+		expect(identity).not.toContain('/v1/auth/oauth/');
+		expect(identity).not.toContain('passwordGrantId');
 		expect(appearance).toContain('account-palette-group');
 		expect(appearance).toContain('account-color-grid');
 		expect(appearance).toContain('data-built-in-theme-table');
