@@ -1,6 +1,11 @@
 name: Finalize Published Candidate
 
 on:
+  push:
+    branches: [staging]
+    paths: ['.github/workflows/finalize-release.yml']
+  pull_request:
+    paths: ['.github/workflows/finalize-release.yml']
   workflow_dispatch:
     inputs:
       tag:
@@ -10,6 +15,7 @@ on:
 
 jobs:
   finalize:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     permissions: { actions: read, contents: write }
     environment: ${{ contains(inputs.tag, '-') && 'staging' || 'production' }}
