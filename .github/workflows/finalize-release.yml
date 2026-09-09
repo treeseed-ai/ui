@@ -1,6 +1,11 @@
 name: Finalize Published Candidate
 
 on:
+  push:
+    branches: [staging]
+    paths: ['.github/workflows/finalize-release.yml']
+  pull_request:
+    paths: ['.github/workflows/finalize-release.yml']
   workflow_dispatch:
     inputs:
       tag:
@@ -10,6 +15,7 @@ on:
 
 jobs:
   finalize:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     permissions: { actions: read, contents: write }
     environment: ${{ contains(inputs.tag, '-') && 'staging' || 'production' }}
@@ -32,8 +38,8 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with: { node-version: 24 }
       - run: npm ci --ignore-scripts --no-audit --no-fund
-      - run: npm run release:check-tag
-        env: { GITHUB_REF_NAME: '${{ inputs.tag }}' }
+      - run: npm run release:check-tag -- "$RELEASE_TAG"
+        env: { RELEASE_TAG: '${{ inputs.tag }}' }
       - run: npm run release:custody -- verify candidate/release-evidence-v1.json
       - name: Read back accepted bytes without publishing
         run: |
