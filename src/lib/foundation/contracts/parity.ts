@@ -38,7 +38,7 @@ export const WIREFRAME_PARITY: readonly WireframeParityDefinition[] = [
 	{ pages: [12], label: 'Chat', viewId: 'chat', surface: 'chat', workspace: 'chat', adminRoute: '/app/chat', renderers: ['ink', 'web'], requiredActions: ['message.send'] },
 	{ pages: [13], label: 'Agent Builder', viewId: 'agent-builder', surface: 'agent-builder', workspace: 'team', adminRoute: '/app/work/build', renderers: ['ink', 'web'], requiredActions: ['agent.create', 'agent.save'] },
 	{ pages: [14], label: 'Inbox', viewId: 'inbox', surface: 'inbox', workspace: 'inbox', adminRoute: '/app/work/inbox', renderers: ['ink', 'web'], requiredActions: ['question.answer', 'proposal.approve', 'proposal.reject'] },
-	{ pages: [15], label: 'Allocator', viewId: 'allocator', surface: 'allocator', workspace: 'team', adminRoute: '/app/work/direction', renderers: ['ink', 'web'], requiredActions: ['allocation.save'] },
+	{ pages: [15], label: 'Allocator', viewId: 'allocator', surface: 'allocator', workspace: 'team', adminRoute: '/app/work/direction', renderers: ['ink', 'web'], requiredActions: [] },
 	{ pages: [16], label: 'Discover', viewId: 'discover', surface: 'discover', workspace: 'discover', adminRoute: '/app/work/find', renderers: ['ink', 'web'], requiredActions: [] },
 	{ pages: [17], label: 'Content', viewId: 'content', surface: 'content', workspace: 'discover', adminRoute: '/app/work/results', renderers: ['ink', 'web'], requiredActions: ['content.edit', 'content.comment'] },
 ] as const;

@@ -11,14 +11,14 @@ import '../../styles/operations-monitor.css';
 
 interface Props {
 	initialOverview: MonitorOverview; initialActivity: DeltaPayload<ActivityIntervalItem>; initialSeries: DeltaPayload<MetricSeriesPoint>;
-		initialAllocation: AllocationSnapshot; endpoints: { overview: string; activity: string; metricSeries: string; allocation: string; viewState?: string }; preference: RealtimePreference; csrfToken: string; logoSrc?: string;
+		initialAllocation: AllocationSnapshot; endpoints: { overview: string; activity: string; metricSeries: string; viewState?: string }; preference: RealtimePreference; logoSrc?: string;
 	metricDestinations: Record<string, string>;
 }
 const labels: Record<string, string> = { agents: 'Agents', workdays: 'Workdays', systemEvents: 'System events', assignments: 'Assignments', executions: 'Executions', artifacts: 'Artifacts', passed: 'Passed', failed: 'Failed', running: 'Running' };
 
 function storedToggles() { if (typeof window === 'undefined') return { allocation: false, activity: false, metrics: false }; try { return JSON.parse(window.localStorage.getItem('treeseed.agent-lab.monitors') ?? '{}'); } catch { return { allocation: false, activity: false, metrics: false }; } }
 
-export default function OperationsMonitorHeader({ initialOverview, initialActivity, initialSeries, initialAllocation, endpoints, preference, metricDestinations, csrfToken, logoSrc }: Props) {
+export default function OperationsMonitorHeader({ initialOverview, initialActivity, initialSeries, initialAllocation, endpoints, preference, metricDestinations, logoSrc }: Props) {
 	const [showAllocation, setShowAllocation] = useState(false); const [showActivity, setShowActivity] = useState(false); const [showMetrics, setShowMetrics] = useState(false);
 	const [density,setDensity]=useState<'expanded'|'compact'>('expanded');
 	const [densityReady,setDensityReady]=useState(!endpoints.viewState);
@@ -63,7 +63,7 @@ export default function OperationsMonitorHeader({ initialOverview, initialActivi
 			<VitalMetricRail metrics={metrics} observedAt={observedAt} timeZone={overview.data.timeZone} />
 		</div>
 		{showAllocation || showActivity || showMetrics ? <OperationsMonitorDock panels={(showAllocation ? 3 : 0) + Number(showActivity) + Number(showMetrics)}>
-			{showAllocation ? <AllocationManagementPanel initialSnapshot={initialAllocation} endpoint={endpoints.allocation} csrfToken={csrfToken} realtime={{ enabled: preference.enabled, intervalMs: baseMs }} expandedSurface={expandedSurface} onExpand={setExpandedSurface} onDismiss={dismissSurface} /> : null}
+			{showAllocation ? <AllocationManagementPanel snapshot={initialAllocation} expandedSurface={expandedSurface} onExpand={setExpandedSurface} onDismiss={dismissSurface} /> : null}
 			{showActivity ? <WorkspaceFocusSurface id="chart:activity" label="agent activity chart" mode={expandedSurface === 'chart:activity' ? 'focused' : 'inline'} onModeChange={(mode) => mode === 'focused' ? setExpandedSurface('chart:activity') : dismissSurface()}><AgentActivityGantt intervals={activity.data} start={overview.data.operatingDay.start} end={overview.data.operatingDay.end} timeZone={overview.data.timeZone} /></WorkspaceFocusSurface> : null}
 			{showMetrics ? <WorkspaceFocusSurface id="chart:metrics" label="metric history chart" mode={expandedSurface === 'chart:metrics' ? 'focused' : 'inline'} onModeChange={(mode) => mode === 'focused' ? setExpandedSurface('chart:metrics') : dismissSurface()}><MetricHistoryChart points={series.data} metrics={metrics} timeZone={overview.data.timeZone} /></WorkspaceFocusSurface> : null}
 		</OperationsMonitorDock> : null}
