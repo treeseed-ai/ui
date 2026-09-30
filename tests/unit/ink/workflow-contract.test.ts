@@ -4,7 +4,7 @@ import { initialWorkflowValues, validateWorkflowField, workflowSteps } from '../
 
 describe('shared Ink workflow contract', () => {
 	it('exposes complete reusable multi-step definitions for high-velocity operations', () => {
-		for (const id of ['service.connect', 'service.configure', 'capacity.configure', 'agent.create', 'agent.save', 'allocation.save', 'content.edit', 'release.cut', 'release.promote-production']) {
+		for (const id of ['service.connect', 'service.configure', 'capacity.configure', 'agent.create', 'agent.save', 'content.edit', 'release.cut', 'release.promote-production']) {
 			const steps = workflowSteps(coreUiRegistry.action(id));
 			expect(steps.length, id).toBeGreaterThan(1);
 			expect(new Set(steps.map((step) => step.id)).size, id).toBe(steps.length);
@@ -24,6 +24,7 @@ describe('shared Ink workflow contract', () => {
 	it('remains serializable for reuse by Ink and web renderers', () => {
 		const serialized = JSON.parse(JSON.stringify([...coreUiRegistry.actions.values()]));
 		expect(serialized.find((action: { id: string }) => action.id === 'content.edit').steps[1].id).toBe('page');
+		expect(serialized.some((action: { id: string }) => action.id === 'allocation.save')).toBe(false);
 	});
 
 	it('prefills selected-resource identity and safe enum defaults without renderer-local state', () => {

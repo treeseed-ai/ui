@@ -8,7 +8,7 @@ interface Props {
 	logoSrc?: string;
 }
 
-const { frame, csrfToken, metricDestinations, logoSrc = '/logo.svg' } = Astro.props as Props;
+const { frame, metricDestinations, logoSrc = '/logo.svg' } = Astro.props as Props;
 const selection = new URLSearchParams();
 if (frame.overview.workdayContext.selectedDate) selection.set('date', frame.overview.workdayContext.selectedDate);
 if (frame.overview.workdayContext.selectedWorkdayId) selection.set('workday', frame.overview.workdayContext.selectedWorkdayId);
@@ -17,4 +17,4 @@ const destinations = Object.fromEntries(Object.entries(metricDestinations).map((
 ---
 <OperationsMonitorHeader client:load initialOverview={frame.overview} initialActivity={frame.activity} initialSeries={frame.series}
 	initialAllocation={frame.allocation} endpoints={frame.endpoints} preference={frame.preference}
-	metricDestinations={destinations} {csrfToken} {logoSrc} />
+	metricDestinations={destinations} {logoSrc} />
