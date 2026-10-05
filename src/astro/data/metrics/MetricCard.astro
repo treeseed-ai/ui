@@ -1,0 +1,39 @@
+---
+import type { Tone } from '../../types.ts';
+
+interface Props {
+	label: string;
+	value: string | number;
+	description?: string;
+	href?: string;
+	ariaLabel?: string;
+	dataScene?: string;
+	tone?: Tone;
+	class?: string;
+}
+
+const {
+	label,
+	value,
+	description,
+	href,
+	ariaLabel,
+	dataScene,
+	tone = 'default',
+	class: className,
+} = Astro.props as Props;
+---
+
+{href ? (
+	<a class:list={['ts-metric-card', 'ts-metric-card--link', className]} data-tone={tone} data-scene={dataScene} href={href} aria-label={ariaLabel}>
+		<p class="ts-metric-card__label">{label}</p>
+		<p class="ts-metric-card__value">{value}</p>
+		{description ? <p class="ts-metric-card__description">{description}</p> : null}
+	</a>
+) : (
+	<article class:list={['ts-metric-card', className]} data-tone={tone} data-scene={dataScene}>
+		<p class="ts-metric-card__label">{label}</p>
+		<p class="ts-metric-card__value">{value}</p>
+		{description ? <p class="ts-metric-card__description">{description}</p> : null}
+	</article>
+)}

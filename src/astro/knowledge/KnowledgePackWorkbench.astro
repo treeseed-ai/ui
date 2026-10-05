@@ -1,0 +1,75 @@
+---
+import Badge from '../data/Badge.astro';
+import Timestamp from '../data/Timestamp.astro';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import Field from '../forms/fields/Field.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Textarea from '../forms/fields/Textarea.astro';
+import EmptyState from '../surface/EmptyState.astro';
+
+interface Props {
+	action: string;
+	csrfToken: string;
+	books: any[];
+	collections: any[];
+	builds: any[];
+	timeZone: string;
+}
+const { action, csrfToken, books, collections, builds, timeZone } = Astro.props as Props;
+const selectable = books.filter((book) => book.status === 'published' && book.packPolicy !== 'disabled');
+const bookById = new Map(books.map((book) => [book.id, book]));
+const tone = (status: string) => status === 'completed' ? 'success' : status === 'failed' ? 'danger' : 'info';
+const latestBuildIds = new Set<string>();
+const seenBuildSelections = new Set<string>();
+for (const build of builds) {
+	const selection = [...build.bookIds].sort().join('|');
+	if (!seenBuildSelections.has(selection)) latestBuildIds.add(build.id);
+	seenBuildSelections.add(selection);
+}
+---
+
+<div class="ts-knowledge-packs" data-knowledge-pack-workbench>
+	<section class="ts-knowledge-pack-builder" aria-labelledby="knowledge-pack-builder-title">
+		<div class="ts-knowledge-pack-builder__intro">
+			<div><h3 id="knowledge-pack-builder-title">Build a knowledge pack</h3><p>Select published books. External relationships remain references unless their books are selected.</p></div>
+			<Badge tone="muted" size="sm">{selectable.length} available</Badge>
+		</div>
+		{selectable.length ? <form method="post" action={action} class="ts-form-stack" data-ts-submit="enhanced" data-scene="knowledge.pack.build">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="build-pack" />
+			<fieldset class="ts-knowledge-book-picker"><legend>Books to include</legend>
+				{selectable.map((book) => <label><input type="checkbox" name="bookIds" value={book.id} /><span><strong>{book.title}</strong><small>{book.summary}</small></span></label>)}
+			</fieldset>
+			<FormActions align="start"><Button type="submit">Build selected books</Button></FormActions>
+		</form> : <EmptyState title="No pack-ready books" description="Publish a pack-enabled book before building an artifact." />}
+	</section>
+
+	<section class="ts-knowledge-pack-builder" aria-labelledby="knowledge-collection-title">
+		<div class="ts-knowledge-pack-builder__intro"><div><h3 id="knowledge-collection-title">Save a repeatable collection</h3><p>Collections preserve a deliberate book selection; each build still captures fresh exact commits.</p></div></div>
+		{selectable.length ? <form method="post" action={action} class="ts-form-stack" data-ts-submit="enhanced">
+			<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="create-collection" />
+			<div class="ts-form-grid ts-form-grid--two"><Field label="Collection name" name="name" required><TextInput name="name" maxlength={120} required /></Field><Field label="Summary" name="summary"><Textarea name="summary" rows={2} maxlength={500} /></Field></div>
+			<fieldset class="ts-knowledge-book-picker"><legend>Books to include</legend>
+				{selectable.map((book) => <label><input type="checkbox" name="bookIds" value={book.id} /><span><strong>{book.title}</strong><small>{book.source?.projectId ?? 'Project knowledge'}</small></span></label>)}
+			</fieldset>
+			<FormActions align="start"><Button type="submit">Save collection</Button></FormActions>
+		</form> : null}
+	</section>
+
+	<section aria-labelledby="knowledge-collections-title">
+		<h3 id="knowledge-collections-title">Saved collections</h3>
+		{collections.length ? <div class="ts-knowledge-pack-list" role="list">{collections.map((collection) => <article role="listitem" class="ts-knowledge-pack-item"
+			data-knowledge-collection-id={collection.id} data-knowledge-collection-book-ids={collection.bookIds.join(' ')}>
+			<div><h4>{collection.name}</h4><p>{collection.summary || `${collection.bookIds.length} selected books`}</p><ul>{collection.bookIds.map((id: string) => <li>{bookById.get(id)?.title ?? id}</li>)}</ul></div>
+			<div class="ts-action-bar"><form method="post" action={action} data-ts-submit="enhanced"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="build-pack" /><input type="hidden" name="collectionId" value={collection.id} /><Button type="submit" size="sm">Build latest</Button></form>{collection.managed ? <Badge tone="info" size="sm">Managed</Badge> : <form method="post" action={action} data-ts-submit="enhanced"><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="delete-collection" /><input type="hidden" name="collectionId" value={collection.id} /><input type="hidden" name="version" value={collection.version} /><Button type="submit" variant="danger" size="sm">Delete</Button></form>}</div>
+		</article>)}</div> : <p class="ts-empty-copy">No saved collections yet.</p>}
+	</section>
+
+	<section aria-labelledby="knowledge-builds-title">
+		<h3 id="knowledge-builds-title">Pack history</h3>
+		{builds.length ? <div class="ts-knowledge-pack-list" role="list">{builds.map((build) => <article role="listitem" class="ts-knowledge-pack-item" data-knowledge-pack-build-id={build.id} data-knowledge-pack-book-ids={build.bookIds.join(' ')} data-knowledge-pack-latest={latestBuildIds.has(build.id) ? 'true' : 'false'}>
+			<div><div class="ts-knowledge-pack-item__title"><h4>{build.artifact?.fileName ?? `Pack ${build.id.slice(0, 8)}`}</h4><Badge tone={tone(build.status)} size="sm">{build.status}</Badge></div><p>{build.bookIds.length} book{build.bookIds.length === 1 ? '' : 's'} · Requested <Timestamp value={build.createdAt} timeZone={timeZone} /></p>{build.error ? <p class="ts-knowledge-pack-item__error">{build.error}</p> : null}</div>
+			{build.status === 'completed' ? <Button href={`/app/knowledge/packs/${encodeURIComponent(build.id)}/download`} variant="secondary" size="sm">Download</Button> : null}
+		</article>)}</div> : <p class="ts-empty-copy">No packs have been built for this team.</p>}
+	</section>
+</div>

@@ -1,5 +1,6 @@
 ---
 import { getBookForPath } from '../../utils/starlight-nav';
+import MobileSidebarToggle from './MobileSidebarToggle.astro';
 
 interface Props {
 	hasSidebar?: boolean;
@@ -20,9 +21,7 @@ const isBookPage = Boolean(getBookForPath(Astro.url.pathname));
 	{
 		hasSidebar && (
 			<nav class="sidebar print:hidden" aria-label={sidebarLabel}>
-				<button class="desktop-sidebar-toggle" type="button" aria-controls="starlight__sidebar" aria-expanded="true">
-					Menu
-				</button>
+				<MobileSidebarToggle label={`Toggle ${sidebarLabel.toLowerCase()}`} />
 				<div id="starlight__sidebar" class="sidebar-pane docs-left-sidebar">
 					<div class="sidebar-content sl-flex">
 						<slot name="sidebar" />

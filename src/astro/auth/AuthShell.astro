@@ -1,12 +1,13 @@
 ---
 import '../../styles/auth.css';
-import ShellFrame from '../shell/ShellFrame.astro';
-import SiteUserControls from '../shell/SiteUserControls.astro';
+import ShellFrame from '../shell/layout/ShellFrame.astro';
+import SiteUserControls from '../shell/chrome/SiteUserControls.astro';
 import DevWatchReload from '../core/DevWatchReload.astro';
 import type { FeedbackContext, HelpContext } from '../../lib/foundation/contracts.ts';
 import type { ThemePreference } from '../../theme/types.ts';
+import { SITE_SLOGAN } from '../../site-brand.ts';
 
-// FeedbackButton, FeedbackDialog, HelpButton, and HelpDrawer are composed through SiteUserControls and ShellFrame.
+// Feedback and contextual help are composed once through SiteUserControls and ShellFrame.
 
 interface Props {
 	title: string;
@@ -24,11 +25,10 @@ const {
 	feedbackContext,
 } = Astro.props as Props;
 const feedbackDialogId = 'auth-shell-feedback';
-const helpDrawerId = 'auth-shell-help';
+const helpDrawerId = 'shell-help';
 const authLinks = [
 	{ label: 'Home', href: '/' },
 	{ label: 'Market', href: '/market/' },
-	{ label: 'Knowledge', href: '/knowledge/' },
 ];
 ---
 
@@ -48,7 +48,7 @@ const authLinks = [
 				<span class="auth-shell-bar__mark">T</span>
 				<span>
 					<strong>TreeSeed</strong>
-					<small>Simple controls</small>
+					<small>{SITE_SLOGAN}</small>
 				</span>
 			</a>
 			<SiteUserControls
@@ -69,7 +69,7 @@ const authLinks = [
 	<script is:inline data-astro-rerun slot="bodyEnd">
 		(() => {
 			const storagePrefix = 'treeseed:auth-form:';
-			const hasError = Boolean(document.querySelector('.auth-alert[data-tone="danger"]'));
+			const hasError = Boolean(document.querySelector('[data-ts-initial-toast][data-tone="error"]'));
 
 			function storageKey(form) {
 				const action = form.getAttribute('action') || location.pathname;

@@ -1,0 +1,53 @@
+---
+interface BoundaryStage {
+	label: string;
+	title: string;
+	description: string;
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	stages: BoundaryStage[];
+	protectedLabel?: string;
+	protectedItems?: string[];
+	class?: string;
+}
+
+const {
+	title,
+	description,
+	stages,
+	protectedLabel = 'Never retained',
+	protectedItems = [],
+	class: className,
+} = Astro.props as Props;
+---
+
+<section class:list={['ts-data-boundary', className]}>
+	<header class="ts-data-boundary__header">
+		<p class="ts-data-boundary__eyebrow">Security boundary</p>
+		<h2>{title}</h2>
+		{description ? <p>{description}</p> : null}
+	</header>
+	<ol class="ts-data-boundary__stages">
+		{stages.map((stage, index) => (
+			<li>
+				<span class="ts-data-boundary__index" aria-hidden="true">{index + 1}</span>
+				<div>
+					<small>{stage.label}</small>
+					<strong>{stage.title}</strong>
+					<p>{stage.description}</p>
+				</div>
+			</li>
+		))}
+	</ol>
+	{protectedItems.length ? (
+		<footer class="ts-data-boundary__protected">
+			<strong>{protectedLabel}</strong>
+			<ul>
+				{protectedItems.map((item) => <li>{item}</li>)}
+			</ul>
+		</footer>
+	) : null}
+</section>

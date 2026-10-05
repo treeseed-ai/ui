@@ -9,6 +9,7 @@ Use this package when you need Treeseed visual primitives. Use `@treeseed/admin`
 - Treeseed shell primitives for authenticated app, operational market, auth, and public single-column layouts
 - shared public stacked-section components for marketing, profiles, books, and Knowledge Hub pages
 - `SurfaceTabs` for routed and in-page control-surface subpages
+- `DisclosureList`, `ResponsiveTable`, `Pagination`, and `InlineConfirmation` for consistent administration displays
 - auth cards and account surfaces
 - form controls and data-entry panels
 - operation status panels and deployment timelines
@@ -75,6 +76,7 @@ Current shell work should compose these exported primitives:
 - `AuthShell` for authentication flows.
 - `PublicSingleColumnShell`, `PublicStack`, `PublicSection`, `PublicHeroSection`, `PublicProfileHeader`, and `PublicKnowledgeSection` for public marketing, profile, book, and Knowledge Hub pages.
 - `SurfaceTabs` for link tabs and accessible in-page tab panels inside a `ControlSurface` tab slot.
+- `DisclosureList`, `DataTable`/`ResponsiveTable`, `KeyValueList`, `Badge`, `Pagination`, and `InlineConfirmation` for reusable settings and administration content. Product packages supply domain data and authorization but do not recreate these visuals.
 
 `ProductShell`, `PublicShell`, `RailNav`, and `BottomNav` remain exported as compatibility/deprecated surfaces for one migration cycle. New host pages should use Admin/Core/Market layout wrappers that compose the current shell primitives.
 
@@ -90,9 +92,32 @@ import { MarkdownEditor } from '@treeseed/ui/react';
 
 Use React widgets for interactive controls that need client-side state. Keep route data loading, auth policy, and workflow orchestration in admin, market, API, SDK, or CLI code.
 
+## Enhanced Form Submissions
+
+`@treeseed/ui` owns the first-party browser submission lifecycle. Mounting a UI shell mounts `ToastRegion` and the delegated controller once. Network forms opt in with `data-ts-submit="enhanced"` and continue to use an ordinary action, method, and server handler when JavaScript is unavailable.
+
+```astro
+<form
+  method="post"
+  action="/account"
+  data-ts-submit="enhanced"
+  data-ts-refresh-target="[data-account-panel]"
+>
+  <!-- normal accessible controls -->
+</form>
+```
+
+Handlers return `FormSubmissionResponse` through `formSubmissionResponse` from `@treeseed/ui/forms`. Enhanced requests receive structured JSON; ordinary posts receive a sanitized same-origin `303` carrying a one-use fallback toast. Inline successes stay on the current URL. Lifecycle transitions such as login, logout, account deletion, and completed onboarding navigate only when the response declares a safe same-origin `redirect`.
+
+Use `@treeseed/ui/forms/client` for thin JSON or long-running-operation adapters. Adapters may shape payloads or poll an accepted operation, but the shared controller retains validation, CSRF transport, duplicate prevention, pending controls, field errors, target refresh, and toast ownership. Do not add component-local mutation `fetch()` calls, browser alerts, forced reloads, or query-string status banners.
+
+Field errors are adjacent English validation messages. Success notifications expire after five seconds and errors after ten seconds; both pause on hover, focus, and hidden documents. Progress notifications remain until an adapter updates or dismisses them.
+
 ## Theme And Tokens
 
 The package owns reusable tokens, theme CSS, app shell styles, form styles, operation styles, market/card styles, and Stripe-free commerce/governance components. Tenant-specific brand colors, public marketing art direction, copy, data loading, and workflow orchestration belong in the host app or Admin/API packages.
+
+Authenticated `ProductShell` surfaces may enable a content workspace palette independently from the application palette. The workspace scope blends canvas, surface, and soft-state colors 70% toward the selected content scheme while retaining fully opaque text, accents, focus, and semantic status tokens from the selected content mode. `ControlSurface` and content-originated overlay slots receive the scoped tokens; the shell header, team navigation, and persistent site utilities remain on the application palette. Do not reproduce this behavior with element opacity or page-local token overrides.
 
 ## Sandbox
 

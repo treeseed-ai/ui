@@ -1,0 +1,20 @@
+---
+import type { DiscussionContext } from '../../lib/foundation/contracts.ts';
+import DiscussionBody from './DiscussionBody.astro';
+
+interface Props { id?: string; context: DiscussionContext; title?: string; description?: string; }
+const { id = 'discussion-workspace', context, title = 'Chat', description = 'Durable conversations and live assignment traces.' } = Astro.props as Props;
+---
+
+<section class="ts-discussion-workspace" data-ts-discussion-container data-ts-discussion-workspace data-scene="chat.workspace" aria-labelledby={`${id}-title`}>
+	<header class="ts-discussion-workspace__header">
+		<div><p class="ts-section__eyebrow">Agent correspondence</p><h1 id={`${id}-title`}>{title}</h1><p>{description}</p></div>
+		<span class="ts-discussion-workspace__persistence">Persistent team capability</span>
+	</header>
+	<DiscussionBody {id} {context} />
+</section>
+
+<script>
+	import { initializeDiscussionPanels } from '../../lib/discussion/panel.ts';
+	initializeDiscussionPanels();
+</script>

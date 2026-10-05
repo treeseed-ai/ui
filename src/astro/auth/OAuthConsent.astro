@@ -1,0 +1,8 @@
+---
+interface Props { clientName: string; redirectOrigin: string; scopes: string[]; }
+const { clientName, redirectOrigin, scopes } = Astro.props as Props;
+---
+<section class="ts-panel" aria-labelledby="oauth-consent-title">
+	<header class="ts-panel__header"><h1 id="oauth-consent-title">Authorize {clientName}</h1></header>
+	<div class="ts-panel__body"><p>Return access to <code>{redirectOrigin}</code>.</p><ul aria-label="Requested permissions">{scopes.map((scope) => <li><code>{scope}</code></li>)}</ul><slot /></div>
+</section>

@@ -1,0 +1,41 @@
+---
+import Field from '../forms/fields/Field.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import PasswordSetupFields from '../forms/fields/PasswordSetupFields.astro';
+import { AvailabilityIsland } from '../../react/progressive/index.ts';
+interface Props {
+	action: string;
+	values?: { firstName?: string; lastName?: string; username?: string; email?: string };
+	appearance: { scheme: string; mode: string };
+	inviteToken?: string;
+	invitedEmailReadonly?: boolean;
+	usernameAvailabilityEndpoint?: string;
+	emailAvailabilityEndpoint?: string;
+	id?: string;
+}
+const { action, values = {}, appearance, inviteToken = '', invitedEmailReadonly = false, usernameAvailabilityEndpoint, emailAvailabilityEndpoint, id = 'registration-form' } = Astro.props as Props;
+const requiresAvailability = Boolean(usernameAvailabilityEndpoint || emailAvailabilityEndpoint);
+---
+
+<form id={id} class="auth-form" method="post" action={action} data-registration-form data-scene="registration-form" data-ts-submit="enhanced">
+	<input type="hidden" name="colorScheme" value={appearance.scheme} data-auth-theme-scheme-field />
+	<input type="hidden" name="themeMode" value={appearance.mode} data-auth-theme-mode-field />
+	{inviteToken ? <input type="hidden" name="inviteToken" value={inviteToken} /> : null}
+	<div class="auth-form-grid">
+		<Field label="First name" name="firstName" required><TextInput name="firstName" autocomplete="given-name" value={values.firstName ?? ''} required /></Field>
+		<Field label="Last name" name="lastName" required><TextInput name="lastName" autocomplete="family-name" value={values.lastName ?? ''} required /></Field>
+	</div>
+	<Field label="Username" name="username" help="Your username is public and cannot be changed after registration." required>
+		<TextInput name="username" autocomplete="username" value={values.username ?? ''} required maxlength={39} pattern="[A-Za-z0-9](?:(?:[A-Za-z0-9]|-){0,37}[A-Za-z0-9])?" data-availability-input="username" aria-describedby="username-help username-availability" />
+		<span id="username-availability" class="auth-field-help" data-availability-status="username" aria-live="polite"></span>
+	</Field>
+	<Field label="Email" name="email" required>
+		<TextInput name="email" type="email" autocomplete="email" value={values.email ?? ''} required readonly={invitedEmailReadonly} data-availability-input="email" aria-describedby="email-availability" />
+		<span id="email-availability" class="auth-field-help" data-availability-status="email" aria-live="polite"></span>
+	</Field>
+	<PasswordSetupFields passwordId="registerPassword" confirmId="registerPasswordConfirmation" />
+	<FormActions><Button type="submit" disabled={requiresAvailability} data-registration-submit>Create account</Button></FormActions>
+</form>
+<AvailabilityIsland rootId={id} mode="registration" endpoints={{ username: usernameAvailabilityEndpoint, email: emailAvailabilityEndpoint }} client:only="react" />

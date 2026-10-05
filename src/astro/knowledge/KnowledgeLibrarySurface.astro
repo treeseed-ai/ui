@@ -1,0 +1,46 @@
+---
+import BookList from '../site/content/BookList.astro';
+import SemanticCollectionSurface from '../semantic/SemanticCollectionSurface.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import KnowledgeOutline from './KnowledgeOutline.astro';
+import KnowledgeProjectCollection from './KnowledgeProjectCollection.astro';
+
+interface SourceReference { projectId: string; path: string; teamSlug?: string; }
+interface PageItem { id: string; bookId: string; title: string; summary: string; slug: string; status: string; visibility: string; order: number; parentId?: string | null; source: SourceReference; }
+interface BookItem { id: string; slug: string; title: string; summary: string; status: string; visibility: string; topics: string[]; audience: string[]; source: SourceReference & { teamSlug: string }; }
+interface ProjectItem { id: string; slug?: string; name: string; description?: string | null; repositoryReady?: boolean; bookCount?: number; draftCount?: number; }
+interface Props {
+	teamId: string;
+	books?: BookItem[];
+	pages?: PageItem[];
+	projects?: ProjectItem[];
+	unavailable?: boolean;
+	retryHref?: string;
+	authorHref?: string;
+}
+const { teamId, books = [], pages = [], projects = [], unavailable = false, retryHref = '/app/knowledge', authorHref = '/app/knowledge?view=author' } = Astro.props as Props;
+const libraryItems = books.map((book) => ({ ...book,
+	pageCount: pages.filter((page) => page.bookId === book.id).length,
+	teamSlug: book.source.teamSlug,
+	manageHref: `/app/knowledge?project=${encodeURIComponent(book.source.projectId)}&sourcePath=${encodeURIComponent(book.source.path)}&kind=book`,
+}));
+const outlineItems = books.map((book) => ({ ...book, pages: pages.filter((page) => page.bookId === book.id)
+	.map((page) => ({ ...page, manageHref: `/app/knowledge?project=${encodeURIComponent(page.source.projectId)}&sourcePath=${encodeURIComponent(page.source.path)}&kind=page` })) }));
+---
+
+<div class="ts-stack" data-ts-knowledge-library-surface>
+	<SemanticCollectionSurface viewId="knowledge" regionId="books" presentation="team-book-library">
+		<Panel title="Team library" description="Search books federated from the active team's project repositories through TreeDX.">
+			{unavailable ? <EmptyState title="The team library is unavailable" description="TreeDX or a project repository did not respond. No empty library has been inferred." actions={[{ label: 'Retry', href: retryHref }]} />
+				: books.length ? <BookList searchEndpoint={`/v1/knowledge/library?teamId=${encodeURIComponent(teamId)}`} items={libraryItems} />
+				: <EmptyState title="No books yet" description="Create the first repository-native book for this team." actions={[{ label: 'Author knowledge', href: authorHref }]} />}
+		</Panel>
+	</SemanticCollectionSurface>
+	{books.length ? <SemanticCollectionSurface viewId="knowledge" regionId="outline" presentation="book-outline">
+		<Panel title="Book outlines" description="Browse ordered pages and open a recoverable authoring workspace."><KnowledgeOutline books={outlineItems} /></Panel>
+	</SemanticCollectionSurface> : null}
+	<Panel title="Knowledge repositories" description="Books remain in their owning project repositories; select a project to manage its source.">
+		<KnowledgeProjectCollection {projects} />
+	</Panel>
+</div>

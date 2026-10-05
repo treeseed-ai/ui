@@ -107,6 +107,11 @@ function initializeMarkdownField(root: MarkdownFieldRoot) {
 	}
 
 	const form = markdownTextarea.form;
+	root.addEventListener('treeseed:markdown-set', (event) => {
+		const value = event instanceof CustomEvent && typeof event.detail === 'string' ? event.detail : '';
+		markdownTextarea.value = value;
+		if (view) view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } });
+	});
 	form?.addEventListener('submit', (event) => {
 		if (root.dataset.markdownRequired !== 'true') return;
 		if (markdownTextarea.value.trim()) return;
@@ -121,15 +126,9 @@ function initializeMarkdownField(root: MarkdownFieldRoot) {
 	previewTab?.addEventListener('click', () => selectMode('preview'));
 }
 
-export function initializeMarkdownFields() {
-	document
+export function initializeMarkdownFields(scope: ParentNode = document) {
+	scope
 		.querySelectorAll<MarkdownFieldRoot>('[data-markdown-field]')
 		.forEach((root) => initializeMarkdownField(root));
+	if (scope instanceof HTMLElement && scope.matches('[data-markdown-field]')) initializeMarkdownField(scope as MarkdownFieldRoot);
 }
-
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initializeMarkdownFields, { once: true });
-} else {
-	initializeMarkdownFields();
-}
-document.addEventListener('astro:page-load', initializeMarkdownFields);

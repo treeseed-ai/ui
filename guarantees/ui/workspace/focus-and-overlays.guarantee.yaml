@@ -1,0 +1,27 @@
+schemaVersion: treeseed.guarantee/v1
+id: guarantee.ui.workspace.focus-and-overlays.814
+journeyIndex: 814
+type: ui
+subtype: workspace
+journey: Focus Internal Workspace Applications
+ownerPackage: "@treeseed/ui"
+surface: admin-ui
+summary: "Reusable internal applications focus inside their declared content boundary and coordinate nested overlays without remounting children, losing drafts, or hiding global navigation."
+status: planned
+dependencies: { journeys: [741], guarantees: [] }
+actors: { allowed: [authenticated_user], forbidden: [unauthorized_user] }
+devices: { required: [desktop_chromium, tablet_chromium, mobile_chromium] }
+gates: [future]
+preconditions: { fixtures: [integrated_treeseed_project] }
+api: { required: false, verifierRefs: [] }
+content: { required: false, verifierRefs: [] }
+audit: { required: false, verifierRefs: [] }
+negativeCases:
+  - "Only one workspace surface owns focused mode at a time."
+  - "Shrink never closes an application or discards unsaved content."
+  - "Closing a dirty authoring overlay requires an accessible explicit discard confirmation and page unload retains the browser's native protection."
+  - "Escape and browser Back close exactly one top overlay before shrinking."
+  - "Focused surfaces never use the browser Fullscreen API."
+  - "Reduced-motion and forced-color users retain complete controls and boundaries."
+evidence: { required: [guarantee_report, playwright_trace] }
+notes: ["Activate after component, browser-history, accessibility, responsive, editor-state, and integrated Agent Lab scenes produce repeatable evidence.", "Agent Designer drafts survive focus, simulation, and Atlas handoffs in session storage; destructive overlay exit is guarded while shrinking remains non-destructive."]

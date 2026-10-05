@@ -1,0 +1,32 @@
+---
+import Button from '../actions/Button.astro';
+import TextInput from '../fields/TextInput.astro';
+
+interface Props {
+	action: string;
+	name?: string;
+	id?: string;
+	label?: string;
+	value?: string;
+	buttonLabel?: string;
+	class?: string;
+}
+
+const {
+	action,
+	name = 'q',
+	id = 'search',
+	label = 'Search',
+	value = '',
+	buttonLabel = 'Search',
+	class: className,
+} = Astro.props as Props;
+---
+
+<form class:list={['ts-inline-search', className]} method="get" {action} role="search">
+	<label for={id}>{label}</label>
+	<div class="ts-inline-search__controls">
+		<TextInput {id} {name} type="search" {value} />
+		<Button type="submit" variant="secondary">{buttonLabel}</Button>
+	</div>
+</form>

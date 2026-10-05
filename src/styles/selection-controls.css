@@ -1,0 +1,19 @@
+.ts-choice-picker { border: 0; padding: 0; margin: 0; min-width: 0; }
+.ts-choice-picker legend { font-weight: 650; margin-bottom: 1rem; }
+.ts-choice-picker__items { display: flex; flex-wrap: wrap; gap: .75rem; }
+.ts-choice-picker__option { position: relative; }
+.ts-choice-picker__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.ts-choice-picker__option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.ts-choice-picker__option label { display: grid; place-items: center; min-width: 3.5rem; min-height: 3.5rem; padding: .5rem .75rem; border: 2px solid var(--ts-color-border); border-radius: .65rem; background: var(--ts-color-surface); cursor: pointer; }
+.ts-choice-picker__option input:checked + label { border-color: var(--ts-color-accent); background: var(--ts-color-accent-soft); box-shadow: inset 0 -3px var(--ts-color-accent); }
+.ts-choice-picker__option input:focus-visible + label { outline: 3px solid var(--ts-color-focus); outline-offset: 3px; }
+.ts-choice-picker__option input:disabled + label { opacity: .5; cursor: not-allowed; }
+.ts-multi-select { border: 1px solid var(--ts-color-border-strong); border-radius: .65rem; background: var(--ts-color-surface); }
+.ts-multi-select summary { padding: 1rem; cursor: pointer; font-weight: 650; }
+.ts-multi-select summary span { float: right; color: var(--ts-color-text-muted); font-weight: 400; margin-left: 1rem; }
+.ts-multi-select fieldset { border: 0; padding: .25rem 1rem 1rem; margin: 0; display: grid; gap: .5rem; }
+.ts-multi-select__option { display: flex; align-items: start; gap: .8rem; padding: .8rem; border: 1px solid var(--ts-color-border); border-radius: .4rem; cursor: pointer; }
+.ts-multi-select__option input { margin-top: .3rem; accent-color: var(--ts-color-accent); flex: 0 0 auto; }
+.ts-multi-select__option > span { display: grid; gap: .3rem; }
+.ts-multi-select__option > span > span { color: var(--ts-color-text-muted); font-size: .9rem; }
+.ts-multi-select__option:has(input:checked) { background: var(--ts-color-accent-soft); border-color: var(--ts-color-accent); }

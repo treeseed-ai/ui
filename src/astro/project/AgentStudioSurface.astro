@@ -1,0 +1,20 @@
+---
+import Button from '../forms/actions/Button.astro';
+import KeyValueList from '../data/KeyValueList.astro';
+import Timestamp from '../data/Timestamp.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import ModeNavigation from '../shell/navigation/ModeNavigation.astro';
+interface Props { projectId: string; agent: any; runs: any[]; fallbacks: any[]; audits: any[]; timeZone: string }
+const { projectId, agent, runs, fallbacks, audits, timeZone } = Astro.props as Props;
+const text = (...values: unknown[]) => String(values.find((value) => typeof value === 'string' && value.trim()) ?? '');
+const dateValue = (...values: unknown[]) => values.find((value) => typeof value === 'string' && !Number.isNaN(Date.parse(value))) as string | undefined;
+---
+<section class="ts-template" aria-label="Read-only Agent Studio" data-scene="command.agent.studio"><PageHeader eyebrow="Command · Agent Studio" title={text(agent.displayName, agent.name, 'Agent unavailable')} description="Inspect how this configured project role behaves. Authoring remains intentionally outside this surface."><Button slot="actions" href={`/app/projects/${encodeURIComponent(projectId)}/agents`} variant="secondary">Project roster</Button></PageHeader><ModeNavigation mode="command" current="projects" />
+	{!agent.id ? <EmptyState title="Agent class not found" description="The synchronized class projection is unavailable or outside your scope." /> : <>
+		<div class="ts-resource-grid"><Panel eyebrow="Class projection" title={text(agent.slug, agent.name, String(agent.id))} description={text(agent.description, 'Configured project execution role.')}><KeyValueList items={[{ key: 'Class ID', value: String(agent.id) }, { key: 'Handler', value: text(agent.handler, agent.handlerId, '—') }, { key: 'Activity profile', value: text(agent.activityProfile, agent.activity_profile, '—') }, { key: 'Planning', value: String(agent.planningEnabled ?? agent.planning_enabled ?? 'configured') }, { key: 'Acting', value: String(agent.actingEnabled ?? agent.acting_enabled ?? 'configured') }]} /></Panel><Panel eyebrow="Contract boundary" title="Inspection only" description="Agents, prompts, permissions, handlers, and outputs remain project-owned TreeDX content."><p>No alternate authoring control is mounted here.</p></Panel></div>
+		<Panel eyebrow="Execution history" title={`${runs.length} mode runs`} description="Each run remains linked to durable assignment and trace evidence.">{runs.map((run) => <details><summary>{text(run.mode, run.handler, 'Mode run')} · {String(run.status ?? 'unknown')}</summary><KeyValueList items={[{ key: 'Assignment', value: text(run.assignmentId, run.providerAssignmentId, '—') }, { key: 'Provider', value: text(run.providerId, run.executionProviderId, '—') }, { key: 'Artifacts', value: Array.isArray(run.contentArtifactRefs) ? run.contentArtifactRefs.join(', ') : 'Inspect assignment' }]} />{dateValue(run.startedAt, run.createdAt) ? <p><Timestamp value={dateValue(run.startedAt, run.createdAt)!} {timeZone} /></p> : null}{run.assignmentId || run.providerAssignmentId ? <Button href={`/app/command/assignments/${encodeURIComponent(String(run.assignmentId ?? run.providerAssignmentId))}`} variant="secondary" size="sm">Inspect assignment</Button> : null}</details>)}</Panel>
+		<div class="ts-resource-grid"><Panel eyebrow="Fallback outputs" title={`${fallbacks.length} records`} description="Fallbacks are recovery evidence, never hidden alternate authoring paths."><pre class="ts-code-block">{JSON.stringify(fallbacks.slice(0, 10), null, 2)}</pre></Panel><Panel eyebrow="TreeDX provenance" title={`${audits.length} access records`} description="Content access and mutation remains traceable through the authorized proxy."><pre class="ts-code-block">{JSON.stringify(audits.slice(0, 10), null, 2)}</pre></Panel></div>
+	</>}
+</section>

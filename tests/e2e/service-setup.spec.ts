@@ -1,0 +1,126 @@
+import {test, expect} from '@playwright/test';
+
+test('step buttons preserve progression, drafts and keyboard navigation', async ({page}) => {
+  await page.goto('/service-setup/github');
+  const progress = page.getByRole('list', {name: 'Connection setup progress'});
+  await progress.getByRole('button', {name: 'Connect account'}).click();
+  await expect(page.getByText('Choose at least one task to continue.', {exact:true})).toBeVisible();
+  await page.getByRole('checkbox', {name: 'Read and update repositories'}).check();
+  await progress.getByRole('button', {name: 'Connect account'}).click();
+  await expect(page.locator('input[name="displayName"]')).toBeFocused();
+  await page.locator('input[name="displayName"]').fill('Preserved draft');
+  await progress.getByRole('button', {name: 'Choose tasks'}).click();
+  await progress.getByRole('button', {name: 'Connection details'}).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('input[name="displayName"]')).toHaveValue('Preserved draft');
+  await expect(progress.getByRole('button', {name: 'Connection details'})).toHaveAttribute('aria-current', 'step');
+  await page.locator('[data-service-wizard]').dispatchEvent('treeseed:form-start');
+  await expect(progress.getByRole('button', {name: 'Choose tasks'})).toBeDisabled();
+  await page.locator('[data-service-wizard]').dispatchEvent('treeseed:form-error', {detail: {message: 'Fixture save failure'}});
+  await expect(progress.getByRole('button', {name: 'Choose tasks'})).toBeEnabled();
+});
+
+test('service surfaces follow the site palette and independent content overlay', async ({page}, testInfo) => {
+  await page.goto('/service-setup/github');
+  await page.locator('.ts-theme-menu > summary').click();
+  await page.getByLabel('Theme mode', {exact: true}).selectOption('dark');
+  const colors = () => page.evaluate(() => {
+    const scope = document.querySelector<HTMLElement>('[data-ts-workspace-content]')!;
+    const probe = document.createElement('div'); scope.append(probe);
+    probe.style.background = 'color-mix(in srgb, var(--ts-color-accent-soft) 65%, var(--ts-color-surface))';
+    const cardExpected = getComputedStyle(probe).backgroundColor;
+    probe.style.background = 'var(--ts-color-surface)';
+    const inputExpected = getComputedStyle(probe).backgroundColor;
+    probe.style.color = 'var(--ts-color-text)';
+    const textExpected = getComputedStyle(probe).color;
+    probe.remove();
+    return {cardExpected, inputExpected, textExpected,
+      heading: getComputedStyle(document.querySelector('[data-service-wizard] h2')!).color,
+      card: getComputedStyle(document.querySelector('[data-service-wizard]')!).backgroundColor,
+      input: getComputedStyle(document.querySelector('input[name="displayName"]')!).backgroundColor,
+      shell: getComputedStyle(document.documentElement).getPropertyValue('--ts-color-surface')};
+  });
+  const shell = await colors();
+  expect(shell.card).toBe(shell.cardExpected); expect(shell.input).toBe(shell.inputExpected);
+  await page.locator('[data-ts-workspace-enabled]').check();
+  await page.getByLabel('Content color scheme', {exact: true}).selectOption('tidepool');
+  await page.getByLabel('Content theme mode', {exact: true}).selectOption('light');
+  const overlay = await colors();
+  expect(overlay.card).toBe(overlay.cardExpected); expect(overlay.input).toBe(overlay.inputExpected);
+  await expect.poll(async () => (await colors()).heading).toBe(overlay.textExpected);
+  expect(overlay.card).not.toBe(shell.card); expect(overlay.shell).toBe(shell.shell);
+  await page.locator('.ts-theme-menu > summary').click();
+  await page.screenshot({path: testInfo.outputPath('service-content-overlay.png'), fullPage: true});
+  await page.locator('.ts-theme-menu > summary').click();
+  await page.locator('[data-ts-workspace-enabled]').uncheck();
+  expect((await colors()).card).toBe(shell.card);
+  await page.getByLabel('Theme mode', {exact: true}).selectOption('light');
+  const light = await colors();
+  expect(light.card).toBe(light.cardExpected); expect(light.input).toBe(light.inputExpected);
+  expect(light.heading).toBe(light.textExpected); expect(light.card).not.toBe(shell.card);
+});
+
+for (const provider of ['github', 'cloudflare', 'railway']) {
+  test(provider + ' shows only one step, validates and preserves inputs when going back', async ({page}) => {
+    await page.goto('/service-setup/' + provider);
+    await expect(page.locator('[data-service-step]:visible')).toHaveCount(1);
+    await expect(page.getByRole('heading', {name: 'Choose your tasks'})).toBeVisible();
+    await expect(page.locator('input[name="displayName"]')).toBeHidden();
+    await page.getByRole('button', {name: 'Continue', exact: true}).click();
+    await expect(page.getByText('Choose at least one task to continue.', {exact:true})).toBeVisible();
+    await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
+    await page.getByRole('button', {name: 'Continue', exact: true}).click();
+    await expect(page.getByRole('heading', {name: 'Name your connection'})).toBeFocused();
+    await expect(page.locator('[data-service-step]:visible')).toHaveCount(1);
+    await expect(page.locator('[data-service-tasks]')).toBeHidden();
+    await page.getByRole('button', {name: 'Save and connect account'}).click();
+    await expect(page.locator('input[name="displayName"]')).toBeFocused();
+    await page.locator('input[name="displayName"]').fill('My connection');
+    await page.getByRole('button', {name: 'Back', exact: true}).click();
+    await expect(page.locator('[data-service-tasks] input[type=checkbox]').first()).toBeChecked();
+    await page.getByRole('button', {name: 'Continue', exact: true}).click();
+    await expect(page.locator('input[name="displayName"]')).toHaveValue('My connection');
+    await expect(page.getByText('Managed OpenBao')).toHaveCount(0);
+  });
+}
+test('GitHub has one method and workflow configuration belongs to Run workflows', async ({page}) => {
+  await page.goto('/service-setup/github');
+  await expect(page.locator('[data-service-wizard] select')).toHaveCount(1);
+  await expect(page.locator('[data-service-tasks] input[type=checkbox]')).toHaveCount(2);
+  await page.getByRole('checkbox', {name: 'Run workflows', exact:true}).check();
+  await page.locator('select[name="githubAuthMethod"]').selectOption('token');
+  await expect(page.locator('select[name^="capabilityProfile."]')).toHaveCount(0);
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
+  await page.getByRole('button', {name: 'Back', exact: true}).click();
+  await expect(page.locator('select[name="githubAuthMethod"]')).toHaveValue('token');
+  await expect(page.getByRole('button', {name: 'Help choosing GitHub access'})).toHaveAttribute('data-ts-help-knowledge-page-id', 'provider.github');
+});
+test('full-width desktop wizard and phone layout', async ({page}, testInfo) => {
+  await page.setViewportSize({width: 1440, height: 1000});
+  await page.goto('/service-setup/github');
+  await page.getByRole('checkbox', {name: 'Read and update repositories'}).check();
+  const box = await page.locator('[data-service-wizard]').boundingBox();
+  expect(box!.width).toBeGreaterThan(1200);
+  await page.screenshot({path: testInfo.outputPath('github-wizard-desktop.png'), fullPage: true});
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
+  await page.screenshot({path: testInfo.outputPath('github-details-desktop.png'), fullPage: true});
+  await page.setViewportSize({width: 390, height: 844});
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({path: testInfo.outputPath('github-details-mobile.png'), fullPage: true});
+});
+test('Cloudflare asks for a domain only for DNS and has no deployment environment or state settings', async ({page}) => {
+  await page.goto('/service-setup/cloudflare');
+  await page.locator('[data-service-tasks] input[type=checkbox]').first().check();
+  await page.getByRole('button', {name: 'Continue', exact: true}).click();
+  await expect(page.locator('input[name="config.zoneId"]')).toHaveCount(0);
+  await expect(page.locator('[name="config.deploymentEnvironment"]')).toHaveCount(0);
+  const domain=page.locator('input[name="config.domain"]');
+  await expect(domain).toBeHidden();
+  await page.getByRole('button',{name:'Back',exact:true}).click();
+  await page.getByRole('checkbox',{name:'Manage domain records',exact:true}).check();
+  await page.getByRole('button',{name:'Continue',exact:true}).click();
+  await expect(domain).toBeVisible();
+  await expect(domain).toHaveAttribute('required');
+  for (const field of ['stateBucket', 'stateEndpoint', 'stateRegion', 'stateEncryptionKeyRef'])
+    await expect(page.locator('input[name="config.' + field + '"]')).toHaveCount(0);
+});

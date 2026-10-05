@@ -1,0 +1,23 @@
+---
+import EmptyState from '../surface/EmptyState.astro';
+import CoreWorkspaceNavigation from '../navigation/CoreWorkspaceNavigation.astro';
+import SemanticRegionSurface from '../semantic/SemanticRegionSurface.astro';
+import { CommandWorkspace } from '../../react/command-center/index.ts';
+import AgentLabChrome from './AgentLabChrome.astro';
+
+type Surface = 'inbox' | 'decisions' | 'build' | 'direction' | 'results' | 'find';
+interface Props { activeTeam: boolean; frame: any | null; surface: any; endpoints: any | null; query: string; current: Surface; preferences: { timeZone: string; realTimeUpdates: boolean; realTimePollingIntervalSeconds: number }; csrfToken: string; metricDestinations: Record<string, string> }
+const { activeTeam, frame, surface, endpoints, query, current, preferences, csrfToken, metricDestinations } = Astro.props as Props;
+const semanticSurface: Record<Surface, { viewId: string; regionId: string; presentation: string }> = {
+	inbox: { viewId: 'inbox', regionId: 'queue', presentation: 'command-inbox' }, decisions: { viewId: 'inbox', regionId: 'document', presentation: 'decision-chamber' },
+	build: { viewId: 'agent-builder', regionId: 'identity', presentation: 'agent-systems-foundry' }, direction: { viewId: 'allocator', regionId: 'workday', presentation: 'execution-direction' },
+	results: { viewId: 'content', regionId: 'document', presentation: 'result-intelligence' }, find: { viewId: 'discover', regionId: 'results', presentation: 'relationship-search' },
+};
+---
+<section class="ts-agent-lab-page" data-scene={`agent-lab.${current}`}>
+	{current === 'inbox' || current === 'find' ? <CoreWorkspaceNavigation current={current === 'inbox' ? 'inbox' : 'discover'} /> : null}
+	{activeTeam && frame && endpoints ? <><AgentLabChrome {frame} {current} inboxCount={surface.unreadCount} {csrfToken} {metricDestinations} />
+		<SemanticRegionSurface {...semanticSurface[current]}><CommandWorkspace client:load surface={current} initial={surface} {endpoints}
+			realtime={{ enabled: preferences.realTimeUpdates, intervalMs: preferences.realTimePollingIntervalSeconds * 1000 }} timeZone={preferences.timeZone} {query} /></SemanticRegionSurface></>
+		: <EmptyState title="Choose an active team" description="Agent Lab operations are team-scoped." />}
+</section>

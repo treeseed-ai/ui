@@ -1,7 +1,7 @@
 import type {
   BuiltInColorSchemeDefinition,
   RequiredSchemeTokenInput,
-  TreeseedSemanticColorTokens,
+  SemanticColorTokens,
 } from '../types.ts';
 
 export type { BuiltInColorSchemeDefinition, RequiredSchemeTokenInput };
@@ -9,7 +9,7 @@ export type { BuiltInColorSchemeDefinition, RequiredSchemeTokenInput };
 export function completeTokens(
   tokens: RequiredSchemeTokenInput,
   mode: 'light' | 'dark',
-): TreeseedSemanticColorTokens {
+): SemanticColorTokens {
   return {
     ...tokens,
     surfaceOverlay: mode === 'dark' ? 'rgba(7, 12, 8, 0.72)' : 'rgba(255, 255, 255, 0.88)',

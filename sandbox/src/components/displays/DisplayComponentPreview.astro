@@ -1,22 +1,37 @@
 ---
 import ActionList from '../../../../src/astro/data/ActionList.astro';
+import ConnectionFields from '../../../../src/astro/service/ConnectionFields.astro';
+import ServiceWizard from '../../../../src/astro/service/ServiceWizard.astro';
+import StepNavigation from '../../../../src/astro/navigation/StepNavigation.astro';
 import Badge from '../../../../src/astro/data/Badge.astro';
 import DataTable from '../../../../src/astro/data/DataTable.astro';
+import DisclosureList from '../../../../src/astro/data/DisclosureList.astro';
 import KeyValueList from '../../../../src/astro/data/KeyValueList.astro';
-import MetricCard from '../../../../src/astro/data/MetricCard.astro';
-import MetricGrid from '../../../../src/astro/data/MetricGrid.astro';
+import MetricCard from '../../../../src/astro/data/metrics/MetricCard.astro';
+import MetricGrid from '../../../../src/astro/data/metrics/MetricGrid.astro';
 import StatusPill from '../../../../src/astro/data/StatusPill.astro';
+import Timestamp from '../../../../src/astro/data/Timestamp.astro';
+import ResponsiveTable from '../../../../src/astro/data/ResponsiveTable.astro';
+import EntityCollection from '../../../../src/astro/data/entities/EntityCollection.astro';
+import EntityFilterToolbar from '../../../../src/astro/data/entities/EntityFilterToolbar.astro';
 import DistributionSummary from '../../../../src/astro/distribution/DistributionSummary.astro';
 import OverlayStatus from '../../../../src/astro/distribution/OverlayStatus.astro';
-import FeedbackButton from '../../../../src/astro/feedback/FeedbackButton.astro';
-import FeedbackDialog from '../../../../src/astro/feedback/FeedbackDialog.astro';
+import FeedbackTrigger from '../../../../src/astro/feedback/FeedbackTrigger.astro';
+import FeedbackPanel from '../../../../src/astro/feedback/FeedbackPanel.astro';
+import DiscussionTrigger from '../../../../src/astro/discussion/DiscussionTrigger.astro';
+import DiscussionPanel from '../../../../src/astro/discussion/DiscussionPanel.astro';
+import DiscussionBody from '../../../../src/astro/discussion/DiscussionBody.astro';
+import DiscussionWorkspace from '../../../../src/astro/discussion/DiscussionWorkspace.astro';
+import TeamChatWorkspace from '../../../../src/astro/discussion/TeamChatWorkspace.astro';
+import CoreWorkspaceNavigation from '../../../../src/astro/navigation/CoreWorkspaceNavigation.astro';
+import TeamViewer from '../../../../src/astro/team/TeamViewer.astro';
 import FeedbackRedactionBoundary from '../../../../src/astro/feedback/FeedbackRedactionBoundary.astro';
-import ContextualHelpPanel from '../../../../src/astro/help/ContextualHelpPanel.astro';
-import HelpActionList from '../../../../src/astro/help/HelpActionList.astro';
-import HelpButton from '../../../../src/astro/help/HelpButton.astro';
-import HelpDrawer from '../../../../src/astro/help/HelpDrawer.astro';
-import HelpPopover from '../../../../src/astro/help/HelpPopover.astro';
-import HelpTopicLink from '../../../../src/astro/help/HelpTopicLink.astro';
+import ToastRegion from '../../../../src/astro/feedback/ToastRegion.astro';
+import HelpArticle from '../../../../src/astro/help/HelpArticle.astro';
+import HelpDialog from '../../../../src/astro/help/HelpDialog.astro';
+import HelpSearch from '../../../../src/astro/help/HelpSearch.astro';
+import HelpKnowledgeNavigation from '../../../../src/astro/help/HelpKnowledgeNavigation.astro';
+import HelpTrigger from '../../../../src/astro/help/HelpTrigger.astro';
 import ActionBar from '../../../../src/astro/layout/ActionBar.astro';
 import PageHeader from '../../../../src/astro/layout/PageHeader.astro';
 import ActivityTimeline from '../../../../src/astro/operating/ActivityTimeline.astro';
@@ -24,50 +39,104 @@ import AllocationPanel from '../../../../src/astro/operating/AllocationPanel.ast
 import AllocationStateLegend from '../../../../src/astro/operating/AllocationStateLegend.astro';
 import AllocationTree from '../../../../src/astro/operating/AllocationTree.astro';
 import WorkQueueSummary from '../../../../src/astro/operating/WorkQueueSummary.astro';
-import BottomNav from '../../../../src/astro/shell/BottomNav.astro';
+import BottomNav from '../../../../src/astro/shell/navigation/BottomNav.astro';
 import ReadinessSummary from '../../../../src/astro/service/ReadinessSummary.astro';
-import ProjectHeader from '../../../../src/astro/shell/ProjectHeader.astro';
-import PublicFooter from '../../../../src/astro/shell/PublicFooter.astro';
-import RailNav from '../../../../src/astro/shell/RailNav.astro';
-import ShellIconLink from '../../../../src/astro/shell/ShellIconLink.astro';
-import TopBar from '../../../../src/astro/shell/TopBar.astro';
+import ProviderMark from '../../../../src/astro/service/ProviderMark.astro';
+import ProviderCard from '../../../../src/astro/service/ProviderCard.astro';
+import CapabilitySelector from '../../../../src/astro/service/CapabilitySelector.astro';
+import CredentialField from '../../../../src/astro/service/CredentialField.astro';
+import PermissionChecklist from '../../../../src/astro/service/PermissionChecklist.astro';
+import ProviderAuthorityPanel from '../../../../src/astro/service/ProviderAuthorityPanel.astro';
+import ServiceConnectionWorkspace from '../../../../src/astro/service/workspace/ServiceConnectionWorkspace.astro';
+import ServiceConnectionCreateSurface from '../../../../src/astro/service/workspace/ServiceConnectionCreateSurface.astro';
+import RepositoryConnectionPanel from '../../../../src/astro/project/RepositoryConnectionPanel.astro';
+import ProjectPortfolioSurface from '../../../../src/astro/project/ProjectPortfolioSurface.astro';
+import ProjectCommandSurface from '../../../../src/astro/project/ProjectCommandSurface.astro';
+import ProjectAgentsSurface from '../../../../src/astro/project/ProjectAgentsSurface.astro';
+import AgentStudioSurface from '../../../../src/astro/project/AgentStudioSurface.astro';
+import CapacityWorkspace from '../../../../src/astro/capacity/CapacityWorkspace.astro';
+import AiDeploymentWorkspace from '../../../../src/astro/capacity/AiDeploymentWorkspace.astro';
+import OperationalList from '../../../../src/astro/surface/OperationalList.astro';
+import ManagementWizard from '../../../../src/astro/navigation/ManagementWizard.astro';
+import VaultSetupPreview from '../../../../src/astro/service/workspace/VaultSetupPreview.astro';
+import WorkflowConfigurationPanel from '../../../../src/astro/workflow/WorkflowConfigurationPanel.astro';
+import WorkflowDefinitionPanel from '../../../../src/astro/workflow/WorkflowDefinitionPanel.astro';
+import WorkflowExecutionPanel from '../../../../src/astro/workflow/WorkflowExecutionPanel.astro';
+import ProjectHeader from '../../../../src/astro/shell/chrome/ProjectHeader.astro';
+import PublicFooter from '../../../../src/astro/shell/chrome/PublicFooter.astro';
+import RailNav from '../../../../src/astro/shell/navigation/RailNav.astro';
+import ShellIconLink from '../../../../src/astro/shell/navigation/ShellIconLink.astro';
+import ShellIcon from '../../../../src/astro/shell/navigation/ShellIcon.astro';
+import TopBar from '../../../../src/astro/shell/navigation/TopBar.astro';
+import ModeNavigation from '../../../../src/astro/shell/navigation/ModeNavigation.astro';
+import AgentLabMonitor from '../../../../src/astro/agent-lab/AgentLabMonitor.astro';
+import AgentLabChrome from '../../../../src/astro/agent-lab/AgentLabChrome.astro';
+import AgentLabHomeSurface from '../../../../src/astro/agent-lab/AgentLabHomeSurface.astro';
+import AgentLabCommandSurface from '../../../../src/astro/agent-lab/AgentLabCommandSurface.astro';
+import AgentLabEntitySurface from '../../../../src/astro/agent-lab/AgentLabEntitySurface.astro';
+import WorkdayCollectionSurface from '../../../../src/astro/agent-lab/WorkdayCollectionSurface.astro';
+import WorkdayDetailSurface from '../../../../src/astro/agent-lab/WorkdayDetailSurface.astro';
 import Card from '../../../../src/astro/surface/Card.astro';
 import EmptyState from '../../../../src/astro/surface/EmptyState.astro';
 import Panel from '../../../../src/astro/surface/Panel.astro';
 import ResourceCard from '../../../../src/astro/surface/ResourceCard.astro';
+import SemanticCollectionSurface from '../../../../src/astro/semantic/SemanticCollectionSurface.astro';
+import SemanticRegionSurface from '../../../../src/astro/semantic/SemanticRegionSurface.astro';
+import InlineConfirmation from '../../../../src/astro/surface/InlineConfirmation.astro';
 import PermissionBoundary from '../../../../src/astro/patterns/PermissionBoundary.astro';
 import CollectionTemplate from '../../../../src/astro/templates/CollectionTemplate.astro';
 import DashboardTemplate from '../../../../src/astro/templates/DashboardTemplate.astro';
 import DetailTemplate from '../../../../src/astro/templates/DetailTemplate.astro';
-import ReaderTemplate from '../../../../src/astro/templates/ReaderTemplate.astro';
 import SettingsTemplate from '../../../../src/astro/templates/SettingsTemplate.astro';
 import WorkspaceTemplate from '../../../../src/astro/templates/WorkspaceTemplate.astro';
 import ThemePreviewSwatch from '../../../../src/astro/theme/ThemePreviewSwatch.astro';
 import ThemeScript from '../../../../src/astro/theme/ThemeScript.astro';
-import ContentFieldHelp from '../../../../src/astro/app/controls/ContentFieldHelp.astro';
-import DeleteConfirmationModal from '../../../../src/astro/app/controls/DeleteConfirmationModal.astro';
-import HostCredentialPermissionNote from '../../../../src/astro/app/controls/HostCredentialPermissionNote.astro';
-import LaunchRequirementSummary from '../../../../src/astro/app/controls/LaunchRequirementSummary.astro';
-import AppMarkdownField from '../../../../src/astro/app/controls/MarkdownField.astro';
-import PlainTable from '../../../../src/astro/app/controls/PlainTable.astro';
-import ProjectControlNav from '../../../../src/astro/app/controls/ProjectControlNav.astro';
-import RelatedContentCreator from '../../../../src/astro/app/controls/RelatedContentCreator.astro';
-import TemplateHostRequirementPicker from '../../../../src/astro/app/controls/TemplateHostRequirementPicker.astro';
-import TemplateResourceRequirementPicker from '../../../../src/astro/app/controls/TemplateResourceRequirementPicker.astro';
-import TemplateSecretRequirementPanel from '../../../../src/astro/app/controls/TemplateSecretRequirementPanel.astro';
-import WorkContentNav from '../../../../src/astro/app/controls/WorkContentNav.astro';
+import DeleteConfirmationModal from '../../../../src/astro/app/controls/data/DeleteConfirmationModal.astro';
+import AppMarkdownField from '../../../../src/astro/app/controls/content/MarkdownField.astro';
+import PlainTable from '../../../../src/astro/app/controls/data/PlainTable.astro';
+import ProjectControlNav from '../../../../src/astro/app/controls/navigation/ProjectControlNav.astro';
+import RelatedContentCreator from '../../../../src/astro/app/controls/content/RelatedContentCreator.astro';
+import WorkContentNav from '../../../../src/astro/app/controls/content/WorkContentNav.astro';
 import CapacityDiagnosticsPanel from '../../../../src/astro/app/operations/CapacityDiagnosticsPanel.astro';
-import DeploymentTimeline from '../../../../src/astro/app/operations/DeploymentTimeline.astro';
+import CapacityControlRoom from '../../../../src/astro/capacity/CapacityControlRoom.astro';
+import CapacityMeter from '../../../../src/astro/capacity/CapacityMeter.astro';
+import ProviderBatteryCard from '../../../../src/astro/capacity/ProviderBatteryCard.astro';
 import GovernanceDecisionPanel from '../../../../src/astro/app/operations/GovernanceDecisionPanel.astro';
 import GovernancePolicySummary from '../../../../src/astro/app/operations/GovernancePolicySummary.astro';
 import KnowledgeArtifactCard from '../../../../src/astro/app/operations/KnowledgeArtifactCard.astro';
+import KnowledgeAuthoringForm from '../../../../src/astro/knowledge/KnowledgeAuthoringForm.astro';
+import KnowledgeProjectCollection from '../../../../src/astro/knowledge/KnowledgeProjectCollection.astro';
+import KnowledgeReviewCollection from '../../../../src/astro/knowledge/KnowledgeReviewCollection.astro';
+import KnowledgeOutline from '../../../../src/astro/knowledge/KnowledgeOutline.astro';
+import KnowledgeOutlineBranch from '../../../../src/astro/knowledge/outline/KnowledgeOutlineBranch.astro';
+import KnowledgePackWorkbench from '../../../../src/astro/knowledge/KnowledgePackWorkbench.astro';
+import KnowledgeLifecyclePanel from '../../../../src/astro/knowledge/KnowledgeLifecyclePanel.astro';
+import KnowledgePublicationStatus from '../../../../src/astro/knowledge/KnowledgePublicationStatus.astro';
+import KnowledgeLibrarySurface from '../../../../src/astro/knowledge/KnowledgeLibrarySurface.astro';
+import KnowledgeWorkbenchSurface from '../../../../src/astro/knowledge/KnowledgeWorkbenchSurface.astro';
+import KnowledgeRelationPicker from '../../../../src/react/editors/KnowledgeRelationPicker';
 import OperationalTimeline from '../../../../src/astro/app/operations/OperationalTimeline.astro';
 import RepositoryContextPanel from '../../../../src/astro/app/operations/RepositoryContextPanel.astro';
 import SeedOperationsPanel from '../../../../src/astro/app/operations/SeedOperationsPanel.astro';
 import WorkerQueuePanel from '../../../../src/astro/app/operations/WorkerQueuePanel.astro';
-import SensitiveDataUnlock from '../../../../src/astro/app/sensitive/SensitiveDataUnlock.astro';
+import OperationsDisplayContainer from '../../../../src/astro/operating/navigation/OperationsDisplayContainer.astro';
+import OperationsNavigator from '../../../../src/astro/operating/navigation/OperationsNavigator.astro';
+import WorkdaySelector from '../../../../src/astro/operating/navigation/WorkdaySelector.astro';
+import AccountDeletionPanel from '../../../../src/astro/account/AccountDeletionPanel.astro';
+import AccountIdentitySettings from '../../../../src/astro/account/AccountIdentitySettings.astro';
+import AccountTimeZoneSettings from '../../../../src/astro/account/AccountTimeZoneSettings.astro';
+import RealtimeExperienceSettings from '../../../../src/astro/account/RealtimeExperienceSettings.astro';
+import NotificationPreferencePanel from '../../../../src/astro/account/NotificationPreferencePanel.astro';
+import PersonalThemeManager from '../../../../src/astro/account/PersonalThemeManager.astro';
+import SessionManager from '../../../../src/astro/account/SessionManager.astro';
 import AuthCard from '../../../../src/astro/auth/AuthCard.astro';
 import AuthDivider from '../../../../src/astro/auth/AuthDivider.astro';
+import OAuthConsent from '../../../../src/astro/auth/OAuthConsent.astro';
+import DeviceApproval from '../../../../src/astro/auth/DeviceApproval.astro';
+import ConfirmationResult from '../../../../src/astro/auth/ConfirmationResult.astro';
+import SessionState from '../../../../src/astro/auth/SessionState.astro';
+import CapabilityUnavailable from '../../../../src/astro/surface/CapabilityUnavailable.astro';
+import LocalCompanionLink from '../../../../src/astro/surface/LocalCompanionLink.astro';
 import ProviderButtonList from '../../../../src/astro/auth/ProviderButtonList.astro';
 import ContentStatusLegend from '../../../../src/astro/content/ContentStatusLegend.astro';
 import ContentStatusBadge from '../../../../src/astro/content/StatusBadge.astro';
@@ -75,7 +144,7 @@ import DevWatchReload from '../../../../src/astro/core/DevWatchReload.astro';
 import SiteTitle from '../../../../src/astro/core/SiteTitle.astro';
 import BookFontControls from '../../../../src/astro/docs/BookFontControls.astro';
 import DesktopSidebarToggle from '../../../../src/astro/docs/DesktopSidebarToggle.astro';
-import DownloadBook from '../../../../src/astro/docs/DownloadBook.astro';
+import MobileSidebarToggle from '../../../../src/astro/docs/MobileSidebarToggle.astro';
 import DocsFooter from '../../../../src/astro/docs/Footer.astro';
 import DocsHeader from '../../../../src/astro/docs/Header.astro';
 import PageFrame from '../../../../src/astro/docs/PageFrame.astro';
@@ -84,7 +153,8 @@ import PageTitle from '../../../../src/astro/docs/PageTitle.astro';
 import DocsSidebar from '../../../../src/astro/docs/Sidebar.astro';
 import ThemeSelect from '../../../../src/astro/docs/ThemeSelect.astro';
 import ContactForm from '../../../../src/astro/forms/ContactForm.astro';
-import FooterSubscribeForm from '../../../../src/astro/forms/FooterSubscribeForm.astro';
+import InlineSearch from '../../../../src/astro/forms/search/InlineSearch.astro';
+import FooterSubscribeForm from '../../../../src/astro/forms/submission/FooterSubscribeForm.astro';
 import CommonsDecisionTimeline from '../../../../src/astro/governance/CommonsDecisionTimeline.astro';
 import CommonsDelegationPanel from '../../../../src/astro/governance/CommonsDelegationPanel.astro';
 import CommonsParticipantBadge from '../../../../src/astro/governance/CommonsParticipantBadge.astro';
@@ -94,360 +164,81 @@ import CommonsStewardDecisionPanel from '../../../../src/astro/governance/Common
 import CommonsVoteSummary from '../../../../src/astro/governance/CommonsVoteSummary.astro';
 import CommonsWeightBreakdown from '../../../../src/astro/governance/CommonsWeightBreakdown.astro';
 import ProductCard from '../../../../src/astro/market/ProductCard.astro';
-import ControlSurface from '../../../../src/astro/shell/ControlSurface.astro';
-import ShellHeader from '../../../../src/astro/shell/ShellHeader.astro';
-import SiteUserControls from '../../../../src/astro/shell/SiteUserControls.astro';
-import SurfaceTabs from '../../../../src/astro/shell/SurfaceTabs.astro';
-import TeamOperationsDrawer from '../../../../src/astro/shell/TeamOperationsDrawer.astro';
-import TeamOperationsPanel from '../../../../src/astro/shell/TeamOperationsPanel.astro';
+import ControlSurface from '../../../../src/astro/shell/layout/ControlSurface.astro';
+import ShellHeader from '../../../../src/astro/shell/chrome/ShellHeader.astro';
+import SiteUserControls from '../../../../src/astro/shell/chrome/SiteUserControls.astro';
+import SurfaceTabs from '../../../../src/astro/shell/navigation/SurfaceTabs.astro';
+import Pagination from '../../../../src/astro/shell/navigation/Pagination.astro';
+import TeamOperationsDrawer from '../../../../src/astro/shell/team-operations/TeamOperationsDrawer.astro';
+import TeamOperationsPanel from '../../../../src/astro/shell/team-operations/TeamOperationsPanel.astro';
 import PublicHeroSection from '../../../../src/astro/public/PublicHeroSection.astro';
 import PublicKnowledgeSection from '../../../../src/astro/public/PublicKnowledgeSection.astro';
 import PublicProfileHeader from '../../../../src/astro/public/PublicProfileHeader.astro';
 import PublicSection from '../../../../src/astro/public/PublicSection.astro';
 import PublicStack from '../../../../src/astro/public/PublicStack.astro';
-import BookList from '../../../../src/astro/site/BookList.astro';
-import CTASection from '../../../../src/astro/site/CTASection.astro';
-import ChronicleList from '../../../../src/astro/site/ChronicleList.astro';
-import Hero from '../../../../src/astro/site/Hero.astro';
-import NotesList from '../../../../src/astro/site/NotesList.astro';
-import PathCard from '../../../../src/astro/site/PathCard.astro';
-import ProfileList from '../../../../src/astro/site/ProfileList.astro';
-import PublishedContentBody from '../../../../src/astro/site/PublishedContentBody.astro';
-import SectionIntro from '../../../../src/astro/site/SectionIntro.astro';
-import StageBanner from '../../../../src/astro/site/StageBanner.astro';
-import TrustCallout from '../../../../src/astro/site/TrustCallout.astro';
+import KnowledgeActivityTrail from '../../../../src/astro/public/profile/KnowledgeActivityTrail.astro';
+import KnowledgeProfileCollection from '../../../../src/astro/public/profile/KnowledgeProfileCollection.astro';
+import KnowledgeProfileIdentity from '../../../../src/astro/public/profile/KnowledgeProfileIdentity.astro';
+import KnowledgeProfileLayout from '../../../../src/astro/public/profile/KnowledgeProfileLayout.astro';
+import KnowledgeProfileStats from '../../../../src/astro/public/profile/KnowledgeProfileStats.astro';
+import BookList from '../../../../src/astro/site/content/BookList.astro';
+import CTASection from '../../../../src/astro/site/marketing/CTASection.astro';
+import ChronicleList from '../../../../src/astro/site/content/ChronicleList.astro';
+import Hero from '../../../../src/astro/site/marketing/Hero.astro';
+import NotesList from '../../../../src/astro/site/content/NotesList.astro';
+import PathCard from '../../../../src/astro/site/navigation/PathCard.astro';
+import ProfileList from '../../../../src/astro/site/content/ProfileList.astro';
+import PublishedContentBody from '../../../../src/astro/site/content/PublishedContentBody.astro';
+import SectionIntro from '../../../../src/astro/site/sections/SectionIntro.astro';
+import StageBanner from '../../../../src/astro/site/marketing/StageBanner.astro';
+import TrustCallout from '../../../../src/astro/site/marketing/TrustCallout.astro';
 import MonitoringChartHarness from './MonitoringChartHarness.tsx';
 import ProjectActivityChartHarness from './ProjectActivityChartHarness.tsx';
+import AgentAtlasHarness from './AgentAtlasHarness.tsx';
 import type { ComponentCatalogEntry } from '../../lib/component-catalog.ts';
 
 const { entry } = Astro.props as { entry: ComponentCatalogEntry };
-const navItems = [
-  { label: 'Overview', href: '/displays/product-shell' },
-  { label: 'Projects', href: '/displays/product-shell/projects' },
-  { label: 'Knowledge', href: '/displays/product-shell/knowledge' },
-  { label: 'Settings', href: '/displays/product-shell/settings' },
-];
-const brand = { name: 'TreeSeed', tag: 'UI package', href: '/', logoSrc: '/logo.svg', logoAlt: 'TreeSeed' };
-const appearance = { scheme: 'fern', mode: 'system' } as const;
-const siteItems = [
-  { label: 'Home', href: '/' },
-  { label: 'Knowledge', href: '/knowledge/' },
-  { label: 'Market', href: '/market/' },
-];
-const teamOperationItems = [
-  { label: 'Dashboard', href: '/app/' },
-  { label: 'Projects', href: '/app/projects' },
-  { label: 'Knowledge', href: '/app/knowledge' },
-  { label: 'Market', href: '/market/' },
-];
-const surfaceTabItems = [
-  { id: 'overview', label: 'Overview', href: '/displays/surface-tabs', count: 2, panelId: 'surface-tabs-overview' },
-  { id: 'activity', label: 'Activity', href: '/displays/surface-tabs/activity', panelId: 'surface-tabs-activity' },
-  { id: 'settings', label: 'Settings', href: '/displays/surface-tabs/settings', panelId: 'surface-tabs-settings' },
-];
-const hostRequirement = {
-  key: 'web-host',
-  type: 'web',
-  displayName: 'Web host',
-  purpose: 'Choose the host that will serve the project web UI.',
-  required: true,
-  compatibleProviders: ['Cloudflare', 'Railway'],
-  choices: [
-    { label: 'Cloudflare Pages', value: 'cloudflare-pages', selected: true },
-    { label: 'Railway Web', value: 'railway-web' },
-  ],
-  configWritePreviews: [{ target: 'treeseed.site.yaml', path: 'hosts.web' }],
-  environmentWritePreviews: [{ env: 'WEB_HOST_ID', targets: ['runtime'] }],
-};
-const resourceRequirement = {
-  key: 'database',
-  type: 'd1',
-  displayName: 'D1 database',
-  purpose: 'Provision or connect the database required by this template.',
-  required: false,
-  compatibleProviders: ['Cloudflare'],
-  configWritePreviews: [{ target: 'wrangler.toml', path: 'd1_databases' }],
-  environmentWritePreviews: [{ env: 'DATABASE_ID', targets: ['worker'] }],
-};
-const secretRequirement = {
-  key: 'openai-api-key',
-  env: 'OPENAI_API_KEY',
-  source: 'team secret',
-  required: true,
-  sensitivity: 'secret',
-  targets: ['worker', 'agent'],
-};
-const templates = [
-  {
-    slug: 'monitoring-console',
-    sourceRef: 'template:monitoring-console',
-    title: 'Monitoring Console',
-    launchRequirements: { hosts: [hostRequirement], resources: [resourceRequirement], secrets: [secretRequirement] },
-  },
-];
-const actionItems = [
-  { title: 'Review deployment guardrails', description: 'Confirm readiness gates.', meta: 'Required', tone: 'warning' as const, actionLabel: 'Open' },
-  { title: 'Sync knowledge pack', description: 'Refresh generated artifacts.', meta: 'Ready', tone: 'success' as const, actionLabel: 'Run' },
-  { title: 'Inspect capacity', description: 'Compare active provider limits.', meta: 'Optional', tone: 'muted' as const, actionLabel: 'View' },
-];
-const tableColumns = [
-  { key: 'name', label: 'Name' },
-  { key: 'type', label: 'Type' },
-  { key: 'status', label: 'Status' },
-  { key: 'owner', label: 'Owner' },
-];
-const tableRows = [
-  { name: '<strong>Monitoring Console</strong><span>Deployment workspace</span>', type: 'Template', status: 'Published', owner: 'Platform' },
-  { name: '<strong>Capacity Diagnostics</strong><span>Operations panel</span>', type: 'Panel', status: 'Draft', owner: 'Ops' },
-  { name: '<strong>Knowledge Pack</strong><span>Generated artifact</span>', type: 'Artifact', status: 'Ready', owner: 'Knowledge' },
-];
-const resolvedActions = [
-  { id: 'question.create', label: 'New question', state: 'allowed' as const, href: '/forms/button' },
-  { id: 'question.export', label: 'Export', state: 'disabledWithReason' as const, reason: 'Export arrives with the direction vertical.' },
-];
-const feedbackContext = {
-  url: 'https://ui.treeseed.test/displays/feedback-dialog',
-  canonicalPath: '/displays/feedback-dialog',
-  title: 'Feedback preview',
-  shell: 'public' as const,
-  context: 'public' as const,
-  submissionEndpoint: '/api/feedback/submit',
-  allowAnonymous: true,
-  screenshotPolicy: 'optional' as const,
-  attachmentStoragePolicy: 'public' as const,
-  environment: 'local' as const,
-};
-const helpContext = {
-  capabilityId: 'work.questions',
-  topicIds: ['work-content', 'questions'],
-  shell: 'product' as const,
-  context: 'project' as const,
-  resourceType: 'question',
-  routePattern: '/app/work/questions',
-  canonicalPath: '/app/work/questions',
-  template: 'collection' as const,
-  summary: 'Questions capture uncertainty that directs project work.',
-  topics: [
-    { id: 'questions', title: 'Question records', summary: 'Use questions to preserve the decisions and research the team still needs.', href: '/displays/help-topic-link', visibility: 'team' as const, source: 'capability' as const },
-    { id: 'question-actions', title: 'Action availability', summary: 'Unavailable actions explain their blocker and the next safe step.', visibility: 'team' as const, source: 'action-state' as const },
-  ],
-  relatedDocs: [
-    { topicId: 'questions', title: 'Questions overview', href: '/displays/help-topic-link', visibility: 'team' as const, summary: 'How question records guide work.', source: 'capability' as const, current: true },
-  ],
-  relatedActions: resolvedActions,
-  searchScope: 'project' as const,
-  searchPlaceholder: 'Search question help',
-  visibility: 'team' as const,
-  feedbackType: 'question' as const,
-};
-const collectionViewModel = {
-  title: 'Questions',
-  description: 'Reusable collection template preview.',
-  columns: tableColumns.slice(0, 3),
-  rows: [
-    { name: 'Launch risks', type: 'Question', status: 'Open' },
-    { name: 'Knowledge gaps', type: 'Question', status: 'Recorded' },
-  ],
-  resources: [
-    { id: 'launch-risks', title: 'Launch risks', description: 'What still blocks launch?', href: '/displays/resource-card', status: 'Open' },
-    { id: 'knowledge-gaps', title: 'Knowledge gaps', description: 'What should agents research next?', href: '/displays/resource-card', status: 'Recorded' },
-  ],
-  emptyTitle: 'No questions yet',
-  emptyDescription: 'Questions appear when users guide project direction.',
-};
-const dashboardViewModel = {
-  title: 'Project dashboard',
-  description: 'Context dashboard template preview.',
-  context: {
-    id: 'context',
-    title: 'Where you are',
-    description: 'Current scope and ownership.',
-    items: [
-      { label: 'Scope', value: 'Project', description: 'Monitoring Console', tone: 'info' as const },
-      { label: 'Team', value: 'Launch', description: 'Active operating team' },
-    ],
-  },
-  status: {
-    id: 'status',
-    title: 'Status',
-    description: 'Readiness at a glance.',
-    items: [
-      { label: 'Knowledge', value: 'Ready', description: 'Runtime content available', tone: 'success' as const },
-      { label: 'Open questions', value: 2, description: 'Needs direction', tone: 'warning' as const, href: '/displays/collection-template' },
-    ],
-  },
-  nextActions: [
-    { id: 'new-question', title: 'Clarify project direction', description: 'Capture the next uncertainty for the team.', href: '/displays/collection-template', status: 'Recommended' },
-    { id: 'review-reader', title: 'Review Knowledge Hub', description: 'Check the public runtime reader proof.', href: '/displays/reader-template', status: 'Ready' },
-  ],
-  primaryResources: [
-    { id: 'questions', title: 'Questions', description: 'Project direction records.', href: '/displays/collection-template', status: 'Level 5' },
-    { id: 'knowledge', title: 'Knowledge', description: 'Runtime reader resources.', href: '/displays/reader-template', status: 'Level 5' },
-  ],
-  alerts: [
-    { id: 'setup', title: 'Setup attention', description: 'Add capacity before the next workday.', tone: 'warning' as const, href: '/displays/resource-card' },
-  ],
-  activity: [
-    { id: 'question', title: 'Question added', description: 'Launch risks were recorded.', timestamp: '2026-06-10', tone: 'info' as const },
-  ],
-};
-const readinessViewModel = {
-  title: 'Service readiness',
-  description: 'Readiness summary preview.',
-  items: [
-    { id: 'hosts', label: 'Hosts', status: 'ready' as const, message: 'Repository and web hosts are connected.', href: '/displays/resource-card' },
-    { id: 'capacity', label: 'Capacity provider', status: 'warning' as const, message: 'Provider heartbeat has not reported recently.', href: '/displays/status-pill' },
-    { id: 'runtime', label: 'Runtime diagnostics', status: 'unknown' as const, message: 'Advanced diagnostics are hidden by default.', advanced: true },
-  ],
-};
-const distributionViewModel = {
-  title: 'Distribution readiness',
-  description: 'Release, entitlement, delivery, and install/import action state.',
-  items: [
-    { id: 'pack', title: 'Operations Knowledge Pack', description: 'Reusable project context and runbooks.', status: 'published' as const, entitlement: 'public' as const, delivery: 'cdn' as const, href: '/displays/distribution-summary', meta: 'knowledge import' },
-    { id: 'template', title: 'Workflow Import', description: 'Template gated by entitlement resolution.', status: 'review' as const, entitlement: 'authenticated' as const, delivery: 'contentProxy' as const, href: '/displays/distribution-summary', meta: 'workflow import' },
-    { id: 'release', title: 'Release Review', description: 'Publication is awaiting reviewer approval.', status: 'blocked' as const, entitlement: 'team' as const, delivery: 'queued' as const, meta: 'release' },
-  ],
-};
-const overlayStatusViewModel = {
-  state: 'preview' as const,
-  label: 'Overlay gated',
-  message: 'Editor and search bundles load only after authorized edit intent.',
-  routePattern: '/knowledge/:slug*',
-  resourceType: 'knowledge-page',
-  action: { id: 'overlay.intent', label: 'Prepare overlay', state: 'allowed' as const, href: '/displays/overlay-status#overlay' },
-};
-const allocationViewModel = {
-  title: 'Portfolio allocation',
-  description: 'Desired allocation, limits, reservations, active assignments, and actual usage.',
-  scopeLabel: 'Team portfolio',
-  tree: [{
-    id: 'team',
-    label: 'Launch team',
-    level: 'team' as const,
-    status: 'running' as const,
-    value: '100%',
-    current: true,
-    children: [
-      { id: 'project-a', label: 'Market Console', level: 'project' as const, status: 'ready' as const, value: '60%' },
-      { id: 'project-b', label: 'Knowledge Hub', level: 'project' as const, status: 'needsReview' as const, value: '40%' },
-    ],
-  }],
-  items: [
-    { id: 'desired', label: 'Market Console', status: 'ready' as const, desired: '60%', inheritedLimit: '80 credits', scheduledReservation: '18 credits', activeAssignment: '4 agents', actualUsage: '12 credits', message: 'Inside inherited limits.' },
-    { id: 'review', label: 'Knowledge Hub', status: 'needsReview' as const, desired: '40%', inheritedLimit: '50 credits', override: 'Pending', scheduledReservation: '20 credits', actualUsage: '31 credits', message: 'Review override before the next workday.' },
-  ],
-};
-const workQueueViewModel = {
-  title: 'Work queue',
-  description: 'Running, blocked, failed, and needs-review work.',
-  items: [
-    { id: 'running', title: 'Planning workday', status: 'running' as const, project: 'Market Console', agent: 'planner', description: 'Collecting project context.' },
-    { id: 'blocked', title: 'Release verification', status: 'blocked' as const, project: 'Knowledge Hub', agent: 'reviewer', description: 'Capacity approval required.' },
-  ],
-};
-const activityTimelineViewModel = {
-  title: 'Operating timeline',
-  description: 'Direction, allocation, agent, and review events.',
-  items: [
-    { id: 'direction', title: 'Question resolved', status: 'completed' as const, description: 'Launch risk was linked to a decision.', timestamp: '2026-06-10', meta: 'direction' },
-    { id: 'approval', title: 'Approval requested', status: 'needsReview' as const, description: 'Budget policy requires review.', timestamp: '2026-06-10', meta: 'governance' },
-  ],
-};
-const workspaceViewModel = {
-  title: 'Workday workspace',
-  description: 'Operating loop workspace preview.',
-  context: {
-    id: 'workspace-context',
-    title: 'Where you are',
-    items: [
-      { label: 'Project', value: 'Market Console', description: 'Active workday' },
-      { label: 'State', value: 'Running', tone: 'info' as const },
-    ],
-  },
-  allocation: allocationViewModel,
-  queue: workQueueViewModel,
-  timeline: activityTimelineViewModel,
-};
-const timelineItems = [
-  { id: 'queued', phase: 'Queue', title: 'Operation queued', description: 'The release was accepted for guarded deployment.', status: 'queued', tone: 'info' as const, createdAt: '2026-06-10', meta: 'release/market-console' },
-  { id: 'verified', phase: 'Verify', title: 'Smoke checks passed', description: 'HTTP checks and worker probes returned healthy results.', status: 'passed', tone: 'success' as const, createdAt: '2026-06-10', meta: '3 checks' },
-  { id: 'approval', phase: 'Governance', title: 'Approval required', description: 'Budget policy requires reviewer sign-off before public promotion.', status: 'waiting', tone: 'warning' as const, createdAt: '2026-06-10', meta: 'policy: budget-threshold' },
-];
-const phases = [
-  { key: 'research', label: 'Research', description: 'Collect context before implementation.', state: 'complete', tone: 'success' },
-  { key: 'implementation', label: 'Implementation', description: 'Ship the planned change.', state: 'active', tone: 'info' },
-  { key: 'verification', label: 'Verification', description: 'Run tests and probes.', state: 'waiting', tone: 'warning' },
-];
-const events = [
-  { phase: 'research', category: 'context', title: 'Repository context collected', description: 'Core templates and runtime constraints were indexed.', state: 'complete', tone: 'success', timestamp: '2026-06-10', meta: '2 repositories' },
-  { phase: 'implementation', category: 'execution', title: 'Worker deployment prepared', description: 'Queue bindings and release notes are staged.', state: 'active', tone: 'info', timestamp: '2026-06-10', repositoryRefs: ['treeseed/market'] },
-];
-const repositories = [
-  { owner: 'treeseed', name: 'market', role: 'application', status: 'connected', description: 'Market UI and launch workflow.', tone: 'success', href: '/displays/repository-context-panel' },
-  { owner: 'treeseed', name: 'core', role: 'content', status: 'indexed', description: 'Docs and site components.', tone: 'info' },
-];
-const capacity = [
-  { title: 'Cloudflare Workers', description: 'Daily request budget remains within threshold.', meta: 'capacity', tone: 'success' },
-  { title: 'LLM budget', description: 'Generation quota needs review before next launch.', meta: 'budget', tone: 'warning' },
-];
-const diagnostics = [
-  { id: 'capacity-region', title: 'Region routing', description: 'Primary region iad-1 is healthy.', meta: 'capacity', tone: 'success' },
-  { id: 'policy-budget', title: 'Budget policy', description: 'Approval needed above the configured threshold.', meta: 'governance', tone: 'warning' },
-];
-const seeds = [
-  { title: 'Team defaults seed', description: 'Creates default roles and operating policies.', meta: 'ready', tone: 'success', href: '/displays/seed-operations-panel' },
-  { title: 'Knowledge starter pack', description: 'Loads initial docs and release templates.', meta: 'queued', tone: 'info' },
-];
-const workers = [
-  { title: 'release-coordinator', description: 'Processing deployment timeline events.', meta: 'active', tone: 'success', href: '/displays/worker-queue-panel' },
-  { title: 'knowledge-indexer', description: 'Waiting for artifact generation.', meta: '2 queued', tone: 'warning' },
-];
-const policies = [
-  { title: 'Budget threshold', description: 'Require approval when launch spend exceeds the team limit.', policyType: 'approval', tone: 'warning', href: '/displays/governance-policy-summary' },
-];
-const constraints = [
-  { title: 'Public release window', description: 'Only promote during staffed operating hours.', constraintType: 'schedule', tone: 'info' },
-];
-const approval = { approvalId: 'approval-42', state: 'pending', severity: 'moderate', tone: 'warning' };
-const artifact = {
-  href: '/displays/knowledge-artifact-card',
-  type: 'Runbook',
-  title: 'Market launch runbook',
-  description: 'Generated checklist tying deployment evidence to governance approvals.',
-  state: 'generated',
-  tone: 'success',
-  repositories: ['treeseed/market', 'treeseed/core'],
-  relationships: { approvals: ['approval-42'], workdays: ['2026-06-10'], releases: ['release-17'] },
-  metadata: { projectName: 'Market Console', producedDuring: 'Release 17' },
-};
-const chronicleItems = [
-  { href: '/notes/release-readiness/', title: 'Release readiness review', summary: 'What changed and what still needs human review.', status: 'live', date: new Date('2026-06-10'), meta: 'market-steward', tags: ['release', 'governance'] },
-  { href: '/notes/capacity/', title: 'Capacity policy update', summary: 'Budget and provider routing notes for operators.', status: 'in progress', date: new Date('2026-06-09'), meta: 'ops', tags: ['capacity'] },
-];
-const bookItems = [
-  { href: '/books/operations/', title: 'Operational Continuity', summary: 'Reusable operating model for TreeSeed launches.', meta: 'Book', landingPath: '/operations/', downloadHref: '/books/operations.md' },
-  { href: '/books/governance/', title: 'Governance Playbook', summary: 'Approval and evidence patterns for releases.', meta: 'Book', landingPath: '/governance/', downloadHref: '/books/governance.md' },
-];
-const profileItems = [
-  { href: '/profiles/market-steward/', name: 'Market Steward', summary: 'Owns public launch readiness and release context.', meta: 'Team role', status: 'live', tags: ['operations'] },
-  { href: '/profiles/knowledge-editor/', name: 'Knowledge Editor', summary: 'Maintains generated docs and public artifacts.', meta: 'Contributor', status: 'planned', tags: ['knowledge'] },
-];
-const notes = chronicleItems.map((item, index) => ({
-  id: `note-${index + 1}`,
-  data: { title: item.title, summary: item.summary, status: item.status, date: item.date, author: item.meta, tags: item.tags },
-}));
-const sidebarItems = [
-  { label: 'Overview', href: '/displays/sidebar' },
-  { label: 'Guides', href: '/displays/sidebar/guides', items: [{ label: 'Launch', href: '/displays/sidebar/guides/launch' }] },
-];
+import { accountIdentity, accountProjects, accountSessions, notificationCapabilities, notificationPreferences, personalThemes, navItems, brand, appearance, siteItems, teamOperationItems, surfaceTabItems, actionItems, tableColumns, tableRows, resolvedActions, feedbackContext, helpContext, collectionViewModel, dashboardViewModel, readinessViewModel, distributionViewModel, overlayStatusViewModel, allocationViewModel, workQueueViewModel, activityTimelineViewModel, workspaceViewModel, phases, events, repositories, capacity, diagnostics, seeds, workers, policies, constraints, approval, artifact, chronicleItems, bookItems, profileItems, notes, sidebarItems } from './display-preview-fixtures.ts';
+import { agentLabCommandEndpoints, agentLabCommandPage, agentLabFrame, agentLabMetricDestinations } from './agent-lab-fixtures.ts';
+const labTabs = ['Inbox', 'Decisions', 'Build', 'Direction', 'Results', 'Find'].map((label) => ({ id: label.toLowerCase(), label, href: '#' }));
+const labWorkdays = [{ id: 'current', title: 'Editorial cycle', status: 'running', startedAt: '2026-08-04T13:00:00.000Z', finishedAt: null, href: '#' }, { id: 'prior', title: 'Research cycle', status: 'completed', startedAt: '2026-08-04T10:00:00.000Z', finishedAt: '2026-08-04T12:00:00.000Z', href: '#' }];
+const knowledgeBooks = bookItems.map((book) => ({ ...book, source: { projectId: 'platform', path: `knowledge/${book.slug}/book.yaml`, teamSlug: 'treeseed' } }));
 ---
+
+{entry.id === 'step-navigation' ? <StepNavigation steps={['Choose', 'Configure', 'Review']} current={1} /> : null}
+{entry.id === 'service-wizard' ? <ServiceWizard><section data-service-step="0"><h2 tabindex="-1">Choose your tasks</h2><p>Choose what your team needs.</p></section></ServiceWizard> : null}
+{entry.id === 'connection-fields' ? <ConnectionFields provider={{id: 'github', knowledgePageIds: ['provider.github'], connectionFields: [{key: 'organization', label: 'Organization', required: true}]}} /> : null}
 
 {entry.id === 'action-list' ? <ActionList items={actionItems} /> : null}
 {entry.id === 'badge' ? <div class="primitive-inline"><Badge>Default</Badge><Badge tone="success">Success</Badge><Badge tone="warning">Warning</Badge><Badge tone="danger">Danger</Badge></div> : null}
 {entry.id === 'card' ? <Card eyebrow="Template" title="Monitoring app" description="Interactive card surface." href="/displays/card"><Badge tone="info">Theme-aware</Badge></Card> : null}
 {entry.id === 'resource-card' ? <ResourceCard title="Question record" description="What should the launch team clarify before agent work starts?" href="/displays/resource-card" status="recorded" meta="Project direction" /> : null}
+{entry.id === 'semantic-collection-surface' ? <SemanticCollectionSurface viewId="projects" regionId="projects" presentation="project-operating-cards" items={[{ id: 'platform', title: 'TreeSeed Platform', description: 'Unified control plane and interface foundation.', status: 'active', meta: '2 active agents', href: '/displays/semantic-collection-surface', tone: 'success' }, { id: 'library', title: 'Platform Library', description: 'Repository-native books and knowledge.', status: 'ready', meta: '3 books', tone: 'info' }]} /> : null}
+{entry.id === 'semantic-region-surface' ? <SemanticRegionSurface viewId="agent-builder" regionId="identity" presentation="agent-identity-form"><Panel eyebrow="Identity" title="Architect" description="A rich Agent Builder presentation embedded in a shell-free semantic region." /></SemanticRegionSurface> : null}
+{entry.id === 'agent-atlas-workspace' ? <AgentAtlasHarness client:load /> : null}
+{entry.id === 'agent-lab-monitor' ? <AgentLabMonitor frame={agentLabFrame} csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'agent-lab-chrome' ? <AgentLabChrome frame={agentLabFrame} csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} current="inbox" inboxCount={1} /> : null}
+{entry.id === 'agent-lab-home-surface' ? <AgentLabHomeSurface frame={agentLabFrame} canManage canDiagnose csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'agent-lab-command-surface' ? <AgentLabCommandSurface activeTeam frame={agentLabFrame} surface={agentLabCommandPage} endpoints={agentLabCommandEndpoints} query="" current="inbox" preferences={{ timeZone: 'UTC', realTimeUpdates: false, realTimePollingIntervalSeconds: 5 }} csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'agent-lab-entity-surface' ? <AgentLabEntitySurface activeTeam monitor={agentLabFrame} label="Agents" description="Configured agent classes and their current operating state." items={[{ id: 'agent-demo', title: 'Interface architect', status: 'active' }]} query="" action="#" csrfToken="sandbox-csrf" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'workday-collection-surface' ? <WorkdayCollectionSurface activeTeam monitor={agentLabFrame} canManage csrfToken="sandbox-csrf" action="#" items={[{ id: 'workday-demo', title: 'Interface parity', status: 'running' }]} query="" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'workday-detail-surface' ? <WorkdayDetailSurface activeTeam run={{ id: 'workday-demo', scenarioId: 'interface-parity', status: 'running', startedAt: '2026-09-02T12:00:00.000Z', durationSeconds: 3600 }} events={[]} eventTotal={0} eventHasMore={false} monitor={agentLabFrame} canManage csrfToken="sandbox-csrf" timeZone="UTC" transitionAction="#" metricDestinations={agentLabMetricDestinations} /> : null}
+{entry.id === 'project-command-surface' ? <ProjectCommandSurface activeTeam projectId="platform" project={{ id: 'platform', name: 'TreeSeed Platform', status: 'active', description: 'Unified control plane and interface foundation.' }} summary={{}} agents={{ count: 1 }} capacity={{ status: 'ready', summary: 'Local Codex capacity is available.' }} releases={{ status: 'staging' }} repository={{ owner: 'treeseed-ai', name: 'platform' }} approvals={[]} /> : null}
+{entry.id === 'project-agents-surface' ? <ProjectAgentsSurface projectId="platform" project={{ id: 'platform', name: 'TreeSeed Platform' }} agents={[{ id: 'interface-architect', displayName: 'Interface architect', description: 'Maintains cross-renderer parity.', status: 'active' }]} runs={[{ agentClassId: 'interface-architect', status: 'succeeded' }]} /> : null}
+{entry.id === 'agent-studio-surface' ? <AgentStudioSurface projectId="platform" agent={{ id: 'interface-architect', name: 'Interface architect', slug: 'interface-architect', handler: 'codex', activityProfile: 'implementation', planningEnabled: true, actingEnabled: true }} runs={[]} fallbacks={[]} audits={[]} timeZone="UTC" /> : null}
+{entry.id === 'knowledge-workbench-surface' ? <KnowledgeWorkbenchSurface team={{ id: 'team-demo', name: 'TreeSeed' }} sections={[{ id: 'library', label: 'Library', href: '#', active: true }]} view="library" retryHref="#" accessUnavailable={false} canRead requestedUnauthorizedControl={false} reviewsUnavailable={false} reviews={[]} packsUnavailable={false} books={knowledgeBooks} collections={[]} builds={[]} selectedProjectId="" sourcePath="" sourceSha="" formValues={{}} canManageBooks lifecycleUnavailable={false} projects={[]} projectItems={[]} libraryCatalog={{ books: knowledgeBooks, pages: [] }} libraryUnavailable={false} csrfToken="catalog" timeZone="UTC" /> : null}
+{entry.id === 'service-connection-create-surface' ? <ServiceConnectionCreateSurface team={{ id: 'team-demo' }} canManage provider={undefined} providers={[{ id: 'github', label: 'GitHub', description: 'Repository and workflow provider.', capabilities: [{ label: 'Repositories', status: 'available' }] }]} csrfToken="catalog" sections={[{ id: 'connections', label: 'Connections', href: '#', active: true }]} /> : null}
 {entry.id === 'readiness-summary' ? <ReadinessSummary viewModel={readinessViewModel} /> : null}
+{entry.id === 'repository-connection-panel' ? <RepositoryConnectionPanel topology={{ contentRepository: { local: { path: '.' } } }} candidates={[{ value: 'connection|binding|authority', label: 'GitHub · TreeSeed', status: 'ready' }]} csrfToken="catalog" action="#" /> : null}
+{entry.id === 'provider-authority-panel' ? <ProviderAuthorityPanel kind="repository" teamId="team_demo" connectionId="connection_demo" csrfToken="catalog" status="ready" accountLogin="treeseed-ai" installationId="installation_demo" permissions={['Metadata: read', 'Contents: read and write']} /> : null}
+{entry.id === 'workflow-definition-panel' ? <WorkflowDefinitionPanel action="#" csrfToken="catalog" repositoryBindingId="repository_demo" workflowBindingId="workflow_demo" /> : null}
+{entry.id === 'workflow-configuration-panel' ? <WorkflowConfigurationPanel projectId="project_demo" repositoryBindingId="repository_demo" secretBindingId="secret_demo" variableBindingId="variable_demo" csrfToken="catalog" /> : null}
+{entry.id === 'workflow-execution-panel' ? <WorkflowExecutionPanel projectId="project_demo" csrfToken="catalog" sourceSha={'a'.repeat(40)} canOperate timeZone="UTC" definition={{ id: 'operation_demo', workflowId: '.github/workflows/remote-operation.yml', refPolicy: ['refs/heads/main'], allowedInputs: { target: { required: true, maximumLength: 40 } }, requiredSecrets: [{ name: 'DEPLOY_TOKEN', scope: 'repository', required: true }], requiredVariables: [{ name: 'REGION', scope: 'repository', required: true }], actorPolicy: ['user', 'capacity_provider'], modePolicy: ['operator', 'acting'] }} runs={[{ id: 'run_demo', operationId: 'operation_demo', ref: 'refs/heads/main', sourceSha: 'a'.repeat(40), status: 'completed', createdAt: '2026-08-01T12:00:00.000Z', artifacts: [] }]} /> : null}
+{entry.id === 'provider-mark' ? <div class="primitive-inline"><ProviderMark provider="github" label="GitHub" size="lg" /><ProviderMark provider="cloudflare" label="Cloudflare" size="lg" /><ProviderMark provider="railway" label="Railway" size="lg" /></div> : null}
+{entry.id === 'provider-card' ? <ProviderCard provider="github" label="GitHub" description="Continuity Studio organization" status="Ready" statusTone="success">Managed OpenBao</ProviderCard> : null}
+{entry.id === 'capability-selector' ? <CapabilitySelector capabilities={[{ type: 'repository-hosting', label: 'Repository hosting', description: 'Host project source repositories.', checked: true }, { type: 'workflow-execution', label: 'Workflow execution', description: 'Run authorized automation workflows.' }, { type: 'artifact-hosting', label: 'Artifact hosting', description: 'Store immutable build artifacts.', status: 'planned' }]} /> : null}
+{entry.id === 'credential-field' ? <CredentialField name="catalog-installation-token" label="Installation token" description="Used only for read-only connection validation." sensitive required /> : null}
+{entry.id === 'permission-checklist' ? <PermissionChecklist permissions={['Read organization metadata', 'Read repository metadata', 'Read workflow status']} /> : null}
 {entry.id === 'distribution-summary' ? <DistributionSummary viewModel={distributionViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'overlay-status' ? <OverlayStatus viewModel={overlayStatusViewModel} /> : null}
 {entry.id === 'allocation-panel' ? <AllocationPanel viewModel={allocationViewModel} /> : null}
@@ -455,35 +246,55 @@ const sidebarItems = [
 {entry.id === 'allocation-state-legend' ? <AllocationStateLegend /> : null}
 {entry.id === 'work-queue-summary' ? <WorkQueueSummary viewModel={workQueueViewModel} /> : null}
 {entry.id === 'activity-timeline' ? <ActivityTimeline viewModel={activityTimelineViewModel} /> : null}
+{entry.id === 'entity-collection' ? <EntityCollection items={[{ id: 'assignment-1', title: 'Review Guide evidence', description: 'Planning assignment', status: 'running', projectName: 'TreeSeed Guide', activityProfile: 'reviewing' }, { id: 'assignment-2', title: 'Estimate editorial work', description: 'Capacity estimate', status: 'completed', projectName: 'TreeSeed Guide', activityProfile: 'estimating' }]} /> : null}
+{entry.id === 'entity-filter-toolbar' ? <EntityFilterToolbar query="guide" status="running" action="/displays/entity-filter-toolbar" /> : null}
 {entry.id === 'data-table' ? <DataTable caption="DataTable preview" columns={tableColumns.slice(0, 3)} rows={[{ name: 'Monitoring Console', type: 'Template', status: 'Published' }, { name: 'Capacity Diagnostics', type: 'Panel', status: 'Draft' }, { name: 'Knowledge Pack', type: 'Artifact', status: 'Ready' }]} /> : null}
+{entry.id === 'responsive-table' ? <ResponsiveTable caption="Team members"><thead><tr><th>Member</th><th>Role</th></tr></thead><tbody><tr><td data-label="Member">Ada Lovelace</td><td data-label="Role">Owner</td></tr><tr><td data-label="Member">Grace Hopper</td><td data-label="Role">Reviewer</td></tr></tbody></ResponsiveTable> : null}
+{entry.id === 'disclosure-list' ? <DisclosureList title="Project lead" description="Leads projects and non-owner membership." items={[{ label: 'Create projects', description: 'Create and configure team projects.' }, { label: 'Manage workstreams', description: 'Organize and advance project work.' }]} open /> : null}
 {entry.id === 'empty-state' ? <EmptyState eyebrow="Empty state" title="No pending approvals" description="Reusable quiet state." actions={[{ label: 'Create approval', href: '/displays/empty-state', variant: 'secondary' }]} /> : null}
+{entry.id === 'inline-confirmation' ? <InlineConfirmation label="Remove member" tone="danger"><p>This member will immediately lose access.</p><button class="ts-button" type="button">Confirm removal</button></InlineConfirmation> : null}
+{entry.id === 'oauth-consent' ? <OAuthConsent clientName="TreeSeed Admin" redirectOrigin="https://admin.treeseed.localhost" scopes={['treeseed:read']}><button class="ts-button">Approve</button></OAuthConsent> : null}
+{entry.id === 'device-approval' ? <DeviceApproval userCode="ABCD-EFGH"><button class="ts-button">Approve login</button></DeviceApproval> : null}
+{entry.id === 'confirmation-result' ? <ConfirmationResult status="confirmed" message="Email confirmed. Sign in to continue." /> : null}
+{entry.id === 'session-state' ? <SessionState state="authenticated" label="Signed in" /> : null}
+{entry.id === 'capability-unavailable' ? <CapabilityUnavailable title="Advanced monitoring unavailable" /> : null}
+{entry.id === 'local-companion-link' ? <LocalCompanionLink href="http://127.0.0.1:4173" /> : null}
 {entry.id === 'key-value-list' ? <KeyValueList items={[{ key: 'Region', value: 'iad-1' }, { key: 'Runtime', value: 'Workers' }, { key: 'Mode', value: 'Dark compatible', tone: 'info' }]} /> : null}
-{entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" /> : null}
-{entry.id === 'metric-grid' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
+{entry.id === 'metric-card' ? <MetricCard label="Deployments" value="18" description="Last 24 hours" tone="success" href="/displays/metric-card" /> : null}
+{entry.id === 'metric-grid' || entry.id === 'metric-grid-public-entrypoint' ? <MetricGrid metrics={[{ label: 'Deployments', value: 18, description: 'Last 24 hours', tone: 'success' }, { label: 'Queue depth', value: 42, description: 'Synthetic workload', tone: 'warning' }, { label: 'Open decisions', value: 7, description: 'Needs review', tone: 'info' }]} /> : null}
 {entry.id === 'monitoring-chart' ? <MonitoringChartHarness client:load /> : null}
 {entry.id === 'page-header' ? <PageHeader title="PageHeader preview" description="Title, description, slot, and actions." actions={[{ label: 'Action', href: '/displays/page-header' }]} /> : null}
 {entry.id === 'action-bar' ? <ActionBar actions={resolvedActions} /> : null}
-{entry.id === 'feedback-button' ? <div class="primitive-inline"><FeedbackButton targetId="catalog-feedback" /><FeedbackDialog id="catalog-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'feedback-dialog' ? <div><FeedbackButton targetId="catalog-feedback-dialog" /><FeedbackDialog id="catalog-feedback-dialog" context={feedbackContext} /></div> : null}
+{entry.id === 'discussion-trigger' ? <div class="primitive-inline"><DiscussionTrigger targetId="catalog-discussion-trigger" /><DiscussionPanel id="catalog-discussion-trigger" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /></div> : null}
+{entry.id === 'discussion-body' ? <div data-ts-discussion-container><DiscussionBody id="catalog-discussion-body" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions' }} /></div> : null}
+{entry.id === 'discussion-panel' ? <div><DiscussionTrigger targetId="catalog-discussion-panel" /><DiscussionPanel id="catalog-discussion-panel" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /></div> : null}
+{entry.id === 'discussion-workspace' ? <DiscussionWorkspace id="catalog-discussion-workspace" context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions', agents: [{ slug: 'reviewer', name: 'Reviewer' }] }} /> : null}
+{entry.id === 'team-chat-workspace' ? <TeamChatWorkspace context={{ teamId: 'team-demo', projectId: 'project-demo', identityLabel: 'Catalog user', endpoint: '/v1/discussions' }} projects={[{ id: 'project-demo', label: 'Platform' }, { id: 'project-ui', label: 'UI' }]} activeProjectId="project-demo" /> : null}
+{entry.id === 'core-workspace-navigation' ? <CoreWorkspaceNavigation current="team" teamHref="/displays/team-viewer" /> : null}
+{entry.id === 'team-viewer' ? <TeamViewer name="TreeSeed" handle="treeseed" description="Platform, packages, products, and agent operations." metrics={[{ label: 'Projects', value: 2 }, { label: 'Open decisions', value: 3 }]} projects={[{ id: 'platform', title: 'Platform', description: 'Public installer and portfolio integration workspace.', status: 'active' }, { id: 'ui', title: 'UI', description: 'Renderer-neutral semantics and reusable presentation.', status: 'active' }]} resources={[{ title: 'Knowledge', description: 'Published team knowledge.', status: 'Available' }]} activity={[]} actions={[{ label: 'Open projects', href: '/displays/team-viewer', variant: 'primary' }]} /> : null}
+{entry.id === 'feedback-trigger' ? <div class="primitive-inline"><FeedbackTrigger targetId="catalog-feedback" /><FeedbackPanel id="catalog-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'feedback-panel' ? <div><FeedbackTrigger targetId="catalog-feedback-panel" /><FeedbackPanel id="catalog-feedback-panel" context={feedbackContext} /></div> : null}
 {entry.id === 'feedback-redaction-boundary' ? <p>Public value <FeedbackRedactionBoundary reason="secret">secret-token-preview</FeedbackRedactionBoundary></p> : null}
-{entry.id === 'help-button' ? <div class="primitive-inline"><HelpButton targetId="catalog-help" /><HelpDrawer id="catalog-help" context={helpContext} feedbackTargetId="catalog-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'help-drawer' ? <div class="primitive-inline"><HelpButton targetId="catalog-help-drawer" /><HelpDrawer id="catalog-help-drawer" context={helpContext} feedbackTargetId="catalog-help-drawer-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-help-drawer-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'help-popover' ? <HelpPopover context={helpContext} /> : null}
-{entry.id === 'contextual-help-panel' ? <div><ContextualHelpPanel context={helpContext} feedbackTargetId="catalog-contextual-help-feedback" feedbackContext={feedbackContext} /><FeedbackDialog id="catalog-contextual-help-feedback" context={feedbackContext} /></div> : null}
-{entry.id === 'help-topic-link' ? <HelpTopicLink topic={helpContext.relatedDocs[0]} /> : null}
-{entry.id === 'help-action-list' ? <HelpActionList actions={resolvedActions} /> : null}
+{entry.id === 'toast-region' ? <div><p>Notifications from enhanced forms appear in this global region.</p><ToastRegion /></div> : null}
+{entry.id === 'help-trigger' ? <div class="primitive-inline"><HelpTrigger targetId="catalog-help" knowledgePageId="questions" /><HelpDialog id="catalog-help" context={helpContext} feedbackTargetId="catalog-help-feedback" feedbackContext={feedbackContext} /><FeedbackPanel id="catalog-help-feedback" context={feedbackContext} /></div> : null}
+{entry.id === 'help-dialog' ? <div class="primitive-inline"><HelpTrigger targetId="catalog-help-dialog" knowledgePageId="questions" /><HelpDialog id="catalog-help-dialog" context={helpContext} /></div> : null}
+{entry.id === 'help-article' ? <HelpArticle page={helpContext.knowledgePages[0]} /> : null}
+{entry.id === 'help-knowledge-navigation' ? <HelpKnowledgeNavigation pages={helpContext.relatedDocs} currentKnowledgePageId="questions" targetId="catalog-help" /> : null}
+{entry.id === 'help-search' ? <HelpSearch placeholder="Search help" /> : null}
 {entry.id === 'permission-boundary' ? <PermissionBoundary state="disabledWithReason" title="Read-only context" remediation="Create access is unavailable in this preview."><Panel title="Allowed content"><p>This slot renders when permission is allowed or read-only.</p></Panel></PermissionBoundary> : null}
 {entry.id === 'panel' ? <Panel title="Panel preview" description="Header, actions, and body."><p>Panel body content sized like an application section.</p></Panel> : null}
 {entry.id === 'project-activity-chart' ? <ProjectActivityChartHarness client:load /> : null}
 {entry.id === 'status-pill' ? <div class="primitive-inline"><StatusPill tone="success">Healthy</StatusPill><StatusPill tone="warning">Delayed</StatusPill><StatusPill tone="danger">Blocked</StatusPill></div> : null}
+{entry.id === 'timestamp' ? <Timestamp value="2026-07-26T18:30:00.000Z" timeZone="America/New_York" /> : null}
 {entry.id === 'theme-preview-swatch' ? <ThemePreviewSwatch swatches={['#245b47', '#d8efe2', '#f2b84b', '#273142']} label="Theme preview swatch" /> : null}
 {entry.id === 'theme-script' ? <div><ThemeScript defaultScheme="fern" defaultMode="system" includeCss={false} /><p class="ts-subtle">ThemeScript is mounted for this preview with generated CSS disabled.</p><KeyValueList items={[{ key: 'Scheme', value: 'fern' }, { key: 'Mode', value: 'system' }]} /></div> : null}
 {entry.id === 'shell-header' ? <ShellHeader brand={brand} showMenuButton><Fragment slot="actions"><ShellIconLink href="/" label="Book home" icon="book" /></Fragment></ShellHeader> : null}
-{entry.id === 'site-user-controls' ? <SiteUserControls items={siteItems} currentPath="/knowledge/" appearance={appearance} helpContext={helpContext} feedbackContext={feedbackContext} showHomeLink showManagerLink /> : null}
-{entry.id === 'team-operations-panel' ? <TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }, { label: 'Browse market', href: '/market/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }, { label: 'Sign out', href: '/auth/sign-out', variant: 'ghost' }]}><Fragment slot="teamSelector"><Badge tone="info">Continuity Studio</Badge></Fragment></TeamOperationsPanel> : null}
+{entry.id === 'site-user-controls' ? <SiteUserControls items={siteItems} currentPath="/books/" appearance={appearance} helpContext={helpContext} feedbackContext={feedbackContext} showManagerLink /> : null}
+{entry.id === 'team-operations-panel' ? <TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }, { label: 'Browse market', href: '/market/', variant: 'secondary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary', icon: 'account' }, { label: 'Sign out', action: '/auth/sign-out', method: 'post', hiddenFields: { csrfToken: 'preview' }, variant: 'ghost', icon: 'sign-out', iconOnly: true }]}><Fragment slot="teamSelector"><Badge tone="info">Continuity Studio</Badge></Fragment></TeamOperationsPanel> : null}
 {entry.id === 'team-operations-drawer' ? <div><button class="ts-button" type="button" data-ts-team-drawer-open="catalog-team-drawer">Open drawer</button><TeamOperationsDrawer id="catalog-team-drawer"><TeamOperationsPanel items={teamOperationItems} currentPath="/app/projects" quickActions={[{ label: 'New project', href: '/app/projects/new', variant: 'primary' }]} accountActions={[{ label: 'Account', href: '/app/account', variant: 'secondary' }]} /><SiteUserControls items={siteItems} currentPath="/market/" appearance={appearance} showAppearanceControl={false} /></TeamOperationsDrawer></div> : null}
 {entry.id === 'control-surface' ? <ControlSurface title="Control surface" description="Header, actions, tabs, and body stay stable across app pages."><Fragment slot="actions"><a class="ts-button" href="/displays/control-surface">Action</a></Fragment><Fragment slot="tabs"><SurfaceTabs items={surfaceTabItems} current="overview" label="Control surface tabs" /></Fragment><Panel title="Surface body"><p>Application page content is rendered here.</p></Panel></ControlSurface> : null}
 {entry.id === 'surface-tabs' ? <div class="ts-public-stack"><SurfaceTabs items={surfaceTabItems} current="overview" label="Link tabs" /><div><SurfaceTabs items={surfaceTabItems} current="overview" label="Panel tabs" mode="panels" persist="none" /><section id="surface-tabs-overview"><Panel title="Overview panel"><p>Panel mode supports arrow-key navigation.</p></Panel></section><section id="surface-tabs-activity" hidden><Panel title="Activity panel"><p>Activity content.</p></Panel></section><section id="surface-tabs-settings" hidden><Panel title="Settings panel"><p>Settings content.</p></Panel></section></div></div> : null}
+{entry.id === 'pagination' ? <Pagination current={2} total={5} previousHref="/displays/pagination?page=1" nextHref="/displays/pagination?page=3" /> : null}
 {entry.id === 'bottom-nav' ? <BottomNav items={navItems.slice(0, 3)} currentPath="/displays/bottom-nav" /> : null}
 {entry.id === 'project-header' ? <ProjectHeader title="ProjectHeader" description="Project context header with tabs." badges={['Preview', 'Healthy']} currentPath="/displays/project-header" tabs={[{ label: 'Overview', href: '/displays/project-header' }, { label: 'Agents', href: '/displays/project-header/agents' }]} actions={[{ label: 'Settings', href: '/displays/project-header' }]} /> : null}
 {entry.id === 'public-footer' ? <PublicFooter brandName="TreeSeed UI" summary="Packaged components for TreeSeed applications." groups={[{ label: 'Sandbox', items: [{ label: 'Components', href: '/' }] }, { label: 'Package', items: [{ label: '@treeseed/ui', href: '/' }] }]} /> : null}
@@ -492,29 +303,40 @@ const sidebarItems = [
 {entry.id === 'public-hero-section' ? <PublicHeroSection eyebrow="TreeSeed" title="Public hero section" description="Accent section for public landing pages." actions={[{ label: 'Start', href: '/auth/register', variant: 'primary' }, { label: 'Read', href: '/knowledge/', variant: 'secondary' }]}><p>Hero body content remains stacked, readable, and inspectable.</p></PublicHeroSection> : null}
 {entry.id === 'public-profile-header' ? <PublicProfileHeader eyebrow="Public project" name="Market Console" handle="/p/market-console" meta="Public project profile" description="Public profile shell for shareable users, teams, and projects." /> : null}
 {entry.id === 'public-knowledge-section' ? <PublicKnowledgeSection title="Knowledge hub" description="Public knowledge and book pages use shared single-column sections." actions={[{ label: 'Open book', href: '/books/operations/', variant: 'secondary' }]}><Panel title="Book page"><p>Readable public knowledge content without app operations chrome.</p></Panel></PublicKnowledgeSection> : null}
+{entry.id === 'knowledge-profile-layout' ? <KnowledgeProfileLayout><KnowledgeProfileIdentity slot="identity" kind="team" name="Continuity Studio" handle="continuity" headline="Making resilient systems reusable" expertise={['Operations', 'Governance']} /><KnowledgeProfileStats slot="stats" items={[{ label: 'Templates', value: 12 }, { label: 'Knowledge packs', value: 4 }]} /><KnowledgeProfileCollection title="Published knowledge" items={[{ id: 'template-1', kind: 'template', title: 'Incident learning loop', summary: 'A reusable facilitation workflow.', updatedAt: '2026-07-26T18:30:00.000Z' }]} /><KnowledgeActivityTrail items={[{ id: 'event-1', type: 'template', action: 'Published template', title: 'Incident learning loop', occurredAt: '2026-07-26T18:30:00.000Z' }]} /></KnowledgeProfileLayout> : null}
+{entry.id === 'knowledge-profile-identity' ? <KnowledgeProfileIdentity kind="person" name="Ada Field" handle="ada" headline="Building knowledge people can carry forward" expertise={['Research', 'Systems']} establishedAt="2026-01-15T12:00:00.000Z" /> : null}
+{entry.id === 'knowledge-profile-stats' ? <KnowledgeProfileStats items={[{ label: 'Contributions', value: 28 }, { label: 'Templates', value: 7 }, { label: 'Knowledge packs', value: 3 }, { label: 'Areas of knowledge', value: 4 }]} /> : null}
+{entry.id === 'knowledge-profile-collection' ? <KnowledgeProfileCollection title="Public contributions" items={[{ id: 'pack-1', kind: 'knowledge_pack', title: 'Decision quality field guide', summary: 'A portable set of practices for better group decisions.', version: '1.2.0', updatedAt: '2026-07-26T18:30:00.000Z' }]} /> : null}
+{entry.id === 'knowledge-activity-trail' ? <KnowledgeActivityTrail items={[{ id: 'event-1', type: 'knowledge_pack', action: 'Published knowledge pack', title: 'Decision quality field guide', occurredAt: '2026-07-26T18:30:00.000Z' }]} /> : null}
 {entry.id === 'rail-nav' ? <div class="catalog-nav-preview"><RailNav items={navItems} currentPath="/displays/rail-nav" /></div> : null}
 {entry.id === 'shell-icon-link' ? <div class="primitive-inline"><ShellIconLink href="/" label="Book home" icon="book" /><ShellIconLink href="/" label="Manager" icon="manager" /></div> : null}
+{entry.id === 'shell-icon' ? <div class="primitive-inline"><ShellIcon name="start" /><ShellIcon name="teams" /><ShellIcon name="projects" /><ShellIcon name="capacity" /><ShellIcon name="work" /><ShellIcon name="knowledge" /><ShellIcon name="account" /><ShellIcon name="sign-out" /></div> : null}
 {entry.id === 'top-bar' ? <TopBar brand={brand} actions={[{ label: 'Launch', href: '/displays/top-bar', variant: 'primary' }]} /> : null}
+{entry.id === 'mode-navigation' ? <ModeNavigation mode="command" current="projects" /> : null}
 {entry.id === 'collection-template' ? <CollectionTemplate viewModel={collectionViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'dashboard-template' ? <DashboardTemplate viewModel={dashboardViewModel} actions={resolvedActions} /> : null}
 {entry.id === 'detail-template' ? <DetailTemplate title="Question detail" description="Detail template preview." actions={resolvedActions} metadata={[{ key: 'Status', value: 'Open' }, { key: 'Type', value: 'Research' }]}><Panel title="Question body"><p>What should the launch team clarify before agent work starts?</p></Panel></DetailTemplate> : null}
-{entry.id === 'reader-template' ? <ReaderTemplate title="Knowledge page" description="Reader template preview." actions={resolvedActions} navItems={[{ label: 'Overview', href: '/displays/reader-template', current: true }, { label: 'Next', href: '/displays/reader-template/next' }]}><p>Reader content uses runtime data in later phases while keeping the frame reusable.</p></ReaderTemplate> : null}
 {entry.id === 'settings-template' ? <SettingsTemplate title="Settings" description="Settings template preview." actions={resolvedActions} sections={[{ label: 'General', href: '/displays/settings-template', current: true }, { label: 'Danger', href: '/displays/settings-template#danger' }]}><Panel title="General"><p>Settings content is supplied by route view models.</p></Panel></SettingsTemplate> : null}
 {entry.id === 'workspace-template' ? <WorkspaceTemplate viewModel={workspaceViewModel} actions={resolvedActions} /> : null}
-{entry.id === 'content-field-help' ? <div class="primitive-inline"><span>Title</span><ContentFieldHelp label="Title" purpose="A short, scannable name for the record." example="Capacity launch review" /></div> : null}
 {entry.id === 'app-markdown-field' ? <AppMarkdownField label="Project note" name="project_note" value="## Launch note\n\nCapture the next review step." rows={8} help="Application work surfaces use this Markdown field variant." /> : null}
 {entry.id === 'delete-confirmation-modal' ? <><button class="ts-button" type="button" onclick="window.treeseedDeleteConfirmation?.confirm({ requiredText: 'DELETE', itemName: 'Preview project' })">Open delete modal</button><DeleteConfirmationModal /></> : null}
-{entry.id === 'host-credential-permission-note' ? <HostCredentialPermissionNote hostType="web" /> : null}
-{entry.id === 'launch-requirement-summary' ? <LaunchRequirementSummary templates={templates} defaultTemplateId="template:monitoring-console" /> : null}
 {entry.id === 'plain-table' ? <PlainTable columns={tableColumns} rows={tableRows} interactive pageSize={2} /> : null}
 {entry.id === 'project-control-nav' ? <ProjectControlNav projectId="project-42" current="deploy" /> : null}
 {entry.id === 'related-content-creator' ? <RelatedContentCreator projectId="project-42" parentCollection="objectives" parentSlug="market-launch" parentTitle="Market launch readiness" actions={[{ collection: 'questions', label: 'Question' }, { collection: 'decisions', label: 'Decision' }]} /> : null}
-{entry.id === 'template-host-requirement-picker' ? <TemplateHostRequirementPicker requirement={hostRequirement} selectName="webHost" /> : null}
-{entry.id === 'template-resource-requirement-picker' ? <TemplateResourceRequirementPicker requirement={resourceRequirement} /> : null}
-{entry.id === 'template-secret-requirement-panel' ? <TemplateSecretRequirementPanel requirement={secretRequirement} /> : null}
 {entry.id === 'work-content-nav' ? <WorkContentNav current="objectives" /> : null}
+{entry.id === 'operations-display-container' ? <OperationsDisplayContainer title="Direction" description="Follow assignments and execution-provider activity."><Panel title="Selected workday"><p>Focused operational content occupies this stable display region.</p></Panel><span slot="context">Knowledge and question context</span></OperationsDisplayContainer> : null}
+{entry.id === 'operations-navigator' ? <OperationsNavigator items={labTabs} current="direction" selectedDate="2026-08-04" selectedWorkdayId="current" workdays={labWorkdays} latestHref="#" /> : null}
+{entry.id === 'workday-selector' ? <WorkdaySelector selectedDate="2026-08-04" selectedWorkdayId="current" workdays={labWorkdays} latestHref="#" /> : null}
 {entry.id === 'capacity-diagnostics-panel' ? <CapacityDiagnosticsPanel capacity={capacity} diagnostics={diagnostics} /> : null}
-{entry.id === 'deployment-timeline' ? <DeploymentTimeline items={timelineItems} /> : null}
+{entry.id === 'capacity-meter' ? <CapacityMeter label="Tokens" used={3200} reserved={800} total={10000} unit=" tok" /> : null}
+{entry.id === 'provider-battery-card' ? <ProviderBatteryCard id="provider-demo" name="Local provider" status="available" owner="Seed Cooperative" capabilities={['planning', 'reviewing']} assignments={2} updatedAt="2026-08-07T18:00:00.000Z" timeZone="America/New_York" meters={[{ label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }, { label: 'Concurrency', used: 2, total: 8 }]} /> : null}
+{entry.id === 'capacity-control-room' ? <CapacityControlRoom timeZone="America/New_York" providers={[{ id: 'provider-local', name: 'Local provider', status: 'available', owner: 'Seed Cooperative', capabilities: ['planning', 'reviewing'], assignments: 2, updatedAt: '2026-08-07T18:00:00.000Z', meters: [{ label: 'Tokens', used: 3200, reserved: 800, total: 10000, unit: ' tok' }] }, { id: 'provider-burst', name: 'Burst provider', status: 'offline', owner: 'External capacity', capabilities: ['acting'], assignments: 0, updatedAt: '2026-08-07T17:45:00.000Z', meters: [{ label: 'Concurrency', used: 0, total: 12, tone: 'violet' }] }]} /> : null}
+{entry.id === 'capacity-workspace' ? <CapacityWorkspace teamId="team-demo" timeZone="America/New_York" fleet={[]} providers={[]} providerAlerts={[]} providerRequests={[]} memberships={[]} reservations={[]} usageCount={0} ledgerCount={0} registrationKey={{ status: 'enabled' }} canManage csrfToken="sandbox-csrf" /> : null}
+{entry.id === 'ai-deployment-workspace' && <AiDeploymentWorkspace teamName="Example team" instances={[]} canManage/>}
+{entry.id === 'vault-setup-preview' && <VaultSetupPreview teamName="Example team" sections={[]} canManage/>}
+{entry.id === 'operational-list' && <OperationalList title="Providers" rows={[{id:'example',name:'Example provider',status:'Offline',description:'Waiting for a fresh availability report',href:'#'}]} empty="No providers yet."/>}
+{entry.id === 'management-wizard' && <ManagementWizard steps={['Details','Review']} direct><section data-management-step="Details"><p>Configure the resource.</p></section><section data-management-step="Review" hidden><p>Review before saving.</p></section></ManagementWizard>}
+{entry.id === 'project-portfolio-surface' ? <ProjectPortfolioSurface activeTeam items={[{ id: 'platform', title: 'Platform', description: 'Unified TreeSeed services and interfaces.', status: 'active', tone: 'success', meta: '2 approvals · 4 active agents', href: '#' }]} /> : null}
 {entry.id === 'governance-decision-panel' ? <GovernanceDecisionPanel approval={approval} /> : null}
 {entry.id === 'governance-policy-summary' ? <GovernancePolicySummary policies={policies} constraints={constraints} /> : null}
 {entry.id === 'knowledge-artifact-card' ? <KnowledgeArtifactCard artifact={artifact} /> : null}
@@ -522,7 +344,13 @@ const sidebarItems = [
 {entry.id === 'repository-context-panel' ? <RepositoryContextPanel repositories={repositories} /> : null}
 {entry.id === 'seed-operations-panel' ? <SeedOperationsPanel seeds={seeds} /> : null}
 {entry.id === 'worker-queue-panel' ? <WorkerQueuePanel workers={workers} /> : null}
-{entry.id === 'sensitive-data-unlock' ? <div><SensitiveDataUnlock part="button" /><SensitiveDataUnlock part="modal" /></div> : null}
+{entry.id === 'account-deletion-panel' ? <AccountDeletionPanel blockers={[]} csrfToken="preview-csrf" hasCredential /> : null}
+{entry.id === 'account-identity-settings' ? <AccountIdentitySettings identity={accountIdentity} identityManagementUrl="https://identity.example.test/realms/example/account" csrfToken="preview-csrf" /> : null}
+{entry.id === 'account-time-zone-settings' ? <AccountTimeZoneSettings timeZone="America/New_York" csrfToken="preview-csrf" /> : null}
+{entry.id === 'realtime-experience-settings' ? <RealtimeExperienceSettings enabled intervalSeconds={5} csrfToken="preview-csrf" /> : null}
+{entry.id === 'notification-preference-panel' ? <NotificationPreferencePanel preferences={notificationPreferences} capabilities={notificationCapabilities} projects={accountProjects} csrfToken="preview-csrf" /> : null}
+{entry.id === 'personal-theme-manager' ? <PersonalThemeManager themes={personalThemes} activeScheme="fern" csrfToken="preview-csrf" /> : null}
+{entry.id === 'session-manager' ? <SessionManager sessions={accountSessions} csrfToken="preview-csrf" /> : null}
 {entry.id === 'auth-card' ? <AuthCard title="Sign in" description="Access your TreeSeed workspace." error="Invalid passphrase." notice="Check your inbox for a sign-in link." appearance={{ scheme: 'fern', mode: 'system' }}><ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" /><AuthDivider label="or continue with email" /></AuthCard> : null}
 {entry.id === 'auth-divider' ? <AuthDivider label="or continue with email" /> : null}
 {entry.id === 'provider-button-list' ? <ProviderButtonList providers={[{ id: 'github' }, { id: 'google' }]} returnTo="/app/" /> : null}
@@ -532,7 +360,7 @@ const sidebarItems = [
 {entry.id === 'site-title' ? <SiteTitle siteTitleHref="/" /> : null}
 {entry.id === 'book-font-controls' ? <BookFontControls /> : null}
 {entry.id === 'desktop-sidebar-toggle' ? <div class="primitive-inline"><DesktopSidebarToggle side="left" label="book contents" /><DesktopSidebarToggle side="right" label="page contents" /></div> : null}
-{entry.id === 'download-book' ? <DownloadBook href="/books/operations.md" fileName="operations.md" title="Download operations book" /> : null}
+{entry.id === 'mobile-sidebar-toggle' ? <MobileSidebarToggle controls="catalog-book-sidebar" /> : null}
 {entry.id === 'footer' ? <DocsFooter lastUpdated="2026-06-10" editHref="/edit/docs" previous={{ label: 'Overview', href: '/docs/' }} next={{ label: 'Launch', href: '/docs/launch/' }} /> : null}
 {entry.id === 'header' ? <DocsHeader hasSidebar hasToc showSearch contactHref="/contact/" /> : null}
 {entry.id === 'page-frame' ? <PageFrame hasSidebar sidebarLabel="Docs navigation"><DocsHeader slot="header" hasSidebar /><DocsSidebar slot="sidebar" items={sidebarItems} /><PageTitle title="Docs frame" /><p>PageFrame lays out the docs header, sidebar, main content, and footer host.</p></PageFrame> : null}
@@ -541,6 +369,7 @@ const sidebarItems = [
 {entry.id === 'sidebar' ? <DocsSidebar items={sidebarItems} /> : null}
 {entry.id === 'theme-select' ? <ThemeSelect /> : null}
 {entry.id === 'contact-form' ? <ContactForm status="idle" formsApiBaseUrl="/api/forms" /> : null}
+{entry.id === 'inline-search' ? <InlineSearch action="/displays/inline-search" label="Search members" value="" /> : null}
 {entry.id === 'footer-subscribe-form' ? <FooterSubscribeForm currentPath="/displays/footer-subscribe-form" formsApiBaseUrl="/api/forms" /> : null}
 {entry.id === 'product-card' ? <div class="catalog-grid-preview"><ProductCard slug="monitoring-console" title="Monitoring Console" summary="A launch-ready operations console template." category="Workflow Import" featured publisherName="TreeSeed" templateVersion="1.4.0" priceModel="included" badges={['Workers', 'Governance']} /><ProductCard slug="knowledge-pack" title="Knowledge Pack" summary="Reusable public documentation package." category="Knowledge Import" publisherName="TreeSeed" badges={['Docs']} /></div> : null}
 {entry.id === 'commons-proposal-card' ? <CommonsProposalCard proposal={entry.defaultProps.proposal as any} href={entry.defaultProps.href as string} /> : null}
@@ -551,7 +380,18 @@ const sidebarItems = [
 {entry.id === 'commons-decision-timeline' ? <CommonsDecisionTimeline events={entry.defaultProps.events as any[]} /> : null}
 {entry.id === 'commons-delegation-panel' ? <CommonsDelegationPanel delegations={entry.defaultProps.delegations as any[]} /> : null}
 {entry.id === 'commons-steward-decision-panel' ? <CommonsStewardDecisionPanel proposalId={entry.defaultProps.proposalId as string} action={entry.defaultProps.action as string} /> : null}
-{entry.id === 'book-list' ? <BookList items={bookItems} /> : null}
+{entry.id === 'book-list' || entry.id === 'book-list-public-entrypoint' ? <BookList items={bookItems} /> : null}
+{entry.id === 'knowledge-project-collection' ? <KnowledgeProjectCollection projects={[{ id: 'project-1', name: 'Platform guide', description: 'Repository-native product knowledge.', repositoryReady: true, bookCount: 3, draftCount: 1 }, { id: 'project-2', name: 'Operations handbook', repositoryReady: false }]} /> : null}
+{entry.id === 'knowledge-library-surface' ? <KnowledgeLibrarySurface teamId="team-demo" books={[{ id: 'book-preview', slug: 'platform-guide', title: 'Platform guide', summary: 'Shared operational knowledge.', status: 'published', visibility: 'public', topics: ['platform'], audience: ['operators'], source: { projectId: 'project-preview', path: 'knowledge/platform-guide/book.yaml', teamSlug: 'treeseed' } }]} pages={[{ id: 'page-start', bookId: 'book-preview', slug: 'start', title: 'Start here', summary: 'Understand the platform.', status: 'published', visibility: 'public', order: 1, source: { projectId: 'project-preview', path: 'knowledge/platform-guide/start.yaml' } }]} projects={[{ id: 'project-preview', name: 'Platform', repositoryReady: true, bookCount: 1, draftCount: 0 }]} /> : null}
+{entry.id === 'service-connection-workspace' ? <ServiceConnectionWorkspace teamName="TreeSeed" services={[{ id: 'service-demo', providerId: 'github', displayName: 'TreeSeed GitHub', status: 'active', capabilities: [{ capabilityType: 'repository', status: 'configured' }], lastValidatedAt: '2026-09-01T12:00:00.000Z' }]} providerCatalog={[{ id: 'github', label: 'GitHub', capabilities: [{ type: 'repository', label: 'Repositories' }] }]} sections={[{ id: 'connections', label: 'Connections', href: '#', active: true }]} canManage /> : null}
+{entry.id === 'knowledge-authoring-form' ? <KnowledgeAuthoringForm action="/v1/knowledge/workspaces/workspace-preview/content" csrfToken="sandbox-csrf" workspaceId="workspace-preview" version={1} values={{ kind: 'page', id: 'knowledge.preview', bookId: 'book.preview', slug: 'getting-started', title: 'Getting started', summary: 'A safe authoring preview.', visibility: 'team', status: 'draft', tags: 'guidance, authoring', bodyMarkdown: '## Start here\n\nWrite and review repository-native knowledge.' }} /> : null}
+{entry.id === 'knowledge-relation-picker' ? <KnowledgeRelationPicker client:load initialIds={['account.identity']} searchEndpoint="/api/catalog/knowledge-search" /> : null}
+{entry.id === 'knowledge-review-collection' ? <KnowledgeReviewCollection action="/v1/knowledge/reviews" csrfToken="sandbox-csrf" timeZone="America/New_York" reviews={[{ id: 'review-1', workspaceId: 'workspace-preview', status: 'open', branchName: 'knowledge/operation-preview', commitSha: '7f2c4d9b18a0', createdAt: '2026-07-31T14:00:00.000Z' }]} /> : null}
+{entry.id === 'knowledge-outline' ? <KnowledgeOutline books={[{ id: 'book-preview', title: 'Platform guide', summary: 'Shared operational knowledge.', status: 'published', pages: [{ id: 'page-start', bookId: 'book-preview', slug: 'start', title: 'Start here', summary: 'Understand the platform knowledge workflow.', status: 'published', visibility: 'team', order: 1, manageHref: '/displays/knowledge-outline' }, { id: 'page-review', bookId: 'book-preview', slug: 'review', title: 'Review changes', summary: 'Inspect and approve a source-backed revision.', status: 'review', visibility: 'team', order: 2 }] }]} /> : null}
+{entry.id === 'knowledge-outline-branch' ? <KnowledgeOutlineBranch pages={[{ id: 'page-start', title: 'Start here', summary: 'Understand the platform knowledge workflow.', status: 'published', visibility: 'team', order: 1, manageHref: '/displays/knowledge-outline-branch' }, { id: 'page-review', parentId: 'page-start', title: 'Review changes', summary: 'Inspect and approve a source-backed revision.', status: 'review', visibility: 'team', order: 2 }]} /> : null}
+{entry.id === 'knowledge-pack-workbench' ? <KnowledgePackWorkbench action="/displays/knowledge-pack-workbench" csrfToken="sandbox-csrf" timeZone="America/New_York" books={[{ id: 'book-preview', title: 'Platform guide', summary: 'Shared operational knowledge.', status: 'published', packPolicy: 'allowed', source: { projectId: 'project-preview' } }]} collections={[{ id: 'collection-preview', name: 'Platform library', summary: 'Saved book selection.', bookIds: ['book-preview'], version: 1, managed: true }]} builds={[]} /> : null}
+{entry.id === 'knowledge-lifecycle-panel' ? <KnowledgeLifecyclePanel action="/displays/knowledge-lifecycle-panel" csrfToken="sandbox-csrf" projectId="project-preview" path="docs/src/content/knowledge/book-preview/start.md" expectedSha="7f2c4d9b18a0" kind="page" status="published" dependencies={{ backlinks: [{ id: 'page-reference', title: 'Related guidance' }] }} /> : null}
+{entry.id === 'knowledge-publication-status' ? <KnowledgePublicationStatus timeZone="America/New_York" status={{ manifest: { revision: '7f2c4d9b18a0', generatedAt: '2026-08-01T12:00:00.000Z', entryCount: 12, projects: [{ projectId: 'project-preview', commitSha: '7f2c4d9b18a0', graphRevision: 'graph-42' }] } }} /> : null}
 {entry.id === 'ctasection' ? <CTASection title="Build a governed launch path" body="Use reusable components to keep market and docs experiences consistent." primaryHref="/displays/ctasection" primaryLabel="Open workflow" secondaryHref="/" secondaryLabel="All components" /> : null}
 {entry.id === 'chronicle-list' ? <ChronicleList items={chronicleItems} /> : null}
 {entry.id === 'hero' ? <Hero><span slot="eyebrow">TreeSeed UI</span><h2 slot="title">Reusable surfaces for launch operations</h2><p slot="body">The hero component presents public site entry points with supporting actions and context.</p><a slot="actions" class="ts-button" href="/displays/hero">Open component</a><Panel slot="aside" title="Launch state"><KeyValueList items={[{ key: 'Status', value: 'Ready' }, { key: 'Updated', value: '2026-06-10' }]} /></Panel></Hero> : null}

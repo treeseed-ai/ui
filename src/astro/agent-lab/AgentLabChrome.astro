@@ -1,0 +1,34 @@
+---
+import '@treeseed/ui/styles/operations-monitor.css';
+import '@treeseed/ui/styles/command-center.css';
+import OperationsNavigator from '../operating/navigation/OperationsNavigator.astro';
+import AgentLabMonitor from './AgentLabMonitor.astro';
+
+type Surface = 'inbox' | 'decisions' | 'build' | 'direction' | 'results' | 'find' | '';
+interface Props { frame: any; csrfToken: string; metricDestinations: Record<string, string>; current?: Surface; inboxCount?: number }
+const { frame, csrfToken, metricDestinations, current = '', inboxCount = 0 } = Astro.props as Props;
+const context = frame.overview.workdayContext;
+const selection = new URLSearchParams();
+if (context.selectedDate) selection.set('date', context.selectedDate);
+if (context.selectedWorkdayId) selection.set('workday', context.selectedWorkdayId);
+const suffix = selection.size ? `?${selection}` : '';
+const tabs = [
+	{ id: 'inbox', label: 'Inbox', href: `/app/work/inbox${suffix}`, count: inboxCount || undefined },
+	{ id: 'decisions', label: 'Decisions', href: `/app/work/decisions${suffix}` },
+	{ id: 'build', label: 'Build', href: `/app/work/build${suffix}` },
+	{ id: 'direction', label: 'Direction', href: `/app/work/direction${suffix}` },
+	{ id: 'results', label: 'Results', href: `/app/work/results${suffix}` },
+	{ id: 'find', label: 'Find', href: `/app/work/find${suffix}` },
+];
+const workdays = context.workdays.map((workday: any) => {
+	const params = new URLSearchParams(Astro.url.searchParams); params.delete('cursor');
+	params.set('date', context.selectedDate); params.set('workday', workday.id);
+	return { ...workday, href: `${Astro.url.pathname}?${params}` };
+});
+const latest = new URLSearchParams(Astro.url.searchParams); latest.delete('date'); latest.delete('workday'); latest.delete('cursor');
+const latestHref = `${Astro.url.pathname}${latest.size ? `?${latest}` : ''}`;
+---
+<div class="ts-agent-lab-chrome" data-ts-agent-lab-chrome>
+	<AgentLabMonitor {frame} {csrfToken} {metricDestinations} />
+	<OperationsNavigator items={tabs} {current} selectedDate={context.selectedDate} selectedWorkdayId={context.selectedWorkdayId} {workdays} {latestHref} />
+</div>

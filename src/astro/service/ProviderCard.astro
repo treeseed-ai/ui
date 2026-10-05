@@ -1,0 +1,38 @@
+---
+import Badge from '../data/Badge.astro';
+import Card from '../surface/Card.astro';
+import ProviderMark from './ProviderMark.astro';
+
+interface Props {
+	provider: string;
+	label: string;
+	description: string;
+	href?: string;
+	status?: string;
+	statusTone?: 'default' | 'muted' | 'success' | 'warning' | 'danger' | 'info';
+	emphasis?: 'default' | 'strong';
+}
+
+const {
+	provider,
+	label,
+	description,
+	href,
+	status,
+	statusTone = 'muted',
+	emphasis = 'strong',
+} = Astro.props as Props;
+---
+
+<Card href={href} class="ts-provider-card" emphasis={emphasis} interactive={Boolean(href)}>
+	<div class="ts-provider-card__identity">
+		<ProviderMark provider={provider} label={label} size="lg" />
+		<div>
+			<h3 class="ts-provider-card__title">{label}</h3>
+			<p>{description}</p>
+		</div>
+		{status ? <Badge tone={statusTone} size="sm">{status}</Badge> : null}
+	</div>
+	<div class="ts-provider-card__body"><slot /></div>
+	{Astro.slots.has('actions') ? <div class="ts-provider-card__actions"><slot name="actions" /></div> : null}
+</Card>

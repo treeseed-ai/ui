@@ -10,6 +10,7 @@ interface Props {
 	viewModel: CollectionViewModel;
 	actions?: ResolvedAction[];
 	mode?: 'table' | 'cards';
+	renderDefault?: boolean;
 	class?: string;
 }
 
@@ -17,6 +18,7 @@ const {
 	viewModel,
 	actions = [],
 	mode = viewModel.resources?.length ? 'cards' : 'table',
+	renderDefault = true,
 	class: className,
 } = Astro.props as Props;
 ---
@@ -48,7 +50,7 @@ const {
 		</form>
 	) : null}
 	<slot name="beforeContent" />
-	{mode === 'cards' && viewModel.resources?.length ? (
+	{!renderDefault ? null : mode === 'cards' && viewModel.resources?.length ? (
 		<div class="ts-resource-grid">
 			{viewModel.resources.map((resource) => (
 				<ResourceCard

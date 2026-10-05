@@ -1,0 +1,11 @@
+---
+import Timestamp from '../../data/Timestamp.astro';
+import FeedbackStatusBadge from './FeedbackStatusBadge.astro';
+interface Event { id: string; toStatus: 'new'|'triaged'|'in_progress'|'resolved'; note?: string; actorId: string; actorLabel?: string; createdAt: string; }
+interface Props { events: Event[]; timeZone: string; initialCreatedAt: string; }
+const { events, timeZone, initialCreatedAt } = Astro.props as Props;
+---
+<ol class="ts-feedback-timeline">
+	<li><span class="ts-feedback-timeline__marker"></span><div><strong>Submitted</strong><Timestamp value={initialCreatedAt} timeZone={timeZone} /></div></li>
+	{events.map((event) => <li><span class="ts-feedback-timeline__marker"></span><div><FeedbackStatusBadge status={event.toStatus} /><span>by {event.actorLabel ?? `administrator ${event.actorId}`}</span><Timestamp value={event.createdAt} timeZone={timeZone} />{event.note ? <p>{event.note}</p> : null}</div></li>)}
+</ol>

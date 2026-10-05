@@ -1,0 +1,138 @@
+---
+import Button from '../../forms/actions/Button.astro';
+import ShellIcon from '../navigation/ShellIcon.astro';
+import type { ButtonAction, ShellNavItem } from '../../types.ts';
+
+interface Props {
+	items: ShellNavItem[];
+	currentPath: string;
+	quickActions?: ButtonAction[];
+	accountActions?: ButtonAction[];
+	label?: string;
+	class?: string;
+	id?: string;
+	collapsible?: boolean;
+}
+
+const {
+	items,
+	currentPath,
+	quickActions = [],
+	accountActions = [],
+	label = 'Team links',
+	class: className,
+	id,
+	collapsible = false,
+} = Astro.props as Props;
+
+function normalizePath(path: string) {
+	if (path.length <= 1) return path;
+	return path.replace(/\/+$/u, '');
+}
+
+function isCurrentPath(href: string) {
+	const current = normalizePath(currentPath);
+	const target = normalizePath(href);
+	if (target === '/') return current === '/';
+	if (target === '/app') return current === '/app';
+	return current === target || current.startsWith(`${target}/`);
+}
+---
+
+<aside id={id} class:list={['ts-team-operations', className]} aria-label={label}>
+	<div class="ts-team-operations__primary">
+		<div class="ts-team-operations__selector">
+			<slot name="teamSelector" />
+		</div>
+		<nav class="ts-team-operations__nav" aria-label={label}>
+			{items.map((item) => (
+				<a
+					class="ts-team-operations__link"
+					href={item.href}
+					aria-label={item.ariaLabel ?? item.label}
+					aria-current={isCurrentPath(item.href) ? 'page' : undefined}
+					title={item.label}
+				>
+					<ShellIcon name={item.icon ?? 'link'} />
+					<span class="ts-team-operations__label">{item.label}</span>
+				</a>
+			))}
+		</nav>
+	</div>
+	<div class="ts-team-operations__footer">
+		{quickActions.length > 0 || accountActions.length > 0 ? <p class="ts-team-operations__eyebrow">Identity</p> : null}
+		{quickActions.length > 0 ? (
+			<div class="ts-team-operations__actions">
+				{quickActions.map((action) => (
+					<Button
+						href={action.href}
+						type={action.type}
+						variant={action.variant ?? 'secondary'}
+						ariaLabel={action.ariaLabel ?? action.label}
+						title={action.label}
+						disabled={action.disabled}
+						reload={action.reload}
+						size="sm"
+						class:list={['ts-team-operations__action', action.iconOnly && 'ts-team-operations__action--icon-only']}
+					>
+						<ShellIcon name={action.icon ?? 'action'} />
+						<span class="ts-team-operations__label">{action.label}</span>
+					</Button>
+				))}
+			</div>
+		) : null}
+		{accountActions.length > 0 ? (
+			<div class="ts-team-operations__account">
+				{accountActions.map((action) => (
+					action.method === 'post' && action.action ? (
+						<form method="post" action={action.action} data-ts-submit="enhanced">
+							{Object.entries(action.hiddenFields ?? {}).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
+							<Button
+								type="submit"
+								variant={action.variant ?? 'secondary'}
+								ariaLabel={action.ariaLabel ?? action.label}
+								title={action.label}
+								disabled={action.disabled}
+								size="sm"
+								class:list={['ts-team-operations__action', action.iconOnly && 'ts-team-operations__action--icon-only']}
+							>
+								<ShellIcon name={action.icon ?? 'action'} />
+								<span class="ts-team-operations__label">{action.label}</span>
+							</Button>
+						</form>
+					) : (
+						<Button
+							href={action.href}
+							type={action.type}
+							variant={action.variant ?? 'secondary'}
+							ariaLabel={action.ariaLabel ?? action.label}
+							title={action.label}
+							disabled={action.disabled}
+							reload={action.reload}
+							size="sm"
+							class:list={['ts-team-operations__action', action.iconOnly && 'ts-team-operations__action--icon-only']}
+						>
+							<ShellIcon name={action.icon ?? 'action'} />
+							<span class="ts-team-operations__label">{action.label}</span>
+						</Button>
+					)
+				))}
+			</div>
+		) : null}
+		{collapsible ? (
+			<button
+				class="ts-team-operations__toggle"
+				type="button"
+				aria-controls={id}
+				aria-expanded="true"
+				aria-label="Collapse sidebar"
+				title="Collapse sidebar"
+				data-ts-app-sidebar-toggle
+			>
+				<span data-ts-sidebar-icon="collapse"><ShellIcon name="collapse" /></span>
+				<span data-ts-sidebar-icon="expand"><ShellIcon name="expand" /></span>
+				<span class="ts-team-operations__label" data-ts-sidebar-toggle-label>Collapse sidebar</span>
+			</button>
+		) : null}
+	</div>
+</aside>

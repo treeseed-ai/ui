@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceWizard from '../../../src/astro/service/ServiceWizard.astro';
+---
+<BaseLayout title="Existing connection editor">
+  <ServiceWizard initialStep={1} existing accountReady>
+    <form data-service-settings>
+      <section data-service-step="0" hidden><h2>Choose tasks</h2><div data-service-tasks><input type="checkbox" name="capabilities" /></div></section>
+      <section data-service-step="1"><h2>Connection details</h2><input name="displayName" required value="Existing connection" /></section>
+    </form>
+    <section data-service-step="2" hidden><h2>Connect account</h2></section>
+    <section data-service-step="3" hidden><h2>Disconnect</h2></section>
+  </ServiceWizard>
+</BaseLayout>

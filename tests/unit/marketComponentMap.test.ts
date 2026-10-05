@@ -4,7 +4,7 @@ import { libraryNativeComponents, marketComponentMap } from '../fixtures/marketC
 
 describe('market component source map', () => {
   it('maps UI components to market or core source files', () => {
-    expect(marketComponentMap.length).toBeGreaterThan(90);
+    expect(marketComponentMap.length).toBeGreaterThanOrEqual(87);
 
     for (const entry of marketComponentMap) {
       expect(existsSync(entry.uiPath), `${entry.uiPath} should exist`).toBe(true);

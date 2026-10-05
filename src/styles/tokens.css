@@ -9,6 +9,7 @@
 	--ts-color-surface-muted: #e8efe1;
 	--ts-color-surface-raised: #fafcf7;
 	--ts-color-surface-overlay: rgba(255, 255, 255, 0.88);
+	--ts-color-card-surface: color-mix(in srgb, var(--ts-color-accent-soft) 65%, var(--ts-color-surface));
 	--ts-control-background: var(--ts-color-surface);
 
 	--ts-color-text: #1f2a20;
@@ -59,6 +60,9 @@
 	--ts-space-2: 0.5rem;
 	--ts-space-3: 0.75rem;
 	--ts-space-4: 1rem;
+	--ts-space-5: 1.5rem;
+	--ts-space-6: 2rem;
+	--ts-space-7: 3rem;
 	--ts-content-width: 76rem;
 	--ts-reading-width: 78ch;
 	--ts-shell-width: 1200px;

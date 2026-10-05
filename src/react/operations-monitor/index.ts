@@ -1,0 +1,11 @@
+export { default as OperationsMonitorHeader } from './OperationsMonitorHeader.tsx';
+export { AgentActivityGantt } from './AgentActivityGantt.tsx';
+export { LiveAgentActivityGantt } from './LiveAgentActivityGantt.tsx';
+export { MetricHistoryChart } from './MetricHistoryChart.tsx';
+export { MetricHistoryDashboard } from './MetricHistoryDashboard.tsx';
+export { AllocationManagementPanel } from './allocation/AllocationManagementPanel.tsx';
+export { WorkspaceFocusSurface, WorkspaceExpandButton, WorkspaceShrinkButton, WorkspaceOverlayCoordinator, useWorkspaceOverlayCoordinator } from '../workspace-surfaces/index.ts';
+export type * from '../workspace-surfaces/types.ts';
+export { MonitorToggleRail, OperationsMonitorDock, OperationsStatusBar, VitalMetricRail } from './MonitorPrimitives.tsx';
+export { mergeVersioned, useRealtimeResource } from './use-realtime-resource.ts';
+export type * from './types.ts';

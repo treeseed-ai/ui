@@ -1,0 +1,15 @@
+---
+import Timestamp from '../../data/Timestamp.astro';
+import FeedbackStatusBadge from './FeedbackStatusBadge.astro';
+interface Item { id: string; type: string; status: 'new'|'triaged'|'in_progress'|'resolved'; message: string; canonicalPath: string; teamId?: string; teamLabel?: string; submitterLabel?: string; hasScreenshot: boolean; createdAt: string; }
+interface Props { items: Item[]; timeZone: string; }
+const { items, timeZone } = Astro.props as Props;
+const typeLabel = (value: string) => value.replaceAll('_', ' ').replace(/^./u, (letter) => letter.toUpperCase());
+---
+<div class="ts-feedback-collection">
+	<table class="ts-feedback-table">
+		<thead><tr><th scope="col">Feedback</th><th scope="col">Status</th><th scope="col">Context</th><th scope="col">Submitted</th></tr></thead>
+		<tbody>{items.map((item) => <tr><td><a class="ts-feedback-item__title" href={`/app/feedback/${encodeURIComponent(item.id)}`}>{typeLabel(item.type)}</a><p>{item.message}</p><code>{item.id}</code></td><td><FeedbackStatusBadge status={item.status} />{item.hasScreenshot ? <span class="ts-feedback-item__meta">Screenshot</span> : null}</td><td><span>{item.teamLabel ?? (item.teamId ? `Team ${item.teamId}` : 'Personal')} · {item.submitterLabel ?? 'User'}</span><code>{item.canonicalPath}</code></td><td><Timestamp value={item.createdAt} timeZone={timeZone} /></td></tr>)}</tbody>
+	</table>
+	<div class="ts-feedback-cards">{items.map((item) => <article class="ts-feedback-card"><header><FeedbackStatusBadge status={item.status} /><span>{typeLabel(item.type)}</span></header><a href={`/app/feedback/${encodeURIComponent(item.id)}`}>{item.message}</a><code>{item.canonicalPath}</code><footer><Timestamp value={item.createdAt} timeZone={timeZone} />{item.hasScreenshot ? <span>Screenshot</span> : null}</footer></article>)}</div>
+</div>

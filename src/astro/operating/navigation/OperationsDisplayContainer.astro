@@ -1,0 +1,13 @@
+---
+interface Props { eyebrow?: string; title: string; description: string; contextLabel?: string; }
+const { eyebrow = 'Agent Lab', title, description, contextLabel = 'Knowledge context' } = Astro.props as Props;
+---
+
+<section class="ts-operations-display" aria-labelledby="operations-display-title">
+	<header class="ts-operations-display__header">
+		<div><p>{eyebrow}</p><h1 id="operations-display-title">{title}</h1><span>{description}</span></div>
+		<div class="ts-operations-display__actions"><slot name="actions" /></div>
+	</header>
+	<div class="ts-operations-display__body"><slot /></div>
+	<footer class="ts-operations-display__context" aria-label={contextLabel}><slot name="context" /></footer>
+</section>

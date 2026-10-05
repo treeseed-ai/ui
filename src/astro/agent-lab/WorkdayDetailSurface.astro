@@ -1,0 +1,26 @@
+---
+import Button from '../forms/actions/Button.astro';
+import KeyValueList from '../data/KeyValueList.astro';
+import Timestamp from '../data/Timestamp.astro';
+import { ForensicEventExplorer } from '../../react/workspace-surfaces/index.ts';
+import '../../styles/workspace-surfaces.css';
+import OperationsDisplayContainer from '../operating/navigation/OperationsDisplayContainer.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import AgentLabChrome from './AgentLabChrome.astro';
+
+interface Props { activeTeam: boolean; run: any; events: any[]; eventTotal: number; eventHasMore: boolean; monitor: any | null; canManage: boolean; csrfToken: string; timeZone: string; transitionAction: string; metricDestinations: Record<string, string> }
+const { activeTeam, run, events, eventTotal, eventHasMore, monitor, canManage, csrfToken, timeZone, transitionAction, metricDestinations } = Astro.props as Props;
+const text = (...values: unknown[]) => String(values.find((value) => typeof value === 'string' && value.trim()) ?? '');
+const dateValue = (...values: unknown[]) => values.find((value) => typeof value === 'string' && !Number.isNaN(Date.parse(value))) as string | undefined;
+const transitions: Record<string, string[]> = { queued: ['running', 'cancelled', 'failed'], running: ['completed', 'degraded', 'cancelled', 'failed'] };
+---
+<section class="ts-template" aria-label="Workday detail" data-scene="command.workday.detail">
+	{monitor ? <AgentLabChrome frame={monitor} {csrfToken} {metricDestinations} /> : null}
+	{!activeTeam ? <EmptyState title="Choose an active team" description="Workdays are team-scoped." /> : !run.id ? <EmptyState title="Workday not found" description="The run is unavailable or outside the active team." /> : <OperationsDisplayContainer eyebrow={`Workday · ${String(run.status ?? 'unknown')}`} title={text(run.name, run.scenarioId, 'Workday')} description="Inspect the run, durable events, and its legal lifecycle actions.">
+		<Button slot="actions" href="/app/work/workdays" variant="secondary">All workdays</Button>
+		<div class="ts-resource-grid"><Panel eyebrow="Run state" title={String(run.status ?? 'unknown')} description="The control plane remains authoritative for every transition."><KeyValueList items={[{ key: 'Scenario', value: text(run.scenarioId, '—') }, { key: 'Duration', value: run.durationSeconds ? `${run.durationSeconds}s` : 'Bounded by plan' }]} /><details><summary>Technical identifiers</summary><KeyValueList items={[{ key: 'Workday', value: String(run.id) }, { key: 'Provider', value: text(run.providerId, 'Unassigned') }]} /></details>{dateValue(run.startedAt, run.createdAt) ? <p>Started <Timestamp value={dateValue(run.startedAt, run.createdAt)!} {timeZone} /></p> : null}</Panel>
+		<Panel eyebrow="Lifecycle" title="Authorized transitions" description="Disruptive terminal changes require an operator reason.">{canManage ? (transitions[String(run.status)] ?? []).map((status) => <form class="ts-form-stack" method="post" action={transitionAction} data-ts-method="PATCH" data-ts-submit="enhanced" data-ts-form-adapter="json" data-ts-refresh-target='[data-scene="command.workday.detail"]' data-ts-confirm={['cancelled', 'failed'].includes(status) ? `Transition this workday to ${status}?` : undefined} data-ts-success-message={`Workday is now ${status}; the execution field has been refreshed.`}><input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="status" value={status} /><label class="ts-field"><span class="ts-field__label">Reason</span><input class="ts-control" name="reason" required={['cancelled', 'failed', 'degraded'].includes(status)} /></label><Button type="submit" variant={['cancelled', 'failed'].includes(status) ? 'danger' : 'secondary'}>{status[0].toUpperCase() + status.slice(1)}</Button></form>) : <p>Your role can inspect this run but cannot transition it.</p>}</Panel></div>
+		<Panel eyebrow="Forensic record" title="Workday events" description="Search and page through the bounded event window. Complete evidence remains queryable through the API and CLI.">{events.length ? <ForensicEventExplorer client:load events={events} total={eventTotal} hasMore={eventHasMore} {timeZone} /> : <p>No workday events were returned.</p>}</Panel>
+	</OperationsDisplayContainer>}
+</section>

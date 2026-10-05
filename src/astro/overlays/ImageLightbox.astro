@@ -1,0 +1,25 @@
+---
+import AccessibleDialog from './AccessibleDialog.astro';
+
+interface Props {
+	id: string;
+	title?: string;
+	description?: string;
+	alt?: string;
+}
+
+const {
+	id,
+	title = 'Expanded image preview',
+	description = 'Review the complete image, then close this preview to return to your work.',
+	alt = 'Expanded preview',
+} = Astro.props as Props;
+---
+
+<div class="ts-image-lightbox">
+	<AccessibleDialog id={id} title={title} description={description}>
+		<figure class="ts-image-lightbox__figure">
+			<img alt={alt} data-ts-image-lightbox-image />
+		</figure>
+	</AccessibleDialog>
+</div>

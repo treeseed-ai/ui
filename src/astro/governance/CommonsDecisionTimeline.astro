@@ -1,4 +1,6 @@
 ---
+import Timestamp from '../data/Timestamp.astro';
+
 interface EventItem {
 	eventType?: string;
 	message?: string | null;
@@ -24,7 +26,7 @@ const { events = [] } = Astro.props as Props;
 					<strong>{event.eventType ?? 'event'}</strong>
 					<span> {event.priorState ?? 'new'} → {event.nextState ?? 'recorded'}</span>
 					{event.message ? <p>{event.message}</p> : null}
-					{event.createdAt ? <small class="ts-governance-muted">{event.createdAt}</small> : null}
+					{event.createdAt ? <small class="ts-governance-muted"><Timestamp value={event.createdAt} /></small> : null}
 				</li>
 			))}
 		</ul>

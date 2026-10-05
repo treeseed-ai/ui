@@ -1,0 +1,44 @@
+---
+import HelpTrigger from '../help/HelpTrigger.astro';
+import { serviceTasks } from './workspace/service-tasks';
+interface Capability {
+  type: string; label: string; description: string; status?: 'available' | 'planned';
+  checked?: boolean; credentialProfileId?: string | null;
+  credentialProfiles?: Array<{ id: string; label: string }>;
+}
+interface Props { capabilities: Capability[]; name?: string; readonly?: boolean }
+const { capabilities, name = 'capabilities', readonly = false } = Astro.props as Props;
+const github = capabilities.some(item => item.credentialProfiles?.some(profile => profile.id.startsWith('github-')));
+const tasks = serviceTasks(capabilities);
+const selectedMethods = new Set(capabilities.filter(item => item.checked && item.credentialProfileId).map(item => item.credentialProfileId?.endsWith('-token') ? 'token' : 'app'));
+const method = selectedMethods.size > 1 ? '' : [...selectedMethods][0] ?? 'app';
+---
+<fieldset class="ts-capability-selector" data-service-tasks>
+  <legend>What should TreeSeed do? <HelpTrigger knowledgePageId="services.capabilities" label="Help choosing tasks" /></legend>
+  {readonly ? <ul>{tasks.filter(item => item.checked).map(item => <li>{item.label}</li>)}</ul>
+  : <>
+    <div class="ts-capability-selector__items">
+      {tasks.map(item => <div class="ts-capability-option" data-service-task>
+        <input id={name + '-' + item.type} aria-describedby={name + '-' + item.type + '-description'} type="checkbox" name={name} value={item.type} checked={item.checked} />
+        <label for={name + '-' + item.type}><strong>{item.label}</strong></label>
+        <small id={name + '-' + item.type + '-description'} class="ts-task-description">{item.description}</small>
+        {!github && item.credentialProfiles?.length === 1 && <input type="hidden" name={'capabilityProfile.' + item.type} value={item.credentialProfiles[0].id} />}
+        {!github && (item.credentialProfiles?.length ?? 0) > 1 && <label class="ts-service-method">
+          <span>Account access for {item.label}</span>
+          <select class="ts-control" name={'capabilityProfile.' + item.type}>
+            {item.credentialProfiles?.map(profile => <option value={profile.id} selected={profile.id === item.credentialProfileId}>{profile.id === 'cloudflare-storage' ? 'Cloudflare API token' : profile.id === 's3-state-session' ? 'R2 access keys' : profile.label}</option>)}
+          </select>
+        </label>}
+      </div>)}
+    </div>
+    {github && <div class="ts-service-method">
+      <label for="github-auth-method">How do you want to connect to GitHub? <HelpTrigger knowledgePageId="provider.github" label="Help choosing GitHub access" /></label>
+      {selectedMethods.size > 1 && <p>Your saved tasks use different methods. Choose one method for this connection before saving.</p>}
+      <select id="github-auth-method" name="githubAuthMethod" class="ts-control" required>
+        {method === '' && <option value="">Choose a connection method</option>}
+        <option value="app" selected={method === 'app'}>GitHub App</option>
+        <option value="token" selected={method === 'token'}>API token</option>
+      </select>
+    </div>}
+  </>}
+</fieldset>

@@ -1,0 +1,19 @@
+---
+import Badge from '../data/Badge.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import KnowledgeOutlineBranch from './outline/KnowledgeOutlineBranch.astro';
+
+interface OutlinePage { id: string; bookId: string; parentId?: string | null; title: string; summary: string; slug: string; status: string; visibility: string; order: number; manageHref?: string; }
+interface OutlineBook { id: string; title: string; summary: string; status: string; pages: OutlinePage[]; }
+const { books } = Astro.props as { books: OutlineBook[] };
+---
+
+{books.length ? <div class="ts-knowledge-outline">
+	{books.map((book, index) => <details class="ts-knowledge-outline__book" data-book-id={book.id} open={index === 0}>
+		<summary>
+			<span><strong>{book.title}</strong><small>{book.summary}</small></span>
+			<span class="ts-knowledge-outline__summary-meta"><Badge size="sm" tone={book.status === 'published' ? 'success' : 'default'}>{book.status}</Badge><span>{book.pages.length} {book.pages.length === 1 ? 'page' : 'pages'}</span></span>
+		</summary>
+		{book.pages.length ? <KnowledgeOutlineBranch pages={book.pages} /> : <p class="ts-subtle">This book does not have any pages yet.</p>}
+	</details>)}
+</div> : <EmptyState title="No book outline" description="Create a book before adding ordered knowledge pages." />}

@@ -1,5 +1,6 @@
 ---
 import StatusPill from '../../data/StatusPill.astro';
+import Timestamp from '../../data/Timestamp.astro';
 import EmptyState from '../../surface/EmptyState.astro';
 
 interface Props {
@@ -62,7 +63,7 @@ const timelinePhases = (phases.length > 0 ? phases : fallbackPhases)
 									</div>
 									{event.description ? <p>{event.description}</p> : null}
 									<div class="ts-operational-timeline__meta">
-										{event.timestamp ? <time>{event.timestamp}</time> : null}
+										{event.timestamp ? <Timestamp value={event.timestamp} /> : null}
 										{event.meta ? <span>{event.meta}</span> : null}
 										{Array.isArray(event.repositoryRefs) && event.repositoryRefs.length > 0 ? <span>{event.repositoryRefs.length} repository reference{event.repositoryRefs.length === 1 ? '' : 's'}</span> : null}
 										{Array.isArray(event.artifactRefs) && event.artifactRefs.length > 0 ? <span>{event.artifactRefs.length} artifact reference{event.artifactRefs.length === 1 ? '' : 's'}</span> : null}

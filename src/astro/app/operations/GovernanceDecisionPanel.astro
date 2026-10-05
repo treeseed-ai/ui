@@ -16,6 +16,7 @@ const {
 const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_required'].includes(String(approval?.state ?? '').toLowerCase());
 ---
 
+<div data-governance-decision={approval?.approvalId ?? approval?.id ?? ''}>
 <Panel eyebrow="Approval request" title="Review request" description="Approve or reject this operational request with a short note.">
 	<div class="ts-governance-decision">
 		<div class="ts-governance-decision__state">
@@ -23,7 +24,7 @@ const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_re
 			<span>{approval?.severity ?? 'moderate'} severity</span>
 		</div>
 		{pending ? (
-			<form method="post" action={action} class="ts-governance-decision__form">
+			<form method="post" action={action} class="ts-governance-decision__form" data-ts-submit="enhanced" data-ts-form-adapter="json" data-ts-success-message="Decision recorded." data-ts-refresh-target={`[data-governance-decision="${approval?.approvalId ?? approval?.id ?? ''}"]`}>
 				<label>
 					<span>Approval note</span>
 					<textarea name="note" rows="4" placeholder="Record the operational rationale for this approval."></textarea>
@@ -42,25 +43,4 @@ const pending = ['pending', 'waiting_for_approval', 'under_review', 'approval_re
 		)}
 	</div>
 </Panel>
-
-<script>
-	document.querySelectorAll<HTMLFormElement>('.ts-governance-decision__form').forEach((form) => {
-		form.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const submitter = event.submitter as HTMLButtonElement | null;
-			const formData = new FormData(form);
-			if (submitter?.name) formData.set(submitter.name, submitter.value);
-			const response = await fetch(form.action, {
-				method: 'POST',
-				headers: { accept: 'application/json', 'content-type': 'application/json' },
-				body: JSON.stringify(Object.fromEntries(formData.entries())),
-			});
-			if (response.ok) {
-				location.reload();
-				return;
-			}
-			const envelope = await response.json().catch(() => null);
-			alert(envelope?.error ?? 'Approval could not be recorded.');
-		});
-	});
-</script>
+</div>

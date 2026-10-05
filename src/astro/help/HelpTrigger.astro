@@ -1,0 +1,29 @@
+---
+import ShellIcon from '../shell/navigation/ShellIcon.astro';
+
+interface Props {
+	targetId?: string;
+	knowledgePageId?: string;
+	label?: string;
+	class?: string;
+}
+
+const {
+	targetId = 'shell-help',
+	knowledgePageId,
+	label = 'Open help',
+	class: className,
+} = Astro.props as Props;
+---
+
+<button
+	class:list={['ts-help-trigger', className]}
+	type="button"
+	title={label}
+	aria-label={label}
+	aria-haspopup="dialog"
+	data-ts-help-open={targetId}
+	data-ts-help-knowledge-page-id={knowledgePageId}
+>
+	<ShellIcon name="help" />
+</button>

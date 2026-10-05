@@ -7,7 +7,7 @@
 .ts-commerce-band {
 	border-bottom: 1px solid var(--ts-color-border);
 	background:
-		linear-gradient(180deg, color-mix(in srgb, var(--ts-color-surface-raised) 82%, transparent), var(--ts-color-surface));
+		color-mix(in srgb, var(--ts-color-surface-raised) 82%, transparent);
 }
 
 .ts-commerce-inner {

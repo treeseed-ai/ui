@@ -1,14 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Button from '../../../../src/astro/forms/Button.astro';
-import Field from '../../../../src/astro/forms/Field.astro';
-import FormActions from '../../../../src/astro/forms/FormActions.astro';
-import MarkdownField from '../../../../src/astro/forms/MarkdownField.astro';
-import PasswordMeter from '../../../../src/astro/forms/PasswordMeter.astro';
-import RadioGroup from '../../../../src/astro/forms/RadioGroup.astro';
-import Select from '../../../../src/astro/forms/Select.astro';
-import TextInput from '../../../../src/astro/forms/TextInput.astro';
-import Textarea from '../../../../src/astro/forms/Textarea.astro';
+import Button from '../../../../src/astro/forms/actions/Button.astro';
+import Field from '../../../../src/astro/forms/fields/Field.astro';
+import ItemPicker from '../../../../src/astro/forms/fields/ItemPicker.astro';
+import CollapsibleMultiSelect from '../../../../src/astro/forms/fields/CollapsibleMultiSelect.astro';
+import FormActions from '../../../../src/astro/forms/actions/FormActions.astro';
+import MarkdownField from '../../../../src/astro/forms/fields/MarkdownField.astro';
+import PasswordMeter from '../../../../src/astro/forms/fields/PasswordMeter.astro';
+import PasswordSetupFields from '../../../../src/astro/forms/fields/PasswordSetupFields.astro';
+import RadioGroup from '../../../../src/astro/forms/fields/RadioGroup.astro';
+import Select from '../../../../src/astro/forms/fields/Select.astro';
+import TextInput from '../../../../src/astro/forms/fields/TextInput.astro';
+import Textarea from '../../../../src/astro/forms/fields/Textarea.astro';
 import ThemeMenu from '../../../../src/astro/theme/ThemeMenu.astro';
 import ThemeSelector from '../../../../src/astro/theme/ThemeSelector.astro';
 import DynamicPieAllocationHarness from '../../components/forms/DynamicPieAllocationHarness.tsx';
@@ -60,10 +63,13 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
     ) : null}
 
     {entry.runtime === 'astro' ? (
-      <form class="catalog-form-harness" data-catalog-form data-redact-password={entry.id === 'password-meter' ? 'true' : undefined}>
+      <form class="catalog-form-harness" data-catalog-form data-redact-password={['password-meter', 'password-setup-fields'].includes(entry.id) ? 'true' : undefined}>
         <section class:list={['catalog-preview', `catalog-preview--${entry.intendedSize}`]} aria-label={`${entry.name} preview`}>
           <span class="catalog-preview__label">Component frame</span>
           <div class="catalog-preview__stage">
+            {entry.id === 'item-picker' && <ItemPicker name="workspace" label="Workspace" value="design" options={[{ value: 'design', label: 'Design' }, { value: 'engineering', label: 'Engineering' }]} />}
+            {entry.id === 'collapsible-multi-select' && <CollapsibleMultiSelect name="notifications" label="Notifications" options={[{ value: 'releases', label: 'Releases', description: 'Updates when a release is published.' }, { value: 'reviews', label: 'Reviews', description: 'Updates when a review needs attention.' }]} />}
+            {['item-picker', 'collapsible-multi-select'].includes(entry.id) && <FormActions><Button type="submit">Submit selection</Button></FormActions>}
             {entry.id === 'button' ? (
               <div class="primitive-inline">
                 <Button type="submit">Submit primary</Button>
@@ -107,6 +113,17 @@ const stateJson = JSON.stringify(entry.stateShape ?? {}, null, 2);
                 </Field>
                 <PasswordMeter inputId="password-preview" />
                 <FormActions><Button type="submit">Submit password</Button></FormActions>
+              </>
+            ) : null}
+            {entry.id === 'password-setup-fields' ? (
+              <>
+                <PasswordSetupFields
+                  passwordId="password-setup-preview"
+                  passwordLabel="New password"
+                  confirmId="password-setup-confirmation-preview"
+                  confirmLabel="Confirm new password"
+                />
+                <FormActions><Button type="submit">Submit password setup</Button></FormActions>
               </>
             ) : null}
             {entry.id === 'radio-group' ? (

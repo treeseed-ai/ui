@@ -1,0 +1,89 @@
+---
+import ActivityFeed from '../activity/ActivityFeed.astro';
+import Button from '../forms/actions/Button.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import MetricCard from '../data/metrics/MetricCard.astro';
+import MetricGrid from '../data/metrics/MetricGrid.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import Panel from '../surface/Panel.astro';
+import ResourceCard from '../surface/ResourceCard.astro';
+import SemanticRegionSurface from '../semantic/SemanticRegionSurface.astro';
+
+interface ViewerItem { id?: string; title: string; description?: string; status?: string; meta?: string; href?: string; tone?: 'default' | 'success' | 'warning' | 'danger' }
+interface ViewerMetric { label: string; value: string | number; description?: string; href?: string }
+interface ViewerAction { label: string; href: string; variant?: 'primary' | 'secondary' | 'danger' }
+interface Props {
+	name: string;
+	handle: string;
+	description?: string | null;
+	logoUrl?: string | null;
+	status?: string;
+	roleLabel?: string;
+	projectLabel?: string;
+	objective?: string | null;
+	metrics?: ViewerMetric[];
+	projects?: ViewerItem[];
+	resources?: ViewerItem[];
+	activity?: any[] | null;
+	actions?: ViewerAction[];
+	publicView?: boolean;
+}
+
+const {
+	name, handle, description, logoUrl, status = 'active', roleLabel, projectLabel = 'All projects', objective,
+	metrics = [], projects = [], resources = [], activity = null, actions = [], publicView = false,
+} = Astro.props;
+---
+
+<section class="ts-team-viewer" aria-label={`${name} team viewer`} data-scene={publicView ? 'team.profile.viewer' : 'team.overview.viewer'}>
+	<SemanticRegionSurface viewId="team" regionId="profile" presentation="team-profile-header"><PageHeader
+		eyebrow={publicView ? 'Public team' : status === 'archived' ? 'Archived team' : 'Team operations'}
+		title={name}
+		description={`@${handle}${roleLabel ? ` · ${roleLabel}` : ''}`}
+	>
+		{logoUrl ? <img slot="media" class="ts-team-viewer__logo" src={logoUrl} alt="" loading="eager" /> : null}
+		{actions.length ? <div slot="actions" class="ts-button-row">{actions.map((action) => <Button href={action.href} variant={action.variant ?? 'secondary'}>{action.label}</Button>)}</div> : null}
+	</PageHeader></SemanticRegionSurface>
+
+	<SemanticRegionSurface viewId="team" regionId="profile" presentation="team-scope"><div class="ts-team-viewer__scope" aria-label="Current scope">
+		<div><span>Team profile</span><strong>{description || 'No team summary has been added.'}</strong></div>
+		<div><span>Project scope</span><strong>{projectLabel}</strong></div>
+		<div><span>Core objective</span><strong>{objective || 'Select a project to inspect its objective.'}</strong></div>
+	</div></SemanticRegionSurface>
+
+	{metrics.length ? <SemanticRegionSurface viewId="team" regionId="signals" presentation="team-metrics"><MetricGrid min="11rem">
+		{metrics.map((metric) => <MetricCard label={metric.label} value={metric.value} description={metric.description} href={metric.href} />)}
+	</MetricGrid></SemanticRegionSurface> : null}
+
+	<div class="ts-team-viewer__workbench">
+		<div class="ts-team-viewer__catalog">
+			<SemanticRegionSurface viewId="team" regionId="projects" presentation="project-operating-cards"><Panel eyebrow="Portfolio" title="Projects" description="Projects, delivery state, and current operating posture.">
+				{projects.length ? <div class="ts-team-viewer__cards">{projects.map((project) => <ResourceCard {...project} />)}</div> : <EmptyState title="No visible projects" description={publicView ? 'Projects remain private until explicitly published.' : 'Create or import a project to begin operating this team.'} />}
+			</Panel></SemanticRegionSurface>
+			<SemanticRegionSurface viewId="team" regionId="resources" presentation="published-resource-cards"><Panel eyebrow="Release catalog" title="Knowledge, models, and templates" description="Reusable outcomes published by this team.">
+				{resources.length ? <div class="ts-team-viewer__cards">{resources.map((item) => <ResourceCard {...item} />)}</div> : <EmptyState title="No published resources" description="Published knowledge, models, and templates will appear here." />}
+			</Panel></SemanticRegionSurface>
+		</div>
+		<SemanticRegionSurface viewId="team" regionId="activity" presentation="team-activity"><Panel eyebrow="Recent activity" title="What happened" description="The newest visible operational and governance events appear first.">
+			{activity ? <ActivityFeed items={activity} emptyLabel="No recent visible activity." /> : <EmptyState title="Activity unavailable" description="The authoritative activity projection is temporarily unavailable; no empty history has been inferred." />}
+		</Panel></SemanticRegionSurface>
+	</div>
+
+	{actions.length ? <nav class="ts-team-viewer__operations" aria-label="Team operations">{actions.map((action) => <Button href={action.href} variant={action.variant ?? 'secondary'}>{action.label}</Button>)}</nav> : null}
+</section>
+
+<style>
+	.ts-team-viewer { display: grid; gap: var(--ts-space-5); }
+	.ts-team-viewer :global([data-semantic-region]) { display: contents; }
+	.ts-team-viewer__logo { width: 3.5rem; height: 3.5rem; border-radius: var(--ts-radius-lg); object-fit: cover; border: 1px solid var(--ts-color-border); }
+	.ts-team-viewer__scope { display: grid; grid-template-columns: minmax(12rem, .8fr) minmax(12rem, .7fr) minmax(18rem, 1.5fr); gap: var(--ts-space-3); }
+	.ts-team-viewer__scope > div { display: grid; align-content: start; gap: var(--ts-space-1); min-width: 0; padding: var(--ts-space-4); border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-lg); background: var(--ts-color-surface); box-shadow: var(--ts-shadow-sm); }
+	.ts-team-viewer__scope span { color: var(--ts-color-text-muted); font-size: var(--ts-font-size-sm); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+	.ts-team-viewer__scope strong { overflow-wrap: anywhere; font-size: var(--ts-font-size-md); }
+	.ts-team-viewer__workbench { display: grid; grid-template-columns: minmax(18rem, .85fr) minmax(22rem, 1.15fr); gap: var(--ts-space-4); align-items: start; }
+	.ts-team-viewer__catalog, .ts-team-viewer__cards { display: grid; gap: var(--ts-space-3); }
+	.ts-team-viewer__operations { position: sticky; bottom: var(--ts-space-3); z-index: 2; display: flex; flex-wrap: wrap; gap: var(--ts-space-2); padding: var(--ts-space-3); border: 1px solid var(--ts-color-border); border-radius: var(--ts-radius-lg); background: color-mix(in srgb, var(--ts-color-surface) 92%, transparent); box-shadow: var(--ts-shadow-md); backdrop-filter: blur(12px); }
+	@media (max-width: 64rem) { .ts-team-viewer__scope { grid-template-columns: 1fr 1fr; } .ts-team-viewer__scope > :last-child { grid-column: 1 / -1; } .ts-team-viewer__workbench { grid-template-columns: 1fr; } }
+	@media (max-width: 42rem) { .ts-team-viewer__scope { grid-template-columns: 1fr; } .ts-team-viewer__scope > :last-child { grid-column: auto; } .ts-team-viewer__operations { position: static; } }
+	@media (prefers-reduced-motion: reduce) { .ts-team-viewer__operations { backdrop-filter: none; } }
+</style>

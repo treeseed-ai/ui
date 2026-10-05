@@ -1,0 +1,17 @@
+---
+import Button from '../forms/actions/Button.astro';
+import PageHeader from '../layout/PageHeader.astro';
+import ModeNavigation from '../shell/navigation/ModeNavigation.astro';
+import EmptyState from '../surface/EmptyState.astro';
+import SemanticCollectionSurface from '../semantic/SemanticCollectionSurface.astro';
+import type { Tone } from '../types.ts';
+
+interface Item { id: string; title: string; description?: string; status?: string; tone?: Tone; meta?: string; href?: string }
+interface Props { activeTeam: boolean; items: Item[] }
+const { activeTeam, items } = Astro.props as Props;
+---
+<section class="ts-template" aria-label="Project portfolio" data-scene="command.projects">
+	<PageHeader eyebrow="Command · Projects" title="Project portfolio" description="See operational posture, pending judgment, agent activity, and release pressure by project."><Button slot="actions" href="/app/command" variant="secondary">Command overview</Button></PageHeader>
+	<ModeNavigation mode="command" current="projects" />
+	{!activeTeam ? <EmptyState title="Choose an active team" description="Projects are scoped to the active team." /> : <SemanticCollectionSurface viewId="projects" regionId="projects" items={items} emptyTitle="No projects in this team" emptyDescription="Projects will appear here after they are created or imported through the canonical project workflow." presentation="project-operating-cards" />}
+</section>

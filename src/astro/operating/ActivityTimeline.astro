@@ -2,6 +2,7 @@
 import EmptyState from '../surface/EmptyState.astro';
 import Panel from '../surface/Panel.astro';
 import StatusPill from '../data/StatusPill.astro';
+import Timestamp from '../data/Timestamp.astro';
 import { labelForOperatingStatus, toneForOperatingStatus } from './status.ts';
 import type { ActivityTimelineViewModel } from '../../lib/foundation/contracts.ts';
 
@@ -22,7 +23,11 @@ const { viewModel, class: className } = Astro.props as Props;
 					<div>
 						<strong>{item.href ? <a href={item.href}>{item.title}</a> : item.title}</strong>
 						{item.description ? <p>{item.description}</p> : null}
-						{item.timestamp || item.meta ? <small>{[item.timestamp, item.meta].filter(Boolean).join(' · ')}</small> : null}
+						{item.timestamp || item.meta ? <small>
+							{item.timestamp ? <Timestamp value={item.timestamp} /> : null}
+							{item.timestamp && item.meta ? ' · ' : null}
+							{item.meta}
+						</small> : null}
 					</div>
 				</li>
 			))}

@@ -1,0 +1,69 @@
+---
+import Button from '../forms/actions/Button.astro';
+import StepNavigation from '../navigation/StepNavigation.astro';
+interface Props { initialStep?: number; accountReady?: boolean; existing?: boolean }
+const {initialStep = 0, accountReady = false, existing = false} = Astro.props;
+---
+<div class="ts-service-wizard" data-service-wizard data-initial-step={initialStep} data-account-ready={String(accountReady)} data-existing={String(existing)}>
+  <StepNavigation steps={['Choose tasks', 'Connection details', 'Connect account', ...(existing ? ['Disconnect'] : [])]} current={initialStep} label="Connection setup progress" />
+  <div class="ts-service-wizard__body"><slot /></div>
+  <p data-wizard-status aria-live="polite" class="ts-service-wizard__status"></p>
+  <p data-wizard-error role="alert" hidden></p>
+  <footer class="ts-service-wizard__actions">
+    <Button variant="secondary" data-wizard-back hidden={initialStep === 0}>Back</Button>
+    <Button href="/app/services" variant="ghost">Cancel</Button>
+    <Button data-wizard-next hidden={initialStep === 2}>Continue</Button>
+    <Button href="/app/services" data-wizard-finish hidden={initialStep !== 2 || !accountReady}>Done</Button>
+  </footer>
+</div>
+<style>
+  .ts-service-wizard__status { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+</style>
+<script>
+  import {mountWizard} from '../../lib/forms/wizard/controller';
+  import {validateForm} from '../../lib/forms/submission/validation';
+  import {syncTaskFields} from '../../lib/forms/wizard/task-fields';
+  function initializeWizards() {
+    document.querySelectorAll<HTMLElement>('[data-service-wizard]').forEach(root => {
+      if (root.dataset.initialized) return;
+      root.dataset.initialized = 'true';
+      syncTaskFields(root);
+      root.addEventListener('change', () => syncTaskFields(root));
+      const panel = (index: number) => root.querySelector<HTMLElement>('[data-service-step="' + index + '"]')!;
+      const finish = root.querySelector<HTMLElement>('[data-wizard-finish]')!;
+      root.addEventListener('treeseed:wizard-change', event => {
+        finish.hidden = (event as CustomEvent).detail.index !== 2 || root.dataset.accountReady !== 'true';
+      });
+      const wizard = mountWizard(root, [
+        {id: 'tasks', label: 'Choose tasks', panel: panel(0), validate: () => {
+          if (!root.querySelector('[data-service-tasks] input[type="checkbox"]:checked')) return {fieldErrors:{capabilities:'Choose at least one task to continue.'}};
+        }},
+        {id: 'details', label: 'Connection details', panel: panel(1), nextLabel: 'Save and connect account', save: () => {
+          const form = root.querySelector<HTMLFormElement>('[data-service-settings]');
+          if (!form || !validateForm(form)) return false;
+          // The form adapter owns navigation after saving the record.
+          return new Promise<boolean>((resolve, reject) => {
+            const done = () => {
+              form.removeEventListener('treeseed:form-success', done);
+              form.removeEventListener('treeseed:form-error', done);
+              resolve(false);
+            };
+            form.addEventListener('treeseed:form-success', done);
+            form.addEventListener('treeseed:form-error', done);
+            try { form.requestSubmit(); } catch (error) { done(); reject(error); }
+          });
+        }},
+        // Creation redirects to the persisted connection before rendering account controls.
+        {id: 'account', label: 'Connect account', panel: panel(2) ?? document.createElement('section'), hideNext: true},
+        ...(root.dataset.existing === 'true' ? [{id: 'disconnect', label: 'Disconnect', panel: panel(3), independent: true}] : []),
+      ], Number(root.dataset.initialStep ?? 0), {directStepNavigation:root.dataset.existing==='true'});
+      root.addEventListener('treeseed:form-start', () => wizard.setBusy(true));
+      root.addEventListener('treeseed:form-error', event => {
+        wizard.setBusy(false);
+        wizard.report((event as CustomEvent).detail?.message ?? 'Could not save. Please try again.');
+      });
+      root.addEventListener('treeseed:form-success', () => wizard.setBusy(false));
+    });
+  }
+  initializeWizards(); document.addEventListener('astro:page-load', initializeWizards);
+</script>

@@ -1,0 +1,18 @@
+---
+import Button from '../../forms/actions/Button.astro';
+interface Props { action: string; status: string; version: number; csrfToken: string; }
+const { action, status, version, csrfToken } = Astro.props as Props;
+const options = status === 'new'
+	? [{ value: 'triaged', label: 'Triaged' }]
+	: status === 'triaged'
+		? [{ value: 'triaged', label: 'Triaged' }, { value: 'in_progress', label: 'In progress' }, { value: 'resolved', label: 'Resolved' }]
+		: status === 'in_progress'
+			? [{ value: 'in_progress', label: 'In progress' }, { value: 'triaged', label: 'Return to triage' }, { value: 'resolved', label: 'Resolved' }]
+			: [{ value: 'resolved', label: 'Resolved' }, { value: 'in_progress', label: 'Reopen as in progress' }];
+---
+<form class="ts-feedback-resolution" method="post" action={action} data-ts-method="PATCH" data-ts-submit="enhanced" data-ts-form-adapter="json" data-ts-refresh-target="[data-feedback-detail]" data-ts-success-message="Feedback status updated.">
+	<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="version" value={version} />
+	<label class="ts-field"><span class="ts-field__label">Status</span><select class="ts-control" name="status" required>{options.map((option) => <option value={option.value} selected={status === option.value}>{option.label}</option>)}</select><span class="ts-field__error" data-ts-field-error="status"></span></label>
+	<label class="ts-field"><span class="ts-field__label">Administrator note</span><textarea class="ts-control" name="note" rows="4" maxlength="4000" placeholder="Required when resolving or reopening"></textarea><span class="ts-field__error" data-ts-field-error="note"></span></label>
+	<Button type="submit">Update status</Button>
+</form>

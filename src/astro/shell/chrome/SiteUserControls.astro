@@ -1,0 +1,68 @@
+---
+import ThemeMenu from '../../theme/ThemeMenu.astro';
+import HelpTrigger from '../../help/HelpTrigger.astro';
+import FeedbackTrigger from '../../feedback/FeedbackTrigger.astro';
+import DiscussionTrigger from '../../discussion/DiscussionTrigger.astro';
+import ShellIconLink from '../navigation/ShellIconLink.astro';
+import type { DiscussionContext, FeedbackContext, HelpContext } from '../../../lib/foundation/contracts.ts';
+import type { AppearancePreference, ThemePreference, ThemeConfig } from '../../../theme/index.ts';
+import type { SiteUserControlItem } from '../../types.ts';
+
+interface Props {
+	items?: SiteUserControlItem[];
+	currentPath?: string;
+	appearance: ThemePreference | AppearancePreference;
+	themeConfig?: ThemeConfig;
+	helpContext?: HelpContext;
+	feedbackContext?: FeedbackContext;
+	discussionContext?: DiscussionContext;
+	helpDrawerId?: string;
+	feedbackDialogId?: string;
+	discussionDialogId?: string;
+	showAppearanceControl?: boolean;
+	showManagerLink?: boolean;
+	showBookLibraryLink?: boolean;
+	class?: string;
+}
+
+const {
+	items = [],
+	currentPath = '/',
+	appearance,
+	themeConfig,
+	helpContext,
+	feedbackContext,
+	discussionContext,
+	helpDrawerId = 'shell-help',
+	feedbackDialogId = 'shell-feedback',
+	discussionDialogId = 'shell-discussion',
+	showAppearanceControl = true,
+	showManagerLink = false,
+	showBookLibraryLink = true,
+	class: className,
+} = Astro.props as Props;
+
+function isCurrentPath(href: string) {
+	if (href === '/') return currentPath === '/';
+	return currentPath === href || currentPath.startsWith(href);
+}
+---
+
+<div class:list={['ts-site-user-controls', className]}>
+	{items.length > 0 ? (
+		<nav class="ts-site-user-controls__nav" aria-label="Site links">
+			{items.map((item) => (
+				<a class="ts-site-user-controls__link" href={item.href} aria-label={item.ariaLabel} aria-current={isCurrentPath(item.href) ? 'page' : undefined}>{item.label}</a>
+			))}
+		</nav>
+	) : null}
+	<div class="ts-site-user-controls__utilities">
+		{showAppearanceControl ? <ThemeMenu selectedScheme={appearance.scheme} selectedMode={appearance.mode} workspace={'workspace' in appearance ? appearance.workspace : undefined} themeConfig={themeConfig} /> : null}
+		{helpContext ? <HelpTrigger targetId={helpDrawerId} knowledgePageId={helpContext.knowledgePageIds[0]} label={helpContext.summary ?? 'Open contextual help'} class="ts-shell-context-action" /> : null}
+		{feedbackContext ? <FeedbackTrigger targetId={feedbackDialogId} title={feedbackContext.title ? `Send feedback about ${feedbackContext.title}` : 'Send feedback'} /> : null}
+		{discussionContext ? <DiscussionTrigger targetId={discussionDialogId} /> : null}
+		{showManagerLink ? <ShellIconLink href="/app/" label="Manager" icon="manager" /> : null}
+		<slot />
+		{showBookLibraryLink ? <ShellIconLink href="/books" label="Book library" icon="book" /> : null}
+	</div>
+</div>

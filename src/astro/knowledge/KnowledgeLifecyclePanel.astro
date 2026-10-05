@@ -1,0 +1,42 @@
+---
+import Button from '../forms/actions/Button.astro';
+import FormActions from '../forms/actions/FormActions.astro';
+import DisclosureList from '../data/DisclosureList.astro';
+import InlineConfirmation from '../surface/InlineConfirmation.astro';
+
+interface Props { action: string; csrfToken: string; projectId: string; path: string; expectedSha: string;
+	kind: 'book' | 'page'; status: string; dependencies: { bookPages?: any[]; backlinks?: any[]; collections?: any[]; parentArchived?: boolean }; }
+const { action, csrfToken, projectId, path, expectedSha, kind, status, dependencies } = Astro.props as Props;
+const dependencyItems = [
+	...(dependencies.bookPages ?? []).map((item) => ({ label: item.title, description: 'Archive this published page first.', href: item.resolutionHref })),
+	...(dependencies.backlinks ?? []).map((item) => ({ label: item.title, description: 'Remove or update this incoming knowledge link.', href: item.resolutionHref })),
+	...(dependencies.collections ?? []).map((item) => ({ label: item.name, description: 'Remove this book from the saved collection.', href: item.resolutionHref })),
+];
+const archived = status === 'archived';
+---
+
+<section class="ts-knowledge-lifecycle" data-scene="knowledge.lifecycle" data-knowledge-kind={kind} data-knowledge-status={status}
+	data-knowledge-path={path} data-knowledge-blocker-count={dependencyItems.length} data-knowledge-parent-archived={dependencies.parentArchived ? 'true' : 'false'}>
+	<header class="ts-section-heading">
+		<div><p class="ts-section__eyebrow">Lifecycle</p><h3>{archived ? `Restore this ${kind}` : `Archive this ${kind}`}</h3></div>
+		<p>{archived ? 'Restoration creates a reviewed repository change before the page returns to the published library.' : 'Archiving removes this content from readers only after independent review and atomic publication.'}</p>
+	</header>
+	<DisclosureList title="Knowledge dependencies" description="Dependencies must be resolved before an archive can be prepared." itemNoun="dependency"
+		emptyLabel="No blocking knowledge dependencies were found." items={dependencyItems} />
+	{dependencies.parentArchived ? <p class="ts-callout" data-tone="warning">Restore the owning book before restoring this page.</p> : null}
+	<form method="post" action={action} data-ts-submit="enhanced" class="ts-form-stack" data-scene="knowledge.lifecycle.form">
+		<input type="hidden" name="csrfToken" value={csrfToken} /><input type="hidden" name="action" value="lifecycle" />
+		<input type="hidden" name="requestId" value="" data-ts-request-id />
+		<input type="hidden" name="lifecycleAction" value={archived ? 'restore' : 'archive'} />
+		<input type="hidden" name="projectId" value={projectId} /><input type="hidden" name="sourcePath" value={path} />
+		<input type="hidden" name="expectedSha" value={expectedSha} />
+		<FormActions align="start">
+			{archived ? <Button type="submit" disabled={dependencies.parentArchived}>Prepare restore for review</Button> : (
+				<InlineConfirmation label={`Archive ${kind}`} tone="danger">
+					<p>This creates an archive draft; it does not bypass review or publication controls.</p>
+					<Button type="submit" variant="danger" disabled={dependencyItems.length > 0}>Prepare archive for review</Button>
+				</InlineConfirmation>
+			)}
+		</FormActions>
+	</form>
+</section>

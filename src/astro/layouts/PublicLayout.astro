@@ -1,9 +1,9 @@
 ---
 import '../../styles/app-controls.css';
 import '../../styles/operations.css';
-import PublicShell from '../shell/PublicShell.astro';
-import ShellIconLink from '../shell/ShellIconLink.astro';
+import PublicShell from '../shell/layout/PublicShell.astro';
 import type { ThemePreference } from '../../theme/types.ts';
+import { SITE_SLOGAN } from '../../site-brand.ts';
 
 
 interface NavItem {
@@ -35,7 +35,7 @@ const navItems: NavItem[] = providedNavItems ?? [
 	{ label: 'Home', href: '/' },
 	{ label: 'Resources', href: '/market/' },
 	{ label: 'Workflow Imports', href: '/market/templates/' },
-	{ label: 'Knowledge Imports', href: '/market/knowledge-packs/' },
+	{ label: 'Books', href: '/books/' },
 ];
 
 const actions = providedActions ?? (isSignedIn
@@ -52,7 +52,7 @@ const actions = providedActions ?? (isSignedIn
 	appearance={appearance}
 	brand={{
 		name: 'TreeSeed',
-		tag: 'Governable AI Infrastructure for Organizational Continuity',
+		tag: SITE_SLOGAN,
 		href: '/',
 		logoSrc: '/logo.svg',
 		logoAlt: '',
@@ -62,8 +62,5 @@ const actions = providedActions ?? (isSignedIn
 	showAppearanceControl
 	preferServerAppearance={isSignedIn}
 >
-	<Fragment slot="actions">
-		<ShellIconLink href="/app/" label="Manager" icon="manager" />
-	</Fragment>
 	<slot />
 </PublicShell>

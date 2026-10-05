@@ -1,0 +1,24 @@
+---
+import NonModalSideSheet from '../overlays/NonModalSideSheet.astro';
+import type { DiscussionContext } from '../../lib/foundation/contracts.ts';
+import DiscussionBody from './DiscussionBody.astro';
+interface Props { id: string; context: DiscussionContext; }
+const { id, context } = Astro.props as Props;
+---
+
+<NonModalSideSheet id={id} labelledBy={`${id}-title`} describedBy={`${id}-description`} class="ts-discussion-panel" scene="discussion.panel" applicationId="chat" transition:persist="shell-discussion">
+	<Fragment slot="header">
+		<div>
+			<p class="ts-section__eyebrow">Agent correspondence</p>
+			<h2 id={`${id}-title`}>Discussion</h2>
+			<p id={`${id}-description`}>Durable conversations and live assignment traces.</p>
+		</div>
+		<button class="ts-icon-button" type="button" aria-label="Close Discussion" data-ts-discussion-close>×</button>
+	</Fragment>
+	<div data-ts-discussion-container><DiscussionBody {id} {context} /></div>
+</NonModalSideSheet>
+
+<script>
+	import { initializeDiscussionPanels } from '../../lib/discussion/panel.ts';
+	initializeDiscussionPanels();
+</script>

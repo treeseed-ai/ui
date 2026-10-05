@@ -1,5 +1,5 @@
 ---
-import { TREESEED_LINKS, getBookForPath } from '../../utils/starlight-nav';
+import { LINKS, getBookForPath } from '../../utils/starlight-nav';
 
 interface SidebarItem {
 	label: string;
@@ -19,7 +19,7 @@ const activeBook = getBookForPath(Astro.url.pathname);
 	{
 		activeBook && (
 			<div class="docs-sidebar-actions">
-				<a href={TREESEED_LINKS.home} class="download-button docs-sidebar-books-button">
+				<a href={LINKS.home} class="download-button docs-sidebar-books-button">
 					All Books
 				</a>
 			</div>

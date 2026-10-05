@@ -1,0 +1,22 @@
+---
+import Badge from '../../data/Badge.astro';
+import Button from '../../forms/actions/Button.astro';
+
+interface OutlinePage { id: string; parentId?: string | null; title: string; summary: string; status: string; visibility: string; order: number; manageHref?: string; }
+const { pages, parentId } = Astro.props as { pages: OutlinePage[]; parentId?: string };
+const children = pages
+	.filter((page) => (page.parentId ?? undefined) === parentId)
+	.sort((left, right) => left.order - right.order || left.title.localeCompare(right.title) || left.id.localeCompare(right.id));
+---
+
+<ol class="ts-knowledge-outline__pages">
+	{children.map((page) => <li data-page-id={page.id}>
+		<div>
+			<span class="ts-section__eyebrow">{page.visibility} · {page.status}</span>
+			<strong>{page.title}</strong><p>{page.summary}</p>
+			<Badge size="sm" tone={page.status === 'published' ? 'success' : 'default'}>{page.status}</Badge>
+		</div>
+		{page.manageHref ? <Button href={page.manageHref} variant="secondary" size="sm">Edit page</Button> : null}
+		{pages.some((candidate) => candidate.parentId === page.id) ? <Astro.self pages={pages} parentId={page.id} /> : null}
+	</li>)}
+</ol>

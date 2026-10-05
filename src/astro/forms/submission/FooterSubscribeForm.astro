@@ -1,0 +1,82 @@
+---
+import { SUBSCRIBE_ANCHOR_ID } from '../../../utils/forms/constants.ts';
+import { SITE_FORMS } from '../../../utils/site-config.ts';
+
+const {
+	currentPath = '/',
+	turnstileSiteKey = '',
+	formsApiBaseUrl: providedFormsApiBaseUrl,
+} = Astro.props as {
+	currentPath?: string;
+	turnstileSiteKey?: string;
+	formsApiBaseUrl?: string;
+};
+const redirectTarget = `${currentPath}#${SUBSCRIBE_ANCHOR_ID}`;
+const shouldBypassTurnstile = import.meta.env.DEV;
+const formsApiBaseUrl = providedFormsApiBaseUrl ?? SITE_FORMS?.apiBaseUrl ?? '/api/form/submit';
+---
+
+<section id={SUBSCRIBE_ANCHOR_ID} class="mt-6 border-t border-[color:var(--ts-color-border)] pt-4">
+	<div class="flex flex-col items-center gap-3 text-center">
+		<div class="flex flex-col gap-1">
+			<p class="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ts-color-info-text)]">Subscribe for updates</p>
+			<p class="text-sm text-[color:var(--ts-color-text-muted)]">
+				Get occasional notes when new writing or project updates are published.
+			</p>
+		</div>
+		<form
+			method="post"
+			action={formsApiBaseUrl}
+			class="js-secure-form flex w-full max-w-4xl flex-col items-center gap-3"
+			data-form-type="subscribe"
+			data-turnstile-action="subscribe_submit"
+			data-turnstile-site-key={turnstileSiteKey}
+			data-turnstile-bypass={String(shouldBypassTurnstile)}
+			data-security-endpoint={formsApiBaseUrl}
+			data-ts-secure-form
+			data-ts-submit="enhanced"
+			data-ts-reset-on-success="true"
+			data-ts-success-message="You are subscribed. Thanks for following along."
+		>
+			<input type="hidden" name="formType" value="subscribe" />
+			<input type="hidden" name="formToken" value="" />
+			<input type="hidden" name="formSession" value="" />
+			<input type="hidden" name="redirectTo" value={redirectTarget} />
+			<div class="sr-only" aria-hidden="true">
+				<label>
+					Website
+					<input type="text" name="website" tabindex="-1" autocomplete="off" />
+				</label>
+			</div>
+			<input type="hidden" name="name" value="" />
+			<div class="flex w-full flex-col items-center justify-center gap-3 md:flex-row md:flex-wrap">
+				<input
+					class="min-h-11 w-full rounded-md border border-[color:var(--ts-color-border-strong)] bg-white/80 px-4 py-2 md:w-auto md:min-w-[16rem] md:max-w-[18rem]"
+					type="email"
+					name="email"
+					placeholder="Email address"
+					autocomplete="email"
+					required
+				/>
+				{turnstileSiteKey && !shouldBypassTurnstile ? (
+					<div class="js-turnstile min-h-0"></div>
+				) : shouldBypassTurnstile ? (
+					<p class="text-xs text-[color:var(--ts-color-text-subtle)]">Captcha bypassed locally.</p>
+				) : (
+					<p class="text-xs text-[color:var(--ts-color-text-subtle)]">Turnstile not configured.</p>
+				)}
+				<button
+					type="submit"
+					class="js-submit inline-flex min-h-11 items-center justify-center whitespace-nowrap border border-[color:var(--ts-color-accent)] bg-[color:var(--ts-color-accent)] px-4 py-2 text-sm font-semibold text-[color:var(--ts-color-text)] transition hover:border-[color:var(--ts-color-info)] hover:bg-[color:var(--ts-color-info-soft)] disabled:cursor-not-allowed disabled:opacity-60"
+					disabled
+				>
+					Subscribe
+				</button>
+			</div>
+		</form>
+	</div>
+</section>
+
+<script>
+	import '../../../lib/forms/secure-form.ts';
+</script>

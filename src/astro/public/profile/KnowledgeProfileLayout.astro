@@ -1,0 +1,22 @@
+---
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props as Props;
+const hasNavigation = Astro.slots.has('navigation');
+---
+
+<div class:list={['ts-knowledge-profile-frame', className]}>
+	{hasNavigation ? <div class="ts-knowledge-profile-frame__navigation"><slot name="navigation" /></div> : null}
+	<article class="ts-knowledge-profile" data-knowledge-profile data-scene="knowledge.profile">
+		<aside class="ts-knowledge-profile__rail">
+			<slot name="identity" />
+			<slot name="stats" />
+			<slot name="rail" />
+		</aside>
+		<div class="ts-knowledge-profile__ledger">
+			<slot />
+		</div>
+	</article>
+</div>

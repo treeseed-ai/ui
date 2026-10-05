@@ -1,0 +1,18 @@
+---
+interface Props {
+	label: string;
+	tone?: 'default' | 'danger';
+	class?: string;
+}
+
+const {
+	label,
+	tone = 'default',
+	class: className,
+} = Astro.props as Props;
+---
+
+<details class:list={['ts-inline-confirmation', className]} data-tone={tone}>
+	<summary>{label}</summary>
+	<div class="ts-inline-confirmation__body"><slot /></div>
+</details>

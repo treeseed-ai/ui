@@ -1,0 +1,32 @@
+---
+import { DEFAULT_TIME_ZONE, formatTimestamp, timestampDate, type TimestampStyle } from '../../timestamps.ts';
+
+interface Props {
+	value: string | number | Date;
+	timeZone?: string;
+	style?: TimestampStyle;
+	class?: string;
+	prefix?: string;
+}
+
+const {
+	value,
+	timeZone = DEFAULT_TIME_ZONE,
+	style = 'date-time',
+	class: className,
+	prefix = '',
+} = Astro.props as Props;
+const parsed = timestampDate(value);
+const dateTime = parsed?.toISOString();
+const formatted = formatTimestamp(value, { timeZone, style });
+---
+
+{prefix}{dateTime ? (
+	<time
+		class={className}
+		datetime={dateTime}
+		data-ts-timestamp={dateTime}
+		data-ts-timestamp-style={style}
+		title={`${formatTimestamp(dateTime, { timeZone: DEFAULT_TIME_ZONE })} (UTC)`}
+	>{formatted}</time>
+) : <span class={className}>{formatted}</span>}

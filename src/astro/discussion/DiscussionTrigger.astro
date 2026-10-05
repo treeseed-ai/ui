@@ -1,0 +1,9 @@
+---
+import ShellIcon from '../shell/navigation/ShellIcon.astro';
+interface Props { targetId: string; title?: string; class?: string; }
+const { targetId, title = 'Open Discussions', class: className = 'ts-shell-context-action' } = Astro.props as Props;
+---
+
+<button class:list={['ts-discussion-trigger', className]} type="button" title={title} aria-label={title} aria-haspopup="dialog" aria-controls={targetId} data-ts-discussion-open={targetId}>
+	<ShellIcon name="discussion" />
+</button>

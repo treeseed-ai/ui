@@ -1,6 +1,6 @@
-import { defineTreeseedTheme, parseTreeseedColorSchemeYaml } from '../../../src/theme/index.ts';
+import { defineTheme, parseColorSchemeYaml } from '../../../src/theme/index.ts';
 
-const mossLab = parseTreeseedColorSchemeYaml(`
+const mossLab = parseColorSchemeYaml(`
 id: moss-lab
 name: Moss Lab
 light:
@@ -41,7 +41,7 @@ dark:
   danger: "#e38075"
 `, 'sandbox:moss-lab');
 
-export const sandboxThemeConfig = defineTreeseedTheme({
+export const sandboxThemeConfig = defineTheme({
   defaultScheme: 'fern',
   defaultMode: 'system',
   schemes: {

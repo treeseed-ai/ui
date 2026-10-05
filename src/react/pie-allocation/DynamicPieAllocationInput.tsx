@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -33,6 +34,7 @@ export type DynamicPieAllocationInputProps = {
   allowAddRemove?: boolean;
   ariaLabel?: string;
   palette?: string[];
+  density?: "default" | "compact" | "monitor";
   onChange?: (
     slices: PieAllocationSlice[],
     validity: PieAllocationValidity
@@ -72,6 +74,15 @@ function toSubmittedSlices(slices: PieAllocationSlice[]) {
   return slices.map(({ id, name, percentage }) => ({ id, name, percentage }));
 }
 
+function slicesMatch(left: PieAllocationSlice[], right: PieAllocationSlice[]) {
+  return left.length === right.length && left.every((slice, index) => {
+    const candidate = right[index];
+    return candidate?.id === slice.id && candidate.name === slice.name &&
+      candidate.percentage === slice.percentage && candidate.locked === slice.locked &&
+      candidate.minPercentage === slice.minPercentage && candidate.maxPercentage === slice.maxPercentage;
+  });
+}
+
 function getBoundaryAngle(slices: PieAllocationSlice[], boundaryIndex: number): number {
   return slices
     .slice(0, boundaryIndex + 1)
@@ -97,6 +108,7 @@ export default function DynamicPieAllocationInput({
   allowAddRemove: _allowAddRemove = false,
   ariaLabel = "Percentage allocation pie chart",
   palette = defaultPalette,
+  density = "default",
   onChange
 }: DynamicPieAllocationInputProps) {
   const initial = useMemo(() => {
@@ -118,13 +130,19 @@ export default function DynamicPieAllocationInput({
     initial.error
   );
   const [hydrated, setHydrated] = useState(false);
+  const glossId = `pie-gloss-${useId().replace(/:/g, "")}`;
   const dragStateRef = useRef<DragState | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const onChangeRef = useRef(onChange);
 
   useEffect(() => {
-    setSlices(initial.slices);
+    setSlices((current) => slicesMatch(current, initial.slices) ? current : initial.slices);
     setInitializationError(initial.error);
   }, [initial]);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     setHydrated(true);
@@ -143,8 +161,8 @@ export default function DynamicPieAllocationInput({
   }, [initializationError, precision, slices]);
 
   useEffect(() => {
-    onChange?.(slices, validity);
-  }, [onChange, slices, validity]);
+    onChangeRef.current?.(slices, validity);
+  }, [slices, validity]);
 
   const geometry = useMemo(() => {
     let startAngle = 0;
@@ -313,6 +331,7 @@ export default function DynamicPieAllocationInput({
   return (
     <div
       className="dynamic-pie-allocation"
+      data-density={density}
       data-hydrated={hydrated ? "true" : "false"}
       data-testid="dynamic-pie-allocation"
     >
@@ -338,6 +357,14 @@ export default function DynamicPieAllocationInput({
             role="img"
             viewBox={`0 0 ${size} ${size}`}
           >
+            <defs>
+              <linearGradient id={glossId} x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stopColor="#fff" stopOpacity=".72" />
+                <stop offset=".34" stopColor="#fff" stopOpacity=".18" />
+                <stop offset=".56" stopColor="#fff" stopOpacity="0" />
+                <stop offset="1" stopColor="#000" stopOpacity=".24" />
+              </linearGradient>
+            </defs>
             {geometry.map(({ slice, startAngle, endAngle, color }) =>
               slice.percentage > 0 ? (
                 <path
@@ -349,6 +376,17 @@ export default function DynamicPieAllocationInput({
                 >
                   <title>{`${slice.name} ${toInputValue(slice.percentage, precision)}%`}</title>
                 </path>
+              ) : null
+            )}
+            {geometry.map(({ slice, startAngle, endAngle }) =>
+              slice.percentage > 0 ? (
+                <path
+                  aria-hidden="true"
+                  className="dynamic-pie-allocation__gloss"
+                  d={describeArcSlice(center, center, radius, startAngle, endAngle)}
+                  fill={`url(#${glossId})`}
+                  key={`gloss-${slice.id}`}
+                />
               ) : null
             )}
             {allowDragEditing && !disabled && slices.length > 1

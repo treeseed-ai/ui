@@ -1,0 +1,78 @@
+---
+import Timestamp from '../../data/Timestamp.astro';
+
+interface CollectionItem {
+	id: string;
+	kind?: string;
+	title: string;
+	summary?: string | null;
+	href?: string | null;
+	version?: string | null;
+	updatedAt?: string | null;
+	meta?: string | null;
+}
+
+interface Props {
+	eyebrow?: string;
+	title: string;
+	description?: string;
+	items: CollectionItem[];
+	emptyTitle?: string;
+	emptyDescription?: string;
+	timeZone?: string;
+}
+
+const {
+	eyebrow = 'Published work',
+	title,
+	description,
+	items,
+	emptyTitle = 'No public work yet',
+	emptyDescription = 'No public items are available in this section.',
+	timeZone,
+} = Astro.props as Props;
+
+function kindLabel(kind?: string) {
+	if (kind === 'knowledge_pack') return 'Knowledge pack';
+	if (kind === 'template') return 'Workflow template';
+	if (kind === 'project') return 'Knowledge project';
+	return 'Published knowledge';
+}
+---
+
+<section class="ts-knowledge-collection" data-scene="knowledge.collection">
+	<header class="ts-knowledge-section-heading">
+		<div>
+			<p>{eyebrow}</p>
+			<h2>{title}</h2>
+			{description ? <p class="ts-knowledge-section-heading__description">{description}</p> : null}
+		</div>
+		<span aria-hidden="true">{String(items.length).padStart(2, '0')}</span>
+	</header>
+	{items.length ? (
+		<div class="ts-knowledge-collection__grid">
+			{items.map((item) => (
+				<article class="ts-knowledge-card">
+					<div class="ts-knowledge-card__marker" data-kind={item.kind ?? 'knowledge'} aria-hidden="true"></div>
+					<div class="ts-knowledge-card__body">
+						<p class="ts-knowledge-card__kind">{kindLabel(item.kind)}</p>
+						<h3>
+							{item.href ? <a href={item.href}>{item.title}</a> : item.title}
+						</h3>
+						{item.summary ? <p class="ts-knowledge-card__summary">{item.summary}</p> : null}
+						<footer>
+							{item.version ? <span>v{item.version}</span> : null}
+							{item.meta ? <span>{item.meta}</span> : null}
+							{item.updatedAt ? <Timestamp value={item.updatedAt} style="date" timeZone={timeZone} /> : null}
+						</footer>
+					</div>
+				</article>
+			))}
+		</div>
+	) : (
+		<div class="ts-knowledge-empty">
+			<span aria-hidden="true">↗</span>
+			<div><h3>{emptyTitle}</h3><p>{emptyDescription}</p></div>
+		</div>
+	)}
+</section>

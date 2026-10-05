@@ -1,0 +1,29 @@
+---
+import type { KnowledgeHelpLink } from '../../lib/foundation/contracts.ts';
+
+interface Props {
+	pages: KnowledgeHelpLink[];
+	currentKnowledgePageId?: string;
+	targetId: string;
+}
+
+const { pages, currentKnowledgePageId, targetId } = Astro.props as Props;
+---
+
+<nav class="ts-help-navigation" aria-label="Related knowledge" data-ts-help-navigation>
+	<p class="ts-help-navigation__label">Related knowledge</p>
+	<div class="ts-help-navigation__items" data-ts-help-navigation-items>
+		{pages.map((page) => (
+			<button
+				type="button"
+				class="ts-help-navigation__item"
+				aria-current={page.knowledgePageId === currentKnowledgePageId ? 'page' : undefined}
+				data-ts-help-open={targetId}
+				data-ts-help-knowledge-page-id={page.knowledgePageId}
+			>
+				<strong>{page.title}</strong>
+				{page.summary ? <span>{page.summary}</span> : null}
+			</button>
+		))}
+	</div>
+</nav>

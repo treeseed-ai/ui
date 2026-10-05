@@ -1,0 +1,13 @@
+---
+import '../../styles/toast.css';
+---
+
+<section class="ts-toast-region" data-ts-toast-region aria-label="Notifications"></section>
+
+<script>
+	import { initializeFormSubmissions, initializeToasts } from '@treeseed/ui/forms/client';
+
+	initializeToasts();
+	initializeFormSubmissions(document);
+	document.addEventListener('astro:page-load', initializeToasts);
+</script>

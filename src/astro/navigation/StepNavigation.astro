@@ -1,0 +1,16 @@
+---
+interface Props { steps: string[]; current?: number; label?: string }
+const { steps, current = 0, label = 'Progress' } = Astro.props;
+---
+<ol class="ts-step-navigation" aria-label={label} data-step-navigation style={`--ts-step-count: ${steps.length}`}>
+  {steps.map((label, index) => <li><button type="button" data-step-target={index} aria-current={index === current ? 'step' : undefined}><span aria-hidden="true">{index + 1}</span>{label}</button></li>)}
+</ol>
+<script>
+  document.addEventListener('click', event => {
+    const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-step-target]') : null;
+    if (!target || target.disabled) return;
+    target.closest('[data-step-navigation]')?.dispatchEvent(new CustomEvent('treeseed:step-request', {
+      bubbles: true, detail: { index: Number(target.dataset.stepTarget) },
+    }));
+  });
+</script>

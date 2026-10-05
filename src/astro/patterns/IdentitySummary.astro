@@ -1,0 +1,31 @@
+---
+interface Props {
+	name: string;
+	meta?: string | null;
+	imageSrc?: string | null;
+	href?: string;
+	class?: string;
+}
+
+const {
+	name,
+	meta,
+	imageSrc,
+	href,
+	class: className,
+} = Astro.props as Props;
+const initial = name.trim().slice(0, 1).toUpperCase() || '?';
+---
+
+<div class:list={['ts-identity-summary', className]}>
+	<div class="ts-identity-summary__avatar" aria-hidden="true">
+		{imageSrc ? <img src={imageSrc} alt="" loading="lazy" /> : <span>{initial}</span>}
+	</div>
+	<div class="ts-identity-summary__content">
+		<div class="ts-identity-summary__topline">
+			{href ? <a href={href}>{name}</a> : <strong>{name}</strong>}
+			<slot name="badge" />
+		</div>
+		{meta ? <small class="ts-identity-summary__meta">{meta}</small> : null}
+	</div>
+</div>

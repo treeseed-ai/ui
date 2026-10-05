@@ -1,13 +1,18 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  buildTreeseedThemeCss,
-  defineTreeseedTheme,
-  loadTreeseedColorSchemes,
-  parseTreeseedColorSchemeYaml,
-  resolveTreeseedThemeConfig,
+  buildThemeCss,
+  buildWorkspaceThemeCss,
+  compileGuidedThemePalette,
+  defineTheme,
+  guidedThemePaletteForScheme,
+  loadColorSchemes,
+  normalizeAppearancePreference,
+  parseColorSchemeYaml,
+  resolveThemeConfig,
+  validateGuidedThemePalette,
 } from '../../src/theme/index.ts';
 
 const validYaml = `
@@ -53,12 +58,12 @@ dark:
 
 describe('YAML themes', () => {
   it('loads built-in YAML schemes', () => {
-    const schemes = loadTreeseedColorSchemes();
+    const schemes = loadColorSchemes();
     expect(schemes.map((scheme) => scheme.id)).toEqual(expect.arrayContaining(['fern', 'lichen', 'cedar', 'tidepool']));
   });
 
   it('parses and completes a custom scheme', () => {
-    const scheme = parseTreeseedColorSchemeYaml(validYaml);
+    const scheme = parseColorSchemeYaml(validYaml);
     expect(scheme.id).toBe('test-scheme');
     expect(scheme.tokens.light.surfaceOverlay).toBeTruthy();
     expect(scheme.modeSwatches.dark).toHaveLength(4);
@@ -69,21 +74,84 @@ describe('YAML themes', () => {
     const directory = resolve(root, 'schemes');
     mkdirSync(directory, { recursive: true });
     writeFileSync(resolve(directory, 'test.yaml'), validYaml);
-    const theme = defineTreeseedTheme({ cwd: root, schemeDirectories: ['schemes'], defaultScheme: 'test-scheme' });
-    const resolved = resolveTreeseedThemeConfig(theme);
+    const theme = defineTheme({ cwd: root, schemeDirectories: ['schemes'], defaultScheme: 'test-scheme' });
+    const resolved = resolveThemeConfig(theme);
     expect(resolved.defaultScheme).toBe('test-scheme');
     expect(resolved.summaries.some((summary) => summary.id === 'test-scheme')).toBe(true);
   });
 
   it('rejects malformed YAML schemes', () => {
-    expect(() => parseTreeseedColorSchemeYaml('id: Bad Scheme')).toThrow(/Invalid color scheme id/);
-    expect(() => parseTreeseedColorSchemeYaml('id: missing-dark\nlight: {}')).toThrow(/missing light tokens/);
+    expect(() => parseColorSchemeYaml('id: Bad Scheme')).toThrow(/Invalid color scheme id/);
+    expect(() => parseColorSchemeYaml('id: missing-dark\nlight: {}')).toThrow(/missing light tokens/);
   });
 
   it('generates CSS selectors for custom schemes', () => {
-    const scheme = parseTreeseedColorSchemeYaml(validYaml);
-    const css = buildTreeseedThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
+    const scheme = parseColorSchemeYaml(validYaml);
+    const css = buildThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
     expect(css).toContain('html[data-ts-scheme="test-scheme"][data-ts-mode="light"]');
     expect(css).toContain('--ts-color-accent: #336633;');
+  });
+
+  it('builds a scoped workspace palette without fading readable tokens', () => {
+    const scheme = parseColorSchemeYaml(validYaml);
+    const css = buildWorkspaceThemeCss({ schemes: { [scheme.id]: scheme.tokens }, defaultScheme: scheme.id });
+    expect(css).toContain('.ts-control-surface,.ts-workspace-overlay-scope');
+    expect(css).toContain('data-ts-workspace-mode="inherit"');
+    expect(css).toContain('--ts-color-canvas: color-mix(in srgb, #ffffff 70%');
+    expect(css).toContain('--ts-color-border: color-mix(in srgb, #dddddd 55%');
+    expect(css).toContain('--ts-color-text: #111111;');
+    expect(css).toContain('color-scheme: dark;');
+  });
+
+  it('normalizes independent content workspace appearance', () => {
+    expect(normalizeAppearancePreference({
+      colorScheme: 'fern',
+      themeMode: 'light',
+      contentThemeOverlayEnabled: true,
+      contentThemeOverlayScheme: 'tidepool',
+      contentThemeOverlayMode: 'dark',
+    })).toEqual({
+      scheme: 'fern',
+      mode: 'light',
+      workspace: { enabled: true, scheme: 'tidepool', mode: 'dark' },
+    });
+  });
+
+  it('compiles accessible guided personal-theme palettes without activating them', () => {
+    const palette = {
+      light: { canvas: '#ffffff', surface: '#f5f5f5', text: '#111111', accent: '#176b45' },
+      dark: { canvas: '#101510', surface: '#182018', text: '#f5fff5', accent: '#69d69a' },
+    };
+    expect(validateGuidedThemePalette(palette)).toEqual({ ok: true, errors: [] });
+    const tokens = compileGuidedThemePalette(palette, 'fern');
+    expect(tokens.light.canvas).toBe('#ffffff');
+    expect(tokens.dark.accent).toBe('#69d69a');
+    expect(tokens.light.danger).toBeTruthy();
+  });
+
+  it('derives custom-theme builder colors from the selected base scheme', () => {
+    const fern = guidedThemePaletteForScheme('fern');
+    const cedar = guidedThemePaletteForScheme('cedar');
+    expect(fern.light.accent).toBe('#4f7d4e');
+    expect(cedar.light.accent).toBe('#b86b3c');
+    expect(cedar.dark.canvas).toBe('#181310');
+    expect(cedar).not.toEqual(fern);
+  });
+
+  it('binds each rendered selector once and synchronizes responsive peers', () => {
+    const selector = readFileSync('src/astro/theme/ThemeSelector.astro', 'utf8');
+    expect(selector).toContain("selector.dataset.tsThemeSelectorBound === 'true'");
+    expect(selector).toContain("selector.dataset.tsThemeSelectorBound = 'true'");
+    expect(selector).toContain("document.querySelectorAll('[data-ts-theme-selector]').forEach((peer)");
+    expect(selector).toContain('window.__tsThemeSelectorMediaBound');
+    expect(selector).toContain('data-ts-workspace-enabled');
+    expect(selector).toContain('data-ts-workspace-scheme-select');
+  });
+
+  it('rejects guided palettes that fail text contrast', () => {
+    expect(validateGuidedThemePalette({
+      light: { canvas: '#ffffff', surface: '#ffffff', text: '#eeeeee', accent: '#dddddd' },
+      dark: { canvas: '#000000', surface: '#111111', text: '#222222', accent: '#333333' },
+    }).ok).toBe(false);
   });
 });

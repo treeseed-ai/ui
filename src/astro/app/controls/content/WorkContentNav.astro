@@ -1,0 +1,20 @@
+---
+import SurfaceTabs from '../../../shell/navigation/SurfaceTabs.astro';
+
+interface Props {
+	current: 'work' | 'review' | 'questions' | 'objectives' | 'notes' | 'proposals' | 'decisions';
+}
+
+const { current } = Astro.props as Props;
+const items = [
+	{ key: 'work', label: 'Work', href: '/app/work' },
+	{ key: 'review', label: 'Review', href: '/app/work/review' },
+	{ key: 'objectives', label: 'Objectives', href: '/app/work/objectives' },
+	{ key: 'questions', label: 'Questions', href: '/app/work/questions' },
+	{ key: 'notes', label: 'Notes', href: '/app/work/notes' },
+	{ key: 'proposals', label: 'Proposals', href: '/app/work/proposals' },
+	{ key: 'decisions', label: 'Decisions', href: '/app/work/decisions' },
+];
+---
+
+<SurfaceTabs items={items.map((item) => ({ id: item.key, label: item.label, href: item.href }))} current={current} label="Work content" />

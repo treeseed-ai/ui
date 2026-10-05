@@ -1,0 +1,9 @@
+---
+interface Props { query?: string; status?: string; action?: string; }
+const { query = '', status = '', action } = Astro.props as Props;
+---
+<form class="ts-entity-filters" method="get" action={action} role="search">
+	<label class="ts-field"><span class="ts-field__label">Search</span><input class="ts-control" type="search" name="q" value={query} /></label>
+	<label class="ts-field"><span class="ts-field__label">Status</span><input class="ts-control" name="status" value={status} placeholder="Any status" /></label>
+	<button class="ts-button" data-variant="secondary" type="submit">Filter</button>
+</form>

@@ -1,0 +1,15 @@
+---
+import PageHeader from '../layout/PageHeader.astro';
+import OperationalList from '../surface/OperationalList.astro';
+import Button from '../forms/actions/Button.astro';
+interface Props {teamName?:string;canManage?:boolean;instances:any[];unavailable?:boolean}
+const {teamName,canManage=false,instances=[],unavailable=false}=Astro.props;
+const rows=instances.map(instance=>({id:instance.id,name:instance.configuration.name,status:instance.status,description:(instance.configuration.purpose==='both'?'Inference and training':instance.configuration.purpose==='training'?'Training':'Inference')+' · '+instance.configuration.model,href:'/app/ai/new?instance='+encodeURIComponent(instance.id),meta:'Not provisioned · '+instance.configuration.schedule}));
+---
+<section class="ts-template" style="padding-bottom:2rem" data-scene="command.ai-deployments">
+<PageHeader title="AI instances" description="Manage inference and training on your team's GPUs.">{canManage&&<Button slot="actions" href="/app/ai/new">Set up AI instance</Button>}</PageHeader>
+{!teamName?<p>Choose a team to see its AI instances.</p>:<>
+<OperationalList title="Instances" {rows} empty="No AI instances yet. Set up an instance to save its configuration." {unavailable}/>
+<p>Hosting accounts are managed in <a href="/app/services">Connections</a>. They are not running AI instances.</p>
+</>}
+</section>

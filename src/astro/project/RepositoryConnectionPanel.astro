@@ -1,0 +1,40 @@
+---
+import Badge from '../data/Badge.astro';
+import Button from '../forms/actions/Button.astro';
+import Field from '../forms/fields/Field.astro';
+import Select from '../forms/fields/Select.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Panel from '../surface/Panel.astro';
+
+interface Candidate { value: string; label: string; status: string; }
+interface Props { topology: unknown; remote?: any; candidates: Candidate[]; csrfToken: string; action: string; }
+const { topology, remote, candidates, csrfToken, action } = Astro.props;
+const selected = remote ? candidates.find((item) => item.value.startsWith(`${remote.serviceConnectionId}|${remote.capabilityBindingId}|${remote.authorityId}`))?.value : '';
+---
+
+<Panel title="Remote repository publication" description="Bind this project to one verified repository-hosting capability. TreeSeed reads the repository back before persisting the binding." knowledgePageId="knowledge.publication">
+	<div class="ts-badge-list">
+		<Badge tone={remote?.grantStatus === 'ready' ? 'success' : 'warning'} size="sm">{remote?.grantStatus ?? 'Not connected'}</Badge>
+		{remote?.drift ? <Badge tone={remote.drift === 'none' ? 'success' : 'warning'} size="sm">{remote.drift}</Badge> : null}
+	</div>
+	<form method="post" action={action} data-ts-submit="enhanced" data-ts-form-adapter="repository-topology"
+		data-ts-success-message="Remote repository binding verified.">
+		<input type="hidden" name="csrfToken" value={csrfToken} />
+		<input type="hidden" name="topology" value={JSON.stringify(topology)} />
+		<input type="hidden" name="bindingId" value={remote?.bindingId ?? ''} />
+		<input type="hidden" name="version" value={remote?.version ?? 1} />
+		<Field label="Repository authority" name="authority" help="Managed Apps and explicit environment references are unattended-ready. Browser-encrypted tokens require an interactive authorization step." required>
+			<Select name="authority" value={selected} required options={[
+				{ value: '', label: 'Choose a repository connection' },
+				...candidates.map((item) => ({ value: item.value, label: `${item.label} · ${item.status}` })),
+			]} />
+		</Field>
+		<div class="ts-form-grid ts-form-grid--two">
+			<Field label="GitHub owner" name="owner" required><TextInput name="owner" value={remote?.owner ?? ''} required /></Field>
+			<Field label="Repository" name="name" required><TextInput name="name" value={remote?.name ?? ''} required /></Field>
+			<Field label="Default ref" name="defaultRef" help="Use a full branch ref." required><TextInput name="defaultRef" value={remote?.defaultRef ?? 'refs/heads/main'} required /></Field>
+			<Field label="Publication ref" name="publicationRef" help="Guarded publication updates only this exact branch." required><TextInput name="publicationRef" value={remote?.publicationRef ?? 'refs/heads/main'} required /></Field>
+		</div>
+		<Button type="submit">Verify and save binding</Button>
+	</form>
+</Panel>

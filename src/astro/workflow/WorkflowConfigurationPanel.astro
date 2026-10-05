@@ -1,0 +1,32 @@
+---
+import Button from '../forms/actions/Button.astro';
+import Field from '../forms/fields/Field.astro';
+import TextInput from '../forms/fields/TextInput.astro';
+import Panel from '../surface/Panel.astro';
+
+interface Props { projectId: string; repositoryBindingId: string; secretBindingId?: string; variableBindingId?: string; csrfToken: string; }
+const props = Astro.props;
+---
+
+<Panel title="Workflow secrets and variables" description="Secret values are encrypted in this browser to GitHub's public key. Variables are readable provider configuration." knowledgePageId="services.workflow-configuration">
+	{props.secretBindingId ? <form method="post" action={`/v1/projects/${encodeURIComponent(props.projectId)}/workflow-configuration/secrets`}
+		data-ts-submit="enhanced" data-ts-form-adapter="workflow-secret" data-ts-success-message="Workflow secret queued securely.">
+		<input type="hidden" name="csrfToken" value={props.csrfToken} />
+		<input type="hidden" name="repositoryBindingId" value={props.repositoryBindingId} />
+		<input type="hidden" name="workflowBindingId" value={props.secretBindingId} />
+		<Field label="Secret name" name="name" required><TextInput name="name" placeholder="DEPLOY_TOKEN" required /></Field>
+		<Field label="Secret value" name="value" help="The plaintext exists only in this form and browser memory." required>
+			<TextInput name="value" type="password" autocomplete="off" required />
+		</Field>
+		<Button type="submit">Encrypt and save secret</Button>
+	</form> : null}
+	{props.variableBindingId ? <form method="post" action={`/v1/projects/${encodeURIComponent(props.projectId)}/workflow-configuration/variables`}
+		data-ts-submit="enhanced" data-ts-form-adapter="workflow-variable" data-ts-success-message="Workflow variable queued.">
+		<input type="hidden" name="csrfToken" value={props.csrfToken} />
+		<input type="hidden" name="repositoryBindingId" value={props.repositoryBindingId} />
+		<input type="hidden" name="workflowBindingId" value={props.variableBindingId} />
+		<Field label="Variable name" name="name" required><TextInput name="name" placeholder="REGION" required /></Field>
+		<Field label="Variable value" name="value" required><TextInput name="value" required /></Field>
+		<Button type="submit" variant="secondary">Save variable</Button>
+	</form> : null}
+</Panel>

@@ -1,0 +1,84 @@
+---
+import { BookLibraryIsland } from '../../../react/progressive/index.ts';
+type BookItem = {
+	id: string;
+	slug: string;
+	title: string;
+	summary: string;
+	status: string;
+	visibility: string;
+	topics: string[];
+	audience: string[];
+	pageCount?: number;
+	teamSlug: string;
+	manageHref?: string;
+};
+
+const { items, searchEndpoint = '/v1/knowledge/library', id = 'book-library' } = Astro.props as { items: BookItem[]; searchEndpoint?: string; id?: string };
+const topics = [...new Set(items.flatMap((item) => item.topics))].sort();
+const audiences = [...new Set(items.flatMap((item) => item.audience))].sort();
+const teams = [...new Set(items.map((item) => item.teamSlug))].sort();
+---
+
+<section id={id} class="ts-book-library" data-ts-book-library>
+	<form class="ts-book-library__filters" role="search" data-ts-book-filters>
+		<label class="ts-book-library__search">
+			<span>Search books</span>
+			<input class="ts-control" type="search" name="query" placeholder="Search titles, topics, and audiences" autocomplete="off" data-ts-book-query />
+		</label>
+		<label>
+			<span>Topic</span>
+			<select class="ts-control" name="topic" data-ts-book-topic>
+				<option value="">All topics</option>
+				{topics.map((topic) => <option value={topic}>{topic}</option>)}
+			</select>
+		</label>
+		<label>
+			<span>Audience</span>
+			<select class="ts-control" name="audience" data-ts-book-audience>
+				<option value="">All audiences</option>
+				{audiences.map((audience) => <option value={audience}>{audience}</option>)}
+			</select>
+		</label>
+		{teams.length > 1 ? <label>
+			<span>Team</span>
+			<select class="ts-control" name="team" data-ts-book-team>
+				<option value="">All teams</option>
+				{teams.map((team) => <option value={team}>{team}</option>)}
+			</select>
+		</label> : null}
+	</form>
+
+	<p class="ts-book-library__count" aria-live="polite" data-ts-book-count>{items.length} {items.length === 1 ? 'book' : 'books'}</p>
+	<div class="ts-book-library__results" data-ts-book-results>
+		{items.map((item) => (
+			<article
+				class="ts-book-card"
+				data-ts-book-card
+				data-book-id={item.id}
+				data-search={[item.title, item.summary, ...item.topics, ...item.audience].join(' ').toLowerCase()}
+				data-topics={item.topics.join('|').toLowerCase()}
+				data-audiences={item.audience.join('|').toLowerCase()}
+				data-team={item.teamSlug.toLowerCase()}
+			>
+				<div class="ts-book-card__meta">
+					<span class="ts-badge" data-tone={item.status === 'published' ? 'success' : 'neutral'}>{item.status}</span>
+					<span>{item.visibility}</span>
+					<span>{item.pageCount ?? 0} {(item.pageCount ?? 0) === 1 ? 'page' : 'pages'}</span>
+				</div>
+				<h2><a href={`/t/${encodeURIComponent(item.teamSlug)}/books/${encodeURIComponent(item.slug)}`}>{item.title}</a></h2>
+				<p>{item.summary}</p>
+				{item.topics.length ? <ul class="ts-book-card__topics" aria-label="Topics">{item.topics.map((topic) => <li>{topic}</li>)}</ul> : null}
+				<div class="ts-action-bar">
+					<a class="ts-button" data-variant="secondary" href={`/t/${encodeURIComponent(item.teamSlug)}/books/${encodeURIComponent(item.slug)}`}>Open book</a>
+					{item.manageHref ? <a class="ts-button" href={item.manageHref}>Manage</a> : null}
+				</div>
+			</article>
+		))}
+	</div>
+	<div class="ts-book-library__empty" hidden data-ts-book-empty>
+		<strong>No matching books</strong>
+		<p>Try a broader search or clear the topic filter.</p>
+	</div>
+</section>
+<BookLibraryIsland rootId={id} searchEndpoint={searchEndpoint} client:only="react" />

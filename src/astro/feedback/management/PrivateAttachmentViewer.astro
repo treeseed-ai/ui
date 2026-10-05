@@ -1,0 +1,8 @@
+---
+interface Props { src: string; alt?: string; digest: string; expiresAt?: string; }
+const { src, alt = 'Redacted feedback screenshot', digest, expiresAt } = Astro.props as Props;
+---
+<figure class="ts-private-attachment" data-ts-feedback-redact="private feedback attachment">
+	<img src={src} alt={alt} loading="lazy" referrerpolicy="no-referrer" />
+	<figcaption><strong>Private redacted capture</strong><span>Digest {digest.slice(0, 12)}…</span>{expiresAt ? <span>Retention scheduled after resolution.</span> : <span>Available while feedback remains open.</span>}</figcaption>
+</figure>

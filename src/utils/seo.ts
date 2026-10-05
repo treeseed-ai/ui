@@ -1,6 +1,8 @@
+import { SITE_SLOGAN } from '../site-brand.ts';
+
 export const SITE = {
   name: 'TreeSeed',
-  statement: 'Governable AI Infrastructure for Organizational Continuity',
+  statement: SITE_SLOGAN,
   description: 'Launch, guide, release, and publish knowledge hubs with your team and your agents.',
   logo: {
     src: '/logo.svg',
