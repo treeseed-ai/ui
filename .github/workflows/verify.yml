@@ -34,6 +34,15 @@ jobs:
       - name: Verify package
         run: npm run verify:direct
 
+      - name: Retain failed browser evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-browser-failure-${{ github.sha }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Pack verified artifact
         run: mkdir -p artifacts && npm pack --json --ignore-scripts --pack-destination artifacts
 
