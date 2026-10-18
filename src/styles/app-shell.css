@@ -356,7 +356,7 @@
 
 .ts-product-shell-body {
 	margin: 0;
-	min-width: 20rem;
+	min-width: 0;
 }
 
 html[data-ts-app-sidebar='collapsed'] .ts-product-shell {
