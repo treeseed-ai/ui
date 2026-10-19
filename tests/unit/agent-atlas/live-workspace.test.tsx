@@ -18,6 +18,14 @@ describe('Atlas live inspector updates',()=>{
   expect(container.querySelector('.ts-atlas-agent > rect')).toHaveAttribute('width','150');
  });
 
+ it.each([NaN,Infinity,-Infinity])('keeps a non-finite %s metric neutral through the real workspace and canvas',score=>{
+  const initial=structuredClone(projection);initial.nodeStates[0]!.metrics[0]!.normalizedValue=score;
+  const {container}=render(<AgentAtlasWorkspace initialProjection={initial} endpoints={{...endpoints,stream:''}}/>);
+  const card=container.querySelector('.ts-atlas-agent > rect');
+  expect(card).toHaveAttribute('width','150');expect(card).toHaveAttribute('height','76');
+  expect(container.querySelector('.ts-atlas-canvas')).not.toHaveAttribute('viewBox',expect.stringContaining('NaN'));
+ });
+
  it('refreshes on an assignment-only delta while preserving selection and exact scope',async()=>{
   const initial=structuredClone(projection),refreshed=structuredClone(projection);refreshed.revision='r2';refreshed.nodeStates[0]!.status='completed';refreshed.assignments[0]!.status='completed';
   const fetch=vi.fn(async(input:RequestInfo|URL)=>({ok:true,json:async()=>({payload:String(input).startsWith('/projection')?refreshed:{title:'UI builder',status:'running',data:{}}})}));
