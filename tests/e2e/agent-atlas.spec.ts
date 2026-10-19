@@ -1,3 +1,4 @@
+import { projection } from '../../sandbox/src/components/displays/agent-atlas-projection.ts';
 import { expect, test } from 'playwright/test';
 
 test('Atlas fixture preserves its game-like workspace and semantic overlays across breakpoints', async ({ page }) => {
@@ -222,4 +223,21 @@ test('Atlas keeps playback in the remaining desktop viewport beneath its existin
  expect(geometry.bottom,JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.height+1);
  expect(geometry.playbackHeight).toBeLessThan(80);
  expect(errors).toEqual([]);
+});
+
+test('Atlas natural fit keeps an unmeasured small circuit readable on a desktop',async({page})=>{
+ await page.route('**/api/atlas/projection*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({payload:{...projection,scope:{...projection.scope,sizingMetric:'queue'},nodeStates:projection.nodeStates.map(state=>({...state,metrics:[]}))}})}));
+ await page.setViewportSize({width:1920,height:1080});
+ await page.goto('/displays/agent-atlas-workspace');
+ await page.getByRole('combobox',{name:/size by/i}).selectOption('queue');
+ await expect(page.locator('.ts-atlas-agent > rect').first()).toHaveAttribute('width','150');
+ await page.getByRole('button',{name:'Fit',exact:true}).click();
+ const card=page.locator('.ts-atlas-agent').first();
+ const size=await card.evaluate(node=>{
+  const rect=node.querySelector('rect')!.getBoundingClientRect();
+  const label=node.querySelector<SVGGraphicsElement>('.ts-atlas-agent-name')!;
+  return {width:rect.width,fontPixels:parseFloat(getComputedStyle(label).fontSize)*(label.getScreenCTM()?.a??0)};
+ });
+ expect(size.width,JSON.stringify(size)).toBeGreaterThanOrEqual(100);
+ expect(size.fontPixels,JSON.stringify(size)).toBeGreaterThanOrEqual(10);
 });
