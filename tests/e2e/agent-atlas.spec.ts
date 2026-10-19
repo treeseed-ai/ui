@@ -208,3 +208,15 @@ test('Atlas places event and assignment docks below the desktop canvas', async (
     .toBeGreaterThanOrEqual(geometry!.canvasBottom - 1);
 });
 
+
+test('Atlas keeps playback in the remaining desktop viewport beneath its existing page header',async({page})=>{
+ await page.setViewportSize({width:1280,height:900});
+ await page.goto('/displays/agent-atlas-workspace');
+ const geometry=await page.locator('.ts-agent-atlas').evaluate(node=>{
+  const root=node.getBoundingClientRect(),playback=node.querySelector('.ts-atlas-playback')!.getBoundingClientRect();
+  return {top:root.top,bottom:playback.bottom,height:window.innerHeight,playbackHeight:playback.height};
+ });
+ expect(geometry.top).toBeGreaterThan(0);
+ expect(geometry.bottom).toBeLessThanOrEqual(geometry.height+1);
+ expect(geometry.playbackHeight).toBeLessThan(80);
+});
