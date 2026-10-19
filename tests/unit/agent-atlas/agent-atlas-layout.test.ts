@@ -102,3 +102,23 @@ describe('Atlas fitting uses observed content bounds',()=>{
   expect(layout.height-bottom).toBeLessThanOrEqual(28);
  });
 });
+
+it("treats non-finite metrics as unavailable while preserving finite metric bounds", () => {
+  for (const score of [NaN, Infinity, -Infinity]) {
+    const layout = layoutAtlas([topology], new Map([["agent:small", score]]));
+    expect(layout.nodes.find((node) => node.id === "agent:small"))
+      .toMatchObject({ width: 150, height: 76 });
+  }
+
+  const zero = layoutAtlas([topology], new Map([["agent:small", 0]]));
+  const full = layoutAtlas([topology], new Map([["agent:small", 100]]));
+  const below = layoutAtlas([topology], new Map([["agent:small", -10]]));
+  const above = layoutAtlas([topology], new Map([["agent:small", 110]]));
+
+  expect(zero.nodes.find((node) => node.id === "agent:small")!.width).toBeLessThan(150);
+  expect(full.nodes.find((node) => node.id === "agent:small")!.width).toBe(210);
+  expect(below.nodes.find((node) => node.id === "agent:small")!.width).toBe(
+    zero.nodes.find((node) => node.id === "agent:small")!.width,
+  );
+  expect(above.nodes.find((node) => node.id === "agent:small")!.width).toBe(210);
+});
