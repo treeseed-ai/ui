@@ -275,11 +275,11 @@ test('Atlas keeps a long discussion artifact inspector contained at every viewpo
   const overlay = page.getByRole('dialog', { name: 'artifact detail' });
   await expect(overlay).toBeVisible();
   await expect(overlay.getByRole('heading', { name: artifactTitle })).toBeVisible();
-  await expect(overlay.getByText(description)).toBeVisible();
-  await expect(overlay.getByText(assignment)).toBeVisible();
-  await expect(overlay.getByText(commit)).toBeVisible();
-  await expect(overlay.getByText(repository)).toBeVisible();
-  await expect(overlay.getByText(path)).toBeVisible();
+  await expect(overlay.locator('.ts-atlas-record-detail p')).toHaveText(description);
+  await expect(overlay.locator('.ts-atlas-record-detail dd').getByText(assignment, { exact: true })).toBeVisible();
+  await expect(overlay.locator('.ts-atlas-record-detail dd').getByText(commit, { exact: true })).toBeVisible();
+  await expect(overlay.locator('.ts-atlas-record-detail dd').getByText(repository, { exact: true })).toBeVisible();
+  await expect(overlay.locator('.ts-atlas-record-detail dd').getByText(path, { exact: true })).toBeVisible();
 
   for (const width of [315, 390, 1280, 1920]) {
     await page.setViewportSize({ width, height: 900 });
