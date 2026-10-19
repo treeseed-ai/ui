@@ -241,3 +241,58 @@ test('Atlas natural fit keeps an unmeasured small circuit readable on a desktop'
  expect(size.width,JSON.stringify(size)).toBeGreaterThanOrEqual(100);
  expect(size.fontPixels,JSON.stringify(size)).toBeGreaterThanOrEqual(10);
 });
+
+test('Atlas keeps a long discussion artifact inspector contained at every viewport width', async ({ page }) => {
+  const artifactId = 'discussion/ui-atlas-center-inspector-body-tester/f7245712a709a187f68cbbb6f6fc8da4';
+  const artifactTitle = 'Adrian Webb: ui-atlas-center-inspector-body-tester — discussion-messages/ui-atlas-center-inspector-body-tester/f7245712a709a187f68cbbb6f6fc8da4.mdx';
+  const description = [
+    'const finite = Number.isFinite(value);',
+    'if (finite) {',
+    '  return await inspectArtifact({ id: artifactId, preserveCanonicalMetadata: true });',
+    '}',
+    'throw new Error("Artifact dimensions must remain contained at every viewport.");',
+  ].join('\n');
+  const assignment = 'assignment_01J9Q8M7K6V5T4R3S2P1N0M9L8';
+  const commit = 'ee32b3e6a4bc4703bc6fa1659d506eb294926a39';
+  const repository = 'treeseed-ai/ui';
+  const path = 'discussion-messages/ui-atlas-center-inspector-body-tester/f7245712a709a187f68cbbb6f6fc8da4.mdx';
+
+  await page.route('**/api/atlas/detail/artifact/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ payload: {
+      title: artifactTitle,
+      status: 'ready',
+      summary: { description, assignment, commit, repository, path },
+      data: { id: artifactId, title: artifactTitle, description, assignment, commit, repository, path },
+      related: [],
+      activity: [],
+    } }),
+  }));
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(`/displays/agent-atlas-workspace?project=project-demo&workday=workday-demo&date=2026-10-18&inspect=artifact~${encodeURIComponent(artifactId)}`);
+  const overlay = page.getByRole('dialog', { name: 'artifact detail' });
+  await expect(overlay).toBeVisible();
+  await expect(overlay.getByRole('heading', { name: artifactTitle })).toBeVisible();
+  await expect(overlay.getByText(description)).toBeVisible();
+  await expect(overlay.getByText(assignment)).toBeVisible();
+  await expect(overlay.getByText(commit)).toBeVisible();
+  await expect(overlay.getByText(repository)).toBeVisible();
+  await expect(overlay.getByText(path)).toBeVisible();
+
+  for (const width of [315, 390, 1280, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(overlay.getByRole('button', { name: 'Close detail' })).toBeVisible();
+    const overflow = await overlay.locator('.ts-atlas-overlay-body').evaluate((body) => ({
+      body: body.scrollWidth - body.clientWidth,
+      details: [...body.querySelectorAll('.ts-atlas-record-detail dd')].map((dd) => dd.scrollWidth - dd.clientWidth),
+    }));
+    expect(overflow.body, `${width}px inspector body overflow`).toBeLessThanOrEqual(1);
+    expect(overflow.details.length).toBeGreaterThan(0);
+    for (const [index, amount] of overflow.details.entries()) {
+      expect(amount, `${width}px detail value ${index} overflow`).toBeLessThanOrEqual(1);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), `${width}px page overflow`).toBeLessThanOrEqual(1);
+  }
+});
