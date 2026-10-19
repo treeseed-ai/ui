@@ -8,7 +8,10 @@ export interface AtlasLayout {
 
 function dimensions(kind: PositionedAtlasNode["kind"], score: number | undefined) {
   if (kind !== "agent") return { width: 0, height: 0 };
-  const scale = score === undefined ? 1 : 0.68 + (Math.max(0, Math.min(100, score)) / 100) * 0.72;
+  const scale =
+    score === undefined || !Number.isFinite(score)
+      ? 1
+      : 0.68 + (Math.max(0, Math.min(100, score)) / 100) * 0.72;
   return { width: Math.round(150 * scale), height: Math.round(76 * scale) };
 }
 
