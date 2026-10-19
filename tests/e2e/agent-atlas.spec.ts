@@ -146,3 +146,80 @@ test('Atlas keeps a long assignment selection contained across viewport widths',
   }
   expect(restoredUrl.searchParams.has('inspect')).toBe(false);
 });
+
+test('Atlas keeps the selected agent inspector beside a useful canvas area', async ({ page }) => {
+  await page.route('**/api/atlas/detail/agent/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ payload: {
+      title: 'UI builder',
+      status: 'running',
+      summary: { description: 'Building shared surfaces', health: 'ready' },
+      data: { name: 'UI builder', class: 'interactive', activity: 'running' },
+      related: [{ id: 'project-demo', kind: 'project', name: 'Platform' }],
+      activity: [{ id: 'event-demo', summary: 'Shared UI workflow rendered' }],
+    } }),
+  }));
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/displays/agent-atlas-workspace');
+  await page.getByRole('button', { name: 'UI builder, engineering, running' }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'agent detail' });
+  await expect(dialog.getByRole('heading', { name: 'UI builder' })).toBeVisible();
+  const geometry = await page.evaluate(() => {
+    const rect = (selector: string) => {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const { left, right, top, bottom, width, height } = node.getBoundingClientRect();
+      return { left, right, top, bottom, width, height };
+    };
+    return {
+      workspace: rect('.ts-atlas-workspace'),
+      canvas: rect('.ts-atlas-canvas'),
+      dialog: rect('[role="dialog"]'),
+    };
+  });
+  expect(geometry.workspace).not.toBeNull();
+  expect(geometry.canvas).not.toBeNull();
+  expect(geometry.dialog).not.toBeNull();
+  expect(geometry.canvas!.height, 'canvas must fit the desktop workspace').toBeLessThanOrEqual(600);
+  expect(geometry.dialog!.right, 'inspector aligns to workspace right edge')
+    .toBeCloseTo(geometry.workspace!.right, 0);
+  expect(geometry.dialog!.width / geometry.workspace!.width, 'inspector uses at most 45% of workspace')
+    .toBeLessThanOrEqual(0.45);
+  expect(geometry.dialog!.left - geometry.canvas!.left, 'canvas retains uncovered space on the left')
+    .toBeGreaterThan(100);
+});
+
+test('Atlas places event and assignment docks below the desktop canvas', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/displays/agent-atlas-workspace');
+
+  const geometry = await page.evaluate(() => {
+    const canvas = document.querySelector('.ts-atlas-canvas');
+    const docks = document.querySelector('.ts-atlas-docks');
+    if (!canvas || !docks) return null;
+    const canvasRect = canvas.getBoundingClientRect();
+    const dockRect = docks.getBoundingClientRect();
+    return { canvasBottom: canvasRect.bottom, dockTop: dockRect.top };
+  });
+  expect(geometry, 'canvas and dock should exist').not.toBeNull();
+  expect(geometry!.dockTop, 'event/assignment dock belongs below canvas')
+    .toBeGreaterThanOrEqual(geometry!.canvasBottom - 1);
+});
+
+
+test('Atlas keeps playback in the remaining desktop viewport beneath its existing page header',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.setViewportSize({width:1280,height:900});
+ await page.goto('/displays/agent-atlas-workspace');
+ await expect.poll(()=>page.locator('.ts-agent-atlas').evaluate(node=>node.getBoundingClientRect().bottom)).toBeLessThanOrEqual(901);
+ const geometry=await page.locator('.ts-agent-atlas').evaluate(node=>{
+  const root=node.getBoundingClientRect(),playback=node.querySelector('.ts-atlas-playback')!.getBoundingClientRect();
+  return {top:root.top,bottom:playback.bottom,height:window.innerHeight,playbackHeight:playback.height,rootHeight:root.height,available:getComputedStyle(node).getPropertyValue('--ts-atlas-available-height'),rows:getComputedStyle(node).gridTemplateRows};
+ });
+ expect(geometry.top).toBeGreaterThan(0);
+ expect(geometry.bottom,JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.height+1);
+ expect(geometry.playbackHeight).toBeLessThan(80);
+ expect(errors).toEqual([]);
+});

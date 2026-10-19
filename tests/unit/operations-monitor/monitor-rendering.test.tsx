@@ -21,7 +21,7 @@ describe('Agent Lab server rendering', () => {
 			initialAllocation={{ revision: 'one', generatedAt, time: { availableSeconds: null, requestedSeconds: 0, reservedSeconds: 0, activeSeconds: 0, elapsedSeconds: 0, releasedSeconds: 0, remainingSeconds: null, overrunSeconds: 0 }, projects: [], agentClasses: [], workdayTime: [] }}
 			endpoints={{ overview: '/overview', activity: '/activity', metricSeries: '/series' }} preference={{ enabled: false, intervalSeconds: 5 }} metricDestinations={{}} logoSrc="/logo.svg" />
 			<CommandOverlayStack endpoints={{ collection: '/collection', detailBase: '/details', state: '/state', actions: '/actions', simulations: '/simulations' }} realtime={{ enabled: false, intervalMs: 5000 }} timeZone="America/New_York" /></>);
-		expect(html).toContain('Agent Lab'); expect(html).toContain('/logo.svg'); expect(html).toContain('Allocation'); expect(html).toContain('Compress vitals'); expect(html).toContain('aria-expanded="true"');
+		expect(html).toContain('Agent Lab'); expect(html).toContain('/logo.svg'); expect(html).toContain('Allocation'); expect(html).toContain('Expand vitals'); expect(html).toContain('aria-expanded="false"');
 	});
 
 	it('renders the complete workspace and metric grid before browser hydration', () => {

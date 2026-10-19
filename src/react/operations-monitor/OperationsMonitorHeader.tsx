@@ -20,15 +20,15 @@ function storedToggles() { if (typeof window === 'undefined') return { allocatio
 
 export default function OperationsMonitorHeader({ initialOverview, initialActivity, initialSeries, initialAllocation, endpoints, preference, metricDestinations, logoSrc }: Props) {
 	const [showAllocation, setShowAllocation] = useState(false); const [showActivity, setShowActivity] = useState(false); const [showMetrics, setShowMetrics] = useState(false);
-	const [density,setDensity]=useState<'expanded'|'compact'>('expanded');
+	const [density,setDensity]=useState<'expanded'|'compact'>('compact');
 	const [densityReady,setDensityReady]=useState(!endpoints.viewState);
 	const densityTouched=useRef(false);
 	const [expandedSurface, setExpandedSurface] = useState<string | null>(null);
 	const dismissSurface = useCallback(() => setExpandedSurface(null), []);
 	useEffect(() => { const saved = storedToggles(); setShowAllocation(saved.allocation === true); setShowActivity(saved.activity === true); setShowMetrics(saved.metrics === true); }, []);
 	useEffect(() => {
-		let active=true; let localDensity:'expanded'|'compact'='expanded';
-		try { localDensity=localStorage.getItem('treeseed.agent-lab.vitals-density')==='compact'?'compact':'expanded'; } catch {}
+		let active=true; let localDensity:'expanded'|'compact'='compact';
+		try { localDensity=localStorage.getItem('treeseed.agent-lab.vitals-density')==='expanded'?'expanded':'compact'; } catch {}
 		if (!endpoints.viewState) { setDensity(localDensity); setDensityReady(true); return; }
 		void fetch(`${endpoints.viewState}?namespace=atlas`,{headers:{accept:'application/json'}}).then(response=>{
 			if(!response.ok) throw new Error('view state unavailable'); return response.json();
