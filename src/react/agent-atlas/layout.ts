@@ -6,9 +6,9 @@ export interface AtlasLayout {
   height: number;
 }
 
-function dimensions(kind: PositionedAtlasNode["kind"], score: number) {
+function dimensions(kind: PositionedAtlasNode["kind"], score: number | undefined) {
   if (kind !== "agent") return { width: 0, height: 0 };
-  const scale = 0.68 + (Math.max(0, Math.min(100, score)) / 100) * 0.72;
+  const scale = score === undefined ? 1 : 0.68 + (Math.max(0, Math.min(100, score)) / 100) * 0.72;
   return { width: Math.round(150 * scale), height: Math.round(76 * scale) };
 }
 
@@ -19,7 +19,6 @@ export function layoutAtlas(
 ): AtlasLayout {
   const placed: PositionedAtlasNode[] = [];
   let projectX = 28;
-  let maximumHeight = 520;
   for (const topology of topologies) {
     const agents = topology.nodes.filter((node) => node.kind === "agent");
     const groups = topology.nodes.filter((node) => node.kind === "group");
@@ -56,7 +55,7 @@ export function layoutAtlas(
         height: groupHeight,
       });
       members.forEach((agent, index) => {
-        const size = dimensions("agent", metricScores.get(agent.id) ?? 0);
+        const size = dimensions("agent", metricScores.get(agent.id));
         const column = (index + seed + groupIndex) % groupColumns;
         const row = Math.floor(index / groupColumns);
         placed.push({
@@ -70,7 +69,7 @@ export function layoutAtlas(
     }
     if (ungrouped.length) {
       ungrouped.forEach((agent, index) => {
-        const size = dimensions("agent", metricScores.get(agent.id) ?? 0);
+        const size = dimensions("agent", metricScores.get(agent.id));
         placed.push({
           ...agent,
           x: projectX + 48 + (index % columns) * 190,
@@ -90,11 +89,10 @@ export function layoutAtlas(
         height: Math.max(260, cursorY),
       });
     projectX += projectWidth + 34;
-    maximumHeight = Math.max(maximumHeight, cursorY + 46);
   }
   return {
     nodes: placed,
     width: Math.max(720, projectX),
-    height: maximumHeight,
+    height: Math.max(1, ...placed.map(node => node.y + node.height + 18)),
   };
 }

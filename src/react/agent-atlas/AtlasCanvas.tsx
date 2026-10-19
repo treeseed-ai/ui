@@ -55,13 +55,10 @@ export function AtlasCanvas({
   } | null>(null);
   const scores = useMemo(
     () =>
-      new Map(
-        states.map((state) => [
-          state.nodeId,
-          state.metrics.find((item) => item.metric === metric)
-            ?.normalizedValue ?? 0,
-        ]),
-      ),
+      new Map(states.flatMap(state => {
+        const value = state.metrics.find(item => item.metric === metric)?.normalizedValue;
+        return value === undefined ? [] : [[state.nodeId, value] as const];
+      })),
     [metric, states],
   );
   const layout = useMemo(
