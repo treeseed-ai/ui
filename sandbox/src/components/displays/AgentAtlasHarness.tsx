@@ -1,7 +1,7 @@
 import { AgentAtlasWorkspace } from '../../../../src/react/agent-atlas/AgentAtlasWorkspace.tsx';
 import type { AtlasProjection } from '../../../../src/react/agent-atlas/types.ts';
 
-const projection: AtlasProjection = {
+export const projection: AtlasProjection = {
 	revision: 'fixture-1', generatedAt: '2026-09-02T12:00:00Z', timeZone: 'America/New_York',
 	scope: { teamId: 'team-demo', selectedDate: '2026-09-02', workdayIds: ['workday-demo'], projectIds: ['project-demo'], groupIds: ['group-demo'], agentIds: ['agent-demo'], activityProfiles: ['engineering'], sizingMetric: 'activity' },
 	topologies: [{ contract: 'treeseed.agent-topology/v1', revision: 'topology-1', projectId: 'project-demo', immutableRef: 'abc123', capturedAt: '2026-09-02T12:00:00Z', planningGraphRevision: 'graph-1', nodes: [
