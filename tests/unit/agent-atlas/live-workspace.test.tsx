@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AgentAtlasWorkspace } from '../../../src/react/agent-atlas/AgentAtlasWorkspace.tsx';
-import { projection } from '../../../sandbox/src/components/displays/AgentAtlasHarness.tsx';
+import { projection } from '../../../sandbox/src/components/displays/agent-atlas-projection.ts';
 
 class FakeEventSource extends EventTarget {
  static instances: FakeEventSource[] = [];
