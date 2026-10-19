@@ -12,6 +12,12 @@ class FakeEventSource extends EventTarget {
 afterEach(() => { FakeEventSource.instances=[]; vi.unstubAllGlobals(); history.replaceState({},'', '/'); });
 const endpoints={projection:'/projection?workday=workday-demo',delta:'/delta',stream:'/stream?workday=workday-demo',detail:'/detail',assignmentGraphs:'/graphs'};
 describe('Atlas live inspector updates',()=>{
+ it('keeps unmeasured cards at neutral size through the actual canvas consumer',()=>{
+  const initial=structuredClone(projection);initial.nodeStates[0]!.metrics=[];
+  const {container}=render(<AgentAtlasWorkspace initialProjection={initial} endpoints={{...endpoints,stream:''}}/>);
+  expect(container.querySelector('.ts-atlas-agent > rect')).toHaveAttribute('width','150');
+ });
+
  it('refreshes on an assignment-only delta while preserving selection and exact scope',async()=>{
   const initial=structuredClone(projection),refreshed=structuredClone(projection);refreshed.revision='r2';refreshed.nodeStates[0]!.status='completed';refreshed.assignments[0]!.status='completed';
   const fetch=vi.fn(async(input:RequestInfo|URL)=>({ok:true,json:async()=>({payload:String(input).startsWith('/projection')?refreshed:{title:'UI builder',status:'running',data:{}}})}));

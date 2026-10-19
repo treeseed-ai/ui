@@ -87,3 +87,18 @@ describe("layoutAtlas", () => {
     expect(result.width).toBeGreaterThanOrEqual(720);
   });
 });
+
+describe('Atlas fitting uses observed content bounds',()=>{
+ it('keeps an unavailable sizing metric neutral rather than treating it as a measured zero',()=>{
+  const layout=layoutAtlas([topology],new Map());
+  expect(layout.nodes.find(node=>node.id==='agent:small')).toMatchObject({width:150,height:76});
+  const zero=layoutAtlas([topology],new Map([['agent:small',0]]));
+  expect(zero.nodes.find(node=>node.id==='agent:small')!.width).toBeLessThan(150);
+ });
+ it('does not add hundreds of empty logical pixels below a small project',()=>{
+  const layout=layoutAtlas([topology],new Map());
+  const bottom=Math.max(...layout.nodes.map(node=>node.y+node.height));
+  expect(layout.height).toBeGreaterThanOrEqual(bottom);
+  expect(layout.height-bottom).toBeLessThanOrEqual(28);
+ });
+});

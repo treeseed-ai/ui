@@ -223,3 +223,17 @@ test('Atlas keeps playback in the remaining desktop viewport beneath its existin
  expect(geometry.playbackHeight).toBeLessThan(80);
  expect(errors).toEqual([]);
 });
+
+test('Atlas natural fit keeps a small circuit readable on a desktop',async({page})=>{
+ await page.setViewportSize({width:1920,height:1080});
+ await page.goto('/displays/agent-atlas-workspace');
+ await page.getByRole('button',{name:'Fit',exact:true}).click();
+ const card=page.locator('.ts-atlas-agent').first();
+ const size=await card.evaluate(node=>{
+  const rect=node.querySelector('rect')!.getBoundingClientRect();
+  const label=node.querySelector<SVGGraphicsElement>('.ts-atlas-agent-name')!;
+  return {width:rect.width,fontPixels:parseFloat(getComputedStyle(label).fontSize)*(label.getScreenCTM()?.a??0)};
+ });
+ expect(size.width,JSON.stringify(size)).toBeGreaterThanOrEqual(100);
+ expect(size.fontPixels,JSON.stringify(size)).toBeGreaterThanOrEqual(10);
+});
