@@ -531,3 +531,6 @@
     padding: var(--ts-space-3);
   }
 }
+
+.catalog-page-header>div{min-width:0}
+.catalog-page-header h1{overflow-wrap:anywhere}

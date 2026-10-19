@@ -56,3 +56,93 @@ test.describe('Atlas touch input', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   });
 });
+
+test('Atlas keeps a long assignment selection contained across viewport widths', async ({ page }) => {
+  await page.route('**/api/atlas/detail/assignment/**', async (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      payload: {
+        title: 'Long assignment detail',
+        status: 'running',
+        summary: { description: 'Assignment detail for responsive inspection', health: 'ready' },
+        data: { name: 'Long assignment', status: 'running' },
+        related: [],
+        activity: [],
+      },
+    }),
+  }));
+
+  const scope = '?project=project-demo&workday=workday-demo&date=2026-10-18';
+  const assignmentId = 'assignment_01J9Q8M7K6V5T4R3S2P1N0M9L8';
+  const widths = [315, 390, 1280];
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(`/displays/agent-atlas-workspace${scope}`);
+  const originalUrl = new URL(page.url());
+  await page.goto(
+    `/displays/agent-atlas-workspace${scope}&inspect=assignment~${assignmentId}`,
+  );
+
+  const overlay = page.getByRole('dialog', { name: 'assignment detail' });
+  await expect(overlay).toBeVisible();
+  await expect(overlay.locator('code').filter({ hasText: assignmentId })).toHaveText(assignmentId);
+  await expect(page.getByRole('heading', { name: 'Long assignment detail' })).toBeVisible();
+
+  const discuss = overlay.getByRole('button', { name: 'Discuss' });
+  const close = overlay.getByRole('button', { name: 'Close detail' });
+
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 900 });
+    const geometry = await page.evaluate(() => {
+      const viewport = document.documentElement.clientWidth;
+      const rect = (element: Element) => {
+        const { left, right } = element.getBoundingClientRect();
+        return { left, right };
+      };
+      const overlayNode = document.querySelector('[role="dialog"]');
+      const header = overlayNode?.querySelector('header');
+      return {
+        viewport,
+        pageWidth: document.documentElement.scrollWidth,
+        overlay: overlayNode ? rect(overlayNode) : null,
+        header: header ? rect(header) : null,
+      };
+    });
+    expect(geometry.pageWidth - geometry.viewport, `${width}px page overflow`).toBeLessThanOrEqual(1);
+    expect(geometry.overlay, 'overlay should exist').not.toBeNull();
+    expect(geometry.header, 'overlay header should exist').not.toBeNull();
+    expect(geometry.overlay!.left, `${width}px overlay left`).toBeGreaterThanOrEqual(-1);
+    expect(geometry.overlay!.right, `${width}px overlay right`).toBeLessThanOrEqual(geometry.viewport + 1);
+    expect(geometry.header!.left, `${width}px header left`).toBeGreaterThanOrEqual(-1);
+    expect(geometry.header!.right, `${width}px header right`).toBeLessThanOrEqual(geometry.viewport + 1);
+
+    for (const control of [discuss, close]) {
+      await expect(control).toBeVisible();
+      const rect = await control.boundingBox();
+      expect(rect, 'control should have a bounding box').not.toBeNull();
+      expect(rect!.x, `${width}px control left`).toBeGreaterThanOrEqual(0);
+      expect(rect!.x + rect!.width, `${width}px control right`).toBeLessThanOrEqual(width);
+    }
+  }
+
+  const discussionOpen = page.evaluate(() => new Promise<void>((resolve) => {
+    document.addEventListener(
+      'treeseed:discussion-open',
+      () => resolve(),
+      { once: true },
+    );
+  }));
+  await discuss.click();
+  await discussionOpen;
+
+  await expect(overlay).toBeVisible();
+  await close.click();
+  await expect(overlay).toBeHidden();
+
+  const restoredUrl = new URL(page.url());
+  for (const key of ['project', 'workday', 'date']) {
+    expect(restoredUrl.searchParams.get(key), `${key} scope preserved`).toBe(originalUrl.searchParams.get(key));
+  }
+  expect(restoredUrl.searchParams.has('inspect')).toBe(false);
+});
