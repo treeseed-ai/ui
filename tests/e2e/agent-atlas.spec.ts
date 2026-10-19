@@ -210,13 +210,16 @@ test('Atlas places event and assignment docks below the desktop canvas', async (
 
 
 test('Atlas keeps playback in the remaining desktop viewport beneath its existing page header',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  await page.setViewportSize({width:1280,height:900});
  await page.goto('/displays/agent-atlas-workspace');
+ await expect.poll(()=>page.locator('.ts-agent-atlas').evaluate(node=>node.getBoundingClientRect().bottom)).toBeLessThanOrEqual(901);
  const geometry=await page.locator('.ts-agent-atlas').evaluate(node=>{
   const root=node.getBoundingClientRect(),playback=node.querySelector('.ts-atlas-playback')!.getBoundingClientRect();
-  return {top:root.top,bottom:playback.bottom,height:window.innerHeight,playbackHeight:playback.height};
+  return {top:root.top,bottom:playback.bottom,height:window.innerHeight,playbackHeight:playback.height,rootHeight:root.height,available:getComputedStyle(node).getPropertyValue('--ts-atlas-available-height'),rows:getComputedStyle(node).gridTemplateRows};
  });
  expect(geometry.top).toBeGreaterThan(0);
- expect(geometry.bottom).toBeLessThanOrEqual(geometry.height+1);
+ expect(geometry.bottom,JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.height+1);
  expect(geometry.playbackHeight).toBeLessThan(80);
+ expect(errors).toEqual([]);
 });
