@@ -73,12 +73,30 @@ function AgentAtlasApplication({
   initialSurfaceMode = "inline",
 }: Props) {
   const [projection, setProjection] = useState(initialProjection);
+  const playbackModeRef = useRef(projection.playback.mode);
+  playbackModeRef.current = projection.playback.mode;
+  const atlasRoot = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const root = atlasRoot.current;
+    if (!root) return;
+    const resize = () => {
+      const top = Math.max(0, root.getBoundingClientRect().top + window.scrollY);
+      root.style.setProperty('--ts-atlas-available-height', `${Math.max(0, window.innerHeight - top - 16)}px`);
+    };
+    resize();
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(resize) : null;
+    if (root.parentElement?.parentElement) observer?.observe(root.parentElement.parentElement);
+    observer?.observe(document.body);
+    observer?.observe(root);
+    window.addEventListener('resize', resize);
+    return () => { observer?.disconnect(); window.removeEventListener('resize', resize); };
+  }, []);
   const [metric, setMetric] = useState<AtlasSizingMetric>(
     initialProjection.scope.sizingMetric,
   );
   const [signals, setSignals] = useState(true);
   const [seed, setSeed] = useState(0);
-  const [dock, setDock] = useState<"events" | "assignments" | "diagnostics" | null>(null);
+  const [dock, setDock] = useState<"events" | "assignments" | "diagnostics" | null>("assignments");
   const [interfaceMode, setInterfaceMode] = useState<AgentLabInterfaceMode>(() =>
     canDiagnose && typeof location !== "undefined" && new URL(location.href).searchParams.get("mode") === "diagnostic" ? "diagnostic" : "easy",
   );
@@ -135,14 +153,14 @@ function AgentAtlasApplication({
     );
     source.addEventListener("atlas.delta", (event) => {
       const delta = JSON.parse((event as MessageEvent).data);
-      if (projection.playback.mode === "historical" || overlays.length) {
+      if (playbackModeRef.current === "historical") {
         setNewEvents((value) => value + (delta.activity?.length ?? 0));
         return;
       }
       void load({});
     });
     return () => source.close();
-  }, [endpoints.stream, load, overlays.length, projection.playback.mode, projection.revision]);
+  }, [endpoints.stream, load, projection.playback.mode, projection.revision]);
   useEffect(() => {
     try {
       sessionStorage.setItem(
@@ -314,6 +332,7 @@ function AgentAtlasApplication({
       className="ts-agent-atlas-surface"
     >
       <section
+        ref={atlasRoot}
         className="ts-agent-atlas"
         data-scene="agent-lab.atlas"
         data-mode={projection.playback.mode}
