@@ -21,7 +21,7 @@ export interface MonitorOverview {
 	workdayContext: { selectedDate: string; selectedWorkdayId: string | null; latestWorkdayId: string | null; workdays: WorkdaySummary[] };
 	metricTargets: Record<string, number>; targetRevision: string | null;
 }
-export interface DeltaPayload<T> { revision: string; generatedAt: string; cursor: string | null; upserts: T[]; removedIds: string[]; }
+export interface DeltaPayload<T> { revision: string; generatedAt: string; cursor: string | null; upserts: T[]; removedIds: string[]; complete?: boolean; }
 export interface RealtimePreference { enabled: boolean; intervalSeconds: 2 | 5 | 15 | 30; }
 export interface AllocationSliceItem { id: string; name: string; percentage: number; projectId?: string; }
 export interface AllocationSnapshot {
