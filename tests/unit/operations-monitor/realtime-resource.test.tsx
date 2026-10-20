@@ -34,11 +34,13 @@ describe('real-time resource coordinator', () => {
 	it('replaces stale rows with a successful complete empty snapshot', async () => {
 		vi.useFakeTimers();
 		const request = vi.fn().mockRejectedValueOnce(new Error('unavailable')).mockResolvedValueOnce(Response.json({ complete: true, upserts: [], removedIds: [], cursor: 'next' }));
+		const endpoint = () => '/activity';
 		const parse = (value: unknown) => {
 			const payload = value as { complete?: boolean; upserts: number[]; removedIds: string[]; cursor: string };
 			return { data: payload.upserts, removedIds: payload.removedIds, cursor: payload.cursor, replace: payload.complete === true };
 		};
-		const { result } = renderHook(() => useRealtimeResource({ initialData: [1], endpoint: () => '/activity', intervalMs: 60_000, enabled: true, parse, merge: (current, next, removed) => [...current.filter((item) => !removed.includes(String(item))), ...next], request }));
+		const initialData = [1]; const merge = (current: number[], next: number[], removed: string[]) => [...current.filter((item) => !removed.includes(String(item))), ...next];
+		const { result } = renderHook(() => useRealtimeResource({ initialData, endpoint, intervalMs: 60_000, enabled: true, parse, merge, request }));
 		await act(async () => { await vi.advanceTimersByTimeAsync(0); });
 		expect(result.current.data).toEqual([1]);
 		expect(result.current.status).toBe('degraded');
@@ -52,9 +54,11 @@ describe('real-time resource coordinator', () => {
 
 	it('clears rows on scope changes and ignores a late response from the previous scope', async () => {
 		vi.useFakeTimers(); let resolveOld!: (response: Response) => void;
-		const request = vi.fn((url: string) => url.includes('team-a') ? new Promise<Response>((resolve) => { resolveOld = resolve; }) : Promise.resolve(Response.json({ data: ['new'] })));
+		let calls = 0;
+		const request = vi.fn(() => ++calls === 1 ? new Promise<Response>((resolve) => { resolveOld = resolve; }) : Promise.resolve(Response.json({ data: ['new'] })));
 		const parse = (value: unknown) => ({ data: (value as { data: string[] }).data });
-		const { result, rerender } = renderHook(({ scope }) => useRealtimeResource({ initialData: ['old-frame'], scopeInitialData: [], scopeKey: scope, endpoint: () => `/activity?${scope}`, intervalMs: 60_000, enabled: true, parse, request }), { initialProps: { scope: 'team-a' } });
+		const endpoint = () => '/activity'; const initialData = ['old-frame']; const emptyData: string[] = [];
+		const { result, rerender } = renderHook(({ scope }) => useRealtimeResource({ initialData, scopeInitialData: emptyData, scopeKey: scope, endpoint, intervalMs: 60_000, enabled: true, parse, request }), { initialProps: { scope: 'team-a' } });
 		await act(async () => { await vi.advanceTimersByTimeAsync(0); });
 		rerender({ scope: 'team-b' });
 		expect(result.current.data).toEqual([]);
@@ -68,7 +72,9 @@ describe('real-time resource coordinator', () => {
 	it('preserves delta upserts and removedIds behavior', async () => {
 		vi.useFakeTimers();
 		const request = vi.fn(async () => Response.json({ upserts: [{ id: '3', stateVersion: 1 }], removedIds: ['2'] }));
-		const { result } = renderHook(() => useRealtimeResource({ initialData: [{ id: '1', stateVersion: 1 }, { id: '2', stateVersion: 1 }], endpoint: () => '/activity', intervalMs: 60_000, enabled: true, parse: (value) => { const payload = value as { upserts: Array<{ id: string; stateVersion: number }>; removedIds: string[] }; return { data: payload.upserts, removedIds: payload.removedIds }; }, merge: mergeVersioned, request }));
+		const parse = (value: unknown) => { const payload = value as { upserts: Array<{ id: string; stateVersion: number }>; removedIds: string[] }; return { data: payload.upserts, removedIds: payload.removedIds }; };
+		const endpoint = () => '/activity'; const initialData = [{ id: '1', stateVersion: 1 }, { id: '2', stateVersion: 1 }];
+		const { result } = renderHook(() => useRealtimeResource({ initialData, endpoint, intervalMs: 60_000, enabled: true, parse, merge: mergeVersioned, request }));
 		await act(async () => { await vi.advanceTimersByTimeAsync(0); });
 		expect(result.current.data).toEqual([{ id: '1', stateVersion: 1 }, { id: '3', stateVersion: 1 }]);
 	});

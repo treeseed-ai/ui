@@ -78,7 +78,7 @@ export function useRealtimeResource<T>({
 		document.addEventListener('visibilitychange', visibility); window.addEventListener('online', resume); window.addEventListener('offline', offline);
 		void refresh();
 		return () => { disposed = true; clear(); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('online', resume); window.removeEventListener('offline', offline); };
-	}, [enabled, endpoint, intervalMs, merge, parse, refreshVersion, request, scopeKey, scopeInitialData]);
+	}, [enabled, endpoint, intervalMs, merge, parse, refreshVersion, request, scopeKey]);
 
 	useEffect(() => {
 		if (!enabled) return;
