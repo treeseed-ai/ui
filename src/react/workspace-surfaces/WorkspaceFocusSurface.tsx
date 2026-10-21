@@ -53,10 +53,13 @@ export function WorkspaceFocusSurface({ id, label, mode, boundary = 'control-sur
 		if (!surface) return;
 		const content = boundaryElement(surface, boundary);
 		const header = document.querySelector<HTMLElement>('.ts-product-shell__header');
+		const bottomNav = document.querySelector<HTMLElement>('.ts-bottom-nav');
 		const rect = content.getBoundingClientRect();
 		const top = Math.max(rect.top, header?.getBoundingClientRect().bottom ?? 0, 0);
+		const navRect = bottomNav?.getBoundingClientRect();
+		const bottom = navRect && navRect.height > 0 && navRect.bottom > 0 && navRect.top < window.innerHeight ? Math.max(top, navRect.top) : window.innerHeight;
 		const left = Math.max(0, rect.left);
-		setFrame({ top, left, width: Math.max(1, Math.min(rect.width, window.innerWidth - left)), height: Math.max(1, window.innerHeight - top) });
+		setFrame({ top, left, width: Math.max(1, Math.min(rect.width, window.innerWidth - left)), height: Math.max(1, bottom - top) });
 	}, [boundary]);
 	const expand = useCallback(() => {
 		captureFrame();
