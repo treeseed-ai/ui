@@ -16,6 +16,32 @@ function SurfaceHarness() {
 }
 
 describe('workspace focus surfaces', () => {
+	it('keeps the focused frame above the fixed mobile navigation', () => {
+		const innerWidth = Object.getOwnPropertyDescriptor(window, 'innerWidth');
+		const innerHeight = Object.getOwnPropertyDescriptor(window, 'innerHeight');
+		Object.defineProperty(window, 'innerWidth', { configurable: true, value: 425 });
+		Object.defineProperty(window, 'innerHeight', { configurable: true, value: 800 });
+		const bounds = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+			const rect = this instanceof HTMLElement && this.matches('.ts-control-surface') ? { top: 120, left: 0, width: 425, height: 800 }
+				: this instanceof HTMLElement && this.matches('.ts-product-shell__header') ? { top: 0, left: 0, width: 425, height: 64 }
+					: this instanceof HTMLElement && this.matches('.ts-bottom-nav') ? { top: 740, left: 0, width: 425, height: 60 }
+						: { top: 0, left: 0, width: 0, height: 0 };
+			return { ...rect, right: rect.left + rect.width, bottom: rect.top + rect.height, x: rect.left, y: rect.top, toJSON: () => ({}) } as DOMRect;
+		});
+		function MobileSurfaceHarness() {
+			const [mode, setMode] = useState<'inline' | 'focused'>('inline');
+			return <><header className="ts-product-shell__header" /><main className="ts-control-surface"><WorkspaceFocusSurface id="activity" label="activity chart" mode={mode} onModeChange={setMode}><div>Chart content</div></WorkspaceFocusSurface></main><nav className="ts-bottom-nav" /></>;
+		}
+		render(<MobileSurfaceHarness />);
+		fireEvent.click(screen.getByRole('button', { name: 'Expand activity chart' }));
+		expect(document.querySelector('[data-workspace-surface="activity"]')).toHaveAttribute('style', expect.stringContaining('--ts-workspace-focus-height: 620px'));
+		expect(document.querySelector('[data-workspace-surface="activity"]')).toHaveAttribute('style', expect.stringContaining('--ts-workspace-focus-top: 120px'));
+		expect(document.querySelector('[data-workspace-surface="activity"]')).toHaveAttribute('style', expect.stringContaining('--ts-workspace-focus-width: 425px'));
+		bounds.mockRestore();
+		if (innerWidth) Object.defineProperty(window, 'innerWidth', innerWidth);
+		if (innerHeight) Object.defineProperty(window, 'innerHeight', innerHeight);
+	});
+
 	it('focuses within the content boundary and restores the mounted draft on shrink', () => {
 		const { container } = render(<SurfaceHarness />);
 		const input = screen.getByRole('textbox', { name: 'Draft' });
