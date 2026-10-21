@@ -1,14 +1,18 @@
 ---
 import type { WorkdaySummary } from '../../../react/operations-monitor/types.ts';
+import { formatWorkdayStart, shortWorkdayIds } from './workday-selector.ts';
 
 interface Props {
 	selectedDate: string;
 	selectedWorkdayId: string | null;
 	workdays: Array<WorkdaySummary & { href: string }>;
 	latestHref: string;
+	timeZone: string;
 }
-const { selectedDate, selectedWorkdayId, workdays, latestHref } = Astro.props as Props;
+const { selectedDate, selectedWorkdayId, workdays, latestHref, timeZone } = Astro.props as Props;
 const selected = workdays.find((workday) => workday.id === selectedWorkdayId);
+const shortIds = shortWorkdayIds(workdays);
+const selectedStart = selected ? formatWorkdayStart(selected.startedAt, timeZone) : null;
 ---
 
 <div class="ts-workday-selector" data-ts-workday-selector>
@@ -18,14 +22,17 @@ const selected = workdays.find((workday) => workday.id === selectedWorkdayId);
 	<details class="ts-workday-selector__calendar" data-ts-workday-calendar>
 		<summary aria-label={`Choose workday. ${selected?.title ?? 'No workday selected'}`}>
 			<span class="ts-workday-selector__calendar-icon" aria-hidden="true">▦</span>
-			<span><small>Workday</small><strong>{selected?.title ?? selectedDate}</strong></span>
+			<span><small>Workday</small><strong>{selected?.title ?? selectedDate}</strong>{selected ? <small>ID {shortIds.get(selected.id) ?? selected.id} · {selectedStart ? <time datetime={selectedStart.dateTime}>{selectedStart.label}</time> : 'Start time unavailable'}</small> : null}</span>
 		</summary>
 		<div class="ts-workday-selector__popover">
 			<label><span>Date</span><input type="date" value={selectedDate} data-ts-workday-date /></label>
 			<div class="ts-workday-selector__list" role="list" aria-label={`Workdays on ${selectedDate}`}>
-				{workdays.length ? workdays.map((workday) => <a href={workday.href} role="listitem" aria-current={workday.id === selectedWorkdayId ? 'true' : undefined}>
-					<span><strong>{workday.title}</strong><small>{workday.status}</small></span><span aria-hidden="true">→</span>
-				</a>) : <p>No workdays intersect this date.</p>}
+				{workdays.length ? workdays.map((workday) => {
+					const start = formatWorkdayStart(workday.startedAt, timeZone);
+					return <a href={workday.href} role="listitem" aria-current={workday.id === selectedWorkdayId ? 'true' : undefined}>
+						<span><strong>{workday.title}</strong><small>{workday.status}</small><small>ID {shortIds.get(workday.id) ?? workday.id}</small>{start ? <time datetime={start.dateTime}>{start.label}</time> : <small>Start time unavailable</small>}</span><span aria-hidden="true">→</span>
+					</a>;
+				}) : <p>No workdays intersect this date.</p>}
 			</div>
 		</div>
 	</details>
