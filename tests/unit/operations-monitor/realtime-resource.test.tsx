@@ -37,7 +37,7 @@ describe('real-time resource coordinator', () => {
 		const endpoint = () => '/activity';
 		const parse = (value: unknown) => {
 			const payload = value as { complete?: boolean; upserts: number[]; removedIds: string[]; cursor: string };
-			return { data: payload.upserts, removedIds: payload.removedIds, cursor: payload.cursor, replace: payload.complete === true };
+			return { data: payload.upserts, removedIds: payload.removedIds, cursor: payload.cursor, complete: payload.complete === true, replace: payload.complete === true };
 		};
 		const initialData = [1]; const merge = (current: number[], next: number[], removed: string[]) => [...current.filter((item) => !removed.includes(String(item))), ...next];
 		const { result } = renderHook(() => useRealtimeResource({ initialData, endpoint, intervalMs: 60_000, enabled: true, parse, merge, request }));
@@ -48,6 +48,7 @@ describe('real-time resource coordinator', () => {
 		act(() => result.current.reconnect());
 		await act(async () => { await vi.advanceTimersByTimeAsync(0); });
 		expect(result.current.data).toEqual([]);
+		expect(result.current.snapshotComplete).toBe(true);
 		expect(result.current.status).toBe('live');
 		expect(result.current.error).toBeNull();
 	});

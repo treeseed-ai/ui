@@ -8,8 +8,8 @@ export function LiveAgentActivityGantt({ initial, endpoint, preference, active, 
 	initial: DeltaPayload<ActivityIntervalItem>; endpoint: string; preference: RealtimePreference; active: boolean; start: string; end: string; timeZone: string;
 }) {
 	const resourceEndpoint = useCallback((cursor: string | null) => `${endpoint}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''}`, [endpoint]);
-	const parse = useCallback((payload: unknown) => { const delta = payload as DeltaPayload<ActivityIntervalItem>; return { data: delta.upserts, cursor: delta.cursor, removedIds: delta.removedIds }; }, []);
+	const parse = useCallback((payload: unknown) => { const delta = payload as DeltaPayload<ActivityIntervalItem>; return { data: delta.upserts, cursor: delta.cursor, removedIds: delta.removedIds, complete: delta.complete === true, replace: delta.complete === true }; }, []);
 	const baseMs = preference.intervalSeconds * 1_000;
-	const live = useRealtimeResource({ initialData: initial.upserts, endpoint: resourceEndpoint, intervalMs: active ? baseMs : Math.max(10_000, baseMs * 2), enabled: preference.enabled, parse, merge: mergeVersioned });
-	return <div data-live-state={preference.enabled ? live.status : 'snapshot'}><AgentActivityGantt intervals={live.data} start={start} end={end} timeZone={timeZone} />{live.error ? <button type="button" onClick={live.reconnect}>Reconnect activity</button> : null}</div>;
+	const live = useRealtimeResource({ initialData: initial.upserts, initiallyComplete: initial.complete === true, endpoint: resourceEndpoint, intervalMs: active ? baseMs : Math.max(10_000, baseMs * 2), enabled: preference.enabled, parse, merge: mergeVersioned });
+	return <div data-live-state={preference.enabled ? live.status : 'snapshot'}><AgentActivityGantt intervals={live.data} start={start} end={end} timeZone={timeZone} status={preference.enabled ? live.status : 'snapshot'} error={live.error} snapshotComplete={live.snapshotComplete} />{live.error ? <button type="button" onClick={live.reconnect}>Reconnect activity</button> : null}</div>;
 }

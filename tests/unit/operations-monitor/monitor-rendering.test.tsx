@@ -8,10 +8,13 @@ import { SimulationBay } from '../../../src/react/command-center/simulation/Simu
 import { MetricHistoryDashboard } from '../../../src/react/operations-monitor/MetricHistoryDashboard.tsx';
 import { fromLogScale, metricLogDomain, toLogScale } from '../../../src/react/operations-monitor/MetricHistoryChart.tsx';
 import OperationsMonitorHeader from '../../../src/react/operations-monitor/OperationsMonitorHeader.tsx';
+import { AgentActivityGantt } from '../../../src/react/operations-monitor/AgentActivityGantt.tsx';
+import type { ActivityIntervalItem } from '../../../src/react/operations-monitor/types.ts';
 import { WorkspaceFocusSurface } from '../../../src/react/workspace-surfaces/WorkspaceFocusSurface.tsx';
 
 const generatedAt = '2026-08-04T14:00:00.000Z';
 const keys = ['agents', 'workdays', 'systemEvents', 'assignments', 'executions', 'artifacts', 'passed', 'failed', 'running'];
+const activityInterval: ActivityIntervalItem = { id: 'interval-1', stateVersion: 1, projectId: 'project', projectName: 'Project', agentId: 'agent', agentName: 'Agent', agentClassId: 'class', activityProfile: 'acting', assignmentId: 'assignment', executionId: 'execution', status: 'running', startedAt: generatedAt, finishedAt: null };
 
 describe('Agent Lab server rendering', () => {
 	it('renders monitoring and command overlays without browser globals', () => {
@@ -67,5 +70,39 @@ describe('Agent Lab server rendering', () => {
 		expect(new URL(location.href).searchParams.get('focus')).toBe('designer');
 		expect(new URL(location.href).searchParams.has('returnTo')).toBe(false);
 		await waitFor(() => expect(overlays).not.toHaveAttribute('aria-hidden'));
+	});
+});
+
+describe('agent activity availability', () => {
+	const chart = (intervals: ActivityIntervalItem[], status: 'connecting' | 'degraded' | 'offline' | 'live' | 'snapshot', snapshotComplete = false, error: string | null = null) => <AgentActivityGantt intervals={intervals} start={generatedAt} end="2026-08-04T15:00:00.000Z" timeZone="UTC" status={status} snapshotComplete={snapshotComplete} error={error} />;
+
+	it('explains loading while the first activity read is pending', () => {
+		render(chart([], 'connecting'));
+		expect(screen.getByRole('status')).toHaveTextContent('Loading agent activity');
+		expect(screen.queryByText(/No agent executions intersect/)).not.toBeInTheDocument();
+	});
+
+	it('explains an unavailable initial read without claiming an empty result', () => {
+		render(chart([], 'degraded', false, 'Live refresh failed (503).'));
+		expect(screen.getByRole('status')).toHaveTextContent('Activity unavailable: Live refresh failed (503).');
+		expect(screen.getByRole('status')).toHaveTextContent('No current intervals are available.');
+		expect(screen.queryByText(/No agent executions intersect/)).not.toBeInTheDocument();
+	});
+
+	it('marks intervals retained after a failed refresh as stale', () => {
+		render(chart([activityInterval], 'degraded', true, 'Live refresh failed (503).'));
+		expect(screen.getByRole('status')).toHaveTextContent('last successful read; they may be stale');
+		expect(screen.getByRole('link', { name: /Agent, acting, running/ })).toBeInTheDocument();
+	});
+
+	it('reports an empty result only for a confirmed complete snapshot', () => {
+		render(chart([], 'live', true));
+		expect(screen.getByText('No agent executions intersect the current operating day.')).toBeInTheDocument();
+	});
+
+	it('continues to render observed nonempty intervals', () => {
+		render(chart([activityInterval], 'live', true));
+		expect(screen.getByRole('link', { name: /Agent, acting, running/ })).toBeInTheDocument();
+		expect(screen.queryByText(/No agent executions intersect/)).not.toBeInTheDocument();
 	});
 });
