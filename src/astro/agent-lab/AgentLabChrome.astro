@@ -30,5 +30,5 @@ const latestHref = `${Astro.url.pathname}${latest.size ? `?${latest}` : ''}`;
 ---
 <div class="ts-agent-lab-chrome" data-ts-agent-lab-chrome>
 	<AgentLabMonitor {frame} {csrfToken} {metricDestinations} />
-	<OperationsNavigator items={tabs} {current} selectedDate={context.selectedDate} selectedWorkdayId={context.selectedWorkdayId} {workdays} {latestHref} />
+	<OperationsNavigator items={tabs} {current} selectedDate={context.selectedDate} selectedWorkdayId={context.selectedWorkdayId} {workdays} {latestHref} timeZone={frame.overview.timeZone} />
 </div>

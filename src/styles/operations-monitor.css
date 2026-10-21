@@ -103,3 +103,8 @@
 .ts-allocation-project { display:grid; gap:.2rem; margin-bottom:.4rem; }.ts-allocation-project span { color:var(--ts-color-text-subtle); font-size:.5rem; font-weight:900; text-transform:uppercase; }.ts-allocation-project select { background:var(--ts-color-canvas); border:1px solid var(--ts-color-border); color:var(--ts-color-text); font-size:.66rem; min-width:0; padding:.32rem; width:100%; }
 @media (max-width:70rem) and (min-width:50.01rem) { .ts-monitor-dock[data-panels] { display:flex; overflow-x:auto; }.ts-monitor-dock[data-panels]>* { flex:0 0 min(24rem,78vw); } }
 @media (max-width:50rem) { .ts-monitor-dock[data-panels] { display:grid; grid-template-columns:minmax(0,1fr); overflow:visible; }.ts-monitor-dock[data-panels]>* { height:auto; min-height:20rem; min-width:0; }.ts-allocation-module { height:auto; min-height:20rem; min-width:0; } }
+.ts-workday-selector__list a > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.ts-workday-selector__list strong,.ts-workday-selector__list time { display: block; }
+.ts-workday-selector__list time { font-size: .72rem; margin-top: .2rem; }
+.ts-workday-selector__calendar > summary > span:last-child { min-width: 0; }
+.ts-workday-selector__calendar > summary small:last-child { overflow-wrap: anywhere; }

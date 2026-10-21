@@ -12,12 +12,13 @@ interface Props {
 	selectedWorkdayId: string | null;
 	workdays: Array<WorkdaySummary & { href: string }>;
 	latestHref: string;
+	timeZone: string;
 	label?: string;
 }
-const { items, current, selectedDate, selectedWorkdayId, workdays, latestHref, label = 'Agent Lab' } = Astro.props as Props;
+const { items, current, selectedDate, selectedWorkdayId, workdays, latestHref, timeZone, label = 'Agent Lab' } = Astro.props as Props;
 ---
 
 <div class="ts-operations-navigator" data-ts-operations-navigator>
 	<SurfaceTabs items={items} current={current} label={`${label} sections`} variant="compact" />
-	<WorkdaySelector {selectedDate} {selectedWorkdayId} {workdays} {latestHref} />
+	<WorkdaySelector {selectedDate} {selectedWorkdayId} {workdays} {latestHref} {timeZone} />
 </div>
