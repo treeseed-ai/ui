@@ -18,6 +18,17 @@ const labels: Record<string, string> = { agents: 'Agents', workdays: 'Workdays',
 
 function storedToggles() { if (typeof window === 'undefined') return { allocation: false, activity: false, metrics: false }; try { return JSON.parse(window.localStorage.getItem('treeseed.agent-lab.monitors') ?? '{}'); } catch { return { allocation: false, activity: false, metrics: false }; } }
 
+export function scopedActivityEndpoint(endpoint: string, teamId: string, date: string, workDayId: string | null, cursor: string | null) {
+	const base = typeof window === 'undefined' ? 'http://localhost' : window.location.href;
+	const url = new URL(endpoint, base);
+	url.searchParams.set('teamId', teamId); url.searchParams.set('date', date);
+	if (workDayId) url.searchParams.set('workDayId', workDayId); else url.searchParams.delete('workDayId');
+	if (cursor) url.searchParams.set('cursor', cursor); else url.searchParams.delete('cursor');
+	return url.origin === new URL(base).origin ? `${url.pathname}${url.search}${url.hash}` : url.href;
+}
+
+const EMPTY_ACTIVITY: ActivityIntervalItem[] = [];
+
 export default function OperationsMonitorHeader({ initialOverview, initialActivity, initialSeries, initialAllocation, endpoints, preference, metricDestinations, logoSrc }: Props) {
 	const [showAllocation, setShowAllocation] = useState(false); const [showActivity, setShowActivity] = useState(false); const [showMetrics, setShowMetrics] = useState(false);
 	const [density,setDensity]=useState<'expanded'|'compact'>('compact');
@@ -45,11 +56,13 @@ export default function OperationsMonitorHeader({ initialOverview, initialActivi
 	const overviewEndpoint = useCallback(() => endpoints.overview, [endpoints.overview]);
 	const parseOverview = useCallback((payload: unknown) => ({ data: payload as MonitorOverview }), []);
 	const overview = useRealtimeResource({ initialData: initialOverview, endpoint: overviewEndpoint, intervalMs: initialOverview.activeWorkdays ? baseMs : Math.max(10_000, baseMs * 2), enabled: preference.enabled, parse: parseOverview });
-	const activityEndpoint = useCallback((cursor: string | null) => `${endpoints.activity}${cursor ? `${endpoints.activity.includes('?') ? '&' : '?'}cursor=${encodeURIComponent(cursor)}` : ''}`, [endpoints.activity]);
+	const activityScope = { teamId: overview.data.team.id, date: overview.data.workdayContext.selectedDate, workDayId: overview.data.workdayContext.selectedWorkdayId };
+	const activityScopeKey = JSON.stringify(activityScope);
+	const activityEndpoint = useCallback((cursor: string | null) => scopedActivityEndpoint(endpoints.activity, activityScope.teamId, activityScope.date, activityScope.workDayId, cursor), [endpoints.activity, activityScopeKey]);
 	const seriesEndpoint = useCallback((cursor: string | null) => `${endpoints.metricSeries}${cursor ? `${endpoints.metricSeries.includes('?') ? '&' : '?'}cursor=${encodeURIComponent(cursor)}` : ''}`, [endpoints.metricSeries]);
-	const parseActivity = useCallback((payload: unknown) => { const delta = payload as DeltaPayload<ActivityIntervalItem>; return { data: delta.upserts, cursor: delta.cursor, removedIds: delta.removedIds }; }, []);
+	const parseActivity = useCallback((payload: unknown) => { const delta = payload as DeltaPayload<ActivityIntervalItem>; return { data: delta.upserts, cursor: delta.cursor, removedIds: delta.removedIds, ...(delta.complete === true ? { replace: true } : {}) }; }, []);
 	const parseSeries = useCallback((payload: unknown) => { const delta = payload as DeltaPayload<MetricSeriesPoint>; return { data: delta.upserts, cursor: delta.cursor, removedIds: delta.removedIds }; }, []);
-	const activity = useRealtimeResource({ initialData: initialActivity.upserts, endpoint: activityEndpoint, intervalMs: overview.data.activeWorkdays ? baseMs : Math.max(10_000, baseMs * 2), enabled: preference.enabled && showActivity, parse: parseActivity, merge: mergeVersioned });
+	const activity = useRealtimeResource({ initialData: initialActivity.upserts, scopeInitialData: EMPTY_ACTIVITY, endpoint: activityEndpoint, intervalMs: overview.data.activeWorkdays ? baseMs : Math.max(10_000, baseMs * 2), enabled: preference.enabled && showActivity, parse: parseActivity, merge: mergeVersioned, scopeKey: activityScopeKey });
 	const series = useRealtimeResource({ initialData: initialSeries.upserts, endpoint: seriesEndpoint, intervalMs: Math.max(10_000, baseMs * 2), enabled: preference.enabled && showMetrics, parse: parseSeries, merge: mergeVersioned });
 	const metrics = useMemo<VitalMetricItem[]>(() => overview.data.metrics.map((metric) => ({ ...metric, label: labels[metric.key] ?? metric.key, href: metricDestinations[metric.key] ?? '/app/work', tone: metric.key === 'failed' && metric.value ? 'danger' : metric.key === 'running' && metric.value ? 'positive' : 'default' })), [overview.data.metrics, metricDestinations]);
 	const liveStatuses = [overview.status, ...(showActivity ? [activity.status] : []), ...(showMetrics ? [series.status] : [])];

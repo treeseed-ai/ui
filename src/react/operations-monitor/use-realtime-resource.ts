@@ -18,24 +18,32 @@ export function mergeVersioned<T extends { id: string; stateVersion?: number }>(
 }
 
 export function useRealtimeResource<T>({
-	initialData, endpoint, intervalMs, enabled, parse, merge = replaceRealtimeData, request = requestRealtimeResource,
+	initialData, endpoint, intervalMs, enabled, parse, merge = replaceRealtimeData, request = requestRealtimeResource, scopeKey, scopeInitialData = initialData,
 }: {
 	initialData: T; endpoint: (cursor: string | null) => string; intervalMs: number; enabled: boolean;
-	parse: (payload: unknown) => { data: T; cursor?: string | null; removedIds?: string[] };
+	parse: (payload: unknown) => { data: T; cursor?: string | null; removedIds?: string[]; replace?: boolean };
 	merge?: (current: T, next: T, removedIds: string[]) => T;
 	request?: (url: string, signal: AbortSignal, etag: string | null) => Promise<Response>;
+	scopeKey?: string;
+	scopeInitialData?: T;
 }) {
-	const [data, setData] = useState(initialData); const [status, setStatus] = useState<RealtimeStatus>(enabled ? 'connecting' : 'snapshot');
+	const [state, setState] = useState({ scopeKey, data: initialData });
+	const data = state.scopeKey === scopeKey ? state.data : scopeInitialData;
+	const [status, setStatus] = useState<RealtimeStatus>(enabled ? 'connecting' : 'snapshot');
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null); const [error, setError] = useState<string | null>(null); const [refreshCount, setRefreshCount] = useState(0);
-	const cursor = useRef<string | null>(null); const etag = useRef<string | null>(null); const generation = useRef(0);
+	const activeScope = useRef(scopeKey); const cursor = useRef<string | null>(null); const etag = useRef<string | null>(null); const generation = useRef(0);
 	const timer = useRef<number | null>(null); const controller = useRef<AbortController | null>(null); const failures = useRef(0);
 	const [refreshVersion, setRefreshVersion] = useState(0);
 
 	const reconnect = useCallback(() => { failures.current = 0; etag.current = null; setRefreshVersion((value) => value + 1); }, []);
-	const replaceData = useCallback((next: T) => setData(next), []);
+	const replaceData = useCallback((next: T) => setState({ scopeKey, data: next }), [scopeKey]);
 
 	useEffect(() => {
 		const activeGeneration = ++generation.current; let disposed = false;
+		if (activeScope.current !== scopeKey) {
+			activeScope.current = scopeKey;
+			setState({ scopeKey, data: scopeInitialData }); setStatus(enabled ? 'connecting' : 'snapshot'); setError(null); setLastUpdatedAt(null); setRefreshCount(0);
+		}
 		const clear = () => { if (timer.current !== null) window.clearTimeout(timer.current); timer.current = null; controller.current?.abort(); };
 		if (!enabled) { clear(); setStatus('snapshot'); setError(null); return clear; }
 		cursor.current = null; etag.current = null;
@@ -51,7 +59,10 @@ export function useRealtimeResource<T>({
 				if (response.status !== 304) {
 					const envelope = await response.json(); const result = parse(envelope?.payload ?? envelope);
 					if (disposed || requestController.signal.aborted || activeGeneration !== generation.current) return;
-					setData((current) => merge(current, result.data, result.removedIds ?? [])); cursor.current = result.cursor ?? cursor.current;
+					setState((current) => {
+						const scoped = current.scopeKey === scopeKey ? current.data : scopeInitialData;
+						return { scopeKey, data: result.replace ? result.data : merge(scoped, result.data, result.removedIds ?? []) };
+					}); cursor.current = result.cursor ?? cursor.current;
 					etag.current = response.headers.get('etag');
 				}
 				failures.current = 0; setStatus('live'); setError(null); setLastUpdatedAt(Date.now()); setRefreshCount((value) => value + 1); schedule(intervalMs);
@@ -67,7 +78,7 @@ export function useRealtimeResource<T>({
 		document.addEventListener('visibilitychange', visibility); window.addEventListener('online', resume); window.addEventListener('offline', offline);
 		void refresh();
 		return () => { disposed = true; clear(); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('online', resume); window.removeEventListener('offline', offline); };
-	}, [enabled, endpoint, intervalMs, merge, parse, refreshVersion, request]);
+	}, [enabled, endpoint, intervalMs, merge, parse, refreshVersion, request, scopeKey]);
 
 	useEffect(() => {
 		if (!enabled) return;
