@@ -18,16 +18,17 @@ export function mergeVersioned<T extends { id: string; stateVersion?: number }>(
 }
 
 export function useRealtimeResource<T>({
-	initialData, endpoint, intervalMs, enabled, parse, merge = replaceRealtimeData, request = requestRealtimeResource, scopeKey, scopeInitialData = initialData,
+	initialData, endpoint, intervalMs, enabled, parse, merge = replaceRealtimeData, request = requestRealtimeResource, scopeKey, scopeInitialData = initialData, initiallyComplete = false,
 }: {
 	initialData: T; endpoint: (cursor: string | null) => string; intervalMs: number; enabled: boolean;
-	parse: (payload: unknown) => { data: T; cursor?: string | null; removedIds?: string[]; replace?: boolean };
+	parse: (payload: unknown) => { data: T; cursor?: string | null; removedIds?: string[]; replace?: boolean; complete?: boolean };
 	merge?: (current: T, next: T, removedIds: string[]) => T;
 	request?: (url: string, signal: AbortSignal, etag: string | null) => Promise<Response>;
 	scopeKey?: string;
 	scopeInitialData?: T;
+	initiallyComplete?: boolean;
 }) {
-	const [state, setState] = useState({ scopeKey, data: initialData });
+	const [state, setState] = useState({ scopeKey, data: initialData, snapshotComplete: initiallyComplete });
 	const data = state.scopeKey === scopeKey ? state.data : scopeInitialData;
 	const [status, setStatus] = useState<RealtimeStatus>(enabled ? 'connecting' : 'snapshot');
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null); const [error, setError] = useState<string | null>(null); const [refreshCount, setRefreshCount] = useState(0);
@@ -36,13 +37,13 @@ export function useRealtimeResource<T>({
 	const [refreshVersion, setRefreshVersion] = useState(0);
 
 	const reconnect = useCallback(() => { failures.current = 0; etag.current = null; setRefreshVersion((value) => value + 1); }, []);
-	const replaceData = useCallback((next: T) => setState({ scopeKey, data: next }), [scopeKey]);
+	const replaceData = useCallback((next: T) => setState((current) => ({ scopeKey, data: next, snapshotComplete: current.scopeKey === scopeKey && current.snapshotComplete })), [scopeKey]);
 
 	useEffect(() => {
 		const activeGeneration = ++generation.current; let disposed = false;
 		if (activeScope.current !== scopeKey) {
 			activeScope.current = scopeKey;
-			setState({ scopeKey, data: scopeInitialData }); setStatus(enabled ? 'connecting' : 'snapshot'); setError(null); setLastUpdatedAt(null); setRefreshCount(0);
+			setState({ scopeKey, data: scopeInitialData, snapshotComplete: false }); setStatus(enabled ? 'connecting' : 'snapshot'); setError(null); setLastUpdatedAt(null); setRefreshCount(0);
 		}
 		const clear = () => { if (timer.current !== null) window.clearTimeout(timer.current); timer.current = null; controller.current?.abort(); };
 		if (!enabled) { clear(); setStatus('snapshot'); setError(null); return clear; }
@@ -61,7 +62,8 @@ export function useRealtimeResource<T>({
 					if (disposed || requestController.signal.aborted || activeGeneration !== generation.current) return;
 					setState((current) => {
 						const scoped = current.scopeKey === scopeKey ? current.data : scopeInitialData;
-						return { scopeKey, data: result.replace ? result.data : merge(scoped, result.data, result.removedIds ?? []) };
+						const previousComplete = current.scopeKey === scopeKey && current.snapshotComplete;
+						return { scopeKey, data: result.replace ? result.data : merge(scoped, result.data, result.removedIds ?? []), snapshotComplete: result.complete === true || previousComplete };
 					}); cursor.current = result.cursor ?? cursor.current;
 					etag.current = response.headers.get('etag');
 				}
@@ -96,5 +98,5 @@ export function useRealtimeResource<T>({
 		return () => { document.removeEventListener('treeseed:session-event', invalidate); if (debounce !== null) window.clearTimeout(debounce); };
 	}, [enabled, endpoint, reconnect]);
 
-	return { data, status, lastUpdatedAt, refreshCount, error, reconnect, replaceData };
+	return { data, status, lastUpdatedAt, refreshCount, error, reconnect, replaceData, snapshotComplete: state.scopeKey === scopeKey && state.snapshotComplete };
 }

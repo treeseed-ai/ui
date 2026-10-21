@@ -2,10 +2,11 @@ import { useMemo, useState, type CSSProperties } from 'react';
 import { formatTimestamp } from '../../timestamps.ts';
 import type { ActivityIntervalItem } from './types.ts';
 import { rangeStart, TimeRangeControl, type MonitorTimeRange } from './controls/TimeRangeControl.tsx';
+import type { RealtimeStatus } from './use-realtime-resource.ts';
 
 const kernelOrder = ['planning', 'estimating', 'researching', 'reviewing', 'acting', 'reporting'];
 
-export function AgentActivityGantt({ intervals, start, end, timeZone }: { intervals: ActivityIntervalItem[]; start: string; end: string; timeZone: string }) {
+export function AgentActivityGantt({ intervals, start, end, timeZone, status = 'snapshot', error, snapshotComplete = false }: { intervals: ActivityIntervalItem[]; start: string; end: string; timeZone: string; status?: RealtimeStatus; error?: string | null; snapshotComplete?: boolean }) {
 	const [range, setRange] = useState<MonitorTimeRange>('workday'); const workdayStart = Date.parse(start); const endMs = Math.max(workdayStart + 1, Date.parse(end)); const now = Math.min(Date.now(), endMs); const startMs = rangeStart(range, workdayStart, now); const width = Math.max(1, now - startMs);
 	const profiles = useMemo(() => [...kernelOrder, ...[...new Set(intervals.map((item) => item.activityProfile))].filter((profile) => !kernelOrder.includes(profile)).sort()], [intervals]);
 	const visible = useMemo(() => intervals.filter((interval) => Date.parse(interval.startedAt) <= now && Date.parse(interval.finishedAt ?? new Date(now).toISOString()) >= startMs), [intervals, now, startMs]);
@@ -20,6 +21,9 @@ export function AgentActivityGantt({ intervals, start, end, timeZone }: { interv
 	const format = (value: number) => formatTimestamp(value, { timeZone, style: 'time' });
 	return <section className="ts-activity-gantt" aria-label="Team agent activity">
 		<header className="ts-monitor-chart-header"><div><small>Portfolio execution field</small><strong>Agent activity by kernel profile</strong></div><TimeRangeControl value={range} onChange={setRange} label="Agent activity time range" /></header>
+		{status === 'connecting' ? <p className="ts-activity-gantt__state" role="status">Loading agent activity…</p> : null}
+		{status === 'degraded' || status === 'offline' ? <p className="ts-activity-gantt__state" role="status">{error ? `Activity unavailable: ${error} ` : 'Activity unavailable. '}{visible.length ? 'Showing intervals from the last successful read; they may be stale.' : 'No current intervals are available.'}</p> : null}
+		{status === 'snapshot' && !snapshotComplete ? <p className="ts-activity-gantt__state" role="status">Activity snapshot is unavailable.</p> : null}
 		<div className="ts-activity-gantt__axis" aria-hidden="true"><span>{format(startMs)}</span><span>{format(startMs + width / 2)}</span><span>{format(now)}</span></div>
 		<div className="ts-activity-gantt__scroll">
 			{groups.length ? groups.map(([key, group]) => <div className="ts-activity-gantt__row" key={key} style={{ '--ts-profile-count': profiles.length } as CSSProperties}>
@@ -29,7 +33,7 @@ export function AgentActivityGantt({ intervals, start, end, timeZone }: { interv
 					const right = Math.min(100, (finish - startMs) / width * 100); const lane = Math.max(0, profiles.indexOf(interval.activityProfile));
 					return <a key={interval.id} className={`ts-activity-gantt__bar is-${interval.activityProfile} is-${interval.status}`} style={{ left: `${left}%`, width: `${Math.max(.5, right - left)}%`, top: `${lane * .78 + .25}rem` }} href={`/app/work/assignments?q=${encodeURIComponent(interval.assignmentId)}`} title={`${interval.activityProfile} · ${interval.status}`} aria-label={`${group.agent}, ${interval.activityProfile}, ${interval.status}, ${format(Date.parse(interval.startedAt))} to ${interval.finishedAt ? format(Date.parse(interval.finishedAt)) : 'now'}`} />;
 				})}<span className="ts-activity-gantt__now" style={{ left: `${Math.max(0, Math.min(100, (now - startMs) / width * 100))}%` }} /></div>
-			</div>) : <p className="ts-activity-gantt__empty">No agent executions intersect the current operating day.</p>}
+			</div>) : snapshotComplete && (status === 'live' || status === 'snapshot') ? <p className="ts-activity-gantt__empty">No agent executions intersect the current operating day.</p> : status !== 'degraded' && status !== 'offline' && status !== 'connecting' ? <p className="ts-activity-gantt__state" role="status">No complete activity snapshot is available.</p> : null}
 		</div>
 		<details className="ts-activity-gantt__accessible"><summary><span>Activity index</span><small>{visible.length} execution interval{visible.length === 1 ? '' : 's'} in this view</small></summary><div><p>Keyboard-accessible equivalent of the activity field, grouped by the same profile lanes.</p><ul>{visible.map((interval) => <li key={interval.id}><a href={`/app/work/assignments?q=${encodeURIComponent(interval.assignmentId)}`}>{interval.projectName} · {interval.agentName}</a><span>{interval.activityProfile}</span><span>{interval.status}</span><time dateTime={interval.startedAt}>{format(Date.parse(interval.startedAt))}</time><span aria-hidden="true">→</span><time dateTime={interval.finishedAt ?? undefined}>{interval.finishedAt ? format(Date.parse(interval.finishedAt)) : 'now'}</time></li>)}</ul></div></details>
 	</section>;
