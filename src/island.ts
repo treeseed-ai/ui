@@ -5,7 +5,7 @@ import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portabl
 import { UiSchemas, type UiHydrationData, type UiComponent, type UiTheme, type UiScopeHandle } from './contracts.js';
 import { UiContributionIdentity } from './contribution.js';
 import { CanonicalJson } from '@treeseed-cordis/sdk/portable';
-import { UiSurface } from './react.js';
+import { UiSurface, UiRenderTree } from './react.js';
 import { UiStyles } from './styles.js';
 import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiPresentation, type UiApplicationConfiguration } from './providers.js';
 import type { UiHostAdapters } from './browser.js';
@@ -40,10 +40,10 @@ class ReactIslandBinding implements UiIslandBinding {
     private disposal: Promise<void> | null = null;
     private closed = false;
     readonly Component: ComponentClass<UiHydrationData>;
-    constructor(readonly generation: string, private readonly component: ProviderLease<UiComponent>, private readonly theme: ProviderLease<UiTheme>, bootstrap: UiHydrationData, cssUrl: string, host: UiHostAdapters) {
+    constructor(readonly generation: string, private readonly tree: UiRenderTree, private readonly theme: ProviderLease<UiTheme>, bootstrap: UiHydrationData, cssUrl: string, host: UiHostAdapters) {
         const binding = this, actions = new IslandActions(host, bootstrap.actionIds);
         class BoundIsland extends Component<UiHydrationData> {
-            render(): ReactNode { binding.assert(this.props, bootstrap); return createElement(UiSurface, { component: component.value.component, view: this.props.view, cssUrl, hostStyles: true, actions }); }
+            render(): ReactNode { binding.assert(this.props, bootstrap); return createElement(UiSurface, { component: tree.root.component.component, tree:tree.root, view: this.props.view, cssUrl, hostStyles: true, actions }); }
         }
         this.Component = BoundIsland;
     }
@@ -68,7 +68,7 @@ class ReactIslandBinding implements UiIslandBinding {
     }
     private async close(): Promise<void> {
         try {
-            await this.component.release();
+            await this.tree.dispose();
         }
         finally {
             await this.theme.release();
@@ -86,18 +86,17 @@ export class ReactIslandRenderer implements UiIslandRendering {
         for (const action of bootstrap.actionIds)
             if (!host.actionIds.includes(action))
                 throw new Error('UI_ACTION_DENIED');
-        const component = await this.presentation.component(bootstrap.view.componentId);
+        const tree = await UiRenderTree.prepare(bootstrap.view,this.presentation);
         let theme: ProviderLease<UiTheme> | undefined;
         try {
-            component.value.validate(bootstrap.view.model);
             theme = await this.presentation.theme();
             const style = await UiStyles.asset(theme.value.css());
-            UiContributionIdentity.assert(bootstrap.contribution, await UiContributionIdentity.create(bootstrap.view, this.presentation, component.value, style.digest));
-            return new ReactIslandBinding(this.presentation.generation, component, theme, bootstrap, style.path, host);
+            UiContributionIdentity.assert(bootstrap.contribution, await tree.contribution(style.digest));
+            return new ReactIslandBinding(this.presentation.generation, tree, theme, bootstrap, style.path, host);
         }
         catch (error) {
             try {
-                await component.release();
+                await tree.dispose();
             }
             finally {
                 await theme?.release();

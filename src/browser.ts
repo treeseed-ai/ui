@@ -1,5 +1,5 @@
 import { Context, type ProviderLease, type ProviderRegistration } from '@treeseed-cordis/sdk/composition';
-import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
+import { CanonicalJson, CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { z } from 'zod';
 import type { UiComponent, UiTheme } from './contracts.js';
 import { UiContributionIdentity } from './contribution.js';
@@ -8,7 +8,7 @@ import { UiStyles } from './styles.js';
 import { createElement } from 'react';
 import { createRoot, hydrateRoot, type Root } from 'react-dom/client';
 import { UiSchemas, type UiViewModel, type UiMount, type UiHydrationData, type UiScopeHandle, type UiActionDispatcher, type UiActionResult } from './contracts.js';
-import { UiSurface, type UiRenderObserver } from './react.js';
+import { UiSurface, UiRenderTree, type UiRenderObserver } from './react.js';
 import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
 export interface UiHostAdapters {
     actions?: UiActionDispatcher;
@@ -36,7 +36,7 @@ class UiReadiness implements UiRenderObserver {
 class UiMountedRoot implements UiMount {
     readonly rootGeneration: string;
     private disposal: Promise<void> | null = null;
-    constructor(readonly generation: string, private readonly root: Root, private readonly component: ProviderLease<UiComponent>, private readonly theme: ProviderLease<UiTheme>) { this.rootGeneration = generation; }
+    constructor(readonly generation: string, private readonly root: Root, private readonly tree: UiRenderTree, private readonly theme: ProviderLease<UiTheme>) { this.rootGeneration = generation; }
     dispose(): Promise<void> {
         if (!this.disposal)
             this.disposal = this.close();
@@ -51,7 +51,7 @@ class UiMountedRoot implements UiMount {
             failed = true;
         }
         try {
-            await this.component.release();
+            await this.tree.dispose();
         }
         catch {
             failed = true;
@@ -71,7 +71,7 @@ class UiAttachedScope implements UiScopeHandle {
     dispose(): Promise<void> { return this.scope.dispose(); }
 }
 export interface UiBrowserRendering {
-    mount(target: Element, view: UiViewModel, host?: UiHostAdapters, hydrate?: boolean): Promise<UiMount>;
+    mount(target: Element, view: UiViewModel, host?: UiHostAdapters, hydrate?: boolean, bootstrap?:UiHydrationData): Promise<UiMount>;
 }
 class BrowserValidator {
     parse(value: unknown): UiBrowserRendering {
@@ -83,20 +83,23 @@ class BrowserValidator {
 export const UiBrowserToken = new CapabilityToken<UiBrowserRendering>('ui.renderer.browser', ProviderV4Schemas.version, new BrowserValidator());
 export class ReactBrowserRenderer implements UiBrowserRendering {
     constructor(private readonly presentation: UiPresentation) { }
-    async mount(target: Element, value: UiViewModel, host?: UiHostAdapters, hydrate = false): Promise<UiMount> {
+    async mount(target: Element, value: UiViewModel, host?: UiHostAdapters, hydrate = false, bootstrap?:UiHydrationData): Promise<UiMount> {
         const view = UiSchemas.view.parse(value);
-        let root: Root | undefined, component: ProviderLease<UiComponent> | undefined, theme: ProviderLease<UiTheme> | undefined, readiness: UiReadiness | undefined;
+        let root: Root | undefined, tree: UiRenderTree | undefined, theme: ProviderLease<UiTheme> | undefined, readiness: UiReadiness | undefined;
         try {
-            component = await this.presentation.component(view.componentId);
+            tree = await UiRenderTree.prepare(view,this.presentation);
             theme = await this.presentation.theme();
-            component.value.validate(view.model);
+
             readiness = new UiReadiness();
-            const element = createElement(UiSurface, { component: component.value.component, view, cssUrl: (await UiStyles.asset(theme.value.css())).path, actions: host ? new UiAdmittedActions(host) : undefined, observer: readiness });
+            const style=await UiStyles.asset(theme.value.css());
+            let admitted=host;
+            if(hydrate){if(!bootstrap||!host)throw new Error('UI_BOOTSTRAP_REQUIRED');const accepted=UiSchemas.hydration.parse(bootstrap);if(CanonicalJson.stringify(accepted.view)!==CanonicalJson.stringify(view))throw new Error('UI_BOOTSTRAP_MISMATCH');if(accepted.presentationGeneration!==this.presentation.generation)throw new Error('UI_GENERATION_MISMATCH');if(accepted.assetGeneration!==host.assetGeneration)throw new Error('UI_ASSET_MISMATCH');for(const action of accepted.actionIds)if(!host.actionIds.includes(action))throw new Error('UI_ACTION_DENIED');UiContributionIdentity.assert(accepted.contribution,await tree.contribution(style.digest));admitted={...host,actionIds:accepted.actionIds};}
+            const element = createElement(UiSurface, { component: tree.root.component.component, tree:tree.root, view, cssUrl:style.path, actions: admitted ? new UiAdmittedActions(admitted) : undefined, observer: readiness });
             root = hydrate ? hydrateRoot(target, element) : createRoot(target);
             if (!hydrate)
                 root.render(element);
             await readiness.promise;
-            return new UiMountedRoot(this.presentation.generation, root, component, theme);
+            return new UiMountedRoot(this.presentation.generation, root, tree, theme);
         }
         catch (error) {
             readiness?.cancel();
@@ -105,7 +108,7 @@ export class ReactBrowserRenderer implements UiBrowserRendering {
             }
             finally {
                 try {
-                    await component?.release();
+                    await tree?.dispose();
                 }
                 finally {
                     await theme?.release();
@@ -159,12 +162,12 @@ class UiOwnedMount implements UiMount {
 }
 export class UiBrowserRenderer {
     constructor(private readonly configuration: UiApplicationConfiguration = {}) { }
-    async mount(target: Element, value: UiViewModel, host?: UiHostAdapters, hydrate = false): Promise<UiMount> {
+    async mount(target: Element, value: UiViewModel, host?: UiHostAdapters, hydrate = false, bootstrap?:UiHydrationData): Promise<UiMount> {
         const registration: ProviderRegistration = { token: UiBrowserToken, plugin: ReactBrowserRendererPlugin, declaration: ReactBrowserRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: this.configuration.artifactIdentity ?? UiPackageIdentity.artifact } }, scope = await UiScope.create(this.configuration, [registration]);
         let renderer: ProviderLease<UiBrowserRendering> | undefined;
         try {
             renderer = await scope.service(UiBrowserToken);
-            return new UiOwnedMount(await renderer.value.mount(target, value, host, hydrate), renderer, scope);
+            return new UiOwnedMount(await renderer.value.mount(target, value, host, hydrate, bootstrap), renderer, scope);
         }
         catch (error) {
             try {
@@ -185,6 +188,7 @@ export interface UiBrowserStart extends UiApplicationConfiguration {
 export class UiBrowserApplication {
     static renderer(configuration: UiApplicationConfiguration = {}): UiBrowserRenderer { return new UiBrowserRenderer(configuration); }
     static start(configuration: UiBrowserStart): Promise<UiMount> { return new UiBrowserRenderer(configuration).mount(configuration.target, configuration.view, configuration.host); }
+    static hydrate(target:Element,bootstrap:UiHydrationData,host:UiHostAdapters,configuration:UiApplicationConfiguration={}):Promise<UiMount>{const accepted=UiSchemas.hydration.parse(bootstrap);return new UiBrowserRenderer(configuration).mount(target,accepted.view,host,true,accepted);}
     static async attach(value: UiHydrationData, host: UiHostAdapters, configuration: UiApplicationConfiguration = {}): Promise<UiScopeHandle> {
         const bootstrap = UiSchemas.hydration.parse(value);
         if (bootstrap.assetGeneration !== host.assetGeneration)
@@ -200,14 +204,14 @@ export class UiBrowserApplication {
         try {
             const presentation = await scope.service(UiPresentationToken);
             try {
-                const component = await presentation.value.component(bootstrap.view.componentId), theme = await presentation.value.theme();
+                const tree = await UiRenderTree.prepare(bootstrap.view,presentation.value);
+                let theme:ProviderLease<UiTheme>|undefined;
                 try {
-                    component.value.validate(bootstrap.view.model);
-                    UiContributionIdentity.assert(bootstrap.contribution, await UiContributionIdentity.create(bootstrap.view, presentation.value, component.value, (await UiStyles.asset(theme.value.css())).digest));
+                    theme=await presentation.value.theme();
+                    UiContributionIdentity.assert(bootstrap.contribution, await tree.contribution((await UiStyles.asset(theme.value.css())).digest));
                 }
                 finally {
-                    await component.release();
-                    await theme.release();
+                    try{await tree.dispose();}finally{await theme?.release();}
                 }
             }
             finally {

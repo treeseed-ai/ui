@@ -21,11 +21,12 @@ class BrowserAssertions {
     static async close(): Promise<void> { await window.ui.close(); }
 }
 class UiBrowserTests {
+    private ssr='';private bootstrap:import('../src/contracts.js').UiHydrationData|undefined;
     private js = '';
     private stylePath = '';
     private handle(request: Request): Response { const url = new URL(request.url); if (url.pathname === '/program.js')
         return new Response(this.js, { headers: { 'content-type': 'text/javascript' } }); if (url.pathname === this.stylePath)
-        return new Response(UiStyles.css, { headers: { 'content-type': 'text/css' } }); return new Response('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module" src="/program.js"></script></body></html>', { headers: { 'content-type': 'text/html', 'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'" } }); }
+        return new Response(UiStyles.css, { headers: { 'content-type': 'text/css' } }); if(url.pathname==='/hydrate'&&this.bootstrap){const data=structuredClone(this.bootstrap);if(url.searchParams.has('tamper'))data.contribution.members![0]!.providerId='ui.foreign';const json=JSON.stringify(data).replaceAll('<','\\u003c');return new Response('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app">'+this.ssr+'</div><script type="application/json" id="ui-bootstrap">'+json+'</script><script type="module" src="/program.js"></script></body></html>',{headers:{'content-type':'text/html','content-security-policy':"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'"}});} return new Response('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module" src="/program.js"></script></body></html>', { headers: { 'content-type': 'text/html', 'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'" } }); }
     private views(): UiViewModel[] { const long = 'LongUnbrokenComponentContent'.repeat(12); return [{ id: 'text', componentId: 'text', model: { text: long } }, { id: 'status', componentId: 'status', model: { title: long, state: 'Ready', detail: '<script>script-output-canary</script>' } }, { id: 'table', componentId: 'table', model: { title: 'Records', columns: ['Name', 'State', 'Details', 'Owner', 'Resource'], rows: [[long, 'Ready', long, 'Owner', 'Resource']] } }, { id: 'form', componentId: 'form', model: { title: long, actionId: 'fixture.save', submitLabel: 'Save ' + long, fields: [{ id: 'name', label: long, required: true }, { id: 'email', label: 'Email', type: 'email' }] } }, { id: 'navigation', componentId: 'navigation', model: { label: 'Navigation', items: [{ label: long, href: '#destination' }, { label: 'Status', href: '/status' }] } }, { id: 'feedback', componentId: 'feedback', model: { title: long, message: long, tone: 'error' } }, {id:'composite',componentId:'stack',model:{title:long,children:[{id:'child-text',componentId:'text',model:{text:long}},{id:'child-status',componentId:'status',model:{title:long,state:'Ready'}}]}}]; }
     async responsive(): Promise<void> {
         const build = await Bun.build({ entrypoints: ['tests/browser-program.ts'], target: 'browser', format: 'esm' });
@@ -34,6 +35,7 @@ class UiBrowserTests {
         this.js = await build.outputs[0]!.text();
         expect(this.js).not.toContain('node:fs');
         this.stylePath = (await UiStyles.asset()).path;
+        const {UiServerRenderer}=await import('@treeseed-cordis/ui/server'),renderer=await UiServerRenderer.create(),view:UiViewModel={id:'page',componentId:'stack',model:{title:'Hydrated page',children:[{id:'form',componentId:'form',model:{title:'Profile',actionId:'fixture.save',submitLabel:'Save',fields:[{id:'name',label:'Name'}]}}]}};try{const page=await renderer.render(view);this.ssr=page.html;this.bootstrap={view,contribution:page.contribution,presentationGeneration:page.generation,assetGeneration:'a'.repeat(64),actionIds:['fixture.save']};}finally{await renderer.dispose();}
         const server = Bun.serve({ hostname: '127.0.0.1', port: 0, fetch: this.handle.bind(this) }), browser = await firefox.launch({ headless: true });
         try {
             const page = await browser.newPage({ reducedMotion: 'reduce' });
@@ -78,6 +80,8 @@ class UiBrowserTests {
             expect(await page.locator('script').count()).toBe(1);
             await page.evaluate(BrowserAssertions.close);
             expect(await page.locator('.trsd-ui').count()).toBe(0);
+            await page.goto('http://127.0.0.1:'+server.port+'/hydrate');await page.waitForSelector('html[data-ready=true]');await page.getByRole('textbox').fill('Hydrated');await page.getByRole('button').click();await page.getByRole('status').filter({hasText:'Saved Hydrated'}).waitFor();await page.evaluate(BrowserAssertions.close);expect(await page.locator('.trsd-ui').count()).toBe(0);
+            await page.goto('http://127.0.0.1:'+server.port+'/hydrate?tamper=1');await page.waitForSelector('html[data-refused=true]');expect(await page.getByRole('button').isDisabled()).toBe(true);
         }
         finally {
             await browser.close();

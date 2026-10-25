@@ -1,5 +1,5 @@
 import { UiBrowserApplication, ReactBrowserRendererPlugin, UiBrowserToken, type UiHostAdapters } from '@treeseed-cordis/ui/browser';
-import { type UiViewModel, type UiMount, type UiActionResult } from '@treeseed-cordis/ui/contracts';
+import { type UiViewModel, type UiMount, type UiActionResult, type UiHydrationData } from '@treeseed-cordis/ui/contracts';
 import { UiScope, StatusComponentPlugin, DefaultThemePlugin } from '@treeseed-cordis/ui/providers';
 import { ProviderV4Schemas, type ProviderSelection } from '@treeseed-cordis/sdk/portable';
 import { UiTokens, type UiComponentProps, type UiViewModel as View } from '@treeseed-cordis/ui/contracts';
@@ -34,7 +34,8 @@ export class UiBrowserProgram {
     generation(): string { return this.mount!.rootGeneration; }
     async show(view: UiViewModel): Promise<void> { await this.mount?.dispose(); this.mount = await UiBrowserApplication.start({ ...this.alternative ? BrowserConfiguration.create() : {}, target: document.getElementById('app')!, view, host: { actions: new FixtureActions(), actionIds: ['fixture.save'], assetGeneration: 'a'.repeat(64) } }); }
     async close(): Promise<void> { await this.mount?.dispose(); this.mount = null; }
-    static async run(): Promise<void> { window.ui = new UiBrowserProgram(); await window.ui.show({ id: 'initial', componentId: 'status', model: { title: 'Status', state: 'Ready' } }); document.documentElement.dataset.ready = 'true'; }
+    async hydrate(value:UiHydrationData):Promise<void>{await this.mount?.dispose();this.mount=await UiBrowserApplication.hydrate(document.getElementById('app')!,value,{actions:new FixtureActions(),actionIds:['fixture.save'],assetGeneration:'a'.repeat(64)});}
+    static async run(): Promise<void> { window.ui = new UiBrowserProgram();try{const serialized=document.getElementById('ui-bootstrap')?.textContent;if(serialized)await window.ui.hydrate(JSON.parse(serialized) as UiHydrationData);else await window.ui.show({ id: 'initial', componentId: 'status', model: { title: 'Status', state: 'Ready' } }); document.documentElement.dataset.ready = 'true';}catch{document.documentElement.dataset.refused='true';} }
 }
 declare global {
     interface Window {
