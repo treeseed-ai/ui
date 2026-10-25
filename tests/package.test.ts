@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import { cpSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -16,7 +17,7 @@ class PackageTests {
                 sha256: string;
             };
         };
-    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.12'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('4a0b12ca45478f58d92a02de4a7c144ed94c7417'); expect(value.cordisCandidate.sdk.sha256).toBe('9652a1e1f830eb85c41b2d9ea207782ffdf291db2ef97331e338775dadf62fd4'); }
+    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.14'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('597a9abd79b76fb292a80cd86e4ea83042fbec62'); expect(value.cordisCandidate.sdk.sha256).toBe('c92fb068064a6db4823b29c31602b47e01c21200af759a770480a1a0cc4240a2');expect(createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex')).toBe(value.cordisCandidate.sdk.sha256);expect(JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json','utf8')).version).toBe(value.peerDependencies['@treeseed-cordis/sdk']); }
 }
 const suite = new PackageTests();
 test('unit: UI runtime uses exact SDK archive and leaves the development compiler optional', suite.metadata.bind(suite));
