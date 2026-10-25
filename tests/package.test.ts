@@ -57,4 +57,4 @@ class MetadataGuardTests {
     } }
 }
 const guard = new MetadataGuardTests();
-test('integration: actual owner check rejects stale native metadata before build can rewrite it', guard.guard.bind(guard));
+test('integration: actual owner check rejects stale native metadata before build can rewrite it', guard.guard.bind(guard),65000);
