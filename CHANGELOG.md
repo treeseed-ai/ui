@@ -4,6 +4,10 @@
 
 ### Added
 
+- Validate and hydrate complete composite trees in browser and Astro roots (#80).
+
+### Added
+
 - Compose validated reusable views through a mobile-first layout provider (#80).
 
 ### Changed

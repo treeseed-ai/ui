@@ -77,3 +77,11 @@ follows as a dependent candidate and remains required before consumer adoption.
 
 The isolated drift regression runs two real compiler checks, each bounded at 30 seconds;
 its outer test budget is 65 seconds so a slower CI host can complete both checks.
+
+Composite views now use the same lease-retained tree in browser and Astro rendering. Standalone
+`UiBrowserApplication.hydrate(target, bootstrap, host, configuration?)` validates the complete
+initial view, child contributions, presentation/style/asset generations and admitted action IDs
+inside the actual renderer scope before creating its React root. Passing `hydrate=true` without
+an accepted bootstrap is refused. Astro retains its one-island host-owned React root and
+observes awaited tree/scope disposal. The real browser matrix includes nested layout content;
+a packed-archive Astro fixture hydrates a composed form without a second React root.
