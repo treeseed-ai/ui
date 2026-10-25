@@ -56,3 +56,8 @@ a changed class export, preserving the working checkout while proving stale meta
 This candidate adopts SDK .9 through the
 vendored archive from source `85a7b6036c9a390a5c56b9db419fc5b6f8f8cd77`, SHA-256
 `80337c6ad9cb4f493fa06ed9a22e3863ae41610cc1027817bd54c1eece3954d3`.
+
+All default UI composition roots derive their bundled artifact label from
+`UiPackageIdentity.artifact`, retaining one current owner version across server, terminal,
+browser and Astro roots. Release consumers bind their accepted exact archive identity through
+`artifactIdentity`. A build check rejects package-version/default-label drift.

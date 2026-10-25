@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Bind default composition roots to one checked owner package identity (#80).
+
+### Changed
+
 - Adopt browser-qualified SDK contracts (#80).
 
 ### Added
