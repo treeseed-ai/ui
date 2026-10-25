@@ -74,3 +74,6 @@ before output. Contribution identities include every selected child/schema/style
 The layout uses the shared one-column mobile grid, expanding only at wider breakpoints.
 This first composite slice qualifies server/terminal output; browser/Astro composite hydration
 follows as a dependent candidate and remains required before consumer adoption.
+
+The isolated drift regression runs two real compiler checks, each bounded at 30 seconds;
+its outer test budget is 65 seconds so a slower CI host can complete both checks.
