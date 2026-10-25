@@ -1,6 +1,6 @@
 {
   "name": "@treeseed-cordis/ui",
-  "version": "0.0.0-cordis.2",
+  "version": "0.0.0-cordis.3",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -16,6 +16,10 @@
     "./react": {
       "types": "./dist/src/react.d.ts",
       "default": "./dist/src/react.js"
+    },
+    "./browser": {
+      "types": "./dist/src/browser.d.ts",
+      "default": "./dist/src/browser.js"
     },
     "./server": {
       "types": "./dist/src/server.d.ts",
@@ -36,6 +40,10 @@
     ".": {
       "types": "./dist/src/contracts.d.ts",
       "default": "./dist/src/contracts.js"
+    },
+    "./island": {
+      "types": "./dist/src/island.d.ts",
+      "default": "./dist/src/island.js"
     },
     "./source-policy": {
       "types": "./dist/src/source-policy.d.ts",
@@ -73,7 +81,11 @@
     "@types/react-dom": "19.3.0",
     "typescript": "5.9.3",
     "@types/bun": "1.4.4",
-    "@types/node": "24.10.1"
+    "@types/node": "24.10.1",
+    "playwright": "1.64.1",
+    "astro": "7.4.2",
+    "@astrojs/react": "7.1.1",
+    "oxc-transform-react": "0.145.0"
   },
   "cordisCandidate": {
     "sdk": {
@@ -174,6 +186,19 @@
       ]
     },
     {
+      "id": "ui.renderer.browser.default",
+      "pluginId": "ui",
+      "capability": "ui.renderer.browser",
+      "contractVersion": "0.4.0-cordis.1",
+      "target": "browser",
+      "provide": [
+        "ui.renderer.browser"
+      ],
+      "inject": [
+        "ui.presentation"
+      ]
+    },
+    {
       "id": "ui.renderer.terminal.default",
       "pluginId": "ui",
       "capability": "ui.renderer.terminal",
@@ -181,6 +206,19 @@
       "target": "browser",
       "provide": [
         "ui.renderer.terminal"
+      ],
+      "inject": [
+        "ui.presentation"
+      ]
+    },
+    {
+      "id": "ui.renderer.island.default",
+      "pluginId": "ui",
+      "capability": "ui.renderer.island",
+      "contractVersion": "0.4.0-cordis.1",
+      "target": "browser",
+      "provide": [
+        "ui.renderer.island"
       ],
       "inject": [
         "ui.presentation"

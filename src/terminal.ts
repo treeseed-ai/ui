@@ -31,7 +31,7 @@ export class PlainTerminalRendererPlugin extends PlainTerminalRenderer {
 export class UiTerminalRenderer {
     private disposal: Promise<void> | null = null;
     private constructor(private readonly scope: UiScope, private readonly renderer: ProviderLease<UiTerminalRendering>) { }
-    static async create(configuration: UiApplicationConfiguration = {}): Promise<UiTerminalRenderer> { const registration: ProviderRegistration = { token: UiTerminalToken, plugin: PlainTerminalRendererPlugin, declaration: PlainTerminalRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.2' } }, scope = await UiScope.create(configuration, [registration]); try {
+    static async create(configuration: UiApplicationConfiguration = {}): Promise<UiTerminalRenderer> { const registration: ProviderRegistration = { token: UiTerminalToken, plugin: PlainTerminalRendererPlugin, declaration: PlainTerminalRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.3' } }, scope = await UiScope.create(configuration, [registration]); try {
         return new UiTerminalRenderer(scope, await scope.service(UiTerminalToken));
     }
     catch (error) {

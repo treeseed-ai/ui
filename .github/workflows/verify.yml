@@ -21,4 +21,5 @@ jobs:
         with:
           node-version: 24.19.0
       - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun node_modules/playwright/cli.js install --with-deps firefox
       - run: bun run verify

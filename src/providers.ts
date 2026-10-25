@@ -109,7 +109,7 @@ export interface UiApplicationConfiguration {
 }
 export class UiScope {
     private constructor(readonly handle: CompositionHandle, private readonly context: Context, readonly presentationGeneration: string) { }
-    static defaults(identity = '@treeseed-cordis/ui@0.0.0-cordis.2'): ProviderRegistration[] {
+    static defaults(identity = '@treeseed-cordis/ui@0.0.0-cordis.3'): ProviderRegistration[] {
         const classes = [TextComponentPlugin, StatusComponentPlugin, TableComponentPlugin, FormComponentPlugin, NavigationComponentPlugin, FeedbackComponentPlugin], result: ProviderRegistration[] = [];
         for (const plugin of classes)
             result.push({ token: UiTokens.component(plugin.provide[0]!.slice('ui.component.'.length)), plugin, declaration: plugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity } });
@@ -145,7 +145,7 @@ export class UiScope {
             static readonly Config = z.strictObject({});
             constructor(context: Context) { context.provide('ui.presentation', new PresentationServices(context, presentationGeneration)); }
         }
-        registrations.push({ token: UiPresentationToken, plugin: PresentationPlugin, declaration: UiDeclaration.create('ui.presentation.default', PresentationPlugin.provide, inject), configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.2' } });
+        registrations.push({ token: UiPresentationToken, plugin: PresentationPlugin, declaration: UiDeclaration.create('ui.presentation.default', PresentationPlugin.provide, inject), configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.3' } });
         selections.push({ scopeId, capability: UiPresentationToken.id, providerId: 'ui.presentation.default' });
         const handle = await CordisComposition.start({ registrations, selections }, { scopeId, target: 'browser', principalId: 'presentation', resourceScope: 'ui' });
         try {

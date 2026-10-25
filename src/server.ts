@@ -53,7 +53,7 @@ export class ReactServerRendererPlugin extends ReactServerRenderer {
 export class UiServerRenderer {
     private disposal: Promise<void> | null = null;
     private constructor(private readonly scope: UiScope, private readonly renderer: ProviderLease<UiServerRendering>) { }
-    static async create(configuration: UiApplicationConfiguration = {}): Promise<UiServerRenderer> { const registration: ProviderRegistration = { token: UiServerToken, plugin: ReactServerRendererPlugin, declaration: ReactServerRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.2' } }, scope = await UiScope.create(configuration, [registration]); try {
+    static async create(configuration: UiApplicationConfiguration = {}): Promise<UiServerRenderer> { const registration: ProviderRegistration = { token: UiServerToken, plugin: ReactServerRendererPlugin, declaration: ReactServerRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.3' } }, scope = await UiScope.create(configuration, [registration]); try {
         return new UiServerRenderer(scope, await scope.service(UiServerToken));
     }
     catch (error) {
