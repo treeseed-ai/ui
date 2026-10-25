@@ -1,0 +1,11 @@
+# TreeSeed Cordis UI contracts
+
+Task 3C owner: https://github.com/treeseed-ai/ui/issues/80. This first review slice owns renderer-neutral view, action, contribution and hydration contracts plus semantic consumer enforcement. Subsequent independent candidates add pure React class components and selected native Cordis renderers, then browser/Astro qualification. The original Astro components remain unchanged in the original repository checkout.
+
+`@treeseed-cordis/ui/contracts` exports strict executable schemas, inferred types, typed component/theme tokens and class-compatible contracts. `UiContribution` binds contribution/component IDs, selected provider, the actual model-schema projection digest and immutable stylesheet digest. Hydration carries safe view/action/contribution/asset identities; it carries no executable callbacks, principal services, sessions or credentials. Identity remains the owner of Keycloak authority; consuming hosts retain session/token custody and authorization.
+
+Every visual implementation in the subsequent candidates must be mobile-first from 320 CSS pixels through widescreen: 320/375/768/1024/1440/1920/2560, 200% text sizing, long content, keyboard, at least 44×44 authored controls and no page overflow. Labeled semantic-table local overflow is permitted. Astro consumes React TSX classes; native mobile/Electron remain future qualification.
+
+Consumers run `UiSourcePolicy.check(root)` from `./source-policy`. Its TypeScript AST checks reject intrinsic JSX markup, DOM construction/HTML sinks, CSS imports, inline HTML templates, direct React DOM renderer imports and Astro component implementations. Domain view models/action classes and UI component imports remain consumer-owned. SDK source policy separately enforces strict TypeScript classes and owner imports. This library is the presentation owner; no parallel renderer or second dependency container is authorized.
+
+Run `bun install --frozen-lockfile --ignore-scripts` and `bun run verify`. Verification includes strict check/build and nonempty unit/integration/built-program tiers. The portable contract program imports the public package without DOM/Node renderer initialization. All issues, including Platform #678, remain open until authorized release; no production publication or activation occurs here.
