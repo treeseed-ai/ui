@@ -116,7 +116,8 @@ presentation contracts and real browser/Astro qualification.
 
 `UiMount.view()` returns a validated clone of the current model. `UiMount.update(view)`
 validates and prepares a complete tree in the same accepted provider/asset generation, commits
-the React update and releases superseded native leases. Stable component/view IDs preserve
+the React update and releases superseded native leases. The component provider returns its stable class through `type()` (class data rather than a
+leased callable property). Stable component/view IDs preserve
 focus and uncontrolled form input. Invalid or concurrent updates cannot replace the current
 view. Updates do not select providers, activate new assets or create a new React root.
 Disposal closes action admission and awaits accepted action/update completion before unmount

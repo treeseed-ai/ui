@@ -25,14 +25,20 @@ class BrowserConfiguration {
     } registrations.push({ token: UiTokens.component('status'), plugin: AlternateStatusPlugin, declaration: AlternateStatusPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.browser.component' } }, { token: UiBrowserToken, plugin: AlternateBrowserPlugin, declaration: AlternateBrowserPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.browser.renderer' } }); selections.push({ scopeId: 'ui', capability: UiBrowserToken.id, providerId: 'ui.renderer.browser.alternate' }); return { registrations, selections }; }
 }
 class FixtureActions {
-    async invoke(_id: string, input: Readonly<Record<string, string>>): Promise<UiActionResult> { return { success: true, message: 'Saved ' + (input.name ?? '')+(input.csrf?' '+input.csrf:'') }; }
+    static paused=false;static calls=0;private static done:(()=>void)|null=null;
+    static hold():void{this.paused=true;this.calls=0;}static release():void{this.paused=false;this.done?.();this.done=null;}private static wait(done:()=>void):void{this.done=done;}
+
+    async invoke(_id: string, input: Readonly<Record<string, string>>): Promise<UiActionResult> { FixtureActions.calls++;if(FixtureActions.paused)await new Promise<void>(FixtureActions.wait.bind(FixtureActions));return { success: true, message: 'Saved ' + (input.name ?? '')+(input.csrf?' '+input.csrf:'') }; }
 }
 export class UiBrowserProgram {
     private mount: UiMount | null = null;
-    private alternative = false;
+    private alternative = false;private closing:Promise<void>|null=null;
     async select(alternative: boolean): Promise<void> { this.alternative = alternative; await this.show({ id: "selection", componentId: "status", model: { title: "Status", state: "Ready" } }); }
     generation(): string { return this.mount!.rootGeneration; }
     async show(view: UiViewModel): Promise<void> { await this.mount?.dispose(); this.mount = await UiBrowserApplication.start({ ...this.alternative ? BrowserConfiguration.create() : {}, target: document.getElementById('app')!, view, host: { actions: new FixtureActions(), actionIds: ['fixture.save'], assetGeneration: 'a'.repeat(64) } }); }
+    hold():void{FixtureActions.hold();}calls():number{return FixtureActions.calls;}beginClose():void{this.closing=this.close();}async finishClose():Promise<void>{FixtureActions.release();await this.closing;}
+    async invalid():Promise<boolean>{try{await this.update({id:'invalid',componentId:'unregistered',model:{}});return false;}catch{return true;}}
+    async concurrent(view:UiViewModel):Promise<boolean>{const first=this.mount!.update(view);let refused=false;try{await this.mount!.update(view);}catch{refused=true;}await first;return refused;}
     async update(view:UiViewModel):Promise<void>{if(!this.mount)throw new Error('missing mount');await this.mount.update(view);}
     view():UiViewModel{return this.mount!.view();}
     async close(): Promise<void> { await this.mount?.dispose(); this.mount = null; }

@@ -4,7 +4,7 @@ import { ProviderV4Schemas, type NativeProviderDeclaration, type ProviderSelecti
 import { UiSchemas, UiTokens, type UiComponent, type UiTheme } from './contracts.js';
 import { UiStack, UiText, UiStatus, UiTable, UiForm, UiNavigation, UiFeedback } from './react.js';
 import { UiStyles } from './styles.js';
-export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.12';}
+export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.13';}
 export class UiTextSafety {
     static clean(value: string): string { return value.replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, ''); }
 }
@@ -22,6 +22,7 @@ abstract class ComponentProvider implements UiComponent {
     abstract readonly component: UiComponent['component'];
     abstract readonly schema: z.ZodType;
     constructor(context: Context) { context.provide((this.constructor as typeof ComponentProvider).provide[0]!, this); }
+    type():UiComponent['component']{return this.component;}
     validate(value: unknown): unknown { return this.schema.parse(value); }
     modelSchema(): unknown { return z.toJSONSchema(this.schema, { unrepresentable: "throw" }); }
     abstract terminal(value: unknown): string;

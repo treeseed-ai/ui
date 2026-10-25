@@ -16,12 +16,12 @@ export interface UiHostAdapters {
     assetGeneration: string;
 }
 class UiAdmittedActions implements UiActionDispatcher {
-    constructor(private readonly host: UiHostAdapters) { }
-    invoke(actionId: string, input: Readonly<Record<string, string>>): Promise<UiActionResult> {
-        if (!this.host.actions || !this.host.actionIds.includes(actionId))
-            return Promise.reject(new Error('UI_ACTION_DENIED'));
-        return this.host.actions.invoke(actionId, input);
-    }
+ private closed=false;private pending=0;private readonly waiters=new Set<()=>void>();
+ constructor(private readonly host:UiHostAdapters){}
+ invoke(id:string,input:Readonly<Record<string,string>>):Promise<UiActionResult>{if(this.closed||!this.host.actions||!this.host.actionIds.includes(id))return Promise.reject(new Error('UI_ACTION_DENIED'));this.pending++;return this.call(id,input);}
+ private async call(id:string,input:Readonly<Record<string,string>>):Promise<UiActionResult>{try{return await this.host.actions!.invoke(id,input);}finally{this.pending--;if(!this.pending){for(const waiter of this.waiters)waiter();this.waiters.clear();}}}
+ close():Promise<void>{this.closed=true;return this.pending?new Promise<void>(this.wait.bind(this)):Promise.resolve();}
+ private wait(resolve:()=>void):void{this.waiters.add(resolve);}
 }
 class UiReadiness implements UiRenderObserver {
     private resolve: (() => void) | null = null;
@@ -36,13 +36,18 @@ class UiReadiness implements UiRenderObserver {
 class UiMountedRoot implements UiMount {
     readonly rootGeneration: string;
     private disposal: Promise<void> | null = null;
-    constructor(readonly generation: string, private readonly root: Root, private readonly tree: UiRenderTree, private readonly theme: ProviderLease<UiTheme>) { this.rootGeneration = generation; }
+    private pending:Promise<void>|null=null;private fenced=false;
+    constructor(readonly generation:string,private readonly root:Root,private tree:UiRenderTree,private readonly theme:ProviderLease<UiTheme>,private readonly presentation:UiPresentation,private readonly cssUrl:string,private readonly actions?:UiAdmittedActions){this.rootGeneration=generation;}
+    view():UiViewModel{if(this.disposal||this.fenced)throw new Error('UI_MOUNT_CLOSED');return UiSchemas.view.parse(this.tree.root.view);}
+    async update(view:UiViewModel):Promise<void>{if(this.disposal||this.fenced)throw new Error('UI_MOUNT_CLOSED');if(this.pending)throw new Error('UI_UPDATE_IN_PROGRESS');this.pending=this.replace(view);try{await this.pending;}finally{this.pending=null;}}
+    private async replace(value:UiViewModel):Promise<void>{let candidate:UiRenderTree|undefined,readiness:UiReadiness|undefined,rendered=false;try{candidate=await UiRenderTree.prepare(value,this.presentation);if(this.disposal)throw new Error('UI_MOUNT_CLOSED');readiness=new UiReadiness();rendered=true;this.root.render(createElement(UiSurface,{component:candidate.root.component.component,tree:candidate.root,view:candidate.root.view,cssUrl:this.cssUrl,actions:this.actions,observer:readiness}));await readiness.promise;const previous=this.tree;this.tree=candidate;candidate=undefined;await previous.dispose();}catch(error){readiness?.cancel();if(rendered){this.fenced=true;await this.actions?.close();this.root.unmount();}await candidate?.dispose();throw error;}}
     dispose(): Promise<void> {
         if (!this.disposal)
             this.disposal = this.close();
         return this.disposal;
     }
     private async close(): Promise<void> {
+        await this.actions?.close();try{await this.pending;}catch{}
         let failed = false;
         try {
             this.root.unmount();
@@ -85,7 +90,7 @@ export class ReactBrowserRenderer implements UiBrowserRendering {
     constructor(private readonly presentation: UiPresentation) { }
     async mount(target: Element, value: UiViewModel, host?: UiHostAdapters, hydrate = false, bootstrap?:UiHydrationData): Promise<UiMount> {
         const view = UiSchemas.view.parse(value);
-        let root: Root | undefined, tree: UiRenderTree | undefined, theme: ProviderLease<UiTheme> | undefined, readiness: UiReadiness | undefined;
+        let root: Root | undefined, tree: UiRenderTree | undefined, theme: ProviderLease<UiTheme> | undefined, readiness: UiReadiness | undefined, actions:UiAdmittedActions|undefined;
         try {
             tree = await UiRenderTree.prepare(view,this.presentation);
             theme = await this.presentation.theme();
@@ -94,15 +99,16 @@ export class ReactBrowserRenderer implements UiBrowserRendering {
             const style=await UiStyles.asset(theme.value.css());
             let admitted=host;
             if(hydrate){if(!bootstrap||!host)throw new Error('UI_BOOTSTRAP_REQUIRED');const accepted=UiSchemas.hydration.parse(bootstrap);if(CanonicalJson.stringify(accepted.view)!==CanonicalJson.stringify(view))throw new Error('UI_BOOTSTRAP_MISMATCH');if(accepted.presentationGeneration!==this.presentation.generation)throw new Error('UI_GENERATION_MISMATCH');if(accepted.assetGeneration!==host.assetGeneration)throw new Error('UI_ASSET_MISMATCH');for(const action of accepted.actionIds)if(!host.actionIds.includes(action))throw new Error('UI_ACTION_DENIED');UiContributionIdentity.assert(accepted.contribution,await tree.contribution(style.digest));admitted={...host,actionIds:accepted.actionIds};}
-            const element = createElement(UiSurface, { component: tree.root.component.component, tree:tree.root, view, cssUrl:style.path, actions: admitted ? new UiAdmittedActions(admitted) : undefined, observer: readiness });
+            actions=admitted?new UiAdmittedActions(admitted):undefined;
+            const element = createElement(UiSurface, { component: tree.root.component.component, tree:tree.root, view, cssUrl:style.path, actions, observer: readiness });
             root = hydrate ? hydrateRoot(target, element) : createRoot(target);
             if (!hydrate)
                 root.render(element);
             await readiness.promise;
-            return new UiMountedRoot(this.presentation.generation, root, tree, theme);
+            return new UiMountedRoot(this.presentation.generation, root, tree, theme,this.presentation,style.path,actions);
         }
         catch (error) {
-            readiness?.cancel();
+            readiness?.cancel();await actions?.close();
             try {
                 root?.unmount();
             }
@@ -131,6 +137,8 @@ class UiOwnedMount implements UiMount {
     readonly generation: string;
     readonly rootGeneration: string;
     constructor(private readonly inner: UiMount, private readonly renderer: ProviderLease<UiBrowserRendering>, private readonly scope: UiScope) { this.generation = inner.generation; this.rootGeneration = scope.handle.generation; }
+    view():UiViewModel{if(this.disposal)throw new Error('UI_MOUNT_CLOSED');return this.inner.view();}
+    update(view:UiViewModel):Promise<void>{if(this.disposal)return Promise.reject(new Error('UI_MOUNT_CLOSED'));return this.inner.update(view);}
     dispose(): Promise<void> {
         if (!this.disposal)
             this.disposal = this.close();

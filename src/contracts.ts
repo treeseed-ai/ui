@@ -72,6 +72,7 @@ export interface UiComponentProps {
 }
 export interface UiComponent {
     component: ComponentClass<UiComponentProps>;
+    type():ComponentClass<UiComponentProps>;
     validate(value: unknown): unknown;
     modelSchema(): unknown;
     terminal(value: unknown, children?:readonly string[]): string;
@@ -94,11 +95,13 @@ export interface UiScopeHandle {
     dispose(): Promise<void>;
 }
 export interface UiMount extends UiScopeHandle {
+    view():UiViewModel;
+    update(view:UiViewModel):Promise<void>;
     generation: string;
     rootGeneration: string;
 }
 class ComponentValidator implements AdapterValidator<UiComponent> {
-    parse(value: unknown): UiComponent { if (!value || typeof value !== 'object' || typeof Reflect.get(value, 'component') !== 'function' || !Reflect.get(value, 'component').prototype?.isReactComponent || typeof Reflect.get(value, 'validate') !== 'function' || typeof Reflect.get(value, 'modelSchema') !== 'function' || typeof Reflect.get(value, 'terminal') !== 'function')
+    parse(value: unknown): UiComponent { if (!value || typeof value !== 'object' || typeof Reflect.get(value, 'component') !== 'function' || !Reflect.get(value, 'component').prototype?.isReactComponent || typeof Reflect.get(value, 'type') !== 'function' || typeof Reflect.get(value, 'validate') !== 'function' || typeof Reflect.get(value, 'modelSchema') !== 'function' || typeof Reflect.get(value, 'terminal') !== 'function')
         throw new Error('INVALID_UI_COMPONENT'); return value as UiComponent; }
 }
 class ThemeValidator implements AdapterValidator<UiTheme> {

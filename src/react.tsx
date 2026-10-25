@@ -21,7 +21,7 @@ export class UiRenderTree {
 }
 export class UiTreeView extends Component<{node:UiRenderNode;actions?:UiActionDispatcher}> {
  private child(node:UiRenderNode):ReactNode{return createElement(UiTreeView,{key:node.view.id,node,actions:this.props.actions});}
- render():ReactNode{const node=this.props.node;return createElement(node.component.component,{instanceId:node.view.id,model:node.view.model,actions:this.props.actions},...node.children.map(this.child.bind(this)));}
+ render():ReactNode{const node=this.props.node;return createElement(node.component.type(),{key:node.view.id,instanceId:node.view.id,model:node.view.model,actions:this.props.actions},...node.children.map(this.child.bind(this)));}
 }
 export class UiText extends Component<UiComponentProps> {
     render(): ReactNode { const model = UiSchemas.textModel.parse(this.props.model); return <p>{model.text}</p>; }
@@ -106,6 +106,7 @@ export class UiSurface extends Component<UiSurfaceProps, {
     }
     else if (this.link.current?.sheet)
         this.loaded(); }
+    override componentDidUpdate(previous:Readonly<UiSurfaceProps>):void{if(previous.observer!==this.props.observer&&this.state.styled)this.acknowledge();}
     private loaded(): void { if (this.state.styled)
         this.acknowledge();
     else

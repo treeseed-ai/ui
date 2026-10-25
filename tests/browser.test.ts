@@ -6,6 +6,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 class BrowserAssertions {
     static async render(serialized: string): Promise<void> { await window.ui.show(JSON.parse(serialized) as UiViewModel); }
     static async update(serialized:string):Promise<void>{await window.ui.update(JSON.parse(serialized) as UiViewModel);}
+    static invalid():Promise<boolean>{return window.ui.invalid();}static concurrent(serialized:string):Promise<boolean>{return window.ui.concurrent(JSON.parse(serialized) as UiViewModel);}static hold():void{window.ui.hold();}static calls():number{return window.ui.calls();}static beginClose():void{window.ui.beginClose();}static finishClose():Promise<void>{return window.ui.finishClose();}
     static currentTitle():unknown{return (window.ui.view().model as {title?:string}).title;}
     static layout(): {
         overflow: boolean;
@@ -65,7 +66,7 @@ class UiBrowserTests {
             }
             await page.evaluate(BrowserAssertions.zoom, '100%');
             await page.evaluate(BrowserAssertions.render, JSON.stringify(this.views()[3]!));
-            await page.getByRole('textbox').first().fill('draft');await page.getByRole('textbox').first().focus();const focused=await page.getByRole('textbox').first().getAttribute('id');const updated=this.views()[3]!;const model=updated.model as {title:string};model.title='Updated profile';await page.evaluate(BrowserAssertions.update,JSON.stringify(updated));expect(await page.getByRole('textbox').first().inputValue()).toBe('draft');expect(await page.locator(':focus').getAttribute('id')).toBe(focused);expect(await page.evaluate(BrowserAssertions.currentTitle)).toBe('Updated profile');
+            await page.getByRole('textbox').first().fill('draft');await page.getByRole('textbox').first().focus();const focused=await page.getByRole('textbox').first().getAttribute('id');const updated=this.views()[3]!;const model=updated.model as {title:string};model.title='Updated profile';await page.evaluate(BrowserAssertions.update,JSON.stringify(updated));expect(await page.getByRole('textbox').first().inputValue()).toBe('draft');expect(await page.locator(':focus').getAttribute('id')).toBe(focused);expect(await page.evaluate(BrowserAssertions.currentTitle)).toBe('Updated profile');expect(await page.evaluate(BrowserAssertions.invalid)).toBe(true);expect(await page.getByRole('textbox').first().inputValue()).toBe('draft');expect(await page.evaluate(BrowserAssertions.concurrent,JSON.stringify(updated))).toBe(true);expect(await page.evaluate(BrowserAssertions.currentTitle)).toBe('Updated profile');
             await page.getByRole('textbox').first().fill('fixture');
             await page.getByRole('button').click();
             await page.getByRole('status').filter({ hasText: 'Saved fixture' }).waitFor();
@@ -82,6 +83,7 @@ class UiBrowserTests {
             expect(await page.locator('script').count()).toBe(1);
             await page.evaluate(BrowserAssertions.close);
             expect(await page.locator('.trsd-ui').count()).toBe(0);
+            const draining:UiViewModel={id:'draining',componentId:'stack',model:{children:[{id:'first',componentId:'form',model:{title:'First',actionId:'fixture.save',submitLabel:'Hold action',fields:[]}},{id:'second',componentId:'form',model:{title:'Second',actionId:'fixture.save',submitLabel:'Try action',fields:[]}}]}};await page.evaluate(BrowserAssertions.render,JSON.stringify(draining));await page.evaluate(BrowserAssertions.hold);await page.getByRole('button',{name:'Hold action'}).click();await page.waitForFunction(BrowserAssertions.calls);await page.evaluate(BrowserAssertions.beginClose);await page.getByRole('button',{name:'Try action'}).click();await page.getByRole('status').filter({hasText:'Action unavailable'}).waitFor();expect(await page.evaluate(BrowserAssertions.calls)).toBe(1);expect(await page.locator('.trsd-ui').count()).toBe(1);await page.evaluate(BrowserAssertions.finishClose);expect(await page.locator('.trsd-ui').count()).toBe(0);
             await page.goto('http://127.0.0.1:'+server.port+'/hydrate');await page.waitForSelector('html[data-ready=true]');await page.getByRole('textbox').fill('Hydrated');await page.getByRole('button').click();await page.getByRole('status').filter({hasText:'Saved Hydrated public-nonce'}).waitFor();await page.evaluate(BrowserAssertions.close);expect(await page.locator('.trsd-ui').count()).toBe(0);
             await page.goto('http://127.0.0.1:'+server.port+'/hydrate?tamper=1');await page.waitForSelector('html[data-refused=true]');expect(await page.getByRole('button').isDisabled()).toBe(true);
         }
