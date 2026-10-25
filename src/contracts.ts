@@ -9,16 +9,19 @@ class UiValidation {
         if (row.length !== model.columns.length)
             return false; return true; }
     static form(model: {
+        actionData?:Record<string,string>;
         fields: Array<{
             id: string;
             type: string;
             value?: string;
         }>;
-    }): boolean { const ids = new Set<string>(); for (const field of model.fields) {
+    }): boolean { if(Object.keys(model.actionData??{}).length>64)return false;const ids = new Set<string>();for(const key of Object.keys(model.actionData??{})){if(/password|secret|token|credential/i.test(key))return false;ids.add(key);} for (const field of model.fields) {
         if (ids.has(field.id) || (field.type === 'password' && field.value !== undefined))
             return false;
         ids.add(field.id);
     } return true; }
+    static script(value:{path:string;sha256:string}):boolean{return value.path.includes(value.sha256);}
+    static unique(values:string[]):boolean{return new Set(values).size===values.length;}
     static href(value: string): boolean { if (/[\\\x00-\x20\x7f]/.test(value))
         return false; if (value.startsWith('/'))
         return !value.startsWith('//'); if (value.startsWith('#'))
@@ -39,13 +42,18 @@ export class UiSchemas {
     static readonly textModel = z.strictObject({ text: this.text });
     static readonly statusModel = z.strictObject({ title: this.text, state: this.text, detail: this.text.optional() });
     static readonly tableModel = z.strictObject({ title: this.text, columns: z.array(this.text).min(1).max(64), rows: z.array(z.array(this.text).max(64)).max(1000) }).refine(UiValidation.table);
-    static readonly formModel = z.strictObject({ title: this.text, actionId: this.action, submitLabel: this.text, fields: z.array(z.strictObject({ id: this.id, label: this.text, type: z.enum(['text', 'email', 'password', 'number']).default('text'), value: this.text.optional(), required: z.boolean().default(false) })).max(64) }).refine(UiValidation.form);
+    static readonly formModel = z.strictObject({ title: this.text, actionId: this.action, submitLabel: this.text, actionData:z.record(this.id,z.string().max(4096)).default({}), fields: z.array(z.strictObject({ id: this.id, label: this.text, type: z.enum(['text', 'email', 'password', 'number']).default('text'), value: this.text.optional(), required: z.boolean().default(false) })).max(64) }).refine(UiValidation.form);
     static readonly navigationModel = z.strictObject({ label: this.text, items: z.array(z.strictObject({ label: this.text, href: z.string().max(2048).refine(UiValidation.href) })).max(128) });
     static readonly feedbackModel = z.strictObject({ title: this.text, message: this.text, tone: z.enum(['info', 'success', 'error']) });
     static readonly member = z.strictObject({ id: this.id, componentId: this.id, providerId: this.id, modelSchemaDigest: z.string().regex(/^[a-f0-9]{64}$/), styleDigest: z.string().regex(/^[a-f0-9]{64}$/) });
     static readonly contribution = this.member.extend({members:z.array(this.member).max(255).optional()});
+    static readonly script=z.strictObject({path:z.string().regex(/^\/assets\/[a-zA-Z0-9/_-]+\.js$/),sha256:z.string().regex(/^[a-f0-9]{64}$/)}).refine(UiValidation.script);
+    static readonly document=z.strictObject({title:this.text,language:z.string().regex(/^[a-z]{2,3}(?:-[a-zA-Z0-9]{2,8})*$/).default('en'),view:this.view,script:this.script,assetGeneration:z.string().regex(/^[a-f0-9]{64}$/),actionIds:z.array(this.action).max(128).refine(UiValidation.unique)});
     static readonly hydration = z.strictObject({ view: this.view, contribution: this.contribution, presentationGeneration: z.string().regex(/^[a-f0-9]{64}$/), assetGeneration: z.string().regex(/^[a-f0-9]{64}$/), actionIds: z.array(this.action).max(128) });
 }
+export type UiDocumentOptions=z.input<typeof UiSchemas.document>;
+export interface RenderedDocument {html:string;bootstrap:UiHydrationData;assets:readonly string[];}
+export class UiDocumentBoundary {static readonly rootId='trsd-ui-root';static readonly bootstrapId='trsd-ui-bootstrap';}
 export type UiViewModel = z.infer<typeof UiSchemas.view>;
 export type UiContribution = z.infer<typeof UiSchemas.contribution>;
 export type UiHydrationData = z.infer<typeof UiSchemas.hydration>;

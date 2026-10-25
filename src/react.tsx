@@ -50,7 +50,7 @@ export class UiForm extends Component<UiComponentProps, {
         required: boolean;
     }): ReactNode { const id = this.props.instanceId + '-' + field.id; return <label key={field.id} htmlFor={id}>{field.label}<input id={id} name={field.id} type={field.type} defaultValue={field.value ?? ''} required={field.required}/></label>; }
     private async submit(event: React.SubmitEvent<HTMLFormElement>): Promise<void> { event.preventDefault(); if (!this.props.actions || this.state.pending)
-        return; const model = UiSchemas.formModel.parse(this.props.model), input: Record<string, string> = {}; for (const [key, value] of new FormData(event.currentTarget))
+        return; const model = UiSchemas.formModel.parse(this.props.model), input: Record<string, string> = {...model.actionData}; for (const [key, value] of new FormData(event.currentTarget))
         if (typeof value === 'string')
             input[key] = value; this.setState({ pending: true, message: '' }); try {
         const result = await this.props.actions.invoke(model.actionId, input);

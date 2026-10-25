@@ -1,6 +1,6 @@
 {
   "name": "@treeseed-cordis/ui",
-  "version": "0.0.0-cordis.9",
+  "version": "0.0.0-cordis.10",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -248,7 +248,7 @@
     "pluginId": "ui",
     "package": {
       "name": "@treeseed-cordis/ui",
-      "version": "0.0.0-cordis.9"
+      "version": "0.0.0-cordis.10"
     },
     "providers": [
       {

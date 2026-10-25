@@ -25,7 +25,7 @@ class BrowserConfiguration {
     } registrations.push({ token: UiTokens.component('status'), plugin: AlternateStatusPlugin, declaration: AlternateStatusPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.browser.component' } }, { token: UiBrowserToken, plugin: AlternateBrowserPlugin, declaration: AlternateBrowserPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.browser.renderer' } }); selections.push({ scopeId: 'ui', capability: UiBrowserToken.id, providerId: 'ui.renderer.browser.alternate' }); return { registrations, selections }; }
 }
 class FixtureActions {
-    async invoke(_id: string, input: Readonly<Record<string, string>>): Promise<UiActionResult> { return { success: true, message: 'Saved ' + (input.name ?? '') }; }
+    async invoke(_id: string, input: Readonly<Record<string, string>>): Promise<UiActionResult> { return { success: true, message: 'Saved ' + (input.name ?? '')+(input.csrf?' '+input.csrf:'') }; }
 }
 export class UiBrowserProgram {
     private mount: UiMount | null = null;
@@ -34,8 +34,8 @@ export class UiBrowserProgram {
     generation(): string { return this.mount!.rootGeneration; }
     async show(view: UiViewModel): Promise<void> { await this.mount?.dispose(); this.mount = await UiBrowserApplication.start({ ...this.alternative ? BrowserConfiguration.create() : {}, target: document.getElementById('app')!, view, host: { actions: new FixtureActions(), actionIds: ['fixture.save'], assetGeneration: 'a'.repeat(64) } }); }
     async close(): Promise<void> { await this.mount?.dispose(); this.mount = null; }
-    async hydrate(value:UiHydrationData):Promise<void>{await this.mount?.dispose();this.mount=await UiBrowserApplication.hydrate(document.getElementById('app')!,value,{actions:new FixtureActions(),actionIds:['fixture.save'],assetGeneration:'a'.repeat(64)});}
-    static async run(): Promise<void> { window.ui = new UiBrowserProgram();try{const serialized=document.getElementById('ui-bootstrap')?.textContent;if(serialized)await window.ui.hydrate(JSON.parse(serialized) as UiHydrationData);else await window.ui.show({ id: 'initial', componentId: 'status', model: { title: 'Status', state: 'Ready' } }); document.documentElement.dataset.ready = 'true';}catch{document.documentElement.dataset.refused='true';} }
+    async hydrateDocument():Promise<void>{await this.mount?.dispose();this.mount=await UiBrowserApplication.hydrateDocument({actions:new FixtureActions(),actionIds:['fixture.save'],assetGeneration:'a'.repeat(64)});}
+    static async run(): Promise<void> { window.ui = new UiBrowserProgram();try{if(document.getElementById('trsd-ui-bootstrap'))await window.ui.hydrateDocument();else await window.ui.show({ id: 'initial', componentId: 'status', model: { title: 'Status', state: 'Ready' } }); document.documentElement.dataset.ready = 'true';}catch{document.documentElement.dataset.refused='true';} }
 }
 declare global {
     interface Window {

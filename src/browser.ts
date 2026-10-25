@@ -7,7 +7,7 @@ import { UiPresentationToken } from './providers.js';
 import { UiStyles } from './styles.js';
 import { createElement } from 'react';
 import { createRoot, hydrateRoot, type Root } from 'react-dom/client';
-import { UiSchemas, type UiViewModel, type UiMount, type UiHydrationData, type UiScopeHandle, type UiActionDispatcher, type UiActionResult } from './contracts.js';
+import { UiDocumentBoundary, UiSchemas, type UiViewModel, type UiMount, type UiHydrationData, type UiScopeHandle, type UiActionDispatcher, type UiActionResult } from './contracts.js';
 import { UiSurface, UiRenderTree, type UiRenderObserver } from './react.js';
 import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
 export interface UiHostAdapters {
@@ -188,6 +188,7 @@ export interface UiBrowserStart extends UiApplicationConfiguration {
 export class UiBrowserApplication {
     static renderer(configuration: UiApplicationConfiguration = {}): UiBrowserRenderer { return new UiBrowserRenderer(configuration); }
     static start(configuration: UiBrowserStart): Promise<UiMount> { return new UiBrowserRenderer(configuration).mount(configuration.target, configuration.view, configuration.host); }
+    static hydrateDocument(host:UiHostAdapters,configuration:UiApplicationConfiguration={}):Promise<UiMount>{const target=document.getElementById(UiDocumentBoundary.rootId),element=document.getElementById(UiDocumentBoundary.bootstrapId);if(document.querySelectorAll('#'+UiDocumentBoundary.rootId).length!==1||document.querySelectorAll('#'+UiDocumentBoundary.bootstrapId).length!==1||!target||!element||element.tagName!=='SCRIPT'||element.getAttribute('type')!=='application/json'||!element.textContent||new TextEncoder().encode(element.textContent).byteLength>4*1024*1024)throw new Error('UI_BOOTSTRAP_REQUIRED');let value:unknown;try{value=JSON.parse(element.textContent);}catch{throw new Error('UI_BOOTSTRAP_REQUIRED');}return this.hydrate(target,UiSchemas.hydration.parse(value),host,configuration);}
     static hydrate(target:Element,bootstrap:UiHydrationData,host:UiHostAdapters,configuration:UiApplicationConfiguration={}):Promise<UiMount>{const accepted=UiSchemas.hydration.parse(bootstrap);return new UiBrowserRenderer(configuration).mount(target,accepted.view,host,true,accepted);}
     static async attach(value: UiHydrationData, host: UiHostAdapters, configuration: UiApplicationConfiguration = {}): Promise<UiScopeHandle> {
         const bootstrap = UiSchemas.hydration.parse(value);
