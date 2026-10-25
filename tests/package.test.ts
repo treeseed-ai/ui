@@ -16,7 +16,7 @@ class PackageTests {
                 sha256: string;
             };
         };
-    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.9'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('85a7b6036c9a390a5c56b9db419fc5b6f8f8cd77'); expect(value.cordisCandidate.sdk.sha256).toBe('80337c6ad9cb4f493fa06ed9a22e3863ae41610cc1027817bd54c1eece3954d3'); }
+    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.10'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('32aea4a7be9ccde3a06dd8552020ab1042cc694d'); expect(value.cordisCandidate.sdk.sha256).toBe('a94dfd38f1d4bae09b211f1517cddb620bb5bbbb3a6afa46cfa9c8e857242393'); }
 }
 const suite = new PackageTests();
 test('unit: UI runtime uses exact SDK archive and leaves the development compiler optional', suite.metadata.bind(suite));
