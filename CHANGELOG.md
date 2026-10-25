@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Compose validated reusable views through a mobile-first layout provider (#80).
+
 ### Changed
 
 - Bind default composition roots to one checked owner package identity (#80).

@@ -61,3 +61,16 @@ All default UI composition roots derive their bundled artifact label from
 `UiPackageIdentity.artifact`, retaining one current owner version across server, terminal,
 browser and Astro roots. Release consumers bind their accepted exact archive identity through
 `artifactIdentity`. A build check rejects package-version/default-label drift.
+
+### Reusable composite views
+
+`StackComponentPlugin` supplies the mobile-first `stack` view with `{title?,children}`.
+Children are ordinary typed views, including other composites; a component provider can expose
+`children(model)` for the shared render tree. Server and terminal renderers resolve every node
+through native selected providers, validate every model, retain leases through rendering and
+release them together. Views contain no markup, CSS, component constructors or callbacks.
+Duplicate view IDs, excessive depth/count, missing components and invalid child models fail
+before output. Contribution identities include every selected child/schema/style identity.
+The layout uses the shared one-column mobile grid, expanding only at wider breakpoints.
+This first composite slice qualifies server/terminal output; browser/Astro composite hydration
+follows as a dependent candidate and remains required before consumer adoption.
