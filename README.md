@@ -100,3 +100,8 @@ Forms may include `actionData`, a bounded string map of public action context (f
 anti-CSRF nonce). These fields are validated model data, never credentials or bearer tokens.
 Visible field IDs cannot override them; the action adapter receives both context and submitted
 fields. Reusable components still contain no domain endpoints or identity implementation.
+
+The consumer presentation gate distinguishes DOM document writes from ordinary native stream
+or class writes. Direct and aliased document writes remain prohibited, including computed
+`document['write']` calls; CLI stdout/stderr and non-DOM typed writers remain valid consumer
+transport behavior. This is checked against both refusal and permitted-stream examples.

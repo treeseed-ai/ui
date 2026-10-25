@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Distinguish native output streams from prohibited document rendering in consumer checks (#80).
+
 ### Added
 
 - Render and hydrate complete reusable documents with immutable scripts and typed action context (#80).
