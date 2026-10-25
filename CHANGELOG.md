@@ -7,6 +7,7 @@
 - Update validated UI models within accepted roots and drain actions before cleanup (#80).
 
 ### Changed
+- Qualify responsive UI providers against exact SDK .12 contracts (#80).
 
 - Adopt accepted probe/runtime SDK contracts for exact owner assembly (#80).
 

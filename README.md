@@ -53,9 +53,13 @@ a changed class export, preserving the working checkout while proving stale meta
 
 ### Current SDK adoption
 
-This candidate adopts SDK .9 through the
-vendored archive from source `85a7b6036c9a390a5c56b9db419fc5b6f8f8cd77`, SHA-256
-`80337c6ad9cb4f493fa06ed9a22e3863ae41610cc1027817bd54c1eece3954d3`.
+This candidate adopts SDK .12 through the
+vendored archive from source `4a0b12ca45478f58d92a02de4a7c144ed94c7417`, SHA-256
+`9652a1e1f830eb85c41b2d9ea207782ffdf291db2ef97331e338775dadf62fd4`.
+The portable native composition contract remains compatible. Requalify all seven responsive
+widths, keyboard/forms/text resizing, source boundaries, provider drain and actual packed Astro
+hydration against this exact archive. Accepted deployment observation metadata adds no session,
+credential or Keycloak authority to reusable UI components.
 
 All default UI composition roots derive their bundled artifact label from
 `UiPackageIdentity.artifact`, retaining one current owner version across server, terminal,
