@@ -264,3 +264,7 @@ Agents must not repeat the same action without progress. This prevents token was
 **Enforcement:** When an agent detects it is in a loop, it must state so explicitly ("I have
 attempted X three times with the same result; switching approach / reporting blocker") rather
 than silently continuing. Silence during a loop is the failure mode this rule prevents.
+
+## UI owner requirement: mobile-first reusable React
+
+Every visual component must be mobile-first from 320 CSS pixels to widescreen monitors; test 320/375/768/1024/1440/1920/2560 widths, long content, keyboard/touch and 200% text resizing. Keep authored controls at least 44×44 CSS pixels, required actions visible, logical/fluid dimensions and no page overflow (labeled local semantic-table overflow is permitted). UI owns components/styles/renderers; consumers retain domain behavior and Identity retains Keycloak authority. Pure reusable visual implementations are React TSX classes behind native Cordis providers. Astro consumes those exports; no parallel Astro component library. Preserve the class/plugin architecture above and keep authentication/token custody outside presentation.
