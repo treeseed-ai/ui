@@ -61,3 +61,6 @@ All default UI composition roots derive their bundled artifact label from
 `UiPackageIdentity.artifact`, retaining one current owner version across server, terminal,
 browser and Astro roots. Release consumers bind their accepted exact archive identity through
 `artifactIdentity`. A build check rejects package-version/default-label drift.
+
+The isolated drift regression runs two real compiler checks, each bounded at 30 seconds;
+its outer test budget is 65 seconds so a slower CI host can complete both checks.
