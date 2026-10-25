@@ -1,19 +1,54 @@
-import {test,expect} from 'bun:test';
-import {Component,createElement,type ReactNode} from 'react';
-import {ProviderV4Schemas,type ProviderSelection} from '@treeseed-cordis/sdk/portable';
-import type {ProviderRegistration} from '@treeseed-cordis/sdk/composition';
-import {UiTokens,type UiComponentProps} from '../src/contracts.js';
-import {UiStatus} from '../src/react.js';
-import {UiScope,StatusComponentPlugin,DefaultThemePlugin,type UiApplicationConfiguration} from '../src/providers.js';
-import {UiServerRenderer,UiServerToken,ReactServerRendererPlugin} from '../src/server.js';
-import {UiTerminalRenderer,UiTerminalToken,PlainTerminalRendererPlugin} from '../src/terminal.js';
-class AlternateStatus extends Component<UiComponentProps> {render():ReactNode{return createElement(UiStatus,this.props);}}
-class AlternateStatusPlugin extends StatusComponentPlugin {static override readonly declaration=ProviderV4Schemas.declaration.parse({...StatusComponentPlugin.declaration,id:'ui.status.alternate'});override readonly component=AlternateStatus;}
-class AlternateThemePlugin extends DefaultThemePlugin {static override readonly declaration=ProviderV4Schemas.declaration.parse({...DefaultThemePlugin.declaration,id:'ui.theme.alternate'});override css():string{return super.css()+'\n/* qualified alternate */';}}
-class AlternateServerPlugin extends ReactServerRendererPlugin {static override readonly declaration=ProviderV4Schemas.declaration.parse({...ReactServerRendererPlugin.declaration,id:'ui.renderer.server.alternate'});}
-class AlternateTerminalPlugin extends PlainTerminalRendererPlugin {static override readonly declaration=ProviderV4Schemas.declaration.parse({...PlainTerminalRendererPlugin.declaration,id:'ui.renderer.terminal.alternate'});}
-class SubstitutionTests {
-  private configuration(){const registrations:ProviderRegistration[]=UiScope.defaults(),selections:ProviderSelection[]=[];registrations.push({token:UiTokens.component('status'),plugin:AlternateStatusPlugin,declaration:AlternateStatusPlugin.declaration,configuration:{},artifact:{kind:'bundled',identity:'fixture.component'}},{token:UiTokens.theme,plugin:AlternateThemePlugin,declaration:AlternateThemePlugin.declaration,configuration:{},artifact:{kind:'bundled',identity:'fixture.theme'}},{token:UiServerToken,plugin:AlternateServerPlugin,declaration:AlternateServerPlugin.declaration,configuration:{},artifact:{kind:'bundled',identity:'fixture.server'}},{token:UiTerminalToken,plugin:AlternateTerminalPlugin,declaration:AlternateTerminalPlugin.declaration,configuration:{},artifact:{kind:'bundled',identity:'fixture.terminal'}});for(const registration of UiScope.defaults()){const declaration=ProviderV4Schemas.declaration.parse(registration.declaration);selections.push({scopeId:'ui',capability:registration.token.id,providerId:registration.token.id==='ui.component.status'?'ui.status.alternate':registration.token.id==='ui.theme'?'ui.theme.alternate':declaration.id});}selections.push({scopeId:'ui',capability:UiServerToken.id,providerId:'ui.renderer.server.alternate'},{scopeId:'ui',capability:UiTerminalToken.id,providerId:'ui.renderer.terminal.alternate'});return {registrations,selections};}
-  async contract():Promise<void>{let generation='';for(const configuration of [{},this.configuration()] as UiApplicationConfiguration[]){const server=await UiServerRenderer.create(configuration),terminal=await UiTerminalRenderer.create(configuration);try{const view={id:'fixture',componentId:'status',model:{title:'Status <script>canary</script>',state:'Ready'}},page=await server.render(view),style=await server.styles();expect(page.html).toContain('&lt;script&gt;canary&lt;/script&gt;');expect(page.html).not.toContain('<script>canary</script>');expect(page.assets).toContain(style.path);expect((await terminal.render(view)).text).toBe('Status <script>canary</script>: Ready\n');expect(server.identity().providerId).toBe(configuration.registrations?'ui.renderer.server.alternate':'ui.renderer.server.default');expect(terminal.identity().providerId).toBe(configuration.registrations?'ui.renderer.terminal.alternate':'ui.renderer.terminal.default');if(generation)expect(page.generation).not.toBe(generation);generation=page.generation;}finally{await server.dispose();await terminal.dispose();}await expect(terminal.render({id:'v',componentId:'text',model:{text:'closed'}})).rejects.toThrow();}}
+import { test, expect } from 'bun:test';
+import { Component, createElement, type ReactNode } from 'react';
+import { ProviderV4Schemas, type ProviderSelection } from '@treeseed-cordis/sdk/portable';
+import type { ProviderRegistration } from '@treeseed-cordis/sdk/composition';
+import { UiTokens, type UiComponentProps } from '../src/contracts.js';
+import { UiStatus } from '../src/react.js';
+import { UiScope, StatusComponentPlugin, DefaultThemePlugin, type UiApplicationConfiguration } from '../src/providers.js';
+import { UiServerRenderer, UiServerToken, ReactServerRendererPlugin } from '../src/server.js';
+import { UiTerminalRenderer, UiTerminalToken, PlainTerminalRendererPlugin } from '../src/terminal.js';
+class AlternateStatus extends Component<UiComponentProps> {
+    render(): ReactNode { return createElement(UiStatus, this.props); }
 }
-const suite=new SubstitutionTests();test('integration: component theme and server terminal alternatives pass one contract with cleanup',suite.contract.bind(suite));
+class AlternateStatusPlugin extends StatusComponentPlugin {
+    static override readonly declaration = ProviderV4Schemas.declaration.parse({ ...StatusComponentPlugin.declaration, id: 'ui.status.alternate' });
+    override readonly component = AlternateStatus;
+}
+class AlternateThemePlugin extends DefaultThemePlugin {
+    static override readonly declaration = ProviderV4Schemas.declaration.parse({ ...DefaultThemePlugin.declaration, id: 'ui.theme.alternate' });
+    override css(): string { return super.css() + '\n/* qualified alternate */'; }
+}
+class AlternateServerPlugin extends ReactServerRendererPlugin {
+    static override readonly declaration = ProviderV4Schemas.declaration.parse({ ...ReactServerRendererPlugin.declaration, id: 'ui.renderer.server.alternate' });
+}
+class AlternateTerminalPlugin extends PlainTerminalRendererPlugin {
+    static override readonly declaration = ProviderV4Schemas.declaration.parse({ ...PlainTerminalRendererPlugin.declaration, id: 'ui.renderer.terminal.alternate' });
+}
+class SubstitutionTests {
+    private configuration() { const registrations: ProviderRegistration[] = UiScope.defaults(), selections: ProviderSelection[] = []; registrations.push({ token: UiTokens.component('status'), plugin: AlternateStatusPlugin, declaration: AlternateStatusPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.component' } }, { token: UiTokens.theme, plugin: AlternateThemePlugin, declaration: AlternateThemePlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.theme' } }, { token: UiServerToken, plugin: AlternateServerPlugin, declaration: AlternateServerPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.server' } }, { token: UiTerminalToken, plugin: AlternateTerminalPlugin, declaration: AlternateTerminalPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: 'fixture.terminal' } }); for (const registration of UiScope.defaults()) {
+        const declaration = ProviderV4Schemas.declaration.parse(registration.declaration);
+        selections.push({ scopeId: 'ui', capability: registration.token.id, providerId: registration.token.id === 'ui.component.status' ? 'ui.status.alternate' : registration.token.id === 'ui.theme' ? 'ui.theme.alternate' : declaration.id });
+    } selections.push({ scopeId: 'ui', capability: UiServerToken.id, providerId: 'ui.renderer.server.alternate' }, { scopeId: 'ui', capability: UiTerminalToken.id, providerId: 'ui.renderer.terminal.alternate' }); return { registrations, selections }; }
+    async contract(): Promise<void> { let generation = ''; for (const configuration of [{}, this.configuration()] as UiApplicationConfiguration[]) {
+        const server = await UiServerRenderer.create(configuration), terminal = await UiTerminalRenderer.create(configuration);
+        try {
+            const view = { id: 'fixture', componentId: 'status', model: { title: 'Status <script>canary</script>', state: 'Ready' } }, page = await server.render(view), style = await server.styles();
+            expect(page.html).toContain('&lt;script&gt;canary&lt;/script&gt;');
+            expect(page.html).not.toContain('<script>canary</script>');
+            expect(page.assets).toContain(style.path);
+            expect((await terminal.render(view)).text).toBe('Status <script>canary</script>: Ready\n');
+            expect(server.identity().providerId).toBe(configuration.registrations ? 'ui.renderer.server.alternate' : 'ui.renderer.server.default');
+            expect(terminal.identity().providerId).toBe(configuration.registrations ? 'ui.renderer.terminal.alternate' : 'ui.renderer.terminal.default');
+            if (generation)
+                expect(page.generation).not.toBe(generation);
+            generation = page.generation;
+        }
+        finally {
+            await server.dispose();
+            await terminal.dispose();
+        }
+        await expect(terminal.render({ id: 'v', componentId: 'text', model: { text: 'closed' } })).rejects.toThrow();
+    } }
+}
+const suite = new SubstitutionTests();
+test('integration: component theme and server terminal alternatives pass one contract with cleanup', suite.contract.bind(suite));

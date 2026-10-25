@@ -4,4 +4,4 @@
 
 ### Added
 
-- Ui: deliver Task 3C typed providers and mobile-first UI integration (#80).
+- Add mobile-first native React UI foundation (#80).
