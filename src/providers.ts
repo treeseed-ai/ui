@@ -11,6 +11,7 @@ abstract class ComponentProvider implements UiComponent {
   abstract readonly component:UiComponent['component'];abstract readonly schema:z.ZodType;
   constructor(context:Context){context.provide((this.constructor as typeof ComponentProvider).provide[0]!,this);}
   validate(value:unknown):unknown {return this.schema.parse(value);}
+  modelSchema():unknown{return z.toJSONSchema(this.schema,{unrepresentable:"throw"});}
   abstract terminal(value:unknown):string;
 }
 export class TextComponentPlugin extends ComponentProvider {static override readonly provide=['ui.component.text'];static readonly declaration=UiDeclaration.create('ui.text.default',this.provide,this.inject);readonly component=UiText;readonly schema=UiSchemas.textModel;terminal(value:unknown):string{return UiTextSafety.clean(UiSchemas.textModel.parse(value).text);}}
@@ -20,11 +21,12 @@ export class FormComponentPlugin extends ComponentProvider {static override read
 export class NavigationComponentPlugin extends ComponentProvider {static override readonly provide=['ui.component.navigation'];static readonly declaration=UiDeclaration.create('ui.navigation.default',this.provide,this.inject);readonly component=UiNavigation;readonly schema=UiSchemas.navigationModel;terminal(value:unknown):string{const model=UiSchemas.navigationModel.parse(value),lines=[model.label];for(const item of model.items)lines.push(item.label+' '+item.href);return UiTextSafety.clean(lines.join('\n'));}}
 export class FeedbackComponentPlugin extends ComponentProvider {static override readonly provide=['ui.component.feedback'];static readonly declaration=UiDeclaration.create('ui.feedback.default',this.provide,this.inject);readonly component=UiFeedback;readonly schema=UiSchemas.feedbackModel;terminal(value:unknown):string{const model=UiSchemas.feedbackModel.parse(value);return UiTextSafety.clean(model.title+': '+model.message);}}
 export class DefaultThemePlugin implements UiTheme {static readonly provide=['ui.theme'];static readonly inject:string[]=[];static readonly Config=z.strictObject({});static readonly declaration=UiDeclaration.create('ui.theme.default',this.provide,this.inject);constructor(context:Context){context.provide('ui.theme',this);}css():string{return UiStyles.css;}}
-export interface UiPresentation {readonly generation:string;component(id:string):Promise<ProviderLease<UiComponent>>;theme():Promise<ProviderLease<UiTheme>>;}
-class PresentationValidator {parse(value:unknown):UiPresentation {if(!value||typeof value!=='object'||typeof Reflect.get(value,'component')!=='function'||typeof Reflect.get(value,'theme')!=='function'||typeof Reflect.get(value,'generation')!=='string')throw new Error('INVALID_UI_PRESENTATION');return value as UiPresentation;}}
+export interface UiPresentation {readonly generation:string;identity(id:string):string;component(id:string):Promise<ProviderLease<UiComponent>>;theme():Promise<ProviderLease<UiTheme>>;}
+class PresentationValidator {parse(value:unknown):UiPresentation {if(!value||typeof value!=='object'||typeof Reflect.get(value,'component')!=='function'||typeof Reflect.get(value,'identity')!=='function'||typeof Reflect.get(value,'theme')!=='function'||typeof Reflect.get(value,'generation')!=='string')throw new Error('INVALID_UI_PRESENTATION');return value as UiPresentation;}}
 export const UiPresentationToken=new CapabilityToken<UiPresentation>('ui.presentation',ProviderV4Schemas.version,new PresentationValidator());
 class PresentationServices implements UiPresentation {
   constructor(private readonly context:Context,readonly generation:string){}
+  identity(id:string):string{const locator=CordisServiceLocator.from(this.context);for(const selected of locator.describe(UiTokens.component(id)))if(selected.selected)return selected.id;throw new Error('UI_COMPONENT_NOT_SELECTED');}
   component(id:string):Promise<ProviderLease<UiComponent>>{return CordisServiceLocator.from(this.context).acquire(UiTokens.component(id));}
   theme():Promise<ProviderLease<UiTheme>>{return CordisServiceLocator.from(this.context).acquire(UiTokens.theme);}
 }

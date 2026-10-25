@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { Context, type ProviderLease, type ProviderRegistration } from '@treeseed-cordis/sdk/composition';
 import { UiSchemas, type UiViewModel, type RenderedPage } from './contracts.js';
+import { UiContributionIdentity } from './contribution.js';
 import { UiSurface } from './react.js';
 import { UiStyles } from './styles.js';
 import { UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
@@ -13,7 +14,7 @@ export const UiServerToken=new CapabilityToken<UiServerRendering>('ui.renderer.s
 export class ReactServerRenderer implements UiServerRendering {
   constructor(private readonly presentation:UiPresentation){}
   async styles():Promise<{path:string;digest:string;css:string}>{const theme=await this.presentation.theme();try{return await UiStyles.asset(theme.value.css());}finally{await theme.release();}}
-  async render(value:UiViewModel):Promise<RenderedPage>{const view=UiSchemas.view.parse(value),component=await this.presentation.component(view.componentId),theme=await this.presentation.theme();try{component.value.validate(view.model);const style=await UiStyles.asset(theme.value.css()),html=renderToString(createElement(UiSurface,{component:component.value.component,view,cssUrl:style.path}));return {html,generation:this.presentation.generation,rootGeneration:this.presentation.generation,assets:[style.path]};}finally{await component.release();await theme.release();}}
+  async render(value:UiViewModel):Promise<RenderedPage>{const view=UiSchemas.view.parse(value),component=await this.presentation.component(view.componentId),theme=await this.presentation.theme();try{component.value.validate(view.model);const style=await UiStyles.asset(theme.value.css()),html=renderToString(createElement(UiSurface,{component:component.value.component,view,cssUrl:style.path}));return {html,contribution:await UiContributionIdentity.create(view,this.presentation,component.value,style.digest),generation:this.presentation.generation,rootGeneration:this.presentation.generation,assets:[style.path]};}finally{await component.release();await theme.release();}}
 }
 export class ReactServerRendererPlugin extends ReactServerRenderer {
   static readonly provide=['ui.renderer.server'];static readonly inject=['ui.presentation'];static readonly Config=z.strictObject({});

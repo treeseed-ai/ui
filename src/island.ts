@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { Context, type ProviderLease, type ProviderRegistration } from '@treeseed-cordis/sdk/composition';
 import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { UiSchemas, type UiHydrationData, type UiComponent, type UiTheme, type UiScopeHandle } from './contracts.js';
+import { UiContributionIdentity } from './contribution.js';
+import { CanonicalJson } from '@treeseed-cordis/sdk/portable';
 import { UiSurface } from './react.js';
 import { UiStyles } from './styles.js';
 import { UiScope, type UiPresentation, type UiApplicationConfiguration } from './providers.js';
@@ -24,7 +26,7 @@ class ReactIslandBinding implements UiIslandBinding {
     }
     this.Component=BoundIsland;
   }
-  private assert(value:UiHydrationData,bootstrap:UiHydrationData):void{if(this.closed)throw new Error('UI_ISLAND_CLOSED');const {children,...data}=value as UiHydrationData&{children?:unknown};if(children!==undefined)throw new Error('UI_ISLAND_CHILDREN_DENIED');const parsed=UiSchemas.hydration.parse(data);if(JSON.stringify(parsed)!==JSON.stringify(bootstrap))throw new Error('UI_BOOTSTRAP_MISMATCH');}
+  private assert(value:UiHydrationData,bootstrap:UiHydrationData):void{if(this.closed)throw new Error('UI_ISLAND_CLOSED');const {children,...data}=value as UiHydrationData&{children?:unknown};if(children!==undefined)throw new Error('UI_ISLAND_CHILDREN_DENIED');const parsed=UiSchemas.hydration.parse(data);if(CanonicalJson.stringify(parsed)!==CanonicalJson.stringify(bootstrap))throw new Error('UI_BOOTSTRAP_MISMATCH');}
   dispose():Promise<void>{if(!this.disposal){this.closed=true;this.disposal=this.close();}return this.disposal;}
   private async close():Promise<void>{try{await this.component.release();}finally{await this.theme.release();}}
 }
@@ -33,7 +35,7 @@ export class ReactIslandRenderer implements UiIslandRendering {
   async prepare(value:UiHydrationData,host:UiHostAdapters):Promise<UiIslandBinding>{
     const bootstrap=UiSchemas.hydration.parse(value);if(bootstrap.presentationGeneration!==this.presentation.generation)throw new Error('UI_GENERATION_MISMATCH');if(bootstrap.assetGeneration!==host.assetGeneration)throw new Error('UI_ASSET_MISMATCH');for(const action of bootstrap.actionIds)if(!host.actionIds.includes(action))throw new Error('UI_ACTION_DENIED');
     const component=await this.presentation.component(bootstrap.view.componentId);let theme:ProviderLease<UiTheme>|undefined;
-    try{component.value.validate(bootstrap.view.model);theme=await this.presentation.theme();const style=await UiStyles.asset(theme.value.css());return new ReactIslandBinding(this.presentation.generation,component,theme,bootstrap,style.path,host);}catch(error){try{await component.release();}finally{await theme?.release();}throw error;}
+    try{component.value.validate(bootstrap.view.model);theme=await this.presentation.theme();const style=await UiStyles.asset(theme.value.css());UiContributionIdentity.assert(bootstrap.contribution,await UiContributionIdentity.create(bootstrap.view,this.presentation,component.value,style.digest));return new ReactIslandBinding(this.presentation.generation,component,theme,bootstrap,style.path,host);}catch(error){try{await component.release();}finally{await theme?.release();}throw error;}
   }
 }
 export class ReactIslandRendererPlugin extends ReactIslandRenderer {

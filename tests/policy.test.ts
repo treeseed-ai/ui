@@ -4,6 +4,6 @@ class PolicyTests {
 }
 const suite=new PolicyTests();test('unit: consumer semantic gate rejects duplicated visual implementations',suite.consumers.bind(suite));
 class ComponentClassTests {
-  async classOnly():Promise<void>{const {UiTokens}=await import('../src/contracts.js');expect(UiTokens.component('text').parse.bind(UiTokens.component('text'),{component:Object,validate:JSON.parse,terminal:JSON.stringify})).toThrow('INVALID_UI_COMPONENT');}
+  async classOnly():Promise<void>{const {UiTokens}=await import('../src/contracts.js');expect(UiTokens.component('text').parse.bind(UiTokens.component('text'),{component:Object,validate:JSON.parse,modelSchema:JSON.parse,terminal:JSON.stringify})).toThrow('INVALID_UI_COMPONENT');}
 }
 const components=new ComponentClassTests();test('unit: advertised UI component must be a React class',components.classOnly.bind(components));

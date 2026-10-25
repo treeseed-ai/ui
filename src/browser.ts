@@ -2,6 +2,8 @@ import { Context, type ProviderLease, type ProviderRegistration } from '@treesee
 import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { z } from 'zod';
 import type { UiComponent, UiTheme } from './contracts.js';
+import { UiContributionIdentity } from './contribution.js';
+import { UiPresentationToken } from './providers.js';
 import { UiStyles } from './styles.js';
 import { createElement } from 'react';
 import { createRoot, hydrateRoot, type Root } from 'react-dom/client';
@@ -63,5 +65,5 @@ export interface UiBrowserStart extends UiApplicationConfiguration {target:Eleme
 export class UiBrowserApplication {
   static renderer(configuration:UiApplicationConfiguration={}):UiBrowserRenderer{return new UiBrowserRenderer(configuration);}
   static start(configuration:UiBrowserStart):Promise<UiMount>{return new UiBrowserRenderer(configuration).mount(configuration.target,configuration.view,configuration.host);}
-  static async attach(value:UiHydrationData,host:UiHostAdapters,configuration:UiApplicationConfiguration={}):Promise<UiScopeHandle>{const bootstrap=UiSchemas.hydration.parse(value);if(bootstrap.assetGeneration!==host.assetGeneration)throw new Error('UI_ASSET_MISMATCH');for(const action of bootstrap.actionIds)if(!host.actionIds.includes(action))throw new Error('UI_ACTION_DENIED');const scope=await UiScope.create(configuration);if(bootstrap.presentationGeneration!==scope.presentationGeneration){await scope.dispose();throw new Error('UI_GENERATION_MISMATCH');}return new UiAttachedScope(scope);}
+  static async attach(value:UiHydrationData,host:UiHostAdapters,configuration:UiApplicationConfiguration={}):Promise<UiScopeHandle>{const bootstrap=UiSchemas.hydration.parse(value);if(bootstrap.assetGeneration!==host.assetGeneration)throw new Error('UI_ASSET_MISMATCH');for(const action of bootstrap.actionIds)if(!host.actionIds.includes(action))throw new Error('UI_ACTION_DENIED');const scope=await UiScope.create(configuration);if(bootstrap.presentationGeneration!==scope.presentationGeneration){await scope.dispose();throw new Error('UI_GENERATION_MISMATCH');}try{const presentation=await scope.service(UiPresentationToken);try{const component=await presentation.value.component(bootstrap.view.componentId),theme=await presentation.value.theme();try{component.value.validate(bootstrap.view.model);UiContributionIdentity.assert(bootstrap.contribution,await UiContributionIdentity.create(bootstrap.view,presentation.value,component.value,(await UiStyles.asset(theme.value.css())).digest));}finally{await component.release();await theme.release();}}finally{await presentation.release();}return new UiAttachedScope(scope);}catch(error){await scope.dispose();throw error;}}
 }
