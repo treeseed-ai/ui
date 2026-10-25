@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Share default owner identity and adopt browser-qualified SDK contracts (#80).
+- Adopt browser-qualified SDK contracts (#80).
 
 ### Added
 - Emit native UI package metadata and immutable stylesheet inventory (#80).

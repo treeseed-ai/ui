@@ -1,6 +1,6 @@
 {
   "name": "@treeseed-cordis/ui",
-  "version": "0.0.0-cordis.5",
+  "version": "0.0.0-cordis.6",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -65,7 +65,7 @@
     "verify": "bun run check && bun run build && bun run test:unit && bun run test:integration && bun run test:smoke"
   },
   "peerDependencies": {
-    "@treeseed-cordis/sdk": "0.0.0-cordis.7",
+    "@treeseed-cordis/sdk": "0.0.0-cordis.9",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "typescript": "5.9.3"
@@ -91,8 +91,8 @@
   "cordisCandidate": {
     "sdk": {
       "repository": "https://github.com/treeseed-ai/sdk.git",
-      "commit": "fc36ec1c66d275336de40f292c992d1047e1fcd8",
-      "sha256": "dedc2c3b13fcd9d87b3f9c94a6490cdf398b6eca4746823b8eb0c99bca02a575"
+      "commit": "85a7b6036c9a390a5c56b9db419fc5b6f8f8cd77",
+      "sha256": "80337c6ad9cb4f493fa06ed9a22e3863ae41610cc1027817bd54c1eece3954d3"
     }
   },
   "cordisProviders": [
@@ -237,7 +237,7 @@
     "pluginId": "ui",
     "package": {
       "name": "@treeseed-cordis/ui",
-      "version": "0.0.0-cordis.5"
+      "version": "0.0.0-cordis.6"
     },
     "providers": [
       {

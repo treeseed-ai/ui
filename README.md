@@ -51,11 +51,8 @@ must bind the exact asset/contribution generation before admitting actions.
 build can rewrite it. The owner regression runs that command in an isolated source copy with
 a changed class export, preserving the working checkout while proving stale metadata fails.
 
-### Shared owner identity and current SDK
+### Current SDK adoption
 
-All default UI composition roots derive their bundled artifact label from
-`UiPackageIdentity.artifact`. Owner builds retain one package-version identity across server,
-terminal, browser and Astro roots. Release consumers can bind accepted exact archive identities
-through the existing `artifactIdentity` setting. This candidate adopts SDK .9 through the
+This candidate adopts SDK .9 through the
 vendored archive from source `85a7b6036c9a390a5c56b9db419fc5b6f8f8cd77`, SHA-256
 `80337c6ad9cb4f493fa06ed9a22e3863ae41610cc1027817bd54c1eece3954d3`.
