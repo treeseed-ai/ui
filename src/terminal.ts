@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { Context, type ProviderLease, type ProviderRegistration } from '@treeseed-cordis/sdk/composition';
 import { UiSchemas, type UiViewModel, type RenderedTerminal } from './contracts.js';
-import { UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
+import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
 export interface UiTerminalRendering {
     render(view: UiViewModel): Promise<RenderedTerminal>;
 }
@@ -39,7 +39,7 @@ export class UiTerminalRenderer {
     private disposal: Promise<void> | null = null;
     private constructor(private readonly scope: UiScope, private readonly renderer: ProviderLease<UiTerminalRendering>) { }
     static async create(configuration: UiApplicationConfiguration = {}): Promise<UiTerminalRenderer> {
-        const registration: ProviderRegistration = { token: UiTerminalToken, plugin: PlainTerminalRendererPlugin, declaration: PlainTerminalRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.5' } }, scope = await UiScope.create(configuration, [registration]);
+        const registration: ProviderRegistration = { token: UiTerminalToken, plugin: PlainTerminalRendererPlugin, declaration: PlainTerminalRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? UiPackageIdentity.artifact } }, scope = await UiScope.create(configuration, [registration]);
         try {
             return new UiTerminalRenderer(scope, await scope.service(UiTerminalToken));
         }

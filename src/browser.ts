@@ -9,7 +9,7 @@ import { createElement } from 'react';
 import { createRoot, hydrateRoot, type Root } from 'react-dom/client';
 import { UiSchemas, type UiViewModel, type UiMount, type UiHydrationData, type UiScopeHandle, type UiActionDispatcher, type UiActionResult } from './contracts.js';
 import { UiSurface, type UiRenderObserver } from './react.js';
-import { UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
+import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
 export interface UiHostAdapters {
     actions?: UiActionDispatcher;
     actionIds: readonly string[];
@@ -160,7 +160,7 @@ class UiOwnedMount implements UiMount {
 export class UiBrowserRenderer {
     constructor(private readonly configuration: UiApplicationConfiguration = {}) { }
     async mount(target: Element, value: UiViewModel, host?: UiHostAdapters, hydrate = false): Promise<UiMount> {
-        const registration: ProviderRegistration = { token: UiBrowserToken, plugin: ReactBrowserRendererPlugin, declaration: ReactBrowserRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: this.configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.5' } }, scope = await UiScope.create(this.configuration, [registration]);
+        const registration: ProviderRegistration = { token: UiBrowserToken, plugin: ReactBrowserRendererPlugin, declaration: ReactBrowserRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: this.configuration.artifactIdentity ?? UiPackageIdentity.artifact } }, scope = await UiScope.create(this.configuration, [registration]);
         let renderer: ProviderLease<UiBrowserRendering> | undefined;
         try {
             renderer = await scope.service(UiBrowserToken);

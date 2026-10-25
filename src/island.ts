@@ -7,7 +7,7 @@ import { UiContributionIdentity } from './contribution.js';
 import { CanonicalJson } from '@treeseed-cordis/sdk/portable';
 import { UiSurface } from './react.js';
 import { UiStyles } from './styles.js';
-import { UiProviderPolicy, UiScope, type UiPresentation, type UiApplicationConfiguration } from './providers.js';
+import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiPresentation, type UiApplicationConfiguration } from './providers.js';
 import type { UiHostAdapters } from './browser.js';
 /** Marker directly imported by Astro. The host adapter must prepare a request-local binding. */
 export class UiIsland extends Component<UiHydrationData> {
@@ -150,7 +150,7 @@ class OwnedIslandBinding implements UiIslandBinding {
 }
 export class UiIslandHost {
     static async prepare(value: UiHydrationData, host: UiHostAdapters, configuration: UiApplicationConfiguration = {}): Promise<UiIslandBinding> {
-        const registration: ProviderRegistration = { token: UiIslandToken, plugin: ReactIslandRendererPlugin, declaration: ReactIslandRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.5' } }, scope = await UiScope.create(configuration, [registration]);
+        const registration: ProviderRegistration = { token: UiIslandToken, plugin: ReactIslandRendererPlugin, declaration: ReactIslandRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? UiPackageIdentity.artifact } }, scope = await UiScope.create(configuration, [registration]);
         let renderer: ProviderLease<UiIslandRendering> | undefined;
         try {
             renderer = await scope.service(UiIslandToken);

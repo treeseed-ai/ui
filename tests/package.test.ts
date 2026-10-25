@@ -37,17 +37,20 @@ class MetadataGuardTests {
             cpSync(resolve(path), join(root, path), { recursive: true });
         symlinkSync(resolve('node_modules'), join(root, 'node_modules'), 'dir');
         const file = join(root, 'package.json'), metadata = JSON.parse(readFileSync(file, 'utf8')) as {
+            version:string;
             cordisPackage: {
                 providers: Array<{
                     classExport: string;
                 }>;
             };
         };
+        const original=metadata.cordisPackage.providers[0]!.classExport;
         metadata.cordisPackage.providers[0]!.classExport = 'WrongClass';
         writeFileSync(file, JSON.stringify(metadata));
         const result = spawnSync('bun', ['scripts/tooling.ts', 'check'], { cwd: root, encoding: 'utf8', timeout: 30000 });
         expect(result.status).toBe(1);
         expect(result.stderr.includes('UI_PACKAGE_METADATA_DRIFT')).toBe(true);
+        metadata.cordisPackage.providers[0]!.classExport=original;metadata.version='0.0.0-cordis.999';writeFileSync(file,JSON.stringify(metadata));const identity=spawnSync('bun',['scripts/tooling.ts','check'],{cwd:root,encoding:'utf8',timeout:30000});expect(identity.status).toBe(1);expect(identity.stderr.includes('UI_PACKAGE_IDENTITY_DRIFT')).toBe(true);
     }
     finally {
         rmSync(root, { recursive: true, force: true });

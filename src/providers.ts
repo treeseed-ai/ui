@@ -4,6 +4,7 @@ import { ProviderV4Schemas, type NativeProviderDeclaration, type ProviderSelecti
 import { UiSchemas, UiTokens, type UiComponent, type UiTheme } from './contracts.js';
 import { UiText, UiStatus, UiTable, UiForm, UiNavigation, UiFeedback } from './react.js';
 import { UiStyles } from './styles.js';
+export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.7';}
 export class UiTextSafety {
     static clean(value: string): string { return value.replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, ''); }
 }
@@ -134,7 +135,7 @@ export interface UiApplicationConfiguration {
 }
 export class UiScope {
     private constructor(readonly handle: CompositionHandle, private readonly context: Context, readonly presentationGeneration: string) { }
-    static defaults(identity = '@treeseed-cordis/ui@0.0.0-cordis.5'): ProviderRegistration[] {
+    static defaults(identity = UiPackageIdentity.artifact): ProviderRegistration[] {
         const classes = [TextComponentPlugin, StatusComponentPlugin, TableComponentPlugin, FormComponentPlugin, NavigationComponentPlugin, FeedbackComponentPlugin], result: ProviderRegistration[] = [];
         for (const plugin of classes)
             result.push({ token: UiTokens.component(plugin.provide[0]!.slice('ui.component.'.length)), plugin, declaration: plugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity } });
@@ -171,7 +172,7 @@ export class UiScope {
             static readonly replacement = UiProviderPolicy.replacement;
             constructor(context: Context) { context.provide('ui.presentation', new PresentationServices(context, presentationGeneration)); }
         }
-        registrations.push({ token: UiPresentationToken, plugin: PresentationPlugin, declaration: UiDeclaration.create('ui.presentation.default', PresentationPlugin.provide, inject), configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.5' } });
+        registrations.push({ token: UiPresentationToken, plugin: PresentationPlugin, declaration: UiDeclaration.create('ui.presentation.default', PresentationPlugin.provide, inject), configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? UiPackageIdentity.artifact } });
         selections.push({ scopeId, capability: UiPresentationToken.id, providerId: 'ui.presentation.default' });
         const handle = await CordisComposition.start({ registrations, selections }, { scopeId, target: 'browser', principalId: 'presentation', resourceScope: 'ui' });
         try {

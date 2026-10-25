@@ -7,7 +7,7 @@ import { UiSchemas, type UiViewModel, type RenderedPage } from './contracts.js';
 import { UiContributionIdentity } from './contribution.js';
 import { UiSurface } from './react.js';
 import { UiStyles } from './styles.js';
-import { UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
+import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
 export interface UiServerRendering {
     render(view: UiViewModel): Promise<RenderedPage>;
     styles(): Promise<{
@@ -64,7 +64,7 @@ export class UiServerRenderer {
     private disposal: Promise<void> | null = null;
     private constructor(private readonly scope: UiScope, private readonly renderer: ProviderLease<UiServerRendering>) { }
     static async create(configuration: UiApplicationConfiguration = {}): Promise<UiServerRenderer> {
-        const registration: ProviderRegistration = { token: UiServerToken, plugin: ReactServerRendererPlugin, declaration: ReactServerRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.5' } }, scope = await UiScope.create(configuration, [registration]);
+        const registration: ProviderRegistration = { token: UiServerToken, plugin: ReactServerRendererPlugin, declaration: ReactServerRendererPlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? UiPackageIdentity.artifact } }, scope = await UiScope.create(configuration, [registration]);
         try {
             return new UiServerRenderer(scope, await scope.service(UiServerToken));
         }
