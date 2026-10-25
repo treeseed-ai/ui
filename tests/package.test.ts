@@ -23,7 +23,7 @@ test('unit: UI runtime uses exact SDK archive and leaves the development compile
 class NativePackageTests {
     async metadata(): Promise<void> { const { PluginManagementSchemas } = await import('@treeseed-cordis/sdk/portable'), { UiStyles } = await import('../src/styles.js'), metadata = JSON.parse(readFileSync('package.json', 'utf8')) as {
         cordisPackage: unknown;
-    }; const descriptor = PluginManagementSchemas.packageDescriptor.parse(metadata.cordisPackage); expect(descriptor.providers.length).toBe(11); const asset = await UiStyles.asset(); expect(descriptor.assets).toEqual([{ path: 'dist/assets/' + asset.digest + '.css', sha256: asset.digest, size: new TextEncoder().encode(asset.css).byteLength }]); expect(readFileSync(descriptor.assets[0]!.path, 'utf8')).toBe(asset.css); for (const provider of descriptor.providers) {
+    }; const descriptor = PluginManagementSchemas.packageDescriptor.parse(metadata.cordisPackage); expect(descriptor.providers.length).toBe(12); const asset = await UiStyles.asset(); expect(descriptor.assets).toEqual([{ path: 'dist/assets/' + asset.digest + '.css', sha256: asset.digest, size: new TextEncoder().encode(asset.css).byteLength }]); expect(readFileSync(descriptor.assets[0]!.path, 'utf8')).toBe(asset.css); for (const provider of descriptor.providers) {
         expect(provider.replacement.kind).toBe('restart');
         expect(provider.replacement.qualificationDigest).toBeNull();
         expect(provider.classExport.length).toBeGreaterThan(0);
@@ -58,3 +58,15 @@ class MetadataGuardTests {
 }
 const guard = new MetadataGuardTests();
 test('integration: actual owner check rejects stale native metadata before build can rewrite it', guard.guard.bind(guard));
+
+import {UiServerRenderer} from '../src/server.js';
+import {UiTerminalRenderer} from '../src/terminal.js';
+import type {UiViewModel} from '../src/contracts.js';
+class CompositeTests {
+ static view():UiViewModel{return {id:'page',componentId:'stack',model:{title:'Installed platform',children:[{id:'installation',componentId:'status',model:{title:'Installation',state:'Ready'}},{id:'nested',componentId:'stack',model:{children:[{id:'detail',componentId:'text',model:{text:'<script>escaped-child</script>'}}]}}]}};}
+ async server():Promise<void>{const renderer=await UiServerRenderer.create();try{const page=await renderer.render(CompositeTests.view());expect(page.html).toContain('ui-stack');expect(page.html).toContain('&lt;script&gt;escaped-child&lt;/script&gt;');expect(page.html.includes('<script>escaped-child')).toBe(false);expect(Reflect.get(page.contribution,'members')).toHaveLength(3);}finally{await renderer.dispose();}}
+ async terminal():Promise<void>{const renderer=await UiTerminalRenderer.create();try{expect((await renderer.render(CompositeTests.view())).text).toBe('Installed platform\n\nInstallation: Ready\n\n<script>escaped-child</script>\n');}finally{await renderer.dispose();}}
+ async invalid():Promise<void>{const renderer=await UiServerRenderer.create();try{for(const children of [[{id:'duplicate',componentId:'text',model:{text:'one'}},{id:'duplicate',componentId:'text',model:{text:'two'}}],[{id:'invalid',componentId:'navigation',model:{label:'Unsafe',items:[{label:'Go',href:'javascript:alert(1)'}]}}],[{id:'missing',componentId:'unknown',model:{}}]])await expect(renderer.render({id:'root',componentId:'stack',model:{children}})).rejects.toThrow();}finally{await renderer.dispose();}}
+ program():void{const code="import {UiTerminalRenderer} from '@treeseed-cordis/ui/terminal';class Program{static async run(){const renderer=await UiTerminalRenderer.create();try{process.stdout.write((await renderer.render({id:'page',componentId:'stack',model:{children:[{id:'status',componentId:'status',model:{title:'System',state:'Ready'}}]}})).text);}finally{await renderer.dispose();}}}await Program.run();";const result=spawnSync('node',['--input-type=module','-e',code],{encoding:'utf8'});expect(result.status).toBe(0);expect(result.stderr).toBe('');expect(result.stdout).toBe('System: Ready\n');}
+}
+const composite=new CompositeTests();test('integration: default server composes nested selected components and binds child identities',composite.server.bind(composite));test('integration: default terminal shares reusable composed models',composite.terminal.bind(composite));test('unit: duplicate missing or unsafe child models fail before output',composite.invalid.bind(composite));test('smoke: built public terminal program renders a composite through default Cordis providers',composite.program.bind(composite));

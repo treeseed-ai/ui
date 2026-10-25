@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { Context, CordisComposition, CordisServiceLocator, type CompositionHandle, type ProviderRegistration, type ProviderLease } from '@treeseed-cordis/sdk/composition';
 import { ProviderV4Schemas, type NativeProviderDeclaration, type ProviderSelection, CapabilityToken, CanonicalJson } from '@treeseed-cordis/sdk/portable';
 import { UiSchemas, UiTokens, type UiComponent, type UiTheme } from './contracts.js';
-import { UiText, UiStatus, UiTable, UiForm, UiNavigation, UiFeedback } from './react.js';
+import { UiStack, UiText, UiStatus, UiTable, UiForm, UiNavigation, UiFeedback } from './react.js';
 import { UiStyles } from './styles.js';
-export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.7';}
+export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.8';}
 export class UiTextSafety {
     static clean(value: string): string { return value.replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, ''); }
 }
@@ -25,6 +25,12 @@ abstract class ComponentProvider implements UiComponent {
     validate(value: unknown): unknown { return this.schema.parse(value); }
     modelSchema(): unknown { return z.toJSONSchema(this.schema, { unrepresentable: "throw" }); }
     abstract terminal(value: unknown): string;
+}
+export class StackComponentPlugin extends ComponentProvider {
+ static override readonly provide=['ui.component.stack'];static readonly declaration=UiDeclaration.create('ui.stack.default',this.provide,this.inject);
+ readonly component=UiStack;readonly schema=UiSchemas.stackModel;
+ children(value:unknown){return UiSchemas.stackModel.parse(value).children;}
+ terminal(value:unknown,children:readonly string[]=[]):string{const model=UiSchemas.stackModel.parse(value);return UiTextSafety.clean([...(model.title?[model.title]:[]),...children].join('\n\n'));}
 }
 export class TextComponentPlugin extends ComponentProvider {
     static override readonly provide = ['ui.component.text'];
@@ -136,7 +142,7 @@ export interface UiApplicationConfiguration {
 export class UiScope {
     private constructor(readonly handle: CompositionHandle, private readonly context: Context, readonly presentationGeneration: string) { }
     static defaults(identity = UiPackageIdentity.artifact): ProviderRegistration[] {
-        const classes = [TextComponentPlugin, StatusComponentPlugin, TableComponentPlugin, FormComponentPlugin, NavigationComponentPlugin, FeedbackComponentPlugin], result: ProviderRegistration[] = [];
+        const classes = [StackComponentPlugin, TextComponentPlugin, StatusComponentPlugin, TableComponentPlugin, FormComponentPlugin, NavigationComponentPlugin, FeedbackComponentPlugin], result: ProviderRegistration[] = [];
         for (const plugin of classes)
             result.push({ token: UiTokens.component(plugin.provide[0]!.slice('ui.component.'.length)), plugin, declaration: plugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity } });
         result.push({ token: UiTokens.theme, plugin: DefaultThemePlugin, declaration: DefaultThemePlugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity } });

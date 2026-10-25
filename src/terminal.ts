@@ -1,3 +1,4 @@
+import {UiRenderTree} from './react.js';
 import { z } from 'zod';
 import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { Context, type ProviderLease, type ProviderRegistration } from '@treeseed-cordis/sdk/composition';
@@ -17,13 +18,12 @@ export const UiTerminalToken = new CapabilityToken<UiTerminalRendering>('ui.rend
 export class PlainTerminalRenderer implements UiTerminalRendering {
     constructor(private readonly presentation: UiPresentation) { }
     async render(value: UiViewModel): Promise<RenderedTerminal> {
-        const view = UiSchemas.view.parse(value), component = await this.presentation.component(view.componentId);
+        const view = UiSchemas.view.parse(value), tree = await UiRenderTree.prepare(view,this.presentation);
         try {
-            component.value.validate(view.model);
-            return { text: component.value.terminal(view.model) + '\n' };
+            return { text: tree.terminal() + '\n' };
         }
         finally {
-            await component.release();
+            await tree.dispose();
         }
     }
 }

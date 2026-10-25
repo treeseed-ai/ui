@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CapabilityToken, ProviderV4Schemas, type AdapterValidator } from '@treeseed-cordis/sdk/portable';
-import type { ComponentClass } from 'react';
+import type { ComponentClass, ReactNode } from 'react';
 class UiValidation {
     static table(model: {
         columns: string[];
@@ -35,13 +35,15 @@ export class UiSchemas {
     static readonly text = z.string().max(16384);
     static readonly action = this.id;
     static readonly view = z.strictObject({ id: this.id, componentId: this.id, model: z.json() });
+    static readonly stackModel = z.strictObject({title:this.text.optional(),children:z.array(this.view).min(1).max(256)});
     static readonly textModel = z.strictObject({ text: this.text });
     static readonly statusModel = z.strictObject({ title: this.text, state: this.text, detail: this.text.optional() });
     static readonly tableModel = z.strictObject({ title: this.text, columns: z.array(this.text).min(1).max(64), rows: z.array(z.array(this.text).max(64)).max(1000) }).refine(UiValidation.table);
     static readonly formModel = z.strictObject({ title: this.text, actionId: this.action, submitLabel: this.text, fields: z.array(z.strictObject({ id: this.id, label: this.text, type: z.enum(['text', 'email', 'password', 'number']).default('text'), value: this.text.optional(), required: z.boolean().default(false) })).max(64) }).refine(UiValidation.form);
     static readonly navigationModel = z.strictObject({ label: this.text, items: z.array(z.strictObject({ label: this.text, href: z.string().max(2048).refine(UiValidation.href) })).max(128) });
     static readonly feedbackModel = z.strictObject({ title: this.text, message: this.text, tone: z.enum(['info', 'success', 'error']) });
-    static readonly contribution = z.strictObject({ id: this.id, componentId: this.id, providerId: this.id, modelSchemaDigest: z.string().regex(/^[a-f0-9]{64}$/), styleDigest: z.string().regex(/^[a-f0-9]{64}$/) });
+    static readonly member = z.strictObject({ id: this.id, componentId: this.id, providerId: this.id, modelSchemaDigest: z.string().regex(/^[a-f0-9]{64}$/), styleDigest: z.string().regex(/^[a-f0-9]{64}$/) });
+    static readonly contribution = this.member.extend({members:z.array(this.member).max(255).optional()});
     static readonly hydration = z.strictObject({ view: this.view, contribution: this.contribution, presentationGeneration: z.string().regex(/^[a-f0-9]{64}$/), assetGeneration: z.string().regex(/^[a-f0-9]{64}$/), actionIds: z.array(this.action).max(128) });
 }
 export type UiViewModel = z.infer<typeof UiSchemas.view>;
@@ -58,12 +60,14 @@ export interface UiComponentProps {
     instanceId: string;
     model: unknown;
     actions?: UiActionDispatcher;
+    children?:ReactNode;
 }
 export interface UiComponent {
     component: ComponentClass<UiComponentProps>;
     validate(value: unknown): unknown;
     modelSchema(): unknown;
-    terminal(value: unknown): string;
+    terminal(value: unknown, children?:readonly string[]): string;
+    children?(value:unknown):UiViewModel[];
 }
 export interface UiTheme {
     css(): string;

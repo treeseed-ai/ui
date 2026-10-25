@@ -4,8 +4,7 @@ import { z } from 'zod';
 import { CapabilityToken, ProviderV4Schemas } from '@treeseed-cordis/sdk/portable';
 import { Context, type ProviderLease, type ProviderRegistration } from '@treeseed-cordis/sdk/composition';
 import { UiSchemas, type UiViewModel, type RenderedPage } from './contracts.js';
-import { UiContributionIdentity } from './contribution.js';
-import { UiSurface } from './react.js';
+import { UiSurface, UiRenderTree } from './react.js';
 import { UiStyles } from './styles.js';
 import { UiPackageIdentity, UiProviderPolicy, UiScope, type UiApplicationConfiguration, type UiPresentation } from './providers.js';
 export interface UiServerRendering {
@@ -40,15 +39,15 @@ export class ReactServerRenderer implements UiServerRendering {
         }
     }
     async render(value: UiViewModel): Promise<RenderedPage> {
-        const view = UiSchemas.view.parse(value), component = await this.presentation.component(view.componentId), theme = await this.presentation.theme();
+        const view = UiSchemas.view.parse(value), tree = await UiRenderTree.prepare(view,this.presentation);
+        let theme:ProviderLease<import('./contracts.js').UiTheme>|undefined;
         try {
-            component.value.validate(view.model);
-            const style = await UiStyles.asset(theme.value.css()), html = renderToString(createElement(UiSurface, { component: component.value.component, view, cssUrl: style.path }));
-            return { html, contribution: await UiContributionIdentity.create(view, this.presentation, component.value, style.digest), generation: this.presentation.generation, rootGeneration: this.presentation.generation, assets: [style.path] };
+            theme=await this.presentation.theme();
+            const style = await UiStyles.asset(theme.value.css()), html = renderToString(createElement(UiSurface, { component: tree.root.component.component, tree:tree.root, view, cssUrl: style.path }));
+            return { html, contribution: await tree.contribution(style.digest), generation: this.presentation.generation, rootGeneration: this.presentation.generation, assets: [style.path] };
         }
         finally {
-            await component.release();
-            await theme.release();
+            try{await tree.dispose();}finally{await theme?.release();}
         }
     }
 }
