@@ -48,7 +48,7 @@ class AstroTests {
             const style = await UiStyles.asset();
             mkdirSync(join(d, 'public', style.path.slice(0, style.path.lastIndexOf('/'))), { recursive: true });
             writeFileSync(join(d, 'public', style.path), style.css);
-            writeFileSync(join(d, 'src/pages/index.astro'), "---\nimport {UiIsland} from '@treeseed-cordis/ui/island';import {FixtureHost} from '../host/host.js';const bootstrap=await FixtureHost.bootstrap('Alice');\n---\n<html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><link rel=\"stylesheet\" href=\"" + style.path + "\"/></head><body><UiIsland client:load {...bootstrap}/></body></html>");
+            writeFileSync(join(d, 'src/pages/index.astro'), "---\nimport {UiIsland} from '@treeseed-cordis/ui/island';import {FixtureBootstrap} from '../host/bootstrap.js';const bootstrap=await FixtureBootstrap.bootstrap('Alice');\n---\n<html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><link rel=\"stylesheet\" href=\"" + style.path + "\"/></head><body><UiIsland client:load {...bootstrap}/></body></html>");
             this.execute('bun', ['install', '--ignore-scripts'], d);
             this.execute('node', ['node_modules/astro/bin/astro.mjs', 'build'], d);
             for(const file of readdirSync(join(d,'dist/_astro')))if(file.endsWith('.js'))expect(readFileSync(join(d,'dist/_astro',file),'utf8').includes('INVALID_UI_SERVER_RENDERER')).toBe(false);
