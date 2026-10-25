@@ -1,50 +1,42 @@
-# Dependencies
-node_modules/
-sandbox/node_modules/
+# Project specific
+# Independent project repositories; never track their source or Git metadata here.
+/packages/
+/examples/
+/context/
+.dsh-*
+.codegraph/
 
-# Build output
-dist/
-*.tgz
-.treeseed/cache/
-
-# Astro/Vite caches
-.astro/
-sandbox/.astro/
-.vite/
-node_modules/.vite/
-sandbox/node_modules/.vite/
-
-# Test output
-coverage/
-test-results/
-playwright-report/
-blob-report/
-*.lcov
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Local environment
+# Environment / secrets
 .env
 .env.*
 !.env.example
-!.env.*.example
 
-# Temporary files
-tmp/
-temp/
-.tmp/
-*.tmp
-*.temp
+# Node.js
+node_modules/
+dist/
+*.tsbuildinfo
+.gyp-cache/
+.npm-cache/
+.pnpm-store/
 
-# Editor and OS files
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# Docker
+.docker/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
 .idea/
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
+*.swp
+*.swo
+
+# Documentation 
+/docs/.astro/
