@@ -1,6 +1,6 @@
 {
   "name": "@treeseed-cordis/ui",
-  "version": "0.0.0-cordis.4",
+  "version": "0.0.0-cordis.5",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -53,7 +53,8 @@
   "files": [
     "dist/src",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "dist/assets"
   ],
   "scripts": {
     "check": "bun scripts/tooling.ts check",
@@ -229,5 +230,329 @@
     "typescript": {
       "optional": true
     }
+  },
+  "cordisPackage": {
+    "formatVersion": 4,
+    "contractVersion": "0.4.0-cordis.1",
+    "pluginId": "ui",
+    "package": {
+      "name": "@treeseed-cordis/ui",
+      "version": "0.0.0-cordis.5"
+    },
+    "providers": [
+      {
+        "declaration": {
+          "id": "ui.text.default",
+          "pluginId": "ui",
+          "capability": "ui.component.text",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.component.text"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "TextComponentPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.status.default",
+          "pluginId": "ui",
+          "capability": "ui.component.status",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.component.status"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "StatusComponentPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.table.default",
+          "pluginId": "ui",
+          "capability": "ui.component.table",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.component.table"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "TableComponentPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.form.default",
+          "pluginId": "ui",
+          "capability": "ui.component.form",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.component.form"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "FormComponentPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.navigation.default",
+          "pluginId": "ui",
+          "capability": "ui.component.navigation",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.component.navigation"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "NavigationComponentPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.feedback.default",
+          "pluginId": "ui",
+          "capability": "ui.component.feedback",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.component.feedback"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "FeedbackComponentPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.theme.default",
+          "pluginId": "ui",
+          "capability": "ui.theme",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.theme"
+          ],
+          "inject": []
+        },
+        "entry": "dist/src/providers.js",
+        "classExport": "DefaultThemePlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.renderer.server.default",
+          "pluginId": "ui",
+          "capability": "ui.renderer.server",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.renderer.server"
+          ],
+          "inject": [
+            "ui.presentation"
+          ]
+        },
+        "entry": "dist/src/server.js",
+        "classExport": "ReactServerRendererPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.renderer.browser.default",
+          "pluginId": "ui",
+          "capability": "ui.renderer.browser",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.renderer.browser"
+          ],
+          "inject": [
+            "ui.presentation"
+          ]
+        },
+        "entry": "dist/src/browser.js",
+        "classExport": "ReactBrowserRendererPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.renderer.terminal.default",
+          "pluginId": "ui",
+          "capability": "ui.renderer.terminal",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.renderer.terminal"
+          ],
+          "inject": [
+            "ui.presentation"
+          ]
+        },
+        "entry": "dist/src/terminal.js",
+        "classExport": "PlainTerminalRendererPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      },
+      {
+        "declaration": {
+          "id": "ui.renderer.island.default",
+          "pluginId": "ui",
+          "capability": "ui.renderer.island",
+          "contractVersion": "0.4.0-cordis.1",
+          "target": "browser",
+          "provide": [
+            "ui.renderer.island"
+          ],
+          "inject": [
+            "ui.presentation"
+          ]
+        },
+        "entry": "dist/src/island.js",
+        "classExport": "ReactIslandRendererPlugin",
+        "configurationSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "replacement": {
+          "kind": "restart",
+          "stateVersion": 1,
+          "qualificationDigest": null
+        },
+        "commandIds": []
+      }
+    ],
+    "assets": [
+      {
+        "path": "dist/assets/7d798d4f49c261cbc544761d688bccbdb0751f32a591dbc55a5d816d8f4affaa.css",
+        "sha256": "7d798d4f49c261cbc544761d688bccbdb0751f32a591dbc55a5d816d8f4affaa",
+        "size": 2348
+      }
+    ],
+    "images": []
   }
 }

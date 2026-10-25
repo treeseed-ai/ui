@@ -10,10 +10,14 @@ export class UiTextSafety {
 class UiDeclaration {
     static create(id: string, provide: string[], inject: string[]): NativeProviderDeclaration { return ProviderV4Schemas.declaration.parse({ id, pluginId: 'ui', capability: provide[0], contractVersion: ProviderV4Schemas.version, target: 'browser', provide, inject }); }
 }
+export class UiProviderPolicy {
+    static readonly replacement = Object.freeze({ kind: 'restart' as const, stateVersion: 1, qualificationDigest: null });
+}
 abstract class ComponentProvider implements UiComponent {
     static readonly provide: string[] = [];
     static readonly inject: string[] = [];
     static readonly Config = z.strictObject({});
+    static readonly replacement = UiProviderPolicy.replacement;
     abstract readonly component: UiComponent['component'];
     abstract readonly schema: z.ZodType;
     constructor(context: Context) { context.provide((this.constructor as typeof ComponentProvider).provide[0]!, this); }
@@ -40,27 +44,40 @@ export class TableComponentPlugin extends ComponentProvider {
     static readonly declaration = UiDeclaration.create('ui.table.default', this.provide, this.inject);
     readonly component = UiTable;
     readonly schema = UiSchemas.tableModel;
-    terminal(value: unknown): string { const model = UiSchemas.tableModel.parse(value), lines = [model.title, model.columns.join(' | ')]; for (const row of model.rows) {
-        if (row.length !== model.columns.length)
-            throw new Error('INVALID_UI_TABLE');
-        lines.push(row.join(' | '));
-    } return UiTextSafety.clean(lines.join('\n')); }
+    terminal(value: unknown): string {
+        const model = UiSchemas.tableModel.parse(value), lines = [model.title, model.columns.join(' | ')];
+        for (const row of model.rows) {
+            if (row.length !== model.columns.length)
+                throw new Error('INVALID_UI_TABLE');
+            lines.push(row.join(' | '));
+        }
+        return UiTextSafety.clean(lines.join('\n'));
+    }
 }
 export class FormComponentPlugin extends ComponentProvider {
     static override readonly provide = ['ui.component.form'];
     static readonly declaration = UiDeclaration.create('ui.form.default', this.provide, this.inject);
     readonly component = UiForm;
     readonly schema = UiSchemas.formModel;
-    terminal(value: unknown): string { const model = UiSchemas.formModel.parse(value), lines = [model.title]; for (const field of model.fields)
-        lines.push(field.label + (field.required ? ' (required)' : '')); lines.push(model.submitLabel); return UiTextSafety.clean(lines.join('\n')); }
+    terminal(value: unknown): string {
+        const model = UiSchemas.formModel.parse(value), lines = [model.title];
+        for (const field of model.fields)
+            lines.push(field.label + (field.required ? ' (required)' : ''));
+        lines.push(model.submitLabel);
+        return UiTextSafety.clean(lines.join('\n'));
+    }
 }
 export class NavigationComponentPlugin extends ComponentProvider {
     static override readonly provide = ['ui.component.navigation'];
     static readonly declaration = UiDeclaration.create('ui.navigation.default', this.provide, this.inject);
     readonly component = UiNavigation;
     readonly schema = UiSchemas.navigationModel;
-    terminal(value: unknown): string { const model = UiSchemas.navigationModel.parse(value), lines = [model.label]; for (const item of model.items)
-        lines.push(item.label + ' ' + item.href); return UiTextSafety.clean(lines.join('\n')); }
+    terminal(value: unknown): string {
+        const model = UiSchemas.navigationModel.parse(value), lines = [model.label];
+        for (const item of model.items)
+            lines.push(item.label + ' ' + item.href);
+        return UiTextSafety.clean(lines.join('\n'));
+    }
 }
 export class FeedbackComponentPlugin extends ComponentProvider {
     static override readonly provide = ['ui.component.feedback'];
@@ -73,6 +90,7 @@ export class DefaultThemePlugin implements UiTheme {
     static readonly provide = ['ui.theme'];
     static readonly inject: string[] = [];
     static readonly Config = z.strictObject({});
+    static readonly replacement = UiProviderPolicy.replacement;
     static readonly declaration = UiDeclaration.create('ui.theme.default', this.provide, this.inject);
     constructor(context: Context) { context.provide('ui.theme', this); }
     css(): string { return UiStyles.css; }
@@ -84,15 +102,22 @@ export interface UiPresentation {
     theme(): Promise<ProviderLease<UiTheme>>;
 }
 class PresentationValidator {
-    parse(value: unknown): UiPresentation { if (!value || typeof value !== 'object' || typeof Reflect.get(value, 'component') !== 'function' || typeof Reflect.get(value, 'identity') !== 'function' || typeof Reflect.get(value, 'theme') !== 'function' || typeof Reflect.get(value, 'generation') !== 'string')
-        throw new Error('INVALID_UI_PRESENTATION'); return value as UiPresentation; }
+    parse(value: unknown): UiPresentation {
+        if (!value || typeof value !== 'object' || typeof Reflect.get(value, 'component') !== 'function' || typeof Reflect.get(value, 'identity') !== 'function' || typeof Reflect.get(value, 'theme') !== 'function' || typeof Reflect.get(value, 'generation') !== 'string')
+            throw new Error('INVALID_UI_PRESENTATION');
+        return value as UiPresentation;
+    }
 }
 export const UiPresentationToken = new CapabilityToken<UiPresentation>('ui.presentation', ProviderV4Schemas.version, new PresentationValidator());
 class PresentationServices implements UiPresentation {
     constructor(private readonly context: Context, readonly generation: string) { }
-    identity(id: string): string { const locator = CordisServiceLocator.from(this.context); for (const selected of locator.describe(UiTokens.component(id)))
-        if (selected.selected)
-            return selected.id; throw new Error('UI_COMPONENT_NOT_SELECTED'); }
+    identity(id: string): string {
+        const locator = CordisServiceLocator.from(this.context);
+        for (const selected of locator.describe(UiTokens.component(id)))
+            if (selected.selected)
+                return selected.id;
+        throw new Error('UI_COMPONENT_NOT_SELECTED');
+    }
     component(id: string): Promise<ProviderLease<UiComponent>> { return CordisServiceLocator.from(this.context).acquire(UiTokens.component(id)); }
     theme(): Promise<ProviderLease<UiTheme>> { return CordisServiceLocator.from(this.context).acquire(UiTokens.theme); }
 }
@@ -109,7 +134,7 @@ export interface UiApplicationConfiguration {
 }
 export class UiScope {
     private constructor(readonly handle: CompositionHandle, private readonly context: Context, readonly presentationGeneration: string) { }
-    static defaults(identity = '@treeseed-cordis/ui@0.0.0-cordis.3'): ProviderRegistration[] {
+    static defaults(identity = '@treeseed-cordis/ui@0.0.0-cordis.5'): ProviderRegistration[] {
         const classes = [TextComponentPlugin, StatusComponentPlugin, TableComponentPlugin, FormComponentPlugin, NavigationComponentPlugin, FeedbackComponentPlugin], result: ProviderRegistration[] = [];
         for (const plugin of classes)
             result.push({ token: UiTokens.component(plugin.provide[0]!.slice('ui.component.'.length)), plugin, declaration: plugin.declaration, configuration: {}, artifact: { kind: 'bundled', identity } });
@@ -143,9 +168,10 @@ export class UiScope {
             static readonly provide = ['ui.presentation'];
             static readonly inject = inject;
             static readonly Config = z.strictObject({});
+            static readonly replacement = UiProviderPolicy.replacement;
             constructor(context: Context) { context.provide('ui.presentation', new PresentationServices(context, presentationGeneration)); }
         }
-        registrations.push({ token: UiPresentationToken, plugin: PresentationPlugin, declaration: UiDeclaration.create('ui.presentation.default', PresentationPlugin.provide, inject), configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.3' } });
+        registrations.push({ token: UiPresentationToken, plugin: PresentationPlugin, declaration: UiDeclaration.create('ui.presentation.default', PresentationPlugin.provide, inject), configuration: {}, artifact: { kind: 'bundled', identity: configuration.artifactIdentity ?? '@treeseed-cordis/ui@0.0.0-cordis.5' } });
         selections.push({ scopeId, capability: UiPresentationToken.id, providerId: 'ui.presentation.default' });
         const handle = await CordisComposition.start({ registrations, selections }, { scopeId, target: 'browser', principalId: 'presentation', resourceScope: 'ui' });
         try {
@@ -168,10 +194,15 @@ export class UiScope {
             throw error;
         }
     }
-    private static selectedPresentation(selections: ProviderSelection[], registration: ProviderRegistration): boolean { if (!UiScope.presentationRegistration(registration))
-        return false; const declaration = ProviderV4Schemas.declaration.parse(registration.declaration); for (const selection of selections)
-        if (selection.capability === registration.token.id && selection.providerId === declaration.id)
-            return true; return false; }
+    private static selectedPresentation(selections: ProviderSelection[], registration: ProviderRegistration): boolean {
+        if (!UiScope.presentationRegistration(registration))
+            return false;
+        const declaration = ProviderV4Schemas.declaration.parse(registration.declaration);
+        for (const selection of selections)
+            if (selection.capability === registration.token.id && selection.providerId === declaration.id)
+                return true;
+        return false;
+    }
     private static presentationIdentity(value: ProviderSelection): {
         capability: string;
         providerId: string;
@@ -190,16 +221,24 @@ export class UiScope {
         capability: string;
     }): number { return UiScope.order(a.capability, b.capability); }
     private static order(a: string, b: string): number { return a < b ? -1 : a > b ? 1 : 0; }
-    private static async digest(value: unknown): Promise<string> { const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(CanonicalJson.stringify(value)))); let result = ''; for (const byte of bytes)
-        result += byte.toString(16).padStart(2, '0'); return result; }
+    private static async digest(value: unknown): Promise<string> {
+        const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(CanonicalJson.stringify(value))));
+        let result = '';
+        for (const byte of bytes)
+            result += byte.toString(16).padStart(2, '0');
+        return result;
+    }
     private static capability(id: string, selection: ProviderSelection): boolean { return selection.capability === id; }
     service<T extends object>(token: CapabilityToken<T>): Promise<ProviderLease<T>> { return this.handle.locator(this.context).acquire(token); }
     identity(token: CapabilityToken): {
         providerId: string;
         generation: string;
-    } { for (const item of this.handle.describe(token))
-        if (item.selected)
-            return { providerId: item.id, generation: this.handle.generation }; throw new Error('UI_RENDERER_NOT_SELECTED'); }
+    } {
+        for (const item of this.handle.describe(token))
+            if (item.selected)
+                return { providerId: item.id, generation: this.handle.generation };
+        throw new Error('UI_RENDERER_NOT_SELECTED');
+    }
     component(id: string): Promise<ProviderLease<UiComponent>> { return this.handle.locator(this.context).acquire(UiTokens.component(id)); }
     theme(): Promise<ProviderLease<UiTheme>> { return this.handle.locator(this.context).acquire(UiTokens.theme); }
     dispose(): Promise<void> { return this.handle.dispose(); }
