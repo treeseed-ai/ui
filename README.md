@@ -46,3 +46,7 @@ its exact SHA-256. Runtime rendering still supplies this class-owned stylesheet 
 public style contract. Browser assets remain closed over the accepted composition; a new
 package does not execute in an existing browser simply because it was downloaded. Hosts
 must bind the exact asset/contribution generation before admitting actions.
+
+`bun run check` recomputes the metadata projection from source and rejects drift before a
+build can rewrite it. The owner regression runs that command in an isolated source copy with
+a changed class export, preserving the working checkout while proving stale metadata fails.
