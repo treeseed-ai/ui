@@ -28,3 +28,7 @@ class UiContractTests {
 const contracts=new UiContractTests();
 test('unit: UI rejects malformed models unsafe navigation and credential defaults',contracts.schemas.bind(contracts));
 test('integration: native default renderers share components assets and cleanup',contracts.renderers.bind(contracts));
+class RendererSelectionTests {
+  async selectedDefault():Promise<void>{const {UiServerRenderer}=await import('../src/server.js');const renderer=await UiServerRenderer.create();try{const identity=(renderer as unknown as {identity():{providerId:string;generation:string}}).identity();expect(identity.providerId).toBe('ui.renderer.server.default');expect(identity.generation).toMatch(/^[a-f0-9]{64}$/);}finally{await renderer.dispose();}}
+}
+const selection=new RendererSelectionTests();test('integration: default renderer is selected through native Cordis',selection.selectedDefault.bind(selection));
