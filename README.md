@@ -128,3 +128,12 @@ focus and uncontrolled form input. Invalid or concurrent updates cannot replace 
 view. Updates do not select providers, activate new assets or create a new React root.
 Disposal closes action admission and awaits accepted action/update completion before unmount
 and provider cleanup; domain transports remain responsible for their cancellation policy.
+
+### Exact scoped-management SDK adoption
+
+Adopt SDK `.14` source `597a9abd79b76fb292a80cd86e4ea83042fbec62`, archive SHA-256
+`c92fb068064a6db4823b29c31602b47e01c21200af759a770480a1a0cc4240a2`, through the public
+package boundary. This aligns shared restart/instance intent contracts for later owner assembly;
+UI acquires no deployment, registration or identity authority. Advance the private package/default
+identity together and requalify the same pure React/native provider surfaces, responsive widths,
+real browser and packed Astro host. Native mobile/Electron remain separately qualified hosts.
