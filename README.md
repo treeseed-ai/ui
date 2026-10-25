@@ -31,3 +31,18 @@ The package records source commit and archive SHA-256; installation uses a refre
 lock and no lifecycle scripts. TypeScript is an optional peer for the development-only
 `/source-policy` export. UI rendering and installed runtime closures do not require the
 compiler; owners using that development export install the pinned TypeScript dev dependency.
+
+### Installable UI provider metadata
+
+The package build emits `cordisPackage` format 4 through SDK `PackageDefinition`, directly
+from all eleven exported native class declarations, Config schemas and replacement policies.
+Each descriptor binds its named class export and package entry. Default components, theme
+and renderers declare restart policy; metadata alone does not qualify a live swap or bypass
+host plan/apply admission. UI's portable presentation scope is separate from CLI/API host
+authority and never carries sessions, cookies, tokens or a Keycloak adapter.
+
+The same build writes the immutable default stylesheet into `dist/assets` and inventories
+its exact SHA-256. Runtime rendering still supplies this class-owned stylesheet through the
+public style contract. Browser assets remain closed over the accepted composition; a new
+package does not execute in an existing browser simply because it was downloaded. Hosts
+must bind the exact asset/contribution generation before admitting actions.
