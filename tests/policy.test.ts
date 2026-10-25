@@ -1,3 +1,4 @@
+import {UiSourcePolicy} from '../src/source-policy.js';
 import { test, expect } from 'bun:test';
 class PolicyTests {
     async consumers(): Promise<void> { const { UiSourcePolicy } = await import('../src/source-policy.js'); const gate = new UiSourcePolicy(); for (const source of ["class View{run(node:Element){node.textContent=String(42)}}", "class View{run(node:HTMLElement){node.style.color=String(42)}}", "import {createElement as h} from 'react';class View{render(){return h('section')}}", "class View{render(){return <section>duplicate</section>}}", "class View{run(){document.createElement('div')}}", "class View{run(node:Element){node.innerHTML='duplicate'}}", "class View{run(){return `<form>duplicate</form>`}}", "import './local.css';class View{}", "import {createRoot as root} from 'react-dom/client';class View{}"]) {
