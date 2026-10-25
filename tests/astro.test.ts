@@ -41,7 +41,7 @@ class AstroTests {
         const d = this.directory;
         try {
             this.execute('bun', ['pm', 'pack', '--destination', d], process.cwd());
-            const archive = join(d, 'treeseed-cordis-ui-0.0.0-cordis.3.tgz');
+            const version=(JSON.parse(readFileSync('package.json','utf8')) as {version:string}).version,archive = join(d, 'treeseed-cordis-ui-'+version+'.tgz');
             cpSync('vendor/sdk.tgz', join(d, 'sdk.tgz'));
             writeFileSync(join(d, 'package.json'), JSON.stringify({ type: 'module', dependencies: { '@treeseed-cordis/ui': 'file:' + archive, '@treeseed-cordis/sdk': 'file:./sdk.tgz', astro: '7.4.2', '@astrojs/react': '7.1.1', react: '19.3.1', 'react-dom': '19.3.1', 'oxc-transform-react': '0.145.0' } }));
             mkdirSync(join(d, 'src/pages'), { recursive: true });
