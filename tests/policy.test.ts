@@ -11,3 +11,8 @@ class ComponentClassTests {
 }
 const components = new ComponentClassTests();
 test('unit: advertised UI component must be a React class', components.classOnly.bind(components));
+
+class StreamBoundaryTests {
+ boundary():void{const policy=new UiSourcePolicy();expect(policy.inspect('consumer.ts',"class Output{write(text:string):void{process.stdout.write(text);process.stderr.write(text);NativeStreams.write(text);}} ")).toEqual([]);for(const source of ["class View{render(text:string){document.write(text);}}","const doc=document;class View{render(text:string){doc.write(text);}}","class View{render(text:string){window.document['write'](text);}}"]){expect(policy.inspect('consumer.ts',source).length).toBeGreaterThan(0);}}
+}
+const streams=new StreamBoundaryTests();test('unit: consumer gate permits native stream writes while refusing direct aliased and computed document writes',streams.boundary.bind(streams));
