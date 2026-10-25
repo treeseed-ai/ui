@@ -10,6 +10,8 @@ class AstroAssertions {
         static error(event: ErrorEvent): void { Reflect.set(window, 'fixtureFailure', JSON.stringify({ message: event.error?.message, issues: event.error?.issues, stack: event.error?.stack })); }
         static accept(event: PromiseRejectionEvent): void { Reflect.set(window, 'fixtureFailure', JSON.stringify({ message: event.reason?.message, issues: event.reason?.issues, stack: event.reason?.stack })); }
     } window.addEventListener('unhandledrejection', Capture.accept); window.addEventListener('error', Capture.error); }
+    static async standalone():Promise<void>{const ui=Reflect.get(window,'ui') as {select(value:boolean):Promise<void>};await ui.select(true);}
+    static async closeStandalone():Promise<void>{await Reflect.get(window,'ui').close();}
     static failure(): unknown { return Reflect.get(window, 'fixtureFailure'); }
     static async close(): Promise<void> { await Reflect.get(window, 'fixtureClose')(); }
 }
@@ -51,6 +53,7 @@ class AstroTests {
             writeFileSync(join(d, 'src/pages/index.astro'), "---\nimport {UiIsland} from '@treeseed-cordis/ui/island';import {FixtureBootstrap} from '../host/bootstrap.js';const bootstrap=await FixtureBootstrap.bootstrap('Alice');\n---\n<html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><link rel=\"stylesheet\" href=\"" + style.path + "\"/></head><body><UiIsland client:load {...bootstrap}/></body></html>");
             this.execute('bun', ['install', '--ignore-scripts'], d);
             this.execute('node', ['node_modules/astro/bin/astro.mjs', 'build'], d);
+            cpSync('tests/browser-program.ts',join(d,'src/standalone.ts'));this.execute('bun',['build','src/standalone.ts','--target','browser','--format','esm','--outfile','dist/standalone.js'],d);writeFileSync(join(d,'dist/standalone.html'),'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module" src="/standalone.js"></script></body></html>');
             for(const file of readdirSync(join(d,'dist/_astro')))if(file.endsWith('.js'))expect(readFileSync(join(d,'dist/_astro',file),'utf8').includes('INVALID_UI_SERVER_RENDERER')).toBe(false);
             const html = readFileSync(join(d, 'dist/index.html'), 'utf8');
             expect(html).toContain('Profile Alice');
@@ -76,6 +79,7 @@ class AstroTests {
                 expect(errors.values).toEqual([]);
                 await page.evaluate(AstroAssertions.close);
                 expect(await page.locator('.trsd-ui').count()).toBe(0);
+                await page.goto('http://127.0.0.1:'+server.port+'/standalone.html');await page.waitForSelector('html[data-ready=true]');await page.evaluate(AstroAssertions.standalone);await page.getByText('Qualified alternate',{exact:true}).waitFor();await page.evaluate(AstroAssertions.closeStandalone);expect(await page.locator('.trsd-ui').count()).toBe(0);expect(errors.values).toEqual([]);
             }
             finally {
                 await browser.close();

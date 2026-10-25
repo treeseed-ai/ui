@@ -1,9 +1,9 @@
-import { UiBrowserApplication, ReactBrowserRendererPlugin, UiBrowserToken, type UiHostAdapters } from '../src/browser.js';
-import { type UiViewModel, type UiMount, type UiActionResult } from '../src/contracts.js';
-import { UiScope, StatusComponentPlugin, DefaultThemePlugin } from '../src/providers.js';
+import { UiBrowserApplication, ReactBrowserRendererPlugin, UiBrowserToken, type UiHostAdapters } from '@treeseed-cordis/ui/browser';
+import { type UiViewModel, type UiMount, type UiActionResult } from '@treeseed-cordis/ui/contracts';
+import { UiScope, StatusComponentPlugin, DefaultThemePlugin } from '@treeseed-cordis/ui/providers';
 import { ProviderV4Schemas, type ProviderSelection } from '@treeseed-cordis/sdk/portable';
-import { UiTokens, type UiComponentProps, type UiViewModel as View } from '../src/contracts.js';
-import { UiStatus } from '../src/react.js';
+import { UiTokens, type UiComponentProps, type UiViewModel as View } from '@treeseed-cordis/ui/contracts';
+import { UiStatus } from '@treeseed-cordis/ui/react';
 import { createElement, type ReactNode } from 'react';
 class AlternateStatus extends UiStatus {
     override render(): ReactNode { return createElement(UiStatus, { ...this.props, model: { ...(this.props.model as {
