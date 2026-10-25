@@ -6,22 +6,22 @@ import { UiSchemas, type UiComponent, type UiViewModel, type UiContribution, typ
 export class UiStack extends Component<UiComponentProps> {
  render():ReactNode{const model=UiSchemas.stackModel.parse(this.props.model);if(!this.props.children)throw new Error('UI_COMPOSITE_NOT_PREPARED');return <section aria-label={model.title}>{model.title&&<h1>{model.title}</h1>}<div className="ui-stack">{this.props.children}</div></section>;}
 }
-export interface UiRenderNode {view:UiViewModel;component:UiComponent;children:UiRenderNode[];}
+export interface UiRenderNode {view:UiViewModel;component:Pick<UiComponent,'component'>;type:UiComponent['component'];children:UiRenderNode[];}
 export class UiRenderTree {
- private readonly leases:ProviderLease<UiComponent>[]=[];private readonly ids=new Set<string>();private readonly nodes:UiRenderNode[]=[];
+ private readonly leases:ProviderLease<UiComponent>[]=[];private readonly ids=new Set<string>();private readonly nodes:UiRenderNode[]=[];private readonly contracts=new Map<string,UiComponent>();
  root!:UiRenderNode;private disposal:Promise<void>|null=null;
  private constructor(private readonly presentation:UiPresentation){}
  static async prepare(view:UiViewModel,presentation:UiPresentation):Promise<UiRenderTree>{const tree=new UiRenderTree(presentation);try{tree.root=await tree.prepareNode(view,0);return tree;}catch(error){await tree.dispose();throw error;}}
- private async prepareNode(value:UiViewModel,depth:number):Promise<UiRenderNode>{const view=UiSchemas.view.parse(value);if(depth>8||this.ids.size>=256||this.ids.has(view.id))throw new Error('INVALID_UI_TREE');this.ids.add(view.id);const lease=await this.presentation.component(view.componentId);this.leases.push(lease);lease.value.validate(view.model);const node:UiRenderNode={view,component:lease.value,children:[]};this.nodes.push(node);for(const child of lease.value.children?.(view.model)??[])node.children.push(await this.prepareNode(child,depth+1));return node;}
- async contribution(styleDigest:string):Promise<UiContribution>{const root=await UiContributionIdentity.create(this.root.view,this.presentation,this.root.component,styleDigest);if(this.nodes.length===1)return root;const members=[];for(const node of this.nodes.slice(1))members.push(await UiContributionIdentity.create(node.view,this.presentation,node.component,styleDigest));return UiSchemas.contribution.parse({...root,members});}
+ private async prepareNode(value:UiViewModel,depth:number):Promise<UiRenderNode>{const view=UiSchemas.view.parse(value);if(depth>8||this.ids.size>=256||this.ids.has(view.id))throw new Error('INVALID_UI_TREE');this.ids.add(view.id);const lease=await this.presentation.component(view.componentId);this.leases.push(lease);lease.value.validate(view.model);const type=lease.value.type();this.contracts.set(view.id,lease.value);const node:UiRenderNode={view,component:{component:type},type,children:[]};this.nodes.push(node);for(const child of lease.value.children?.(view.model)??[])node.children.push(await this.prepareNode(child,depth+1));return node;}
+ async contribution(styleDigest:string):Promise<UiContribution>{const root=await UiContributionIdentity.create(this.root.view,this.presentation,this.contracts.get(this.root.view.id)!,styleDigest);if(this.nodes.length===1)return root;const members=[];for(const node of this.nodes.slice(1))members.push(await UiContributionIdentity.create(node.view,this.presentation,this.contracts.get(node.view.id)!,styleDigest));return UiSchemas.contribution.parse({...root,members});}
  terminal():string{return this.terminalNode(this.root);}
- private terminalNode(node:UiRenderNode):string{const children:string[]=[];for(const child of node.children)children.push(this.terminalNode(child));return node.component.terminal(node.view.model,children);}
+ private terminalNode(node:UiRenderNode):string{const children:string[]=[];for(const child of node.children)children.push(this.terminalNode(child));return this.contracts.get(node.view.id)!.terminal(node.view.model,children);}
  dispose():Promise<void>{if(!this.disposal)this.disposal=this.close();return this.disposal;}
- private async close():Promise<void>{let failed=false;for(const lease of this.leases.splice(0).reverse())try{await lease.release();}catch{failed=true;}if(failed)throw new Error('UI_CLEANUP_FAILED');}
+ private async close():Promise<void>{let failed=false;for(const lease of this.leases.splice(0).reverse())try{await lease.release();}catch{failed=true;}this.contracts.clear();if(failed)throw new Error('UI_CLEANUP_FAILED');}
 }
 export class UiTreeView extends Component<{node:UiRenderNode;actions?:UiActionDispatcher}> {
  private child(node:UiRenderNode):ReactNode{return createElement(UiTreeView,{key:node.view.id,node,actions:this.props.actions});}
- render():ReactNode{const node=this.props.node;return createElement(node.component.type(),{key:node.view.id,instanceId:node.view.id,model:node.view.model,actions:this.props.actions},...node.children.map(this.child.bind(this)));}
+ render():ReactNode{const node=this.props.node;return createElement(node.type,{key:node.view.id,instanceId:node.view.id,model:node.view.model,actions:this.props.actions},...node.children.map(this.child.bind(this)));}
 }
 export class UiText extends Component<UiComponentProps> {
     render(): ReactNode { const model = UiSchemas.textModel.parse(this.props.model); return <p>{model.text}</p>; }
