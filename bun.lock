@@ -26,6 +26,7 @@
         "@treeseed-cordis/sdk": "0.0.0-cordis.5",
         "react": "19.3.1",
         "react-dom": "19.3.1",
+        "typescript": "5.9.3",
       },
     },
   },

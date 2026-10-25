@@ -29,5 +29,5 @@ export class UiServerRenderer {
   styles():Promise<{path:string;digest:string;css:string}>{return this.renderer.value.styles();}
   identity():{providerId:string;generation:string}{return this.scope.identity(UiServerToken);}
   dispose():Promise<void>{if(!this.disposal)this.disposal=this.close();return this.disposal;}
-  private async close():Promise<void>{await this.renderer.release();await this.scope.dispose();}
+  private async close():Promise<void>{try{await this.renderer.release();}finally{await this.scope.dispose();}}
 }

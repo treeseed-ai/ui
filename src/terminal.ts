@@ -15,8 +15,8 @@ export class UiTerminalRenderer {
   private disposal:Promise<void>|null=null;
   private constructor(private readonly scope:UiScope,private readonly renderer:ProviderLease<UiTerminalRendering>){}
   static async create(configuration:UiApplicationConfiguration={}):Promise<UiTerminalRenderer>{const registration:ProviderRegistration={token:UiTerminalToken,plugin:PlainTerminalRendererPlugin,declaration:PlainTerminalRendererPlugin.declaration,configuration:{},artifact:{kind:'bundled',identity:configuration.artifactIdentity??'@treeseed-cordis/ui@0.0.0-cordis.1'}},scope=await UiScope.create(configuration,[registration]);try{return new UiTerminalRenderer(scope,await scope.service(UiTerminalToken));}catch(error){await scope.dispose();throw error;}}
-  render(value:UiViewModel):Promise<RenderedTerminal>{return this.renderer.value.render(value);}
+  async render(value:UiViewModel):Promise<RenderedTerminal>{return this.renderer.value.render(value);}
   identity():{providerId:string;generation:string}{return this.scope.identity(UiTerminalToken);}
   dispose():Promise<void>{if(!this.disposal)this.disposal=this.close();return this.disposal;}
-  private async close():Promise<void>{await this.renderer.release();await this.scope.dispose();}
+  private async close():Promise<void>{try{await this.renderer.release();}finally{await this.scope.dispose();}}
 }

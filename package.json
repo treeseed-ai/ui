@@ -44,6 +44,10 @@
     "./island": {
       "types": "./dist/src/island.d.ts",
       "default": "./dist/src/island.js"
+    },
+    "./source-policy": {
+      "types": "./dist/src/source-policy.d.ts",
+      "default": "./dist/src/source-policy.js"
     }
   },
   "files": [
@@ -62,7 +66,8 @@
   "peerDependencies": {
     "@treeseed-cordis/sdk": "0.0.0-cordis.5",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "cordis": "4.0.0-rc.12",

@@ -30,7 +30,7 @@ export interface RenderedPage {html:string;generation:string;rootGeneration:stri
 export interface RenderedTerminal {text:string;}
 export interface UiScopeHandle {dispose():Promise<void>;}
 export interface UiMount extends UiScopeHandle {generation:string;rootGeneration:string;}
-class ComponentValidator implements AdapterValidator<UiComponent> {parse(value:unknown):UiComponent {if(!value||typeof value!=='object'||typeof Reflect.get(value,'component')!=='function'||typeof Reflect.get(value,'validate')!=='function'||typeof Reflect.get(value,'terminal')!=='function')throw new Error('INVALID_UI_COMPONENT');return value as UiComponent;}}
+class ComponentValidator implements AdapterValidator<UiComponent> {parse(value:unknown):UiComponent {if(!value||typeof value!=='object'||typeof Reflect.get(value,'component')!=='function'||!Reflect.get(value,'component').prototype?.isReactComponent||typeof Reflect.get(value,'validate')!=='function'||typeof Reflect.get(value,'terminal')!=='function')throw new Error('INVALID_UI_COMPONENT');return value as UiComponent;}}
 class ThemeValidator implements AdapterValidator<UiTheme> {parse(value:unknown):UiTheme {if(!value||typeof value!=='object'||typeof Reflect.get(value,'css')!=='function')throw new Error('INVALID_UI_THEME');return value as UiTheme;}}
 export class UiTokens {
   static readonly theme=new CapabilityToken<UiTheme>('ui.theme',ProviderV4Schemas.version,new ThemeValidator());
