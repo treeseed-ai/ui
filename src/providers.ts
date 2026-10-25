@@ -42,7 +42,7 @@ export class UiScope {
     if(configuration.selections)selections.push(...configuration.selections);else for(const item of registrations){const declaration=ProviderV4Schemas.declaration.parse(item.declaration);selections.push({scopeId,capability:item.token.id,providerId:declaration.id});}
     if(configuration.selections)for(const item of extensions)if(!selections.some(UiScope.capability.bind(null,item.token.id))){const declaration=ProviderV4Schemas.declaration.parse(item.declaration);selections.push({scopeId,capability:item.token.id,providerId:declaration.id});}
     for(const item of registrations)if(item.token.id===UiPresentationToken.id)throw new Error('RESERVED_UI_PRESENTATION');
-    const projection=registrations.filter(UiScope.presentationRegistration).map(UiScope.providerIdentity).sort(UiScope.identityOrder),selectedProjection=selections.filter(UiScope.presentationSelection).sort(UiScope.selectionOrder),presentationGeneration=await UiScope.digest({providers:projection,selections:selectedProjection});
+    const projection=registrations.filter(UiScope.selectedPresentation.bind(null,selections)).map(UiScope.providerIdentity).sort(UiScope.identityOrder),selectedProjection=selections.filter(UiScope.presentationSelection).map(UiScope.presentationIdentity).sort(UiScope.selectionOrder),presentationGeneration=await UiScope.digest({providers:projection,selections:selectedProjection});
     const inject=['cordis.composition','ui.theme'];for(const selection of selections)if(selection.capability.startsWith('ui.component.'))inject.push(selection.capability);
     class PresentationPlugin {static readonly provide=['ui.presentation'];static readonly inject=inject;static readonly Config=z.strictObject({});constructor(context:Context){context.provide('ui.presentation',new PresentationServices(context,presentationGeneration));}}
     registrations.push({token:UiPresentationToken,plugin:PresentationPlugin,declaration:UiDeclaration.create('ui.presentation.default',PresentationPlugin.provide,inject),configuration:{},artifact:{kind:'bundled',identity:configuration.artifactIdentity??'@treeseed-cordis/ui@0.0.0-cordis.1'}});selections.push({scopeId,capability:UiPresentationToken.id,providerId:'ui.presentation.default'});
@@ -52,11 +52,14 @@ export class UiScope {
       await handle.mount(UiConsumer,undefined);if(!receiver.context)throw new Error('UI_CONTEXT_UNAVAILABLE');return new UiScope(handle,receiver.context,presentationGeneration);
     }catch(error){await handle.dispose();throw error;}
   }
+  private static selectedPresentation(selections:ProviderSelection[],registration:ProviderRegistration):boolean{if(!UiScope.presentationRegistration(registration))return false;const declaration=ProviderV4Schemas.declaration.parse(registration.declaration);for(const selection of selections)if(selection.capability===registration.token.id&&selection.providerId===declaration.id)return true;return false;}
+  private static presentationIdentity(value:ProviderSelection):{capability:string;providerId:string}{return {capability:value.capability,providerId:value.providerId};}
   private static presentationRegistration(value:ProviderRegistration):boolean{return value.token.id.startsWith('ui.component.')||value.token.id==='ui.theme';}
   private static presentationSelection(value:ProviderSelection):boolean{return value.capability.startsWith('ui.component.')||value.capability==='ui.theme';}
   private static providerIdentity(value:ProviderRegistration):{declaration:unknown;configuration:unknown;artifact:unknown}{return {declaration:value.declaration,configuration:value.configuration,artifact:value.artifact};}
-  private static identityOrder(a:unknown,b:unknown):number{return CanonicalJson.stringify(a).localeCompare(CanonicalJson.stringify(b));}
-  private static selectionOrder(a:ProviderSelection,b:ProviderSelection):number{return a.capability.localeCompare(b.capability);}
+  private static identityOrder(a:unknown,b:unknown):number{return UiScope.order(CanonicalJson.stringify(a),CanonicalJson.stringify(b));}
+  private static selectionOrder(a:{capability:string},b:{capability:string}):number{return UiScope.order(a.capability,b.capability);}
+  private static order(a:string,b:string):number{return a<b?-1:a>b?1:0;}
   private static async digest(value:unknown):Promise<string>{const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(CanonicalJson.stringify(value))));let result='';for(const byte of bytes)result+=byte.toString(16).padStart(2,'0');return result;}
   private static capability(id:string,selection:ProviderSelection):boolean{return selection.capability===id;}
   service<T extends object>(token:CapabilityToken<T>):Promise<ProviderLease<T>> {return this.handle.locator(this.context).acquire(token);}
