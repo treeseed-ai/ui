@@ -4,7 +4,12 @@ import { join, relative, resolve } from 'node:path';
 class PresentationVisitor {
     readonly errors: string[] = [];
     private readonly elementFactories=new Set<string>();
-    collect(source:ts.SourceFile):void{for(const node of source.statements)if(ts.isImportDeclaration(node)&&ts.isStringLiteral(node.moduleSpecifier)&&node.moduleSpecifier.text==='react'){const bindings=node.importClause?.namedBindings;if(bindings&&ts.isNamedImports(bindings))for(const item of bindings.elements)if((item.propertyName??item.name).text==='createElement')this.elementFactories.add(item.name.text);}}
+    private readonly documents=new Set<string>(['document']);private readonly writers=new Set<string>();
+    private member(value:ts.Expression):{receiver:ts.Expression;name:string}|null{if(ts.isPropertyAccessExpression(value))return {receiver:value.expression,name:value.name.text};if(ts.isElementAccessExpression(value)&&value.argumentExpression&&ts.isStringLiteral(value.argumentExpression))return {receiver:value.expression,name:value.argumentExpression.text};return null;}
+    private document(value:ts.Expression):boolean{if(ts.isParenthesizedExpression(value)||ts.isAsExpression(value)||ts.isNonNullExpression(value))return this.document(value.expression);if(ts.isIdentifier(value))return this.documents.has(value.text);const property=this.member(value);return Boolean(property&&['document','ownerDocument','contentDocument'].includes(property.name));}
+    private collectAliases(node:ts.Node):void{if(ts.isVariableDeclaration(node)&&node.initializer){if(ts.isIdentifier(node.name)){if(this.document(node.initializer))this.documents.add(node.name.text);const method=this.member(node.initializer);if(method&&['write','writeln'].includes(method.name)&&this.document(method.receiver))this.writers.add(node.name.text);}else if(ts.isObjectBindingPattern(node.name)&&this.document(node.initializer))for(const binding of node.name.elements){const name=binding.propertyName??binding.name;if(ts.isIdentifier(name)&&['write','writeln'].includes(name.text)&&ts.isIdentifier(binding.name))this.writers.add(binding.name.text);}}ts.forEachChild(node,this.collectAliases.bind(this));}
+
+    collect(source:ts.SourceFile):void{for(const node of source.statements)if(ts.isImportDeclaration(node)&&ts.isStringLiteral(node.moduleSpecifier)&&node.moduleSpecifier.text==='react'){const bindings=node.importClause?.namedBindings;if(bindings&&ts.isNamedImports(bindings))for(const item of bindings.elements)if((item.propertyName??item.name).text==='createElement')this.elementFactories.add(item.name.text);}this.collectAliases(source);}
     constructor(private readonly file: string) { }
     private fail(): void { this.errors.push(this.file + ': visual rendering and styles must come from UI providers'); }
     visit(node: ts.Node): void {
@@ -19,8 +24,9 @@ class PresentationVisitor {
                 this.fail();
         }
         if (ts.isCallExpression(node)) {
-            const callee = node.expression;
-            if (ts.isPropertyAccessExpression(callee) && ['createElement', 'createElementNS', 'insertAdjacentHTML', 'write', 'writeln', 'appendChild', 'replaceChildren'].includes(callee.name.text)) {
+            const callee = node.expression,member=this.member(callee);
+            if((member&&['write','writeln'].includes(member.name)&&this.document(member.receiver))||(ts.isIdentifier(callee)&&this.writers.has(callee.text)))this.fail();
+            if (ts.isPropertyAccessExpression(callee) && ['createElement', 'createElementNS', 'insertAdjacentHTML', 'appendChild', 'replaceChildren'].includes(callee.name.text)) {
                 if (callee.name.text !== 'createElement' || !node.arguments[0] || ts.isStringLiteral(node.arguments[0]))
                     this.fail();
             }
