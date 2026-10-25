@@ -136,3 +136,8 @@ class ContributionTests {
 }
 const contribution = new ContributionTests();
 test('integration: rendered contribution binds native provider model schema and exact style', contribution.binding.bind(contribution));
+
+class CompositeHydrationTests {
+ async island():Promise<void>{const {UiServerRenderer}=await import('../src/server.js'),{UiIslandHost}=await import('../src/island.js'),{renderToString}=await import('react-dom/server'),{createElement}=await import('react');const view={id:'page',componentId:'stack',model:{children:[{id:'message',componentId:'text',model:{text:'Nested island'}}]}},renderer=await UiServerRenderer.create();try{const page=await renderer.render(view),bootstrap={view,contribution:page.contribution,presentationGeneration:page.generation,assetGeneration:'a'.repeat(64),actionIds:[]},host={assetGeneration:'a'.repeat(64),actionIds:[]};const binding=await UiIslandHost.prepare(bootstrap,host);try{expect(renderToString(createElement(binding.Component,bootstrap))).toContain('Nested island');}finally{await binding.dispose();}const tampered=structuredClone(bootstrap);tampered.contribution.members![0]!.providerId='ui.foreign';await expect(UiIslandHost.prepare(tampered,host)).rejects.toThrow('UI_CONTRIBUTION_MISMATCH');}finally{await renderer.dispose();}}
+}
+const compositeHydration=new CompositeHydrationTests();test('integration: actual island binding validates every composite member before rendering',compositeHydration.island.bind(compositeHydration));
