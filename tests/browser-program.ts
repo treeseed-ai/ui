@@ -33,6 +33,8 @@ export class UiBrowserProgram {
     async select(alternative: boolean): Promise<void> { this.alternative = alternative; await this.show({ id: "selection", componentId: "status", model: { title: "Status", state: "Ready" } }); }
     generation(): string { return this.mount!.rootGeneration; }
     async show(view: UiViewModel): Promise<void> { await this.mount?.dispose(); this.mount = await UiBrowserApplication.start({ ...this.alternative ? BrowserConfiguration.create() : {}, target: document.getElementById('app')!, view, host: { actions: new FixtureActions(), actionIds: ['fixture.save'], assetGeneration: 'a'.repeat(64) } }); }
+    async update(view:UiViewModel):Promise<void>{if(!this.mount)throw new Error('missing mount');await this.mount.update(view);}
+    view():UiViewModel{return this.mount!.view();}
     async close(): Promise<void> { await this.mount?.dispose(); this.mount = null; }
     async hydrateDocument():Promise<void>{await this.mount?.dispose();this.mount=await UiBrowserApplication.hydrateDocument({actions:new FixtureActions(),actionIds:['fixture.save'],assetGeneration:'a'.repeat(64)});}
     static async run(): Promise<void> { window.ui = new UiBrowserProgram();try{if(document.getElementById('trsd-ui-bootstrap'))await window.ui.hydrateDocument();else await window.ui.show({ id: 'initial', componentId: 'status', model: { title: 'Status', state: 'Ready' } }); document.documentElement.dataset.ready = 'true';}catch{document.documentElement.dataset.refused='true';} }

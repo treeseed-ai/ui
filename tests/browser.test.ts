@@ -5,6 +5,8 @@ import { type UiViewModel } from '../src/contracts.js';
 import { mkdirSync, writeFileSync } from 'node:fs';
 class BrowserAssertions {
     static async render(serialized: string): Promise<void> { await window.ui.show(JSON.parse(serialized) as UiViewModel); }
+    static async update(serialized:string):Promise<void>{await window.ui.update(JSON.parse(serialized) as UiViewModel);}
+    static currentTitle():unknown{return (window.ui.view().model as {title?:string}).title;}
     static layout(): {
         overflow: boolean;
         smallTargets: number;
@@ -63,6 +65,7 @@ class UiBrowserTests {
             }
             await page.evaluate(BrowserAssertions.zoom, '100%');
             await page.evaluate(BrowserAssertions.render, JSON.stringify(this.views()[3]!));
+            await page.getByRole('textbox').first().fill('draft');await page.getByRole('textbox').first().focus();const focused=await page.getByRole('textbox').first().getAttribute('id');const updated=this.views()[3]!;const model=updated.model as {title:string};model.title='Updated profile';await page.evaluate(BrowserAssertions.update,JSON.stringify(updated));expect(await page.getByRole('textbox').first().inputValue()).toBe('draft');expect(await page.locator(':focus').getAttribute('id')).toBe(focused);expect(await page.evaluate(BrowserAssertions.currentTitle)).toBe('Updated profile');
             await page.getByRole('textbox').first().fill('fixture');
             await page.getByRole('button').click();
             await page.getByRole('status').filter({ hasText: 'Saved fixture' }).waitFor();
