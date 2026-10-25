@@ -15,7 +15,7 @@ class UiContractTests {
     expect(UiSchemas.formModel.safeParse({title:'t',actionId:'save',submitLabel:'Save',fields:[{id:'a',label:'A'},{id:'a',label:'A'}]}).success).toBe(false);
     expect(UiSchemas.formModel.safeParse({title:'t',actionId:'save',submitLabel:'Save',fields:[{id:'a',label:'Password',type:'password',value:'credential-output-canary'}]}).success).toBe(false);
     for(const href of ['javascript:alert(1)','//foreign.invalid','/\\foreign.invalid','https://user:secret@host.invalid'])expect(UiSchemas.navigationModel.safeParse({label:'n',items:[{label:'x',href}]}).success).toBe(false);
-    expect(UiSchemas.hydration.safeParse({view:{id:'v',componentId:'text',model:{text:'safe'}},compositionGeneration:'a'.repeat(64),assetGeneration:'b'.repeat(64),actionIds:[],token:'credential-output-canary'}).success).toBe(false);
+    expect(UiSchemas.hydration.safeParse({view:{id:'v',componentId:'text',model:{text:'safe'}},presentationGeneration:'a'.repeat(64),assetGeneration:'b'.repeat(64),actionIds:[],token:'credential-output-canary'}).success).toBe(false);
   }
   async renderers():Promise<void> {
     const {UiServerRenderer}=await import('../src/server.js'),{UiTerminalRenderer}=await import('../src/terminal.js');
@@ -32,3 +32,7 @@ class RendererSelectionTests {
   async selectedDefault():Promise<void>{const {UiServerRenderer}=await import('../src/server.js');const renderer=await UiServerRenderer.create();try{const identity=(renderer as unknown as {identity():{providerId:string;generation:string}}).identity();expect(identity.providerId).toBe('ui.renderer.server.default');expect(identity.generation).toMatch(/^[a-f0-9]{64}$/);}finally{await renderer.dispose();}}
 }
 const selection=new RendererSelectionTests();test('integration: default renderer is selected through native Cordis',selection.selectedDefault.bind(selection));
+class IslandProgramTests {
+  missing():void {const code="import {UiIslandHost} from '@treeseed-cordis/ui/island';class Program{static async run(){const prepared=await UiIslandHost.prepare({view:{id:'v',componentId:'text',model:{text:'portable'}},presentationGeneration:'a'.repeat(64),assetGeneration:'b'.repeat(64),actionIds:[]},{assetGeneration:'b'.repeat(64),actionIds:[]});await prepared.dispose();}}await Program.run();";const result=spawnSync('node',['--input-type=module','-e',code],{encoding:'utf8'});expect(result.stderr).toContain('UI_GENERATION_MISMATCH');}
+}
+const island=new IslandProgramTests();test('smoke: public island boundary refuses unaccepted presentation before rendering',island.missing.bind(island));
