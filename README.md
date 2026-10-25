@@ -35,7 +35,7 @@ compiler; owners using that development export install the pinned TypeScript dev
 ### Installable UI provider metadata
 
 The package build emits `cordisPackage` format 4 through SDK `PackageDefinition`, directly
-from all eleven exported native class declarations, Config schemas and replacement policies.
+from all exported native class declarations, Config schemas and replacement policies.
 Each descriptor binds its named class export and package entry. Default components, theme
 and renderers declare restart policy; metadata alone does not qualify a live swap or bypass
 host plan/apply admission. UI's portable presentation scope is separate from CLI/API host
