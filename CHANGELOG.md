@@ -4,6 +4,10 @@
 
 ### Added
 
+- Render and hydrate complete reusable documents with immutable scripts and typed action context (#80).
+
+### Added
+
 - Validate and hydrate complete composite trees in browser and Astro roots (#80).
 
 ### Added

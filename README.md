@@ -85,3 +85,18 @@ inside the actual renderer scope before creating its React root. Passing `hydrat
 an accepted bootstrap is refused. Astro retains its one-island host-owned React root and
 observes awaited tree/scope disposal. The real browser matrix includes nested layout content;
 a packed-archive Astro fixture hydrates a composed form without a second React root.
+
+### Complete reusable document boundary
+
+`UiServerRenderer.document({title,view,script,assetGeneration,actionIds,language?})` renders the
+complete mobile-first HTML document: charset, viewport, escaped title, one UI root, inert
+validated bootstrap and one same-origin digest-addressed module with SHA-256 integrity.
+`script` is `{path,sha256}`; its path must contain that exact digest. Domain owners supply
+models, action IDs and accepted asset identity; they do not generate markup or bootstrap tags.
+`UiBrowserApplication.hydrateDocument(host, configuration?)` reads and validates this fixed UI
+boundary before mounting. Host adapters retain authentication, requests, routing and navigation.
+
+Forms may include `actionData`, a bounded string map of public action context (for example an
+anti-CSRF nonce). These fields are validated model data, never credentials or bearer tokens.
+Visible field IDs cannot override them; the action adapter receives both context and submitted
+fields. Reusable components still contain no domain endpoints or identity implementation.
