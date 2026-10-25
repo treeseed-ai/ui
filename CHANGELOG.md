@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Adopt exact SDK service and native replacement contracts (#80).
 
 - Add mobile-first browser and Astro React presentation (#80).
 

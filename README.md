@@ -23,3 +23,11 @@ The pinned Astro React server renderer strips resource links from island markup.
 Consumers run `UiSourcePolicy.check(root)` from `./source-policy` in their owner check script. The semantic TypeScript gate permits domain view-model/action classes and UI component imports, but rejects consumer JSX intrinsic markup, DOM construction/HTML sinks, CSS imports, inline HTML strings, direct React DOM renderer imports and Astro component implementations. UI owns rendering and styling. Non-UI owners retain explicit document-envelope/HTTP adapters with no presentation markup: those adapters serve UI-produced assets and escaped renderer output. Negative fixtures exercise aliases, text/style mutations, templates and sinks; matching a token or an import alone is not evidence of UI reuse.
 
 `RenderedPage.contribution` is the validated `UiContribution` identity: contribution/component IDs, selected native provider ID, the SHA-256 of its actual model-schema projection, and the exact theme stylesheet digest. Hydration includes that identity alongside the view, presentation generation, accepted asset generation and admitted action IDs. Server/browser render preparation recomputes the model-schema/provider/style binding; a copied generation cannot authorize a different component/schema/theme. Schema projections come from the same class-owned schema used by `validate`, never a second hand-maintained declaration.
+
+### SDK candidate and development-only source checking
+
+UI consumes the exact SDK 0.0.0-cordis.7 archive from its reviewed native composition stack.
+The package records source commit and archive SHA-256; installation uses a refreshed frozen
+lock and no lifecycle scripts. TypeScript is an optional peer for the development-only
+`/source-policy` export. UI rendering and installed runtime closures do not require the
+compiler; owners using that development export install the pinned TypeScript dev dependency.
