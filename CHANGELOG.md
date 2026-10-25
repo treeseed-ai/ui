@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Adopt accepted probe/runtime SDK contracts for exact owner assembly (#80).
+
 ### Fixed
 
 - Distinguish native output streams from prohibited document rendering in consumer checks (#80).

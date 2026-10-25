@@ -105,3 +105,9 @@ The consumer presentation gate distinguishes DOM document writes from ordinary n
 or class writes. Direct and aliased document writes remain prohibited, including computed
 `document['write']` calls; CLI stdout/stderr and non-DOM typed writers remain valid consumer
 transport behavior. This is checked against both refusal and permitted-stream examples.
+
+The current owner candidate adopts SDK `.10`, source
+`32aea4a7be9ccde3a06dd8552020ab1042cc694d`, archive SHA-256
+`a94dfd38f1d4bae09b211f1517cddb620bb5bbbb3a6afa46cfa9c8e857242393`.
+This keeps API/Identity/UI assembly on one exact SDK version while retaining the same public
+presentation contracts and real browser/Astro qualification.
