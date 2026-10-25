@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, cpSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, cpSync, rmSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
@@ -51,6 +51,7 @@ class AstroTests {
             writeFileSync(join(d, 'src/pages/index.astro'), "---\nimport {UiIsland} from '@treeseed-cordis/ui/island';import {FixtureHost} from '../host/host.js';const bootstrap=await FixtureHost.bootstrap('Alice');\n---\n<html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><link rel=\"stylesheet\" href=\"" + style.path + "\"/></head><body><UiIsland client:load {...bootstrap}/></body></html>");
             this.execute('bun', ['install', '--ignore-scripts'], d);
             this.execute('node', ['node_modules/astro/bin/astro.mjs', 'build'], d);
+            for(const file of readdirSync(join(d,'dist/_astro')))if(file.endsWith('.js'))expect(readFileSync(join(d,'dist/_astro',file),'utf8').includes('INVALID_UI_SERVER_RENDERER')).toBe(false);
             const html = readFileSync(join(d, 'dist/index.html'), 'utf8');
             expect(html).toContain('Profile Alice');
             expect(html).toContain('astro-island');
