@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Update validated UI models within accepted roots and drain actions before cleanup (#80).
+
 ### Changed
 
 - Adopt accepted probe/runtime SDK contracts for exact owner assembly (#80).

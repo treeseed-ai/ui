@@ -111,3 +111,13 @@ The current owner candidate adopts SDK `.10`, source
 `a94dfd38f1d4bae09b211f1517cddb620bb5bbbb3a6afa46cfa9c8e857242393`.
 This keeps API/Identity/UI assembly on one exact SDK version while retaining the same public
 presentation contracts and real browser/Astro qualification.
+
+### Updating data inside an accepted presentation
+
+`UiMount.view()` returns a validated clone of the current model. `UiMount.update(view)`
+validates and prepares a complete tree in the same accepted provider/asset generation, commits
+the React update and releases superseded native leases. Stable component/view IDs preserve
+focus and uncontrolled form input. Invalid or concurrent updates cannot replace the current
+view. Updates do not select providers, activate new assets or create a new React root.
+Disposal closes action admission and awaits accepted action/update completion before unmount
+and provider cleanup; domain transports remain responsible for their cancellation policy.
