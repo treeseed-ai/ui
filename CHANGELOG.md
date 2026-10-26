@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Align reusable UI and its replacement fixture with the exact portable SDK .16 contract (#80).
+
 ### Added
 - Produce owner-scoped replacement qualification archives for shared human interfaces (#80).
 

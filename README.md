@@ -159,3 +159,19 @@ qualification and mobile-first layout checks remain required in the assembled ac
 Consumers update exact peer/artifact selections and rebuild their matching asset/image/binary
 closure from the exact fixture archive;
 consumer-owned rendering and cross-checkout source imports remain prohibited.
+
+### Final portable SDK contract alignment
+
+The next Task 3C UI candidate adopts the exact SDK `.16` archive from
+`4c0ecd2a0fc28545dbf677cc988ce69f0cf2f15d`, SHA-256
+`4084aa8dbe9767984fac9fef7f5cea30a0bec93ed416138d32c804e6389fdba5`.
+All browser/server/terminal providers share that peer; no additional SDK instance belongs in a
+consumer's UI closure. The reusable React components, responsive widths and 200% text checks
+continue through the real default roots and packed Astro fixture. Identity remains host-owned;
+no Keycloak session, issuer or credential authority moves into UI.
+
+Re-derive the qualification-only replacement archive from the exact `.16` runtime source tree,
+with its own `.16.fixture.1` version and source/recipe receipt. Preserve the existing frozen
+`.15` and `.15.fixture.1` archives. Final assembled consumers must rebuild matching browser
+assets, API image and CLI executable from the new exact default/fixture closures before claiming
+an observable replacement; changing a dependency archive cannot update an already built image.
