@@ -137,3 +137,24 @@ package boundary. This aligns shared restart/instance intent contracts for later
 UI acquires no deployment, registration or identity authority. Advance the private package/default
 identity together and requalify the same pure React/native provider surfaces, responsive widths,
 real browser and packed Astro host. Native mobile/Electron remain separately qualified hosts.
+
+### Owner-produced replacement qualification archive
+
+For assembled Task 3C acceptance, `bun dist/tests/ui-archive-fixture.js --output ABSOLUTE_DIR`
+produces a genuine npm archive in a fresh owner-private output directory. The builder reads
+UI source from pinned commit `25856122398e44e2f8fd973a396ce46b3a585400`, compiles a
+clearly marked qualification-only status provider variant, and emits its archive hash and
+source/recipe receipt. The variant adds the visible `Cordis UI qualification fixture` marker
+through the same reusable React status component and its terminal method. Models, native
+Cordis declarations and package version remain compatible. The archive lives in a separate
+directory and never overwrites the frozen default `.15` archive. It is a test fixture, not
+a production UI default or publication.
+
+Build with the owning locked development dependencies and Bun 1.4.4. Read exact source blobs
+without modifying the checkout, retain the license, run the owner build to regenerate native
+metadata/assets, and package with lifecycle scripts disabled. Validate output ownership,
+freshness and receipt hashes. The built-program test must render the same model through
+server and terminal public interfaces, observe the marker and preserve escaping. Browser
+qualification and mobile-first layout checks remain required in the assembled acceptance.
+Consumers rebuild their matching asset/image/binary closure from the exact fixture archive;
+consumer-owned rendering and cross-checkout source imports remain prohibited.

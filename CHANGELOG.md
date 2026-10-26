@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- Produce owner-scoped replacement qualification archives for shared human interfaces (#80).
+
+### Added
 
 - Update validated UI models within accepted roots and drain actions before cleanup (#80).
 
