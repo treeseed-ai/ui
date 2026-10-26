@@ -145,8 +145,8 @@ produces a genuine npm archive in a fresh owner-private output directory. The bu
 UI source from pinned commit `25856122398e44e2f8fd973a396ce46b3a585400`, compiles a
 clearly marked qualification-only status provider variant, and emits its archive hash and
 source/recipe receipt. The variant adds the visible `Cordis UI qualification fixture` marker
-through the same reusable React status component and its terminal method. Models, native
-Cordis declarations and package version remain compatible. The archive lives in a separate
+through the same reusable React status component and its terminal method. Models and native Cordis declarations remain compatible. The archive uses the distinct
+test-only version `0.0.0-cordis.15.fixture.1`, binding the UI scope identity to the variant. The archive lives in a separate
 directory and never overwrites the frozen default `.15` archive. It is a test fixture, not
 a production UI default or publication.
 
@@ -156,5 +156,6 @@ metadata/assets, and package with lifecycle scripts disabled. Validate output ow
 freshness and receipt hashes. The built-program test must render the same model through
 server and terminal public interfaces, observe the marker and preserve escaping. Browser
 qualification and mobile-first layout checks remain required in the assembled acceptance.
-Consumers rebuild their matching asset/image/binary closure from the exact fixture archive;
+Consumers update exact peer/artifact selections and rebuild their matching asset/image/binary
+closure from the exact fixture archive;
 consumer-owned rendering and cross-checkout source imports remain prohibited.
