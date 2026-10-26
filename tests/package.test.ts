@@ -17,7 +17,7 @@ class PackageTests {
                 sha256: string;
             };
         };
-    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.14'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('597a9abd79b76fb292a80cd86e4ea83042fbec62'); expect(value.cordisCandidate.sdk.sha256).toBe('c92fb068064a6db4823b29c31602b47e01c21200af759a770480a1a0cc4240a2');expect(createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex')).toBe(value.cordisCandidate.sdk.sha256);expect(JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json','utf8')).version).toBe(value.peerDependencies['@treeseed-cordis/sdk']); }
+    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.16'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('4c0ecd2a0fc28545dbf677cc988ce69f0cf2f15d'); expect(value.cordisCandidate.sdk.sha256).toBe('4084aa8dbe9767984fac9fef7f5cea30a0bec93ed416138d32c804e6389fdba5');expect(createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex')).toBe(value.cordisCandidate.sdk.sha256);expect(JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json','utf8')).version).toBe(value.peerDependencies['@treeseed-cordis/sdk']); }
 }
 const suite = new PackageTests();
 test('unit: UI runtime uses exact SDK archive and leaves the development compiler optional', suite.metadata.bind(suite));
