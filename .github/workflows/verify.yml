@@ -22,4 +22,6 @@ jobs:
           node-version: 24.19.0
       - run: bun install --frozen-lockfile --ignore-scripts
       - run: bun node_modules/playwright/cli.js install --with-deps firefox
+      - name: Read exact UI replacement fixture source
+        run: git fetch --no-tags --depth=1 origin 25856122398e44e2f8fd973a396ce46b3a585400
       - run: bun run verify
