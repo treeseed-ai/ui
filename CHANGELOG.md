@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- Qualify SDK Agent contract candidate for reusable presentation (#101).
+
+### Changed
 
 - Organize permanent tests by tier and enforce the shared development/testing strategy (#99).
 - Align reusable UI and its replacement fixture with the exact portable SDK .16 contract (#80).

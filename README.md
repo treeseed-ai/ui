@@ -175,3 +175,7 @@ with its own `.16.fixture.1` version and source/recipe receipt. Preserve the exi
 `.15` and `.15.fixture.1` archives. Final assembled consumers must rebuild matching browser
 assets, API image and CLI executable from the new exact default/fixture closures before claiming
 an observable replacement; changing a dependency archive cannot update an already built image.
+
+Task 3D candidate compatibility: existing reusable terminal/browser providers are qualified against the exact SDK 0.0.0-cordis.17 Agent-contract candidate. The UI package remains the presentation owner; Agent supplies a view model and host-owned authority. No execution, account, session or Keycloak custody moves into UI. Existing React/mobile-first components and public exports retain their behavior.
+
+Historical UI replacement fixtures continue to use their pinned Git source and SDK archive. The producer installs that frozen closure in its isolated build and includes the exact fixture SDK archive in the receipt; it never borrows the current owner node_modules.
