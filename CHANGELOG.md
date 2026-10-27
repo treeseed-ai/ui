@@ -4,8 +4,7 @@
 
 ### Changed
 - Qualify SDK Agent contract candidate for reusable presentation (#101).
-
-### Changed
+- Require readable capability layers and contextual refactoring with a twenty-line method gate (#102).
 
 - Organize permanent tests by tier and enforce the shared development/testing strategy (#99).
 - Align reusable UI and its replacement fixture with the exact portable SDK .16 contract (#80).
