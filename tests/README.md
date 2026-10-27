@@ -36,3 +36,8 @@ archive mirror for those bounded prerequisite downloads, as Platform acceptance 
 A prerequisite download failure fails the job; browser acceptance is never silently skipped.
 
 
+
+Complete tier commands use `bun test ./tests/<tier>` with only non-filtering timeout or
+empty-tier reporting options. Individual-file selectors and shell wrappers do not prove
+complete discovery. Name-filtered CI matrices must cover each registered case exactly once
+and every partition must be nonempty; the shared layout guard verifies that inventory.
