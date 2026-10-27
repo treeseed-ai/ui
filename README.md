@@ -1,5 +1,19 @@
 # TreeSeed Cordis UI
 
+## Capacity contract compatibility candidate
+
+Task 3D keeps reusable presentation and Keycloak identity boundaries unchanged. Qualify UI
+`0.0.0-cordis.18` against the genuine SDK `0.0.0-cordis.19` archive from source
+`90cf4f3cc62e166685280450c727499defd2af5b`, SHA-256
+`93dd549c98aba180306e9b19cc1cbc37494544b2764ed341c531c9af618c6f81`.
+This avoids assembling Agent with incompatible exact SDK peer selections. It adds no Agent,
+seed, domain or identity behavior to UI. Existing mobile-first/Keycloak contracts remain binding.
+
+The owner replacement fixture still reads its frozen UI .16 source and SDK archive from Git.
+Its source tree, fixed recipe and produced presentation behavior remain unchanged by current
+SDK adoption. Refactor the touched fixture orchestration into readable class methods and preserve
+all assertions, inputs, timeouts and test registrations; do not grandfather the unmerged draft.
+
 ## Task 3C contract
 
 Owner issue: https://github.com/treeseed-ai/ui/issues/80. Follow the approved Platform Task 3C service/provider/UI plan through exact public archives. Preserve independent repository ownership, strict TypeScript classes, native Cordis lifecycle, historical formats and all seven SDK operations. Expected-generation/idempotency, resource/credential/TLS retention and explicit unsafe restart/migration gates are mandatory. All issues remain open until release.

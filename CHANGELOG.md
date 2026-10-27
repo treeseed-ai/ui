@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- Qualify reusable presentation against exact portable capacity contracts (#101).
 - Qualify SDK Agent contract candidate for reusable presentation (#101).
 - Require readable capability layers and contextual refactoring with a twenty-line method gate (#102).
 
