@@ -2,11 +2,11 @@ import { test, expect } from 'bun:test';
 import { Component, createElement, type ReactNode } from 'react';
 import { ProviderV4Schemas, type ProviderSelection } from '@treeseed-cordis/sdk/portable';
 import type { ProviderRegistration } from '@treeseed-cordis/sdk/composition';
-import { UiTokens, type UiComponentProps } from '../src/contracts.js';
-import { UiStatus } from '../src/react.js';
-import { UiScope, StatusComponentPlugin, DefaultThemePlugin, type UiApplicationConfiguration } from '../src/providers.js';
-import { UiServerRenderer, UiServerToken, ReactServerRendererPlugin } from '../src/server.js';
-import { UiTerminalRenderer, UiTerminalToken, PlainTerminalRendererPlugin } from '../src/terminal.js';
+import { UiTokens, type UiComponentProps } from '../../src/contracts.js';
+import { UiStatus } from '../../src/react.js';
+import { UiScope, StatusComponentPlugin, DefaultThemePlugin, type UiApplicationConfiguration } from '../../src/providers.js';
+import { UiServerRenderer, UiServerToken, ReactServerRendererPlugin } from '../../src/server.js';
+import { UiTerminalRenderer, UiTerminalToken, PlainTerminalRendererPlugin } from '../../src/terminal.js';
 class AlternateStatus extends Component<UiComponentProps> {
     render(): ReactNode { return createElement(UiStatus, this.props); }
 }
