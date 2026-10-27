@@ -140,7 +140,7 @@ real browser and packed Astro host. Native mobile/Electron remain separately qua
 
 ### Owner-produced replacement qualification archive
 
-For assembled Task 3C acceptance, `bun dist/tests/ui-archive-fixture.js --output ABSOLUTE_DIR`
+For assembled Task 3C acceptance, `bun dist/tests/support/ui-archive-fixture.js --output ABSOLUTE_DIR`
 produces a genuine npm archive in a fresh owner-private output directory. The builder reads
 UI source from pinned commit `25856122398e44e2f8fd973a396ce46b3a585400`, compiles a
 clearly marked qualification-only status provider variant, and emits its archive hash and
