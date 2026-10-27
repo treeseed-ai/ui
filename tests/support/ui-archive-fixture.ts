@@ -11,7 +11,7 @@ export class UiArchiveFixtureBuild {
     static readonly baseCommit='4bc3511b661e832531c60ab37980fed6dcc8aba6';
     static readonly version='0.0.0-cordis.16.fixture.1';
     static readonly marker='Cordis UI qualification fixture';
-    private readonly root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
+    private readonly root=resolve(dirname(fileURLToPath(import.meta.url)),'../../..');
     private diagnostics:string|undefined;
     private static require(value:unknown):asserts value{if(!value)throw new Error('UI_FIXTURE_VALIDATION');}
     private static sha(value:Uint8Array|string):string{return createHash('sha256').update(value).digest('hex');}

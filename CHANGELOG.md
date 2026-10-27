@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Changed
+
+- Organize permanent tests by tier and enforce the shared development/testing strategy (#99).
 - Align reusable UI and its replacement fixture with the exact portable SDK .16 contract (#80).
 
 ### Added

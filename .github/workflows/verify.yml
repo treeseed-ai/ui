@@ -21,6 +21,8 @@ jobs:
         with:
           node-version: 24.19.0
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Use official Ubuntu archive for bounded browser prerequisites
+        run: sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
       - run: bun node_modules/playwright/cli.js install --with-deps firefox
       - name: Read exact UI replacement fixture source
         run: git fetch --no-tags --depth=1 origin 4bc3511b661e832531c60ab37980fed6dcc8aba6

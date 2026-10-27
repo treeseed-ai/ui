@@ -4,7 +4,7 @@ import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { firefox } from 'playwright';
-import { UiStyles } from '../src/styles.js';
+import { UiStyles } from '../../src/styles.js';
 class AstroAssertions {
     static capture(): void { class Capture {
         static error(event: ErrorEvent): void { Reflect.set(window, 'fixtureFailure', JSON.stringify({ message: event.error?.message, issues: event.error?.issues, stack: event.error?.stack })); }
@@ -45,7 +45,7 @@ class AstroTests {
             cpSync('vendor/sdk.tgz', join(d, 'sdk.tgz'));
             writeFileSync(join(d, 'package.json'), JSON.stringify({ type: 'module', dependencies: { '@treeseed-cordis/ui': 'file:' + archive, '@treeseed-cordis/sdk': 'file:./sdk.tgz', astro: '7.4.2', '@astrojs/react': '7.1.1', react: '19.3.1', 'react-dom': '19.3.1', 'oxc-transform-react': '0.145.0' } }));
             mkdirSync(join(d, 'src/pages'), { recursive: true });
-            cpSync('tests/astro-fixture', join(d, 'src/host'), { recursive: true });
+            cpSync('tests/support/astro-fixture', join(d, 'src/host'), { recursive: true });
             writeFileSync(join(d, 'astro.config.ts'), "import react from '@astrojs/react';import {fileURLToPath} from 'node:url';class Integration{static setup({addRenderer}){addRenderer({name:'cordis-ui',serverEntrypoint:fileURLToPath(new URL('./src/host/server.ts',import.meta.url)),clientEntrypoint:fileURLToPath(new URL('./src/host/client.ts',import.meta.url))});}}export default {integrations:[{name:'cordis-ui',hooks:{'astro:config:setup':Integration.setup}},react()],vite:{build:{target:'es2022'}}};");
             const style = await UiStyles.asset();
             mkdirSync(join(d, 'public', style.path.slice(0, style.path.lastIndexOf('/'))), { recursive: true });
@@ -53,7 +53,7 @@ class AstroTests {
             writeFileSync(join(d, 'src/pages/index.astro'), "---\nimport {UiIsland} from '@treeseed-cordis/ui/island';import {FixtureBootstrap} from '../host/bootstrap.js';const bootstrap=await FixtureBootstrap.bootstrap('Alice');\n---\n<html lang=\"en\"><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><link rel=\"stylesheet\" href=\"" + style.path + "\"/></head><body><UiIsland client:load {...bootstrap}/></body></html>");
             this.execute('bun', ['install', '--ignore-scripts'], d);
             this.execute('node', ['node_modules/astro/bin/astro.mjs', 'build'], d);
-            cpSync('tests/browser-program.ts',join(d,'src/standalone.ts'));this.execute('bun',['build','src/standalone.ts','--target','browser','--format','esm','--outfile','dist/standalone.js'],d);writeFileSync(join(d,'dist/standalone.html'),'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module" src="/standalone.js"></script></body></html>');
+            cpSync('tests/support/browser-program.ts',join(d,'src/standalone.ts'));this.execute('bun',['build','src/standalone.ts','--target','browser','--format','esm','--outfile','dist/standalone.js'],d);writeFileSync(join(d,'dist/standalone.html'),'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module" src="/standalone.js"></script></body></html>');
             for(const file of readdirSync(join(d,'dist/_astro')))if(file.endsWith('.js'))expect(readFileSync(join(d,'dist/_astro',file),'utf8').includes('INVALID_UI_SERVER_RENDERER')).toBe(false);
             const html = readFileSync(join(d, 'dist/index.html'), 'utf8');
             expect(html).toContain('Profile Alice');
@@ -93,4 +93,4 @@ class AstroTests {
     }
 }
 const suite = new AstroTests();
-test('smoke: packed UI archive renders and hydrates through real Astro React integration', suite.hydration.bind(suite), 180000);
+test("acceptance: packed UI archive renders and hydrates through real Astro React integration", suite.hydration.bind(suite), 180000);
