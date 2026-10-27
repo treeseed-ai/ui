@@ -22,7 +22,7 @@ class PackageTestsUnit {
                 sha256: string;
             };
         };
-    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.16'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('4c0ecd2a0fc28545dbf677cc988ce69f0cf2f15d'); expect(value.cordisCandidate.sdk.sha256).toBe('4084aa8dbe9767984fac9fef7f5cea30a0bec93ed416138d32c804e6389fdba5');expect(createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex')).toBe(value.cordisCandidate.sdk.sha256);expect(JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json','utf8')).version).toBe(value.peerDependencies['@treeseed-cordis/sdk']); }
+    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.17'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('890902948c9ca9df778a90d4fde975d33e29142d'); expect(value.cordisCandidate.sdk.sha256).toBe('a1e32909f12a1d93d6929a67eee1460f6abb7c5a507ca7262a8d74f8611f541a');expect(createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex')).toBe(value.cordisCandidate.sdk.sha256);expect(JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json','utf8')).version).toBe(value.peerDependencies['@treeseed-cordis/sdk']); }
 }
 class NativePackageTestsUnit {
 
