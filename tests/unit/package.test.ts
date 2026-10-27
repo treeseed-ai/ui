@@ -9,20 +9,23 @@ import {UiServerRenderer} from '../../src/server.js';
 import {UiTerminalRenderer} from '../../src/terminal.js';
 import type {UiViewModel} from '../../src/contracts.js';
 import {CompositeTests} from '../support/package-test-support.js';
+interface UiCandidateMetadata {
+    peerDependencies: Record<string, string>;
+    peerDependenciesMeta?: Record<string, { optional: boolean }>;
+    cordisCandidate: { sdk: { commit: string; sha256: string } };
+}
 class PackageTestsUnit {
-
-    metadata(): void { const value = JSON.parse(readFileSync('package.json', 'utf8')) as {
-        peerDependencies: Record<string, string>;
-        peerDependenciesMeta?: Record<string, {
-            optional: boolean;
-        }>;
-        cordisCandidate: {
-            sdk: {
-                commit: string;
-                sha256: string;
-            };
-        };
-    }; expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.17'); expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true); expect(value.cordisCandidate.sdk.commit).toBe('890902948c9ca9df778a90d4fde975d33e29142d'); expect(value.cordisCandidate.sdk.sha256).toBe('a1e32909f12a1d93d6929a67eee1460f6abb7c5a507ca7262a8d74f8611f541a');expect(createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex')).toBe(value.cordisCandidate.sdk.sha256);expect(JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json','utf8')).version).toBe(value.peerDependencies['@treeseed-cordis/sdk']); }
+    metadata(): void {
+        const value = JSON.parse(readFileSync('package.json', 'utf8')) as UiCandidateMetadata;
+        expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.19');
+        expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true);
+        expect(value.cordisCandidate.sdk.commit).toBe('90cf4f3cc62e166685280450c727499defd2af5b');
+        expect(value.cordisCandidate.sdk.sha256).toBe('93dd549c98aba180306e9b19cc1cbc37494544b2764ed341c531c9af618c6f81');
+        const hash = createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex');
+        expect(hash).toBe(value.cordisCandidate.sdk.sha256);
+        const installed = JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json', 'utf8'));
+        expect(installed.version).toBe(value.peerDependencies['@treeseed-cordis/sdk']);
+    }
 }
 class NativePackageTestsUnit {
 
