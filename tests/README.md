@@ -31,4 +31,8 @@ program needs a built-program acceptance test. Completion requires applicable ti
 checks, build, CI and assembled-artifact smoke evidence. Report missing prerequisites or gates
 explicitly. A green unit suite or policy prose alone is never sufficient.
 
+CI installs Firefox and its system prerequisites before verification. Use the official Ubuntu
+archive mirror for those bounded prerequisite downloads, as Platform acceptance already does.
+A prerequisite download failure fails the job; browser acceptance is never silently skipped.
+
 
