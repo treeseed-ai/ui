@@ -1,5 +1,23 @@
 # TreeSeed Cordis UI
 
+## Capacity contract compatibility candidate
+
+Task 3D keeps reusable presentation and Keycloak identity boundaries unchanged. Qualify UI
+`0.0.0-cordis.20` against the genuine SDK `0.0.0-cordis.22` archive from source
+`c4f7849d402fc60bd1ee8274f647dac71a45b76e`, SHA-256
+`dc9a91c26b12180a6dd003a8f7b56e1bc76c19c48fde42feaa0026765dd6583f`.
+This avoids assembling Agent with incompatible exact SDK peer selections. It adds no Agent,
+seed, domain or identity behavior to UI. Existing mobile-first/Keycloak contracts remain binding.
+Earlier UI `.18` and SDK `.19`/`.20`/`.21` archives remain immutable. This candidate supports one
+SDK closure for capacity protocols and the existing provider-control client; it grants no authority.
+The built public server/terminal presentation program must render the same safe capacity view with
+that SDK closure and await both native roots' disposal. Archive fixtures retain historical bytes.
+
+The owner replacement fixture still reads its frozen UI .16 source and SDK archive from Git.
+Its source tree, fixed recipe and produced presentation behavior remain unchanged by current
+SDK adoption. Refactor the touched fixture orchestration into readable class methods and preserve
+all assertions, inputs, timeouts and test registrations; do not grandfather the unmerged draft.
+
 ## Task 3C contract
 
 Owner issue: https://github.com/treeseed-ai/ui/issues/80. Follow the approved Platform Task 3C service/provider/UI plan through exact public archives. Preserve independent repository ownership, strict TypeScript classes, native Cordis lifecycle, historical formats and all seven SDK operations. Expected-generation/idempotency, resource/credential/TLS retention and explicit unsafe restart/migration gates are mandatory. All issues remain open until release.
@@ -175,3 +193,7 @@ with its own `.16.fixture.1` version and source/recipe receipt. Preserve the exi
 `.15` and `.15.fixture.1` archives. Final assembled consumers must rebuild matching browser
 assets, API image and CLI executable from the new exact default/fixture closures before claiming
 an observable replacement; changing a dependency archive cannot update an already built image.
+
+Task 3D candidate compatibility: existing reusable terminal/browser providers are qualified against the exact SDK 0.0.0-cordis.17 Agent-contract candidate. The UI package remains the presentation owner; Agent supplies a view model and host-owned authority. No execution, account, session or Keycloak custody moves into UI. Existing React/mobile-first components and public exports retain their behavior.
+
+Historical UI replacement fixtures continue to use their pinned Git source and SDK archive. The producer installs that frozen closure in its isolated build and includes the exact fixture SDK archive in the receipt; it never borrows the current owner node_modules.

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- Qualify reusable presentation with the exact capacity and provider SDK closure (#101).
 - Require readable capability layers and contextual refactoring with a twenty-line method gate (#102).
 
 - Organize permanent tests by tier and enforce the shared development/testing strategy (#99).
