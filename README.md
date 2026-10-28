@@ -10,6 +10,8 @@ This avoids assembling Agent with incompatible exact SDK peer selections. It add
 seed, domain or identity behavior to UI. Existing mobile-first/Keycloak contracts remain binding.
 Earlier UI `.18` and SDK `.19`/`.20`/`.21` archives remain immutable. This candidate supports one
 SDK closure for capacity protocols and the existing provider-control client; it grants no authority.
+The built public server/terminal presentation program must render the same safe capacity view with
+that SDK closure and await both native roots' disposal. Archive fixtures retain historical bytes.
 
 The owner replacement fixture still reads its frozen UI .16 source and SDK archive from Git.
 Its source tree, fixed recipe and produced presentation behavior remain unchanged by current
