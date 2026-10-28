@@ -3,11 +3,13 @@
 ## Capacity contract compatibility candidate
 
 Task 3D keeps reusable presentation and Keycloak identity boundaries unchanged. Qualify UI
-`0.0.0-cordis.18` against the genuine SDK `0.0.0-cordis.19` archive from source
-`90cf4f3cc62e166685280450c727499defd2af5b`, SHA-256
-`93dd549c98aba180306e9b19cc1cbc37494544b2764ed341c531c9af618c6f81`.
+`0.0.0-cordis.19` against the genuine SDK `0.0.0-cordis.22` archive from source
+`c4f7849d402fc60bd1ee8274f647dac71a45b76e`, SHA-256
+`dc9a91c26b12180a6dd003a8f7b56e1bc76c19c48fde42feaa0026765dd6583f`.
 This avoids assembling Agent with incompatible exact SDK peer selections. It adds no Agent,
 seed, domain or identity behavior to UI. Existing mobile-first/Keycloak contracts remain binding.
+Earlier UI `.18` and SDK `.19`/`.20`/`.21` archives remain immutable. This candidate supports one
+SDK closure for capacity protocols and the existing provider-control client; it grants no authority.
 
 The owner replacement fixture still reads its frozen UI .16 source and SDK archive from Git.
 Its source tree, fixed recipe and produced presentation behavior remain unchanged by current
