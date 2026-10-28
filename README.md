@@ -1,12 +1,12 @@
 # TreeSeed Cordis UI
 
-## Capacity contract compatibility candidate
+## Accepted capacity contract compatibility
 
 Task 3D keeps reusable presentation and Keycloak identity boundaries unchanged. Qualify UI
-`0.0.0-cordis.21` against the genuine SDK `0.0.0-cordis.30` archive from source
-`39d337c79528a3b815973a684844781211c4669a`, SHA-256
-`ce65aa96b9366a6c6aab3fad9d673d659f410f68eccb47325e1c5943b5ae0723`.
-This avoids assembling Agent with incompatible exact SDK peer selections. It adds no Agent,
+`0.0.0-cordis.22` against the genuine SDK `0.0.0-cordis.35` archive from source
+`bc6cb6610fd5ddc13639b3c3bc8b709ed930d647`, SHA-256
+`98a4474726b79c1ce1a4b96a76e636a3dafa8e20df3dc66db89331ae79b31fbf`.
+The bounded SDK #493–#497 changes are integrated into SDK cordis. This avoids assembling Agent with incompatible exact SDK peer selections. It adds no Agent,
 seed, domain or identity behavior to UI. Existing mobile-first/Keycloak contracts remain binding.
 Earlier UI `.18` and SDK `.19`/`.20`/`.21` archives remain immutable. This candidate supports one
 SDK closure for capacity protocols and the existing provider-control client; it grants no authority.
