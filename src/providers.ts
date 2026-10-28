@@ -4,7 +4,7 @@ import { ProviderV4Schemas, type NativeProviderDeclaration, type ProviderSelecti
 import { UiSchemas, UiTokens, type UiComponent, type UiTheme } from './contracts.js';
 import { UiStack, UiText, UiStatus, UiTable, UiForm, UiNavigation, UiFeedback } from './react.js';
 import { UiStyles } from './styles.js';
-export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.18';}
+export class UiPackageIdentity {static readonly artifact='@treeseed-cordis/ui@0.0.0-cordis.19';}
 export class UiTextSafety {
     static clean(value: string): string { return value.replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, ''); }
 }
