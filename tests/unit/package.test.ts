@@ -17,10 +17,10 @@ interface UiCandidateMetadata {
 class PackageTestsUnit {
     metadata(): void {
         const value = JSON.parse(readFileSync('package.json', 'utf8')) as UiCandidateMetadata;
-        expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.19');
+        expect(value.peerDependencies['@treeseed-cordis/sdk']).toBe('0.0.0-cordis.22');
         expect(value.peerDependenciesMeta?.typescript?.optional).toBe(true);
-        expect(value.cordisCandidate.sdk.commit).toBe('90cf4f3cc62e166685280450c727499defd2af5b');
-        expect(value.cordisCandidate.sdk.sha256).toBe('93dd549c98aba180306e9b19cc1cbc37494544b2764ed341c531c9af618c6f81');
+        expect(value.cordisCandidate.sdk.commit).toBe('c4f7849d402fc60bd1ee8274f647dac71a45b76e');
+        expect(value.cordisCandidate.sdk.sha256).toBe('dc9a91c26b12180a6dd003a8f7b56e1bc76c19c48fde42feaa0026765dd6583f');
         const hash = createHash('sha256').update(readFileSync('vendor/sdk.tgz')).digest('hex');
         expect(hash).toBe(value.cordisCandidate.sdk.sha256);
         const installed = JSON.parse(readFileSync('node_modules/@treeseed-cordis/sdk/package.json', 'utf8'));
