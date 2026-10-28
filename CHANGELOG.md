@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- Qualify reusable presentation with the exact capacity and provider SDK closure (#101).
+
+### Changed
 
 - Organize permanent tests by tier and enforce the shared development/testing strategy (#99).
 - Align reusable UI and its replacement fixture with the exact portable SDK .16 contract (#80).
