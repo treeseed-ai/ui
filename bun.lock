@@ -24,7 +24,7 @@
         "typescript": "5.9.3",
       },
       "peerDependencies": {
-        "@treeseed-cordis/sdk": "0.0.0-cordis.22",
+        "@treeseed-cordis/sdk": "0.0.0-cordis.35",
         "react": "19.3.1",
         "react-dom": "19.3.1",
         "typescript": "5.9.3",
@@ -257,7 +257,7 @@
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
-    "@treeseed-cordis/sdk": ["@treeseed-cordis/sdk@vendor/sdk.tgz", { "dependencies": { "cordis": "4.0.0-rc.12", "jsonc-parser": "3.3.1", "semver": "7.8.5", "zod": "4.6.7" } }, "sha512-jLEUv5ZmySdATXKN/gfuhh7DxHUuiNA10pMRtmPtejYi2X4piLdKtgHuOsT98ZHJzYASXkXZYQvNIzN0x2Wb9w=="],
+    "@treeseed-cordis/sdk": ["@treeseed-cordis/sdk@vendor/sdk.tgz", { "dependencies": { "cordis": "4.0.0-rc.12", "jsonc-parser": "3.3.1", "semver": "7.8.5", "zod": "4.6.7" } }, "sha512-5lwQ8zCCrnooP24wtJYdKVFaL6Z3MrQ2NmkbsMq6ZNKSPQW+R2dubbfHq7R9KvLmmlfdeGR0K6KX/plqSKqKaQ=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.4", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A=="],
 
