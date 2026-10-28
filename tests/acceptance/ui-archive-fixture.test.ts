@@ -12,6 +12,12 @@ interface UiFixtureReceipt {
     version: string;
 }
 class UiArchiveFixtureTests {
+    capacity(): void {
+        const result = spawnSync('node', ['dist/tests/support/capacity-presentation-program.js'], { encoding: 'utf8', timeout: 10000 });
+        expect(result.status).toBe(0);
+        expect(result.stderr).toBe('');
+        expect(result.stdout).toBe('capacity-presentation-ok\n');
+    }
     private static protectedSource():string{const hash=createHash('sha256'),paths=['package.json','bun.lock','vendor/sdk.tgz','LICENSE'];for(const name of readdirSync('src').sort())paths.push('src/'+name);for(const path of paths)hash.update(path).update(readFileSync(path));return hash.digest('hex');}
     private static readonly source = "import {UiServerRenderer} from '@treeseed-cordis/ui/server';import {UiTerminalRenderer} from '@treeseed-cordis/ui/terminal';class Program{static async run(){const server=await UiServerRenderer.create(),terminal=await UiTerminalRenderer.create();try{const view={id:'qualified-status',componentId:'status',model:{title:'Status <script>fixture</script>',state:'Ready'}},page=await server.render(view),text=await terminal.render(view);if(!page.html.includes('Cordis UI qualification fixture')||!page.html.includes('&lt;script&gt;fixture&lt;/script&gt;')||page.html.includes('<script>fixture</script>')||!text.text.includes('Cordis UI qualification fixture'))throw new Error('Qualified UI contract mismatch');process.stdout.write('qualified-ui-contract-ok\\n');}finally{await server.dispose();await terminal.dispose();}}}await Program.run();";
     program(): void {
@@ -84,4 +90,5 @@ class UiArchiveFixtureTests {
 
 }
 const archiveFixture=new UiArchiveFixtureTests();
+test('acceptance: built public capacity presentation uses the exact SDK with native server and terminal roots', archiveFixture.capacity.bind(archiveFixture));
 test("acceptance: built owner fixture producer packages reusable React and terminal variation without changing frozen source",archiveFixture.program.bind(archiveFixture),300000);
