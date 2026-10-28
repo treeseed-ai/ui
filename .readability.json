@@ -1,0 +1,772 @@
+{
+  "formatVersion": 1,
+  "baselineCommit": "96eda9606e5679cbc03b352339fd22ece68941c2",
+  "violations": [
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestLayout.inspect",
+      "fingerprint": "bfff01a3fe612610a72c2bcc0f00c92fdb5abbe557d2b876614a24990d557a0c"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestLayout.check",
+      "fingerprint": "aec11cb99ea6438078fa6cbf353bbf8c4b5f5803a1e0102c86b725180f20e669"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestLayout.discovery",
+      "fingerprint": "771becf2a0f493fa9ee054d98379140581968b2134e1ccfd778ac1618eb4074b"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestLayout.partitions",
+      "fingerprint": "95cef1faa4182536c0be52904c7525d3ed245bac04f22d969ea73307ef0fa2bd"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestLayout.directory",
+      "fingerprint": "fb2f15a07b290e17c566adedf0e37dd7b4093a59a6085ebbf4f787474f6adb0a"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestRegistrationVisitor.inspect",
+      "fingerprint": "ccbfb614b5e447bf0eb3230ba9a80b6a369bae7ec130ef5e134c087a2d0c7058"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestRegistrationVisitor.visit",
+      "fingerprint": "8740012694378c96522cedfa0f69377ee1f26c18d316baaee9050fcb4d6e752d"
+    },
+    {
+      "file": ".agents/skills/release-workflow/scripts/test-layout.ts",
+      "symbol": "TestRegistrationVisitor.test",
+      "fingerprint": "facc0ab411b33f7d001b6f8e5852eebf4ff02716394b318b20ec046794e30fe1"
+    },
+    {
+      "file": "scripts/tooling.ts",
+      "symbol": "UiTooling.static run",
+      "fingerprint": "98662ba5e0ceee111450fca3d5bf2487baedf0e285bf482fc3b7f8e79fdf4dec"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiAdmittedActions.invoke",
+      "fingerprint": "a251009e6c3e32b9374994ffe243775bfbc8d56aaed13b4010be69463bbffd04"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiAdmittedActions.call",
+      "fingerprint": "bba3c2875ee2493fb65f4a77cea2c13fa61f43cf00dc011ee8604e12329cf3d1"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiAdmittedActions.close",
+      "fingerprint": "8eee2f9785fd42b47f6825a8dec7151c6457be1b8ee374f6733d1cae22988e51"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiReadiness.begin",
+      "fingerprint": "5e2022fa0da05ed3b905ac69d3925421741b097c092726e1313afc25e2650078"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiReadiness.loaded",
+      "fingerprint": "b0ce4000d20e7d7559cb3dcf88299e215f5e2154103be6ba6e23259d8d23560a"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiReadiness.failed",
+      "fingerprint": "092160d8604165a9ca24066f3c9e63e05b27e925ee346be8e9ae385ee85ecca8"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiMountedRoot.view",
+      "fingerprint": "bd11728e7ac4714f791ae2d4883c7317b8a9f996f1aba2e8ff41e1530a8587a5"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiMountedRoot.update",
+      "fingerprint": "565c2f9fe3822cd241b88612edfbcaf392d080985c8f08ea90312cb3b5e0112b"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiMountedRoot.replace",
+      "fingerprint": "ab88372421342f9717ca07042d1d1b3bfc109b4d099d779ca50d7d9fb132bb4e"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiMountedRoot.close",
+      "fingerprint": "a439ee02cf6cd15402ae86380244bfa79061b6fb963c8a881e91624f2ea33543"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "ReactBrowserRenderer.mount",
+      "fingerprint": "20528513f9e559dc1d2c4f328febefa7ff2e6811c367328438e16466597245fa"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "ReactBrowserRendererPlugin.constructor",
+      "fingerprint": "84d0c01099aca77ad8887ce4f4b5c0566073b4ead9e794bb4023ee37c7209e99"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiOwnedMount.constructor",
+      "fingerprint": "551be2c27924997b40fbcc819544aad83ca44626cbb09ecebf3b13b026257b6e"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiOwnedMount.view",
+      "fingerprint": "2413eef74848825fe1b161c6dd8329bc9a2caf9686888aa4fbf20bd7b72c1e73"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiOwnedMount.update",
+      "fingerprint": "cda95872e58f913b908c6b1d90460523e8a0e2cb3b5fe6f94f642841796055e7"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiBrowserRenderer.mount",
+      "fingerprint": "87bda1840984ba32cad3a70933f5a252da8327397f5b93ba943a71a63e36d0ee"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiBrowserApplication.static hydrateDocument",
+      "fingerprint": "bfb3ce1809d52b228d8ae574740df4a97cf41f33620d372b79e656959bf6bff9"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiBrowserApplication.static hydrate",
+      "fingerprint": "f6c5484c197a75a177128ddf78b660f358eadd7a171ac50804e7606afef5f81c"
+    },
+    {
+      "file": "src/browser.ts",
+      "symbol": "UiBrowserApplication.static attach",
+      "fingerprint": "932de93c6a92f53dc1b0e76466815af0b9a4638bea478abf6ac863ea82e1ed51"
+    },
+    {
+      "file": "src/contracts.ts",
+      "symbol": "UiValidation.static table",
+      "fingerprint": "37af4e6e308de41ee9abedf6cb02bfd975a17e52054d5525781b4cbae23c7fa5"
+    },
+    {
+      "file": "src/contracts.ts",
+      "symbol": "UiValidation.static form",
+      "fingerprint": "a725b7c175d2965c2e3cbdaa6688a2e43f3cb9be13bfcc36b3a117b28eeffb72"
+    },
+    {
+      "file": "src/contracts.ts",
+      "symbol": "UiValidation.static href",
+      "fingerprint": "55208cf50043d6ab550bf8ca846887ecdee54a4ec826fe4969126fa55099b72f"
+    },
+    {
+      "file": "src/contracts.ts",
+      "symbol": "ComponentValidator.parse",
+      "fingerprint": "0bb2392804bd18ecfc665b399996d3d829f40359bb762c9a3d94b34d05889d87"
+    },
+    {
+      "file": "src/contracts.ts",
+      "symbol": "ThemeValidator.parse",
+      "fingerprint": "1411ca39737bc111e76fdc7300d0d7e920ffc39f4b3a06f9eaac7449c351e872"
+    },
+    {
+      "file": "src/contracts.ts",
+      "symbol": "UiTokens.static component",
+      "fingerprint": "1d81722a1f51c968bf4b63ae1151d25e8e2997e32a2cdc93920c79d9324f9de6"
+    },
+    {
+      "file": "src/contribution.ts",
+      "symbol": "UiContributionIdentity.static create",
+      "fingerprint": "0999f0ac5f040f18248a1a00155a6aca735808fcd06128d8926fb1a0db48d6b7"
+    },
+    {
+      "file": "src/island.ts",
+      "symbol": "ReactIslandBinding.constructor",
+      "fingerprint": "dd675c470ae321b1e7d4c91282c297399138838e446de30b5c838f4354b7ab19"
+    },
+    {
+      "file": "src/island.ts",
+      "symbol": "ReactIslandBinding.BoundIsland.render",
+      "fingerprint": "23f419f9b0e3c0aa9e6138b0e3367ce640d190b8e3171df4a882ddadcc67ec18"
+    },
+    {
+      "file": "src/island.ts",
+      "symbol": "ReactIslandRenderer.prepare",
+      "fingerprint": "4e01f67f573638636874b3233ef3dc3441ee059dda82ec7d8828a9c05980f8bf"
+    },
+    {
+      "file": "src/island.ts",
+      "symbol": "ReactIslandRendererPlugin.constructor",
+      "fingerprint": "fc6672dfdafb201a12a4f55cc14a03fdc9523d7d527947919963ed8f03503f43"
+    },
+    {
+      "file": "src/island.ts",
+      "symbol": "OwnedIslandBinding.constructor",
+      "fingerprint": "5febeb07c66c60c4c1ee4590ef17ca15c8aedcc1cb046f49067a2cf128f0999e"
+    },
+    {
+      "file": "src/island.ts",
+      "symbol": "UiIslandHost.static prepare",
+      "fingerprint": "11f227567ba79780af3454b280d590224420d0532930990f10bf529fe6e6da7f"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "StackComponentPlugin.terminal",
+      "fingerprint": "761880cf3b5d8539cc5ded37889ecfc3982c702f28da82513994bca0c8b3bece"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "StatusComponentPlugin.terminal",
+      "fingerprint": "98f9b15eca60d651eeb0ab2fd0a8d9359af0eb16c393770ce0f3efb0c211fd02"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "TableComponentPlugin.terminal",
+      "fingerprint": "8a08785be44f6716aeceb2fee8666f32dda866100a724b7ed0e5ad5f4a02fff9"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "FormComponentPlugin.terminal",
+      "fingerprint": "9f4018a278b87b6792fd03e09c9d48b4422ac1091a77d308d9fe3f7842925ad1"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "NavigationComponentPlugin.terminal",
+      "fingerprint": "282a2c7046f8040d4254a910849b6db6529b242365083db73a76325744170284"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "FeedbackComponentPlugin.terminal",
+      "fingerprint": "5d61459031f2d29d71191097e03c3363dcdcdf6f8e74cbd993e9e48d46bf6b2b"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "UiScope.static defaults",
+      "fingerprint": "e75ebd47b8fbcc220fa2a9cd4a25bc4715b8362cabaafe983e234189ff14ada6"
+    },
+    {
+      "file": "src/providers.ts",
+      "symbol": "UiScope.static create",
+      "fingerprint": "d0a5359737a091f3d8847838bb263c4431628c099c472b44ff9c7c1a6342e0c5"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiStack.render",
+      "fingerprint": "943f5beb7d05a064e21a071a30685e8ee0c5640b07b4e4802f0f6e4bc11f50c6"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiRenderTree.static prepare",
+      "fingerprint": "021a09404896c0072b2f0f65f48672cff82fb4ed8c6e7033ab8cf58d74f4c87d"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiRenderTree.prepareNode",
+      "fingerprint": "fbd8edc10e6428701db78b06e2693e13f870c361d61327c0efbf46e027f8351c"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiRenderTree.contribution",
+      "fingerprint": "c4d8034abc17ea331f01424a2573a5e96711f52a23e2ae5091e95f426ac0d4f6"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiRenderTree.terminalNode",
+      "fingerprint": "39b03a246122f028c2ac7d7f49b7c49aa6540b58c2eb97d7cb2fe4030e422aa2"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiRenderTree.dispose",
+      "fingerprint": "e6f13a40f1176dbe11482df5468f63ab0350e24a3b447904a4f6d9f8ab212cfe"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiRenderTree.close",
+      "fingerprint": "99098e9a159a95ce75e28fc4a8e1ab3b4224a344acc75d63cc718fae2751b944"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiTreeView.render",
+      "fingerprint": "2001ba8a14f34bce95ef6ff0646789b450fde6e558ef450e1904a68bb7894e7d"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiText.render",
+      "fingerprint": "ba83812aca79bcf2235a4827e958ac19979479730e68806956232d2be42bc912"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiStatus.render",
+      "fingerprint": "61f3c5d40184ed1195d892d6df46c960c28e938727b3103d4f2da79f4911a3b9"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiTable.render",
+      "fingerprint": "7feac185f6642aebb4e175e676e82e5a8e31fc682bdd8f46d82d1fad8536bff0"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiForm.field",
+      "fingerprint": "3fee6bc3db415ea210dc918677a2c3951af3fc511ff067cd85c0ed6e2211049b"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiForm.submit",
+      "fingerprint": "a1a6212c27d91612388e71be0c2002cef3b3ca6289da7b3896829d01f337e66c"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiForm.render",
+      "fingerprint": "a93dbd301ba0d6131a8955b7bcd0ffd46df8480aad6dfc63e3e6866abda87dab"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiNavigation.render",
+      "fingerprint": "59b1e02ebe26b157d1eaf8cfc1be5f918d9ca1ffbb985adb9351ff1499d28ef2"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiFeedback.render",
+      "fingerprint": "a8b2eb1ca95b13543a97db48a3f0076e3195d1ab7145acd3cafd431d92480ff0"
+    },
+    {
+      "file": "src/react.tsx",
+      "symbol": "UiSurface.render",
+      "fingerprint": "7198368f142f3fe65d30b65871404dcd092b4ea839801a3a856f28ac5cc83555"
+    },
+    {
+      "file": "src/server.ts",
+      "symbol": "DocumentMarkup.static render",
+      "fingerprint": "1587c143eadf76ef11adbb5429aa11bb058ca42fc69bb268904467ae4ed27514"
+    },
+    {
+      "file": "src/server.ts",
+      "symbol": "ReactServerRenderer.document",
+      "fingerprint": "12e0fb9ddb36fe84c457f53008c3dbf8bd8a736f9a27b71d3e49c42c581724bb"
+    },
+    {
+      "file": "src/server.ts",
+      "symbol": "ReactServerRenderer.render",
+      "fingerprint": "d8ea138b9060cd7dabd45942a69d980d781ceaf51c208ed389310e09985c8b2b"
+    },
+    {
+      "file": "src/server.ts",
+      "symbol": "ReactServerRendererPlugin.constructor",
+      "fingerprint": "5cf4d17abf53722c1d7b0fc9432d2933b881284f58f9d44adce76fe6506fe08f"
+    },
+    {
+      "file": "src/server.ts",
+      "symbol": "UiServerRenderer.static create",
+      "fingerprint": "bee9705773f9d2604614dc47c55110ae8fbe09ec091c5e8fbef7ee5c8290bc9f"
+    },
+    {
+      "file": "src/server.ts",
+      "symbol": "UiServerRenderer.project",
+      "fingerprint": "d6128d69ab137f92e9012992393b8a79119d6b447f0478c8aecb976ddcb34edf"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "PresentationVisitor.member",
+      "fingerprint": "4cad42dfd1d50f08cdd26b1872ebac877cba90a8a2a9a8ca1fdf3b9c90913a62"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "PresentationVisitor.document",
+      "fingerprint": "5fa20119d6b61692c315d2d8a71c2bcd470267d53d4ce1f9c4ebe4d013986571"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "PresentationVisitor.collectAliases",
+      "fingerprint": "7dcee4e50768d4fdf2df1113cabc1e25c0c1a1d61472a0d5652e0ae317cefbc4"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "PresentationVisitor.collect",
+      "fingerprint": "03dc9272a61497f6d1bdead3acd5674c7fe491e9fb71be5f0b8b1283e0f872a2"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "PresentationVisitor.visit",
+      "fingerprint": "5a27ab990d9268f933287990017bde0991b5d53164d9dff95b1eb113b3873b15"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "UiSourcePolicy.inspect",
+      "fingerprint": "6fcf2cc15da6e997af04fe0a21a68ec6925dcc28583653d68753bdc8cbffe37c"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "UiSourcePolicy.check",
+      "fingerprint": "0178738b2e37ae8919ca65a44a0520fb59674675facebe022c50cfaede56661b"
+    },
+    {
+      "file": "src/source-policy.ts",
+      "symbol": "UiSourcePolicy.files",
+      "fingerprint": "49ca55c0c40557fb89d3ff163684220f814fb0a045bf2eebcfc56f4a009230f5"
+    },
+    {
+      "file": "src/styles.ts",
+      "symbol": "UiStyles.static asset",
+      "fingerprint": "c0ad7176a13a30539ae61bb86e686b7a4409baf95933b718530e4e338a5125ed"
+    },
+    {
+      "file": "src/terminal.ts",
+      "symbol": "PlainTerminalRenderer.render",
+      "fingerprint": "2a132e121be46c85a7e1983e87206b6ecd82e0804469658b8d124526674d40b3"
+    },
+    {
+      "file": "src/terminal.ts",
+      "symbol": "PlainTerminalRendererPlugin.constructor",
+      "fingerprint": "f7ae3afb7c20e542e5baa6ab35a900ebadec51fc5df68ac66c35579cc545ba87"
+    },
+    {
+      "file": "src/terminal.ts",
+      "symbol": "UiTerminalRenderer.static create",
+      "fingerprint": "aba206a8883f1787ea3973887304c4b3e19f27508688a00f8fcf8bff8e3bb5b1"
+    },
+    {
+      "file": "tests/acceptance/astro.test.ts",
+      "symbol": "AstroAssertions.static capture",
+      "fingerprint": "2569c49b63f2bf7bcc55f3474cc91e14c77dbcf5dd36fb8035b0b4147bccb5b7"
+    },
+    {
+      "file": "tests/acceptance/astro.test.ts",
+      "symbol": "AstroAssertions.static standalone",
+      "fingerprint": "f1644dcb6dda7e8471ab8baa31fc6272e9108376f16a051ab273564cb7ed9dba"
+    },
+    {
+      "file": "tests/acceptance/astro.test.ts",
+      "symbol": "AstroTests.execute",
+      "fingerprint": "046b6be78e8ed52ed4edae499655e22f609a957ceaf1fa0a0fe862559948dc10"
+    },
+    {
+      "file": "tests/acceptance/astro.test.ts",
+      "symbol": "AstroTests.serve",
+      "fingerprint": "140e5f7f109b5f1dc00dfe8ef091dc3c52db55ce62be9bfad6adb645fcd461e9"
+    },
+    {
+      "file": "tests/acceptance/astro.test.ts",
+      "symbol": "AstroTests.hydration",
+      "fingerprint": "3929ef56b38ab5a9160f5956428f2fc568e1a6e690350f4331b93d2b7afa90f0"
+    },
+    {
+      "file": "tests/acceptance/browser.test.ts",
+      "symbol": "UiBrowserTestsAcceptance.responsive",
+      "fingerprint": "d4884416e7ff5e9470130bbb1e9bd446471aaf617739a485d734b0db89a626c2"
+    },
+    {
+      "file": "tests/acceptance/contracts.test.ts",
+      "symbol": "ContractTestsAcceptance.program",
+      "fingerprint": "b7c681a24961f63c785d2a4b86c1898a675cb3be4dd80fe3b41f7ee37649e102"
+    },
+    {
+      "file": "tests/acceptance/package.test.ts",
+      "symbol": "CompositeTestsAcceptance.program",
+      "fingerprint": "9e7bc5d2296950759c0fcc0eb1c152ea1b57c44d7cdaf6dfc6db31426e235b23"
+    },
+    {
+      "file": "tests/acceptance/ui-archive-fixture.test.ts",
+      "symbol": "UiArchiveFixtureTests.static protectedSource",
+      "fingerprint": "645a3a1b97373363259610a5f8a5ff82f4e2fdfdb86983e32962210b6b9b10e2"
+    },
+    {
+      "file": "tests/acceptance/ui-archive-fixture.test.ts",
+      "symbol": "UiArchiveFixtureTests.program",
+      "fingerprint": "e6c2a82acc362ea061217b9ec3e26a9406d756af131d5e29da19498c970b2132"
+    },
+    {
+      "file": "tests/acceptance/ui.test.ts",
+      "symbol": "IslandProgramTestsAcceptance.missing",
+      "fingerprint": "aa950ab27c03c07033308a99cc986e2461ab76b800969f32f925e1951d8e2d21"
+    },
+    {
+      "file": "tests/integration/browser.test.ts",
+      "symbol": "DocumentTestsIntegration.document",
+      "fingerprint": "141d53290e032daee08077eb5f9dc0064d1a69cbfde3a5fda94d37d9bef7d3b3"
+    },
+    {
+      "file": "tests/integration/contracts.test.ts",
+      "symbol": "ContractTestsIntegration.boundary",
+      "fingerprint": "83e1907243c5c7e31c394be9dcb79e07de2f497767ffa6acd808fc1cff69854a"
+    },
+    {
+      "file": "tests/integration/package.test.ts",
+      "symbol": "CompositeTestsIntegration.server",
+      "fingerprint": "c5b1b0ad7c09e8197e1bee4e8d784ec1bfc38a32938ebe77db2ddbe3723430c2"
+    },
+    {
+      "file": "tests/integration/package.test.ts",
+      "symbol": "CompositeTestsIntegration.terminal",
+      "fingerprint": "f196478d36a79d4382c779e9b41a2fa9fa2290e0c87ef188f183a21ae12452b0"
+    },
+    {
+      "file": "tests/integration/substitution.test.ts",
+      "symbol": "SubstitutionTests.configuration",
+      "fingerprint": "8c2dead41a716726e01fbe8e9f348278c4a61ee5f1644f40671606d8b9129966"
+    },
+    {
+      "file": "tests/integration/substitution.test.ts",
+      "symbol": "SubstitutionTests.contract",
+      "fingerprint": "c7f45da64878f8fb0f1bcf9580c11f3c9283a52ca19c83f161623cd248d6192f"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "UiContractTestsIntegration.renderers",
+      "fingerprint": "e3924d0b43d2909ed890f6d3885510d7e4c50a97224f44c0ba4d7ab6b59ecc98"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "RendererSelectionTestsIntegration.selectedDefault",
+      "fingerprint": "3a3b479a347c97eef7d120ec72ed0ab0195dbf52276fbbc4568e8d0d37d99066"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "IslandReactPropsTestsIntegration.boundary",
+      "fingerprint": "d506515102a2f1aa9eca08eaa0c89b14080d45b6f3b4d14de19aaddd1607292d"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "IslandAdmissionTestsIntegration.isolated",
+      "fingerprint": "ea84a4aceec55c3df5e37dcfe159f81f934d3eb9251ba42ad4a5f99661ee73fe"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "PresentationIdentityTestsIntegration.selectedOnly",
+      "fingerprint": "92deedbad9b437ab2a668edc4e9487cd14f18b41d61e20dff45715d02d130f50"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "ContributionTestsIntegration.binding",
+      "fingerprint": "017a8b161507ef49e2ce1e71a9d5faeac7b0381d4c91133e423738631dbacd6b"
+    },
+    {
+      "file": "tests/integration/ui.test.ts",
+      "symbol": "CompositeHydrationTestsIntegration.island",
+      "fingerprint": "7350cff6d5af8234a7ee126a6b1a833d0c3304622469d22353f5bae2d55d2de1"
+    },
+    {
+      "file": "tests/regression/package.test.ts",
+      "symbol": "MetadataGuardTestsRegression.guard",
+      "fingerprint": "11dcd96b8c18e8894c373198d2f98a31ea7ec71b9257617b5d4bbf1b5d1ccd3a"
+    },
+    {
+      "file": "tests/regression/policy.test.ts",
+      "symbol": "PolicyTests.consumers",
+      "fingerprint": "d7f075c0092b11abc5c33d823c4748551ebee3d0b8a00032b627128b5659c97b"
+    },
+    {
+      "file": "tests/regression/policy.test.ts",
+      "symbol": "ComponentClassTests.classOnly",
+      "fingerprint": "a3bcce7bae81c4207b1209755416ef4d26945f36cd195597d2a683d5fdca8689"
+    },
+    {
+      "file": "tests/regression/policy.test.ts",
+      "symbol": "StreamBoundaryTests.boundary",
+      "fingerprint": "28cce9518933f4acd02a6a267a7d11dd51ceeada4bd98a7ac327a204a2ac65a2"
+    },
+    {
+      "file": "tests/regression/test-layout.test.ts",
+      "symbol": "TestLayoutRegression.check",
+      "fingerprint": "58a1e54d5b4d5e806480547f2c44fc7fd4a30b548e11033ce1aec339518628f4"
+    },
+    {
+      "file": "tests/regression/test-layout.test.ts",
+      "symbol": "TestLayoutRegression.discovery",
+      "fingerprint": "9a2d5796d031c1f6b33cfe9b537b6ebaacb870e3bcdf578110c016bbc44dca2d"
+    },
+    {
+      "file": "tests/regression/test-layout.test.ts",
+      "symbol": "TestLayoutRegression.matrix",
+      "fingerprint": "ec2572e83c489f133b4c787afaaa99cc1106c22b8e76a2cbbc5dae077a23c0c5"
+    },
+    {
+      "file": "tests/regression/test-layout.test.ts",
+      "symbol": "TestLayoutRegression.partitions",
+      "fingerprint": "99923590bc7eb9c1f0b70fd32403786ecdc51b98ed1eec4241ae1a0693c17dcd"
+    },
+    {
+      "file": "tests/regression/test-layout.test.ts",
+      "symbol": "TestLayoutRegression.support",
+      "fingerprint": "e933ea0a60e46f10d31f0368c7d6413a5b60d3e5b392dca3f3c18daa81cb0966"
+    },
+    {
+      "file": "tests/support/astro-fixture/bootstrap.ts",
+      "symbol": "FixtureBootstrap.static bootstrap",
+      "fingerprint": "a7c5e6f2999dc71a986337770778879869f804689e6953344c7f934f9a2746f8"
+    },
+    {
+      "file": "tests/support/astro-fixture/client.ts",
+      "symbol": "Client.static forElement",
+      "fingerprint": "e7d5f16eb595ae2cbc7a8e3a88e0056a77f25a764d62416bb82855d899f56044"
+    },
+    {
+      "file": "tests/support/astro-fixture/client.ts",
+      "symbol": "Client.render",
+      "fingerprint": "4f705ec8f3ee042c206b19b15078eeb2bc79881ee272d8014d1a6289d0e28155"
+    },
+    {
+      "file": "tests/support/astro-fixture/client.ts",
+      "symbol": "Client.close",
+      "fingerprint": "69c0be81044f65ef83624a96eeb8e02c0c15e57b23210164d763e11af9ce53e1"
+    },
+    {
+      "file": "tests/support/astro-fixture/server.ts",
+      "symbol": "Server.static renderToStaticMarkup",
+      "fingerprint": "28e9aef05cba5ac2456692eec756a29fec5d2b749c4ee74d22691f8fa6277c00"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "BrowserConfiguration.static create",
+      "fingerprint": "8c2ddad3b94c66b04987e8eedd48311d98afbbe282a415a82861ab650a8b6f13"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "FixtureActions.static hold",
+      "fingerprint": "908be2bfd5837829315eead0bc38a7e40fdfee7bae95fd9adf569d8ccbaca378"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "FixtureActions.static release",
+      "fingerprint": "68db3063316e7633fe82a9d90b8f8715ea137c2088a3d90aeb87e2a6d27ad51a"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "FixtureActions.invoke",
+      "fingerprint": "799f55b6780a683a72b3e2c3ca2d1d69b129d7f001d8917a854800c7bf765c98"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.select",
+      "fingerprint": "84234e1530e09dcb870d92db053f0c924ab858fec50222ecdda2065ca44f8c11"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.show",
+      "fingerprint": "acb9d0ba16f001b3e22422e7eb5f0d8dbc31689c5dcb1de29b655050b6eea03a"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.finishClose",
+      "fingerprint": "44b5cbcc30e61b159939aae9891d49da702be061c04662f65a5b46896237c370"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.invalid",
+      "fingerprint": "ba532a8ab970638d4b051e004567a308e3931c64006ccae500eb88e3476e3c13"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.concurrent",
+      "fingerprint": "74ae0349c77f5378b8a81313340ebc1f89ce5582037208337ae93059d88ce411"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.update",
+      "fingerprint": "53b82562fa5e945baf872551ce2343ad4ef5f19fadca0a2e18c7624379ed48ca"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.close",
+      "fingerprint": "dabcbe2833739575077576a9eaf4cca6c6276dbcdd2547050e90ffc182f25edf"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.hydrateDocument",
+      "fingerprint": "84b9d24874787173f60bea8e2cb2d2b756c8559e0bf7617f352aed67cda212d3"
+    },
+    {
+      "file": "tests/support/browser-program.ts",
+      "symbol": "UiBrowserProgram.static run",
+      "fingerprint": "e66ac761247c9cb274dc3dfadf9e6add7d3631a47086843d0d45f46e5d2ad11e"
+    },
+    {
+      "file": "tests/support/browser-test-support.ts",
+      "symbol": "BrowserAssertions.static layout",
+      "fingerprint": "1fe376bf636c08612d9a29193ca82dffddf2243c1f1a49552a703c6aa6e2a0fa"
+    },
+    {
+      "file": "tests/support/browser-test-support.ts",
+      "symbol": "BrowserAssertions.static alternative",
+      "fingerprint": "2bb62d415a6146f684ca830b170ab4940f4b69502db0eeca250f7c7eaf8baf81"
+    },
+    {
+      "file": "tests/support/browser-test-support.ts",
+      "symbol": "BrowserErrors.unexpected",
+      "fingerprint": "425a8f2bc39d370862cfae8964b0f8645edc36336cac8a4976cd3fdcf4ed8dc2"
+    },
+    {
+      "file": "tests/support/browser-test-support.ts",
+      "symbol": "UiBrowserTests.handle",
+      "fingerprint": "de79870d16905bb91cc36894da2f0d7b27d145c66c348979301a7984f0ee2213"
+    },
+    {
+      "file": "tests/support/browser-test-support.ts",
+      "symbol": "UiBrowserTests.views",
+      "fingerprint": "fc733311a8567efb9485a5de4a779891e5fe9a3563715e35495019d9b474f4f4"
+    },
+    {
+      "file": "tests/support/package-test-support.ts",
+      "symbol": "CompositeTests.static view",
+      "fingerprint": "3cc251e23a71b75b8c2962aadabfd90333284d39a34374d464aa4d39608df007"
+    },
+    {
+      "file": "tests/support/ui-archive-fixture.ts",
+      "symbol": "UiArchiveFixtureBuild.command",
+      "fingerprint": "3dfd354881091aa0dc34190e9f10e549246b8a19ad71a8aa8cd48ed635d79cc2"
+    },
+    {
+      "file": "tests/support/ui-archive-fixture.ts",
+      "symbol": "UiArchiveFixtureBuild.source",
+      "fingerprint": "b33f9fc10d783f81e04c38d4de4531e80e1c411273c586ea7928b7a181825929"
+    },
+    {
+      "file": "tests/support/ui-archive-fixture.ts",
+      "symbol": "UiArchiveFixtureBuild.static replace",
+      "fingerprint": "dab19a9534e231be921c40b570ef770040de3ca489b28ee692d16eb248e21242"
+    },
+    {
+      "file": "tests/support/ui-archive-fixture.ts",
+      "symbol": "UiArchiveFixtureBuild.variant",
+      "fingerprint": "db51a969441bd1ffb26c6869a19b850b6fc29a759796791f3b4a3c77ddfc6d22"
+    },
+    {
+      "file": "tests/support/ui-archive-fixture.ts",
+      "symbol": "UiArchiveFixtureBuild.produce",
+      "fingerprint": "aa2a710f85398de34a1666af08daa65f06c6a6c212127715b67c158c234374bc"
+    },
+    {
+      "file": "tests/support/ui-archive-fixture.ts",
+      "symbol": "UiFixtureCommand.static run",
+      "fingerprint": "4a60b7421f9daa9bfabba245b2353420cb955e36d1bdd17ad706806a91bdae87"
+    },
+    {
+      "file": "tests/unit/browser.test.ts",
+      "symbol": "DocumentTestsUnit.context",
+      "fingerprint": "fba4925e0235e8b9f6e4357243dc47c8d9fd61cdf1ef6b3d02b12797a96c86ec"
+    },
+    {
+      "file": "tests/unit/contracts.test.ts",
+      "symbol": "ContractTestsUnit.models",
+      "fingerprint": "9b76e3c567289c95623478647258d82211cf70b6f581849a85cfb6f0cbe0dff7"
+    },
+    {
+      "file": "tests/unit/package.test.ts",
+      "symbol": "PackageTestsUnit.metadata",
+      "fingerprint": "1cdab423335168819544381804a4d5a4fdd5f8304d7146903a2f515799a452af"
+    },
+    {
+      "file": "tests/unit/package.test.ts",
+      "symbol": "NativePackageTestsUnit.metadata",
+      "fingerprint": "a225890bdf383c5227b4d94faaca7981d256f62d96e052acb23901b1d76a85c3"
+    },
+    {
+      "file": "tests/unit/package.test.ts",
+      "symbol": "CompositeTestsUnit.invalid",
+      "fingerprint": "5c760e91a1aba9cb65eea87471b329b07f3e01e7b0e758273c80c0eab29102fb"
+    },
+    {
+      "file": "tests/unit/ui.test.ts",
+      "symbol": "UiContractTestsUnit.schemas",
+      "fingerprint": "996d821e21d5f4df8e786660c564fa2f8122d8c6ad910667452fb8f03ec42a74"
+    }
+  ],
+  "exceptions": []
+}
