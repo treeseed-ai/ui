@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- Qualify reusable presentation against the exact combined capacity SDK successor (#101).
+
+### Changed
 - Qualify reusable presentation with the exact capacity and provider SDK closure (#101).
 - Require readable capability layers and contextual refactoring with a twenty-line method gate (#102).
 
