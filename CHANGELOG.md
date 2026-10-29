@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- Select the availability-ready SDK owner closure (#107).
+
+### Changed
 - Qualify reusable presentation against the exact manager-compatible SDK closure (#101).
 - Qualify reusable presentation against the exact combined capacity SDK successor (#101).
 
