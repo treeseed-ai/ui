@@ -12,7 +12,7 @@ class CapacityPresentationProgram {
   };
 
   async run(): Promise<void> {
-    assert.equal(typeof Reflect.get(sdk, 'CapacitySchemas'), 'function', 'capacity contracts required');
+    this.contracts();
     const server = await UiServerRenderer.create();
     const terminal = await UiTerminalRenderer.create();
     try {
@@ -26,6 +26,16 @@ class CapacityPresentationProgram {
       await server.dispose();
       await terminal.dispose();
     }
+  }
+  private contracts(): void {
+    assert.equal(
+      typeof Reflect.get(sdk, 'CapacitySchemas'),
+      'function',
+      'capacity contracts required',
+    );
+    const channel = Reflect.get(sdk, 'CapacityChannelSchemas');
+    assert.equal(typeof channel, 'function', 'manager channel contracts required');
+    assert.equal(Reflect.get(channel, 'version'), '1.1.0-cordis.1');
   }
 }
 
