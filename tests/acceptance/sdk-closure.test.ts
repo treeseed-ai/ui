@@ -4,9 +4,9 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 class UiSdkClosureAcceptance {
   private static readonly expected = {
-    version: '0.0.0-cordis.42',
-    commit: 'afdfac7bdd3c9c1f783362cd1d50324181e1d725',
-    sha256: '0ecfe599916fe8ef364fc4b73203c810981f163109fbe71a0dd4c01a9dfb7bbc',
+    version: '0.0.0-cordis.44',
+    commit: '00be028b92998f8d7039a3906e784c6b8598e730',
+    sha256: 'd95c54cf6081c7634498dfb4f3235d42d65b8664a5d62cc87c4dd4e85381f0f3',
   };
   run(): void {
     const metadata = JSON.parse(readFileSync('package.json', 'utf8'));
