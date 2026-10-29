@@ -2,21 +2,21 @@
 
 ## Accepted capacity contract compatibility
 
-Task 3D preserves reusable React/mobile-first presentation and host-owned Keycloak identity.
-Qualify UI `.23` against accepted SDK `0.0.0-cordis.42`, source
-`afdfac7bdd3c9c1f783362cd1d50324181e1d725`, SHA-256
-`0ecfe599916fe8ef364fc4b73203c810981f163109fbe71a0dd4c01a9dfb7bbc`.
-The public server/terminal program must require capacity-channel `1.1.0-cordis.1`, render the
-same escaped/safe view through default native providers and await both roots' disposal. One
-exact SDK peer serves the final manager/worker closure; presentation gains no domain execution,
-authority, credentials or account custody. Existing browser, mobile-first, terminal, Astro and
-replacement qualification remains required. Historical UI .22 / SDK .35 and earlier artifacts
-remain immutable. No runtime implementation, public export or dependency ownership moves.
+Under #107, qualify UI `.24` against accepted SDK `0.0.0-cordis.44`, source
+`00be028b92998f8d7039a3906e784c6b8598e730`, archive SHA-256
+`d95c54cf6081c7634498dfb4f3235d42d65b8664a5d62cc87c4dd4e85381f0f3`.
+Peer, vendor, candidate provenance, lock and installed metadata must agree. Package and bundled
+provider artifact identities advance together. Preserve all twelve native providers, public
+exports, React classes, responsive styles, mobile-first/browser/Astro/terminal behavior and
+Keycloak-owned identity. Presentation acquires no domain execution or credential custody.
 
-The owner replacement fixture still reads its frozen UI .16 source and SDK archive from Git.
-Its source tree, fixed recipe and produced presentation behavior remain unchanged by current
-SDK adoption. Refactor the touched fixture orchestration into readable class methods and preserve
-all assertions, inputs, timeouts and test registrations; do not grandfather the unmerged draft.
+Follow documentation, outside-in exact-selection tests, archive adoption, owner checks/build/all
+four tiers, independent public archive consumption, hosted qualification and review. Built default
+server/terminal/native disposal and real browser/Astro/width/keyboard fixtures remain required.
+SDK44 transport/contracts do not enable Agent availability or Work/model execution in UI.
+Keep UI23/SDK42 and older archives, frozen replacement fixtures and their source pins immutable.
+No runtime behavior, dependency ownership, historical assertion, timeout or release policy changes.
+All issues remain open. Productive Work/models remain Task10; no production publication/cutover.
 
 ## Task 3C contract
 
